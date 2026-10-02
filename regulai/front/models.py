@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .encrypted_fields import EncryptedCharField
+from .policy import validate_ai_config, validate_yara
+from django.core.validators import MinValueValidator
+import uuid
 
 
 class Company(models.Model):
@@ -12,6 +15,9 @@ class Company(models.Model):
         help_text="General context sent to all engines in every conversation."
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    ai_config = models.JSONField(default=dict, blank=True, validators=[validate_ai_config])
+    jev_api_key = EncryptedCharField(max_length=512, blank=True, default='')
 
     def __str__(self):
         return self.name
@@ -126,7 +132,7 @@ class Rule(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    yara_rule = models.TextField(help_text="Define the YARA rule here")
+    yara_rule = models.TextField(help_text="Define the YARA rule here", validators=[validate_yara])
     rules_group = models.ForeignKey(RulesGroup, on_delete=models.CASCADE, related_name="rules")
     severity = models.CharField(max_length=20, choices=SEVERITY_CHOICES, default="medium")
     applies_to = models.CharField(max_length=20, choices=APPLIES_TO_CHOICES, default="both")
@@ -195,6 +201,15 @@ class Prompt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     model_used = models.CharField(max_length=100, default="gpt-4o-mini")
     filtered = models.BooleanField(default=False)
+    request_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    user_message = models.OneToOneField(Message, on_delete=models.SET_NULL, null=True, blank=True, related_name='request_record')
+    status = models.CharField(max_length=24, default='legacy')
+    decision = models.JSONField(default=dict, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user', 'request_id'], name='unique_user_request')]
 
     # File information (if a file was attached)
     file_name = models.CharField(max_length=255, null=True, blank=True, help_text="Name of attached file")
@@ -213,6 +228,8 @@ class Response(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     tokens_used = models.IntegerField(default=0)
+    assistant_message = models.OneToOneField(Message, on_delete=models.SET_NULL, null=True, blank=True, related_name='response_record')
+    evidence = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return f"Response to Prompt {self.prompt.id}"
@@ -220,6 +237,7 @@ class Response(models.Model):
 
 class AuditLog(models.Model):
     """Auditoría detallada de la interacción usuario-IA."""
+    company = models.ForeignKey('Company', null=True, blank=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     action = models.CharField(max_length=100)  # ej: "prompt_sent", "response_received", "alert_triggered"
     details = models.TextField(blank=True, null=True)
@@ -292,6 +310,12 @@ class EngineModel(models.Model):
     description = models.TextField(blank=True, null=True)
     supports_vision = models.BooleanField(default=False)  # Can process images
     max_tokens = models.IntegerField(default=4096)
+    context_window = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+    supports_json = models.BooleanField(default=False)
+    input_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0)])
+    output_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0)])
+    currency = models.CharField(max_length=3, default='USD')
+    price_date = models.DateField(null=True, blank=True)
     order = models.IntegerField(default=0)  # For ordering in UI
     active = models.BooleanField(default=True)
 
