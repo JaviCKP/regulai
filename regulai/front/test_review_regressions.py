@@ -177,7 +177,6 @@ class ReviewRegressionTests(ChatFixture):
         self.assertTrue('tracked_changes_present' in result.warnings or any(
             item['code'] == 'tracked_changes_present' for item in disclosures), result.metadata())
 
-    @unittest.expectedFailure
     def test_b08_one_json_code_fence_is_accepted_as_a_document_answer(self):
         self.configure()
         self.http.side_effect = test_pipeline.jev_http(choices={'task': 'document_question'})

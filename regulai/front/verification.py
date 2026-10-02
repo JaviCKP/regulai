@@ -1,5 +1,6 @@
 """Local response/citation checks; these cannot establish semantic truth."""
 import json
+import re
 
 
 def normalize_finish_reason(finish_reason):
@@ -39,6 +40,9 @@ def _document_claims(content, fragments):
             raise ValueError("invalid_sources")
         sources[fragment["id"]] = fragment
     try:
+        fence = re.fullmatch(r"```json[ \t]*\r?\n([\s\S]*?)\r?\n```", content.strip())
+        if fence:
+            content = fence[1]
         document = json.loads(content, object_pairs_hook=_unique_fields)
     except (ValueError, RecursionError):
         raise ValueError("invalid_document_json") from None
