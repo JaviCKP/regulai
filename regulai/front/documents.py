@@ -11,7 +11,7 @@ import zipfile
 import zlib
 
 
-EXTRACTOR_VERSION = "1"
+EXTRACTOR_VERSION = "2"
 MAX_TEXT_CHARS = 200_000
 MAX_UNITS = 10_000
 MAX_PAGES = 100
@@ -41,6 +41,7 @@ class Document:
     units_read: int = 0
     units_total: int | None = None
     warnings: list = field(default_factory=list)
+    disclosures: list = field(default_factory=list)
     file_name: str = ""
     file_size: int = 0
     _characters: int = field(default=0, init=False, repr=False)
@@ -54,6 +55,7 @@ class Document:
             "units_read": self.units_read,
             "units_total": self.units_total,
             "warnings": list(self.warnings),
+            "disclosures": self.disclosures,
             "file_name": self.file_name,
             "file_size": self.file_size,
             "fragment_hashes": [fragment["id"] for fragment in self.fragments],
@@ -76,13 +78,41 @@ def _append(document, locator, text):
     return True
 
 
+def _disclose(document, code, locator, count=1):
+    document.warnings.append(code)
+    notice = next((item for item in document.disclosures if item["code"] == code), None)
+    if notice is None:
+        notice = {"code": code, "count": 0, "locators": []}
+        document.disclosures.append(notice)
+    notice["count"] += count
+    if locator not in notice["locators"]:
+        notice["locators"].append(locator)
+
+
+def _decode_text(document, content):
+    try:
+        if content.startswith((b"\xff\xfe", b"\xfe\xff")):
+            text = content.decode("utf-16")
+        else:
+            try:
+                text = content.decode("utf-8-sig")
+            except UnicodeDecodeError:
+                text = content.decode("cp1252")  # strict: undefined bytes remain invalid
+                _disclose(document, "encoding_assumed", "document")
+        if any(ord(char) < 32 and char not in "\t\n\r\f" for char in text):
+            raise ValueError("binary text")
+        if content and not text:
+            raise ValueError("empty encoded text")
+        return text
+    except (UnicodeDecodeError, ValueError) as error:
+        raise _Rejected("invalid_text") from error
+
+
 def _parse_text(document, content):
     try:
-        text = content.decode("utf-8-sig")
-        if any(ord(char) < 32 and char not in "\t\n\r" for char in text):
-            raise ValueError("binary text")
-    except (UnicodeDecodeError, ValueError):
-        document.warnings.append("invalid_text")
+        text = _decode_text(document, content)
+    except _Rejected as error:
+        document.warnings.append(str(error))
         return
     lines = text.splitlines()
     document.units_total = len(lines)
@@ -94,8 +124,8 @@ def _parse_text(document, content):
             break
         document.units_read += 1
     document.text = "\n".join(fragment["text"] for fragment in document.fragments)
-    document.status = "partial" if document.warnings else "complete"
-    if not document.warnings and not document.text.strip():
+    document.status = "partial" if document.units_read != document.units_total else "complete"
+    if not document.text.strip() and document.status == "complete":
         document.warnings.append("empty_document")
         document.status = "unreadable"
 
@@ -365,7 +395,7 @@ def extract_document(uploaded_file):
     from django.conf import settings
     from django.core.exceptions import ValidationError
     from .file_security import (
-        FILE_SIGNATURES, MAX_FILE_SIZES, get_file_extension, sanitize_filename,
+        FILE_SIGNATURES, MAX_FILE_SIZES, get_file_extension, has_file_signature, sanitize_filename,
         validate_file_signature, validate_file_size,
     )
 
@@ -399,8 +429,8 @@ def extract_document(uploaded_file):
         ):
             raise ValidationError("missing signature")
         if document.format in TEXT_FORMATS and any(
-            content.startswith(signature)
-            for signatures in FILE_SIGNATURES.values() for signature in signatures
+            has_file_signature(content, known_mime)
+            for known_mime in FILE_SIGNATURES
         ):
             raise ValidationError("binary signature")
     except ValidationError:
@@ -416,7 +446,7 @@ def extract_document(uploaded_file):
                 timeout=getattr(settings, "DOCUMENT_PARSER_TIMEOUT", 5), check=True,
             )
             parsed = json.loads(result.stdout)
-            for attribute in ("text", "fragments", "status", "units_read", "units_total", "warnings"):
+            for attribute in ("text", "fragments", "status", "units_read", "units_total", "warnings", "disclosures"):
                 setattr(document, attribute, parsed[attribute])
         except subprocess.TimeoutExpired:
             document.warnings.append("parser_timeout")
