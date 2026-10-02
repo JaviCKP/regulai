@@ -462,21 +462,59 @@ def _parse_pdf(document, content):
     if reader.is_encrypted:
         raise _Rejected("encrypted_document")
     document.units_total = len(reader.pages)
+    for number, attachment in enumerate(reader.attachment_list, 1):
+        if number > MAX_ARCHIVE_ENTRIES:
+            raise _Rejected("attachment_limit")
+        _disclose(document, "attachments_unread", f"document/attachment:{number}")
     form = reader.trailer["/Root"].get("/AcroForm")
     if form and (form.get_object().get("/Fields") or form.get_object().get("/XFA")):
-        document.warnings.append("visual_coverage_unknown")
+        fields = form.get_object().get("/Fields", [])
+        _disclose(document, "form_fields_unread", "document/form", max(len(fields), 1))
     for number in range(min(document.units_total, MAX_PAGES)):
         page = reader.pages[number]
         resources = page.get("/Resources", {})
         if hasattr(resources, "get_object"):
             resources = resources.get_object()
-        if "/XObject" in resources or page.get("/Annots"):
-            document.warnings.append("visual_coverage_unknown")
+        locator = f"page:{number + 1}"
+        image_count = 0
+        pending = [(resources, 0)]
+        seen = set()
+        while pending:
+            current, depth = pending.pop()
+            if depth > MAX_XML_DEPTH or len(seen) > MAX_XML_ELEMENTS:
+                raise _Rejected("pdf_structure_limit")
+            xobjects = current.get("/XObject", {})
+            xobjects = xobjects.get_object() if hasattr(xobjects, "get_object") else xobjects
+            for reference in xobjects.values():
+                item = reference.get_object()
+                if id(item) in seen:
+                    continue
+                seen.add(id(item))
+                if item.get("/Subtype") == "/Image":
+                    image_count += 1
+                elif item.get("/Subtype") == "/Form":
+                    nested = item.get("/Resources", {})
+                    pending.append((nested.get_object() if hasattr(nested, "get_object") else nested, depth + 1))
+        if image_count:
+            _disclose(document, "images_unread", locator, image_count)
+        for reference in page.get("/Annots", []):
+            annotation = reference.get_object()
+            subtype = annotation.get("/Subtype")
+            if subtype == "/FileAttachment":
+                _disclose(document, "attachments_unread", locator)
+            elif subtype not in ("/Link", "/Widget"):
+                _disclose(document, "annotations_unread", locator)
         text = page.extract_text() if page.get("/Contents") else ""
         if not text or not text.strip():
-            document.warnings.append("page_without_text")
+            # Resources containing images are conservatively a scan, even if a
+            # producer omits the drawing operator. Truly empty pages are readable.
+            if image_count or (page.get_contents() and page.get_contents().get_data().strip()):
+                _disclose(document, "page_without_text", locator)
+            else:
+                _disclose(document, "blank_page", locator)
+                document.units_read += 1
             continue
-        if not _append(document, f"page:{number + 1}", text):
+        if not _append(document, locator, text):
             break
         document.units_read += 1
     if document.units_total > MAX_PAGES:

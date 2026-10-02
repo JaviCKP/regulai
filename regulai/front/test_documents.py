@@ -102,10 +102,10 @@ class DocumentTests(SimpleTestCase):
         self.assertEqual(compressed.status, "complete")
         self.assertIn("Compressed evidence", compressed.text)
         for content, status, warning in [
-            (self.pdf(["Readable", None]), "partial", "page_without_text"),
+            (self.pdf(["Readable", None]), "complete", "blank_page"),
             (self.pdf(["Hidden"], encrypted=True), "unreadable", "encrypted_document"),
             (b"%PDF-1.4\ncorrupt", "unreadable", "corrupt_document"),
-            (self.pdf(["Visible"], image=True), "partial", "visual_coverage_unknown"),
+            (self.pdf(["Visible"], image=True), "complete_text_only", "images_unread"),
             (self.pdf(["Page"] * 101), "partial", "page_limit"),
         ]:
             with self.subTest(warning=warning):

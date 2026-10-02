@@ -16,6 +16,9 @@ from docx.oxml.ns import qn
 from PIL import Image
 
 from front.documents import extract_document
+from front.test_documents import DocumentTests
+from pypdf import PdfReader, PdfWriter
+from pypdf.generic import ArrayObject, DictionaryObject, NameObject, TextStringObject
 
 
 class FidelityTests(SimpleTestCase):
@@ -216,3 +219,49 @@ class FidelityTests(SimpleTestCase):
             self.assertEqual(notice["count"], 1)
             self.assertTrue(notice["locators"])
         self.assertNotIn("Private comment", document.text)
+
+    def test_pdf_blank_pages_are_not_scans_and_link_annotations_are_text_complete(self):
+        fixture = DocumentTests()
+        blank = self.extract("blank.pdf", fixture.pdf(["Readable", None]))
+        self.assertEqual(blank.status, "complete")
+        self.assertEqual(blank.units_read, 2)
+        self.assertEqual(blank.disclosures, [{"code": "blank_page", "count": 1, "locators": ["page:2"]}])
+        writer = PdfWriter(clone_from=PdfReader(io.BytesIO(fixture.pdf(["Linked text"]))))
+        writer.pages[0][NameObject("/Annots")] = ArrayObject([writer._add_object(DictionaryObject({
+            NameObject("/Subtype"): NameObject("/Link"),
+            NameObject("/A"): DictionaryObject({NameObject("/S"): NameObject("/URI"),
+                NameObject("/URI"): TextStringObject("https://example.invalid")})}))])
+        output = io.BytesIO()
+        writer.write(output)
+        linked = self.extract("linked.pdf", output.getvalue())
+        self.assertEqual(linked.status, "complete")
+        self.assertIn("Linked text", linked.text)
+
+    def test_pdf_declares_images_forms_attachments_and_detects_scan_pages(self):
+        fixture = DocumentTests()
+        visible = self.extract("logo.pdf", fixture.pdf(["Readable"], image=True))
+        self.assertEqual(visible.status, "complete_text_only")
+        self.assertEqual(visible.disclosures, [{"code": "images_unread", "count": 1, "locators": ["page:1"]}])
+        writer = PdfWriter(clone_from=PdfReader(io.BytesIO(fixture.pdf(["Readable", None]))))
+        writer.pages[1][NameObject("/Resources")] = writer.pages[0][NameObject("/Resources")]
+        source = PdfReader(io.BytesIO(fixture.pdf(["Scanned"], image=True)))
+        writer.pages[1][NameObject("/Resources")] = source.pages[0]["/Resources"].clone(writer)
+        output = io.BytesIO()
+        writer.write(output)
+        scan = self.extract("scan.pdf", output.getvalue())
+        self.assertEqual(scan.status, "partial")
+        self.assertIn("page_without_text", scan.warnings)
+        writer = PdfWriter(clone_from=PdfReader(io.BytesIO(fixture.pdf(["Readable"]))))
+        writer.add_attachment("synthetic.txt", b"private attachment")
+        writer._root_object[NameObject("/AcroForm")] = DictionaryObject({NameObject("/Fields"): ArrayObject([
+            writer._add_object(DictionaryObject({NameObject("/FT"): NameObject("/Tx"),
+                NameObject("/T"): TextStringObject("synthetic"), NameObject("/V"): TextStringObject("private field")}))])})
+        output = io.BytesIO()
+        writer.write(output)
+        attached = self.extract("attached.pdf", output.getvalue())
+        self.assertEqual(attached.status, "complete_text_only")
+        for code in ("attachments_unread", "form_fields_unread"):
+            notice = next(item for item in attached.disclosures if item["code"] == code)
+            self.assertEqual(notice["count"], 1)
+        self.assertNotIn("private attachment", attached.text)
+        self.assertNotIn("private field", attached.text)
