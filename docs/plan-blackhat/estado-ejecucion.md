@@ -1,5 +1,13 @@
 # Estado observado de la implementación
 
+## Correcciones iniciadas el 3 de octubre de 2026
+
+Rama `codex/community-fixes` desde `4400f0b`; [contratos, propiedad y decisiones D1–D7 aprobadas](correcciones-community.md). La base se volvió a ejecutar: check sin incidencias; 129 tests OK en 21.060 s; migraciones sin cambios; 150 controles offline correctos y cero llamadas reales; pip-audit sin vulnerabilidades conocidas.
+
+Primera integración de regresiones: ASTRA reprodujo B1–B10/C1–C2 sin decoradores en base, con 12 AssertionError y cero errores/omitidas. Suite integrada: 141 tests OK (12 expected failures) en 22.900 s; check/migraciones/evaluación150/auditoría correctos. No son doce correcciones terminadas: los decoradores se retirarán con su implementación. [Tarea10](tareas/10-regresiones-revision.md).
+
+El registro histórico que sigue corresponde a la implementación anterior; no acredita cambios de esta rama.
+
 2 de octubre de 2026. Rama local `codex/community-blackhat`, base `6a0f667`. Sin push, despliegue ni publicación. Los planes conservan la especificación original y anotan su implementación. [Arranque y guion](arranque-y-demo.md); [tracker local](tareas/00-base.md).
 
 ## Entorno y datos
