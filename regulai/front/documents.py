@@ -278,8 +278,9 @@ def _parse_docx(document, content):
     namespace = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
     with _office_archive(document, content) as archive:
         names = archive.namelist()
-        if any(name.startswith(("word/media/", "word/embeddings/")) for name in names):
-            document.warnings.append("visual_coverage_unknown")
+        for name in names:
+            if name.startswith("word/embeddings/"):
+                _disclose(document, "attachments_unread", name)
         parts = ["word/document.xml"] + sorted(
             name for name in names if name.startswith((
                 "word/header", "word/footer", "word/footnotes", "word/endnotes", "word/comments",
@@ -295,10 +296,6 @@ def _parse_docx(document, content):
                         root_seen = True
                         if part == "word/document.xml" and element.tag != namespace + "document":
                             raise _Rejected("signature_mismatch")
-                    if event == "start" and element.tag in {
-                        namespace + tag for tag in ("drawing", "pict", "object", "altChunk")
-                    }:
-                        document.warnings.append("visual_coverage_unknown")
                     if event != "end" or element.tag != namespace + "p":
                         continue
                     paragraph += 1
@@ -309,6 +306,11 @@ def _parse_docx(document, content):
                     chunks = []
                     locator = f"{part}/paragraph:{paragraph}"
                     for node in element.iter():
+                        omission = {namespace + "drawing": "images_unread", namespace + "pict": "images_unread",
+                                    namespace + "altChunk": "attachments_unread", namespace + "sym": "symbols_unread",
+                                    "{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath": "equations_unread"}.get(node.tag)
+                        if omission:
+                            _disclose(document, omission, locator)
                         if node.tag in {namespace + tag for tag in ("del", "ins", "moveFrom", "moveTo")}:
                             _disclose(document, "tracked_changes_present", locator)
 

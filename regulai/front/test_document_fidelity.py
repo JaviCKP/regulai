@@ -7,6 +7,7 @@ from django.test import SimpleTestCase
 from docx import Document as WordDocument
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from PIL import Image
 
 from front.documents import extract_document
 
@@ -96,3 +97,26 @@ class FidelityTests(SimpleTestCase):
         self.assertEqual(document.text, "17 days Contact")
         self.assertEqual(document.disclosures, [{"code": "tracked_changes_present", "count": 2,
             "locators": ["word/document.xml/paragraph:1"]}])
+
+    def test_word_discloses_header_images_attachments_equations_and_symbols(self):
+        word = WordDocument()
+        paragraph = word.add_paragraph("Readable body")
+        symbol = OxmlElement("w:sym")
+        symbol.set(qn("w:char"), "F0A7")
+        paragraph._p.append(symbol)
+        paragraph._p.append(OxmlElement("m:oMath"))
+        bitmap = io.BytesIO()
+        Image.new("RGB", (2, 2), "white").save(bitmap, "PNG")
+        bitmap.seek(0)
+        word.sections[0].header.paragraphs[0].add_run().add_picture(bitmap)
+        with zipfile.ZipFile(io.BytesIO(self.word_bytes(word))) as source:
+            files = {name: source.read(name) for name in source.namelist()}
+        files["word/embeddings/object1.bin"] = b"synthetic attachment"
+        document = self.extract("visual.docx", self.archive(files))
+        self.assertEqual(document.status, "complete_text_only")
+        disclosures = {item["code"]: item for item in document.disclosures}
+        for code in ("images_unread", "attachments_unread", "equations_unread", "symbols_unread"):
+            self.assertEqual(disclosures[code]["count"], 1)
+            self.assertTrue(disclosures[code]["locators"])
+        self.assertIn("Readable body", document.text)
+        self.assertNotIn("synthetic attachment", document.text)
