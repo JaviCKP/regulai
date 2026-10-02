@@ -152,11 +152,12 @@ Complete REST API with token authentication for programmatic access.
 
 ```bash
 # Authenticate
-curl -X POST http://localhost:8000/api/token/ \
+curl -X POST http://localhost:8765/api/auth/login/ \
+  -H "Content-Type: application/json" \
   -d '{"username": "user", "password": "pass"}'
 
 # List conversations
-curl http://localhost:8000/api/conversations/ \
+curl http://localhost:8765/api/conversations/ \
   -H "Authorization: Token YOUR_TOKEN"
 ```
 
@@ -170,10 +171,12 @@ curl http://localhost:8000/api/conversations/ \
 - `/api/rules/` — Individual YARA rules
 - `/api/alerts/` — Security alerts
 - `/api/audit-logs/` — Audit trail
-- `/api/prompts/` — Prompt history
-- `/api/users/` — User management
+- `/api/profiles/` — Company-scoped user profiles
+- `/api/chat/send/` — Shared authorized chat workflow
 
 </details>
+
+Chat requests include a stable UUID `request_id` and `content`, with owned `engine_id`/`model_id` when choosing a manual route. Reuse the same UUID and unchanged content/file when retrying or confirming. A pending confirmation returns a signed `consent_token`; a Boolean confirmation flag cannot authorize a send. See [the shared-flow contract](docs/plan-blackhat/03-flujo-unico-web-api.md).
 
 ## Tech Stack
 
