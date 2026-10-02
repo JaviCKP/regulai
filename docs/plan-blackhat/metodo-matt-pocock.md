@@ -1,6 +1,6 @@
 # Método de implementación con las skills de Matt Pocock
 
-**Estado:** investigación y adaptación propuestas; no se han instalado skills ni ejecutado sus acciones de publicación. Fuentes revisadas el 2 de octubre de 2026 en el [repositorio original](https://github.com/mattpocock/skills/tree/d81f3a183412e71a5b1e84ca21bc1a35eea03a60), revisión `d81f3a183412e71a5b1e84ca21bc1a35eea03a60`.
+**Estado:** las seis skills prioritarias están instaladas a nivel de proyecto y configuradas para tareas locales; no se ha publicado nada. Véanse [configuración](../agents/skills.md) y [estado real](estado-ejecucion.md). Fuentes revisadas el 2 de octubre de 2026 en el [repositorio original](https://github.com/mattpocock/skills/tree/d81f3a183412e71a5b1e84ca21bc1a35eea03a60), revisión `d81f3a183412e71a5b1e84ca21bc1a35eea03a60`. Las menciones posteriores a acciones no ejecutadas describen la investigación original.
 
 ## Cuáles encajan
 

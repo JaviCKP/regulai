@@ -14,4 +14,12 @@ Configuración local creada una sola vez por `scripts/bootstrap_local.py`, clave
 
 ## Pendientes actuales
 
-Actualización de plataforma y planes funcionales 01–12 en ejecución. Comparación y calibración real de proveedores pendientes de credenciales y presupuesto expresamente autorizados; no se harán llamadas de pago en este encargo. No hay mediciones reales de ahorro o precisión semántica.
+Planes funcionales 01–12 en ejecución. Comparación y calibración real de proveedores pendientes de credenciales y presupuesto expresamente autorizados; no se harán llamadas de pago en este encargo. No hay mediciones reales de ahorro o precisión semántica.
+
+## Plataforma actualizada y arranque visual
+
+Django 5.2.17 LTS y DRF 3.18.1 instalados. El resto de versiones se conserva en esta entrega acotada. `requirements.txt` raíz es la fuente única y el archivo interior la incluye. Revisión de compatibilidad: [Django 5.0](https://docs.djangoproject.com/en/5.0/releases/5.0/), [5.1](https://docs.djangoproject.com/en/5.1/releases/5.1/), [5.2](https://docs.djangoproject.com/en/5.2/releases/5.2/), [DRF](https://www.django-rest-framework.org/community/release-notes/). La rama 5.2 mantiene soporte extendido hasta abril de 2028 según el [calendario oficial](https://www.djangoproject.com/download/).
+
+Comprobado: tres tests (incluyen login web, chat, autenticación REST, cifrado y carga de texto), `check`, `makemigrations --check --dry-run` y `uv pip check`: correctos. Migraciones 0001–0025 aplicadas en la base local nueva. Inicio de sesión y chat abiertos y usados en navegador en `http://127.0.0.1:8765/`; 8000 estaba ocupado por otra aplicación. Cuenta exclusivamente sintética `community-local-demo`, contraseña local `Local-demo-only-2026!`, sin proveedor configurado ni datos reales. Esta contraseña es pública de desarrollo: no reutilizar esa cuenta en una instalación expuesta.
+
+Revisión de preparación: Standards sin hallazgos; Spec pidió completar documento de evidencia tardía, registrar apertura real y actualizar estados de skills. Hecho. El documento sintético tiene la condición «17 dias» después de 10.000 caracteres.

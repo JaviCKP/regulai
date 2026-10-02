@@ -25,7 +25,7 @@ import os
 
 
 #CHANGE:
-ENCRYPTION_KEY = 'FO4V3GO6J3TjZdRf_VSW5bJqLT8CZCw1818F5eiKzvY='
+ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY']
 
 # ==============================================================================
 # DJANGO SECRET KEY
@@ -33,7 +33,7 @@ ENCRYPTION_KEY = 'FO4V3GO6J3TjZdRf_VSW5bJqLT8CZCw1818F5eiKzvY='
 
 # Uncomment to override the default (recommended for production)
 #CHANGE:
-SECRET_KEY = 'fsd89fsdy9fas89dyf8y9asfyasdf99y8fysd98lnmsa'
+SECRET_KEY = os.environ['SECRET_KEY']
 CORS_ALLOW_CREDENTIALS = False
 # ==============================================================================
 # DEBUG MODE
@@ -49,7 +49,7 @@ DEBUG = True
 
 # Add your domain(s) in production
 #CHANGE:
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
 
 # ==============================================================================
 # DATABASE (Optional - override default SQLite)

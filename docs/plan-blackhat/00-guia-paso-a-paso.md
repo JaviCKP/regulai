@@ -1,6 +1,6 @@
 # Guía paso a paso: de los planes a una demo que funciona
 
-**Estado:** guía de ejecución; estos pasos todavía no se han ejecutado. **Fecha:** 2 de octubre de 2026. Leer junto al [índice](README.md) y la [investigación de skills](metodo-matt-pocock.md).
+**Estado:** ejecución en curso; entorno y skills preparados. El [registro de ejecución](estado-ejecucion.md) indica comprobaciones reales y pendientes. **Fecha:** 2 de octubre de 2026. Leer junto al [índice](README.md) y la [investigación de skills](metodo-matt-pocock.md).
 
 El orden es: preparar una base reproducible → cerrar los fallos de seguridad → comprobar la integración de Jev → implementar clasificación, selección y verificación → medir → ensayar. Terminar una entrega comprobable antes de abrir la siguiente.
 
@@ -62,7 +62,7 @@ Después, ejecutar migraciones únicamente en la base de desarrollo, crear usuar
 
 ## 3. Instalar y configurar solo las skills que vas a usar
 
-Todavía no se han instalado las skills de Matt en este trabajo. Su README documenta el siguiente instalador para Codex y otros agentes; requiere Node.js y `npx`. Ejecutarlo desde la raíz del repositorio cuando se vaya a preparar ese entorno:
+Las seis skills prioritarias están instaladas en el proyecto, con revisión y referencias en [skills.md](../agents/skills.md). La alternativa del README original usa Node.js y `npx` desde la raíz; no fue necesaria para esta instalación fijada:
 
 ```powershell
 rtk proxy npx skills@latest add mattpocock/skills
