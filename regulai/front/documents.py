@@ -1,5 +1,6 @@
 """Bounded textual extraction. Coverage describes admitted units, never visual fidelity."""
 from dataclasses import asdict, dataclass, field
+from datetime import date, datetime, time
 import hashlib
 import csv
 import io
@@ -224,8 +225,16 @@ def _parse_xlsx(document, content):
 
     with _office_archive(document, content) as archive:
         names = archive.namelist()
-        if any(name.startswith(("xl/media/", "xl/drawings/", "xl/embeddings/", "xl/comments")) for name in names):
-            document.warnings.append("visual_coverage_unknown")
+        for name in names:
+            for prefix, code in (("xl/media/", "images_unread"), ("xl/embeddings/", "attachments_unread"),
+                                 ("xl/charts/chart", "charts_unread")):
+                if name.startswith(prefix) and not name.endswith(".rels"):
+                    _disclose(document, code, name)
+            if name.startswith("xl/comments") and name.endswith(".xml"):
+                root = ET.fromstring(archive.read(name))
+                for comment in root.iter():
+                    if comment.tag.endswith("}comment"):
+                        _disclose(document, "comments_unread", f"{name}/cell:{comment.get('ref', '?')}")
         if any(name.startswith("xl/externalLinks/") for name in names):
             document.warnings.append("external_content_unread")
         cells = strings = sheets = 0
@@ -282,7 +291,7 @@ def _parse_xlsx(document, content):
                         if value is None:
                             continue
                     coordinates.append(cell.coordinate)
-                    values.append(f"{cell.coordinate}: {value}")
+                    values.append(f"{cell.coordinate}: {_cell_text(value, cell.number_format)}")
                 if values and not _append(document, f"sheet:{sheet.title}/row:{row_number}/cells:{coordinates[0]}-{coordinates[-1]}", "\t".join(values)):
                     return
                 document.units_read += 1
@@ -290,6 +299,19 @@ def _parse_xlsx(document, content):
     finally:
         workbook.close()
         cached_workbook.close()
+
+
+def _cell_text(value, number_format):
+    if isinstance(value, datetime):
+        return value.date().isoformat() if value.time() == time() else value.isoformat(sep=" ")
+    if isinstance(value, (date, time)):
+        return value.isoformat()
+    pattern = re.sub(r'"[^\"]*"|\\.', "", number_format.split(";")[0])
+    if isinstance(value, (int, float)) and not isinstance(value, bool) and "%" in pattern:
+        decimals = re.search(r"\.([0#?]+)", pattern)
+        precision = min(len(decimals[1]), 15) if decimals else 0
+        return f"{value * 100:.{precision}f}%"
+    return str(value)
 
 
 def _parse_docx(document, content):

@@ -4,6 +4,9 @@ import zipfile
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.workbook.properties import CalcProperties
+from openpyxl.comments import Comment
+from openpyxl.chart import BarChart, Reference
+from openpyxl.drawing.image import Image as SheetImage
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
@@ -186,3 +189,30 @@ class FidelityTests(SimpleTestCase):
             self.assertEqual(partial.status, "partial")
             self.assertIn("formula_coverage_unknown", partial.warnings)
             self.assertIn("=A1+B1", partial.text)
+
+    def test_xlsx_discloses_visual_content_and_formats_dates_and_percentages(self):
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet["A1"] = 0.17
+        sheet["A1"].number_format = "0.0%"
+        sheet["B1"] = datetime(2026, 10, 3)
+        sheet["B1"].number_format = "yyyy-mm-dd"
+        sheet["A1"].comment = Comment("Private comment", "Synthetic")
+        chart = BarChart()
+        chart.add_data(Reference(sheet, min_col=1, min_row=1, max_row=1))
+        sheet.add_chart(chart, "D1")
+        image = io.BytesIO()
+        Image.new("RGB", (2, 2), "white").save(image, "PNG")
+        image.seek(0)
+        sheet.add_image(SheetImage(image), "D4")
+        with zipfile.ZipFile(io.BytesIO(self.xlsx_bytes(workbook))) as source:
+            files = {name: source.read(name) for name in source.namelist()}
+        files["xl/embeddings/object1.bin"] = b"synthetic attachment"
+        document = self.extract("visual.xlsx", self.archive(files))
+        self.assertEqual(document.status, "complete_text_only")
+        self.assertEqual(document.fragments[0]["text"], "A1: 17.0%\tB1: 2026-10-03")
+        for code in ("images_unread", "charts_unread", "comments_unread", "attachments_unread"):
+            notice = next(item for item in document.disclosures if item["code"] == code)
+            self.assertEqual(notice["count"], 1)
+            self.assertTrue(notice["locators"])
+        self.assertNotIn("Private comment", document.text)
