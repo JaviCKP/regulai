@@ -132,7 +132,7 @@ def _outcome(actor, config, sample, rules, signals):
         policy.update(status='unavailable', reason_codes=['policy_configuration_invalid'], allowed_destinations=[])
         return {'policy': policy, 'route': {'status': 'not_evaluated', 'origin': origin,
             'reason_codes': ['security_not_allowed']}}
-    if signals['origin'] == 'jev' and (cfg.classification == 'required' or cfg.routing.mode == 'auto'):
+    if signals['origin'] == 'jev' and cfg.classification == 'required':
         classification = decide(signals['answers'], cfg, local.sensitivity)
         sensitivity, task, difficulty = classification.sensitivity, classification.task, classification.difficulty
         notices, plausible_tasks = classification.notices, classification.plausible_tasks
@@ -150,6 +150,9 @@ def _outcome(actor, config, sample, rules, signals):
         if sensitivity in ranks and local.sensitivity in ranks:
             sensitivity = max((sensitivity, local.sensitivity), key=ranks.get)
     policy = evaluate_policy(actor, [('prompts', sample)], config=config, rules=rules, sensitivity=sensitivity)
+    policy.allowed_destinations = sorted(set(policy.allowed_destinations) & set(local.allowed_destinations))
+    if policy.status in {'allow', 'consent_required'} and not policy.allowed_destinations:
+        policy.status, policy.reason_codes = 'block', ['destination_not_allowed']
     result = {'policy': policy.as_dict(), 'notices': notices, 'task': task, 'difficulty': difficulty,
         'plausible_tasks': plausible_tasks, 'route': {'status': 'not_evaluated',
         'origin': 'jev_signals' if signals['origin'] == 'jev' else 'synthetic_signals'}}
@@ -161,13 +164,13 @@ def _outcome(actor, config, sample, rules, signals):
         candidates = candidates_for(actor, cfg, task)
         if len(plausible_tasks) > 1:
             qualities = {(item.company_engine_id, item.model_id): item.quality for item in cfg.routing.candidates}
-            candidates = [replace(item, quality=min(qualities.get((item.company_engine_id, item.model_pk), {}).get(name, 0)
+            candidates = [replace(item, quality=min(qualities.get((item.company_engine_id, item.model_pk), {}).get(name, -1)
                 for name in plausible_tasks)) for item in candidates]
         result['candidates'] = [{'company_engine_id': item.company_engine_id, 'model': item.model_id,
             'level': item.level, 'quality': item.quality} for item in candidates
             if f'engine:{item.company_engine_id}' in policy.allowed_destinations]
         budget = Decimal(cfg.limits.budget) if cfg.limits.budget is not None else None
-        required_checks = int(cfg.classification == 'required' or cfg.routing.mode == 'auto') + int(cfg.verification.mode != 'local')
+        required_checks = int(cfg.classification == 'required') + int(cfg.verification.mode != 'local')
         if budget is not None and required_checks:
             if cfg.jev.max_call_cost is None or cfg.jev.input_price is None or cfg.jev.output_price is None:
                 raise RoutingError('unknown_price')
@@ -202,6 +205,11 @@ def _semantic(actor, company, sample, rules):
     if decision.status != 'allow':
         return {'status': 'not_authorized', 'reason_codes': decision.reason_codes}, [], None
     cfg = AIConfig.model_validate(company.ai_config)
+    if ObfuscationConfig.objects.filter(company=company, active=True).exists():
+        code = ('policy_configuration_invalid' if cfg.limits.budget is not None
+            and cfg.masking.max_call_cost is None else 'masking_required')
+        # ponytail: semantic masking disabled; enable through shared mask_texts and its ledger.
+        return {'status': 'not_authorized', 'reason_codes': [code]}, [], None
     if (not company.jev_api_key or cfg.limits.budget is None or cfg.jev.max_call_cost is None
             or cfg.jev.input_price is None or cfg.jev.output_price is None or cfg.jev.currency != 'USD'):
         return {'status': 'not_evaluated', 'reason_codes': ['budget_or_credentials_unconfigured']}, [], None

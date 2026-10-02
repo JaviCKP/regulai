@@ -10,7 +10,12 @@ from django.test import SimpleTestCase
 from front import test_policy_simulator
 from front.policy import AIConfig
 from front.classification import decide
-from front.models import ObfuscationConfig
+from front.models import CompanyEngine, Engine, EngineModel, ObfuscationConfig
+
+
+def provider_response(payload):
+    return SimpleNamespace(status_code=200, headers={}, close=lambda: None,
+        iter_content=lambda **kwargs: iter([json.dumps(payload).encode()]))
 
 
 def answers():
@@ -119,7 +124,8 @@ class ClassificationConfigTests(SimpleTestCase):
             {'classification_policy': {'signal_threshold': float('nan')}},
             {'classification_policy': {'on_ambiguity': 'ignore'}},
             {'masking': {'max_call_cost': '-1'}}, {'masking': {'max_call_cost': 0}},
-            {'limits': {'deadline_seconds': 29}}, {'limits': {'deadline_seconds': 181}},
+            {'limits': {'deadline_seconds': 29, 'call_timeout_seconds': 30}},
+            {'limits': {'deadline_seconds': 181}},
             {'limits': {'call_timeout_seconds': True}},
             {'routing': {'allow_cross_engine_fallback': 'false'}},
             {'verification': {'min_quote_chars': 0}}, {'verification': {'min_quote_words': 0}},
@@ -129,6 +135,10 @@ class ClassificationConfigTests(SimpleTestCase):
                 AIConfig.model_validate(value)
         self.assertEqual(AIConfig.model_validate({'limits': {
             'deadline_seconds': 180, 'call_timeout_seconds': 180}}).limits.call_timeout_seconds, 180)
+
+    def test_legacy_short_deadline_keeps_configuration_valid(self):
+        cfg = AIConfig.model_validate({'limits': {'budget': '0.01', 'deadline_seconds': 5}})
+        self.assertEqual(cfg.limits.call_timeout_seconds, 5)
 
     def test_prices_are_per_million_but_call_bounds_can_be_smaller(self):
         for field in ('input_price', 'output_price'):
@@ -162,8 +172,7 @@ class ClassificationSimulatorTests(TestCase):
         payload['answers']['category'].update(confidence=0.49, probabilities={
             'public': 0.14, 'internal': 0.59, 'unknown': 0.22,
             'confidential': 0.05, 'restricted': 0.0})
-        response = SimpleNamespace(status_code=200, headers={}, close=lambda: None,
-            iter_content=lambda **kwargs: iter([json.dumps(payload).encode()]))
+        response = provider_response(payload)
         with patch('requests.sessions.Session.request', return_value=response) as network:
             result = self.client.post(self.url, self.command(mode='semantic'))
         self.assertEqual(result.status_code, 200)
@@ -182,8 +191,38 @@ class ClassificationSimulatorTests(TestCase):
         self.assertEqual(result.status_code, 400)
         network.assert_not_called()
 
+    def test_bounded_draft_cannot_authorize_semantics_with_unbounded_active_mask_policy(self):
+        ObfuscationConfig.objects.create(company=self.company, name='Synthetic mask', api_url='https://mask.invalid')
+        self.company.ai_config.update(classification='required',
+            jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
+            limits={'budget': '1'})
+        self.company.jev_api_key = 'synthetic-key'
+        self.company.save()
+        proposed = dict(self.company.ai_config, masking={'max_call_cost': '0'})
+        with patch('requests.sessions.Session.request', return_value=test_policy_simulator.jev_response()) as network:
+            result = self.client.post(self.url, self.command(mode='semantic', proposed_config=json.dumps(proposed)))
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.context['comparison']['semantic']['status'], 'not_authorized')
+        self.assertEqual(result.context['comparison']['semantic']['reason_codes'], ['policy_configuration_invalid'])
+        network.assert_not_called()
+
+    def test_semantic_simulator_never_sends_unmasked_content_to_jev(self):
+        ObfuscationConfig.objects.create(company=self.company, name='Synthetic mask', api_url='https://mask.invalid')
+        self.company.ai_config.update(classification='required', masking={'max_call_cost': '0'},
+            jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
+            limits={'budget': '1'})
+        self.company.jev_api_key = 'synthetic-key'
+        self.company.save()
+        with patch('requests.sessions.Session.request', return_value=test_policy_simulator.jev_response()) as network:
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.context['comparison']['semantic']['status'], 'not_authorized')
+        self.assertEqual(result.context['comparison']['semantic']['reason_codes'], ['masking_required'])
+        network.assert_not_called()
+
     def test_local_classification_ignores_semantic_category_for_routing(self):
         self.company.ai_config.update(classification='local',
+            routing={'mode': 'auto'},
             jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
             limits={'budget': '0.002'})
         self.company.jev_api_key = 'synthetic-key'
@@ -192,3 +231,97 @@ class ClassificationSimulatorTests(TestCase):
             result = self.client.post(self.url, self.command(mode='semantic'))
         self.assertEqual(result.context['comparison']['current']['policy']['sensitivity'], 'internal')
         self.assertEqual(result.context['comparison']['current']['policy']['status'], 'allow')
+
+    def test_credentials_below_choice_threshold_still_block(self):
+        self.company.ai_config.update(classification='required',
+            jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
+            limits={'budget': '0.002'})
+        self.company.jev_api_key = 'synthetic-key'
+        self.company.save()
+        payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+        payload['answers']['credentials']['noul'] = 0.75
+        with patch('requests.sessions.Session.request', return_value=provider_response(payload)) as network:
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        policy = result.context['comparison']['current']['policy']
+        self.assertEqual(policy['sensitivity'], 'restricted')
+        self.assertEqual(policy['status'], 'block')
+        self.assertEqual(policy['reason_codes'], ['restricted_content'])
+        self.assertEqual(network.call_count, 1)
+
+    def route_catalogue(self):
+        engine = Engine.objects.create(name='Classification route engine')
+        credential = CompanyEngine.objects.create(company=self.company, engine=engine, api_key='synthetic-key')
+        cheap = EngineModel.objects.create(engine=engine, name='Cheap', model_id='synthetic-cheap',
+            context_window=20_000, max_tokens=2000, input_price='1', output_price='2')
+        strong = EngineModel.objects.create(engine=engine, name='Strong', model_id='synthetic-strong',
+            context_window=20_000, max_tokens=2000, input_price='10', output_price='20')
+        self.company.ai_config.update(classification='required',
+            destinations={'internal': ['jev', f'engine:{credential.pk}']},
+            jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
+            limits={'budget': '1'}, routing={'candidates': [
+                {'company_engine_id': credential.pk, 'model_id': cheap.pk, 'level': 'economy',
+                 'quality': {'general': 1.0, 'summary': 0.1, 'document_question': 0.9}},
+                {'company_engine_id': credential.pk, 'model_id': strong.pk, 'level': 'strong',
+                 'quality': {'general': 0.9, 'summary': 0.9, 'document_question': 0.9}},
+            ], 'min_quality': {'economy': 0.8, 'balanced': 0.8, 'strong': 0.8}})
+        self.company.jev_api_key = 'synthetic-key'
+        self.company.save()
+        return credential, cheap, strong
+
+    def test_uncertain_task_routes_by_lowest_quality_among_plausible_tasks(self):
+        _, _, strong = self.route_catalogue()
+        payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+        payload['answers']['task'].update(confidence=0.4, choice='summary',
+            probabilities={'summary': 0.6, 'document_question': 0.4, 'general': 0.0, 'extraction': 0.0})
+        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        outcome = result.context['comparison']['current']
+        self.assertEqual(outcome['task'], 'general')
+        self.assertEqual(outcome['plausible_tasks'], ['summary', 'document_question'])
+        self.assertEqual(outcome['route']['model'], strong.model_id)
+
+    def test_unmeasured_plausible_task_quality_cannot_route_even_at_zero_minimum(self):
+        self.route_catalogue()
+        self.company.ai_config['routing']['min_quality'] = {'economy': 0.0, 'balanced': 0.0, 'strong': 0.0}
+        for candidate in self.company.ai_config['routing']['candidates']:
+            candidate['quality'].pop('summary')
+        self.company.save()
+        payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+        payload['answers']['task'].update(confidence=0.4, choice='summary',
+            probabilities={'summary': 0.6, 'document_question': 0.4, 'general': 0.0, 'extraction': 0.0})
+        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        self.assertEqual(result.context['comparison']['current']['route']['reason_codes'], ['quality_unavailable'])
+
+    def test_incoherent_confidence_fails_closed_in_http_simulation(self):
+        self.route_catalogue()
+        payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+        payload['answers']['category']['confidence'] = 0.99
+        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        outcome = result.context['comparison']['current']
+        self.assertEqual(outcome['policy']['status'], 'unavailable')
+        self.assertEqual(outcome['policy']['allowed_destinations'], [])
+        self.assertEqual(outcome['policy']['reason_codes'], ['security_check_failed'])
+
+    def test_manipulation_is_distinct_from_ambiguity_in_http_simulation(self):
+        self.route_catalogue()
+        payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+        payload['answers']['manipulation']['noul'] = 0.75
+        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        outcome = result.context['comparison']['current']
+        self.assertEqual(outcome['policy']['status'], 'block')
+        self.assertEqual(outcome['policy']['reason_codes'], ['classification_manipulation'])
+
+    def test_semantic_classification_never_adds_a_destination(self):
+        credential, _, _ = self.route_catalogue()
+        self.company.ai_config['destinations'] = {'internal': ['jev'],
+            'confidential': ['jev', f'engine:{credential.pk}']}
+        self.company.save()
+        with patch('requests.sessions.Session.request', return_value=test_policy_simulator.jev_response('confidential')):
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        outcome = result.context['comparison']['current']
+        self.assertEqual(outcome['policy']['allowed_destinations'], ['jev'])
+        self.assertEqual(outcome['route']['status'], 'unavailable')
+        self.assertEqual(outcome['route']['reason_codes'], ['no_authorized_candidates'])

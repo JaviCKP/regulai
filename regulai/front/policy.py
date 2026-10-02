@@ -106,7 +106,9 @@ class LimitsConfig(StrictConfig):
     @model_validator(mode='after')
     def coherent_timeout(self):
         if self.call_timeout_seconds > self.deadline_seconds:
-            raise ValueError('Call timeout cannot exceed the request deadline.')
+            if 'call_timeout_seconds' in self.model_fields_set:
+                raise ValueError('Call timeout cannot exceed the request deadline.')
+            self.call_timeout_seconds = self.deadline_seconds
         return self
 
 
