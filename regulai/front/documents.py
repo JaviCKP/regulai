@@ -23,6 +23,9 @@ MAX_CELLS = 100_000
 MAX_SHEETS = 100
 MAX_XML_ELEMENTS = 100_000
 MAX_XML_DEPTH = 128
+INFORMATIONAL = {"encoding_assumed", "blank_page", "tracked_changes_present", "formula_expression_security_only"}
+TEXT_ONLY = {"images_unread", "attachments_unread", "charts_unread", "comments_unread", "form_fields_unread",
+             "annotations_unread", "equations_unread", "symbols_unread", "numbering_unsupported", "external_content_unread"}
 TEXT_FORMATS = {"txt", "md", "json", "py", "js", "csv"}
 MIME_TYPES = {
     "pdf": "application/pdf",
@@ -116,13 +119,15 @@ def _parse_text(document, content):
         return
     lines = text.splitlines()
     document.units_total = len(lines)
-    for number, line in enumerate(lines, 1):
-        if number > MAX_UNITS:
-            document.warnings.append("unit_limit")
+    for start in range(0, min(len(lines), MAX_UNITS), 40):
+        block = lines[start:min(start + 40, MAX_UNITS)]
+        end = start + len(block)
+        locator = f"line:{end}" if len(block) == 1 else f"lines:{start + 1}-{end}"
+        if not _append(document, locator, "\n".join(block)):
             break
-        if not _append(document, f"line:{number}", line):
-            break
-        document.units_read += 1
+        document.units_read += len(block)
+    if len(lines) > MAX_UNITS:
+        document.warnings.append("unit_limit")
     document.text = "\n".join(fragment["text"] for fragment in document.fragments)
     document.status = "partial" if document.units_read != document.units_total else "complete"
     if not document.text.strip() and document.status == "complete":
@@ -133,20 +138,22 @@ def _parse_text(document, content):
 def _parse_csv(document, content):
     from openpyxl.utils import get_column_letter
 
-    text = content.decode("utf-8-sig")
-    if any(ord(char) < 32 and char not in "\t\n\r" for char in text):
-        raise _Rejected("invalid_text")
+    text = _decode_text(document, content)
     csv.field_size_limit(1024 * 1024)
-    for row_number, row in enumerate(csv.reader(io.StringIO(text), strict=True), 1):
+    try:
+        dialect = csv.Sniffer().sniff(text[:65536], delimiters=",;\t|")
+    except csv.Error:
+        dialect = csv.excel
+    for row_number, row in enumerate(csv.reader(io.StringIO(text), dialect=dialect, strict=True), 1):
         if row_number > MAX_UNITS:
             document.warnings.append("unit_limit")
             return
         if len(row) > MAX_COLUMNS:
             document.warnings.append("column_limit")
             return
-        for column, value in enumerate(row, 1):
-            if not _append(document, f"cell:{get_column_letter(column)}{row_number}", value):
-                return
+        values = [f"{get_column_letter(column)}{row_number}: {value}" for column, value in enumerate(row, 1)]
+        if not _append(document, f"row:{row_number}/cells:A{row_number}-{get_column_letter(max(len(row), 1))}{row_number}", "\t".join(values)):
+            return
         document.units_read += 1
     document.units_total = document.units_read
 
@@ -374,7 +381,8 @@ def _worker(format, content):
             _parse_xlsx(document, content)
         else:
             _parse_docx(document, content)
-        document.status = "partial" if document.warnings else "complete"
+        document.status = ("partial" if set(document.warnings) - INFORMATIONAL - TEXT_ONLY else
+                           "complete_text_only" if set(document.warnings) & TEXT_ONLY else "complete")
     except _Rejected as error:
         document.warnings.append(str(error))
         document.status = "partial" if document.units_read else "unreadable"

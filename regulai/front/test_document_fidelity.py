@@ -31,3 +31,25 @@ class FidelityTests(SimpleTestCase):
             {"code": "encoding_assumed", "count": 1, "locators": ["document"]}])
         self.assertEqual(self.extract("invalid.txt", b"x\x81").status, "unreadable")
 
+    def test_csv_dialects_preserve_cells_in_compact_rows(self):
+        for separator in (",", ";", "\t", "|"):
+            content = f'name{separator}note\nAda{separator}"first\nsecond"\n'.encode()
+            with self.subTest(separator=separator):
+                document = self.extract("sheet.csv", content)
+                self.assertEqual(document.status, "complete")
+                self.assertEqual(len(document.fragments), 2)
+                self.assertEqual(document.fragments[1]["locator"], "row:2/cells:A2-B2")
+                self.assertEqual(document.fragments[1]["text"], "A2: Ada\tB2: first\nsecond")
+        document = self.extract("sheet.csv", "nombre;precio\nCafé;17 €\n".encode("cp1252"))
+        self.assertEqual(document.status, "complete")
+        self.assertIn("encoding_assumed", document.warnings)
+
+    def test_text_groups_lines_without_losing_evidence_or_locations(self):
+        content = ("ordinary text\n" * 1499 + "late evidence").encode()
+        document = self.extract("large.txt", content)
+        self.assertEqual(document.status, "complete")
+        self.assertEqual(document.units_read, 1500)
+        self.assertLess(len(document.fragments), 50)
+        self.assertEqual(document.fragments[0]["locator"], "lines:1-40")
+        self.assertEqual(document.fragments[-1]["locator"], "lines:1481-1500")
+        self.assertTrue(document.text.endswith("late evidence"))
