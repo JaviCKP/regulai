@@ -252,8 +252,8 @@ class DocumentTests(SimpleTestCase):
         output = io.BytesIO()
         word.save(output)
         external = self.extract("external.docx", output.getvalue())
-        self.assertEqual(external.status, "partial")
-        self.assertIn("external_content_unread", external.warnings)
+        self.assertEqual(external.status, "complete")
+        self.assertNotIn("external_content_unread", external.warnings)
 
     def test_docx_tabs_and_breaks_do_not_join_separate_words(self):
         word = WordDocument()

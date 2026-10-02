@@ -205,8 +205,9 @@ def _office_archive(document, content):
                         depth += 1
                         if elements > MAX_XML_ELEMENTS or depth > MAX_XML_DEPTH:
                             raise _Rejected("xml_structure_limit")
-                        if element.tag.endswith("}Relationship") and element.attrib.get("TargetMode") == "External":
-                            document.warnings.append("external_content_unread")
+                        if (element.tag.endswith("}Relationship") and element.attrib.get("TargetMode") == "External"
+                                and not element.attrib.get("Type", "").endswith("/hyperlink")):
+                            _disclose(document, "external_content_unread", entry.filename)
                     else:
                         depth -= 1
                         element.clear()
@@ -306,13 +307,24 @@ def _parse_docx(document, content):
                         document.warnings.append("unit_limit")
                         return
                     chunks = []
+                    locator = f"{part}/paragraph:{paragraph}"
                     for node in element.iter():
-                        if node.tag in {namespace + "t", namespace + "delText", namespace + "instrText"}:
+                        if node.tag in {namespace + tag for tag in ("del", "ins", "moveFrom", "moveTo")}:
+                            _disclose(document, "tracked_changes_present", locator)
+
+                    def accepted_text(node):
+                        if node.tag in {namespace + "del", namespace + "moveFrom", namespace + "instrText", namespace + "delText"}:
+                            return
+                        if node.tag == namespace + "t":
                             chunks.append(node.text or "")
                         elif node.tag == namespace + "tab":
                             chunks.append("\t")
                         elif node.tag in {namespace + "br", namespace + "cr"}:
                             chunks.append("\n")
+                        for child in node:
+                            accepted_text(child)
+
+                    accepted_text(element)
                     text = "".join(chunks)
                     if not _append(document, f"{part}/paragraph:{paragraph}", text):
                         return

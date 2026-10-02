@@ -4,6 +4,9 @@ import zipfile
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
+from docx import Document as WordDocument
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 
 from front.documents import extract_document
 
@@ -53,3 +56,43 @@ class FidelityTests(SimpleTestCase):
         self.assertEqual(document.fragments[0]["locator"], "lines:1-40")
         self.assertEqual(document.fragments[-1]["locator"], "lines:1481-1500")
         self.assertTrue(document.text.endswith("late evidence"))
+
+    def word_bytes(self, word):
+        output = io.BytesIO()
+        word.save(output)
+        return output.getvalue()
+
+    def test_word_accepts_changes_and_link_text_without_field_instructions(self):
+        word = WordDocument()
+        paragraph = word.add_paragraph()
+        deleted = OxmlElement("w:del")
+        run = OxmlElement("w:r")
+        text = OxmlElement("w:delText")
+        text.text = "30"
+        run.append(text)
+        deleted.append(run)
+        paragraph._p.append(deleted)
+        inserted = OxmlElement("w:ins")
+        run = OxmlElement("w:r")
+        text = OxmlElement("w:t")
+        text.text = "17 days "
+        run.append(text)
+        inserted.append(run)
+        paragraph._p.append(inserted)
+        instruction = OxmlElement("w:instrText")
+        instruction.text = "HYPERLINK mailto:private@example.invalid"
+        paragraph._p.append(instruction)
+        link = OxmlElement("w:hyperlink")
+        link.set(qn("r:id"), word.part.relate_to("mailto:private@example.invalid",
+            "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", is_external=True))
+        run = OxmlElement("w:r")
+        text = OxmlElement("w:t")
+        text.text = "Contact"
+        run.append(text)
+        link.append(run)
+        paragraph._p.append(link)
+        document = self.extract("changes.docx", self.word_bytes(word))
+        self.assertEqual(document.status, "complete")
+        self.assertEqual(document.text, "17 days Contact")
+        self.assertEqual(document.disclosures, [{"code": "tracked_changes_present", "count": 2,
+            "locators": ["word/document.xml/paragraph:1"]}])
