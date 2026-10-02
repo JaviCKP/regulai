@@ -4,6 +4,7 @@ import hashlib
 import csv
 import io
 import json
+import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -286,6 +287,27 @@ def _parse_docx(document, content):
                 "word/header", "word/footer", "word/footnotes", "word/endnotes", "word/comments",
             )) and name.endswith(".xml")
         )
+        definitions, numbers, styles, counters = {}, {}, {}, {}
+        if "word/numbering.xml" in names:
+            numbering = ET.fromstring(archive.read("word/numbering.xml"))
+            for node in numbering.findall(namespace + "abstractNum"):
+                definitions[node.get(namespace + "abstractNumId")] = {
+                    int(level.get(namespace + "ilvl")): level for level in node.findall(namespace + "lvl")}
+            for node in numbering.findall(namespace + "num"):
+                reference = node.find(namespace + "abstractNumId")
+                levels = dict(definitions.get(reference.get(namespace + "val"), {})) if reference is not None else {}
+                starts = {}
+                for override in node.findall(namespace + "lvlOverride"):
+                    index = int(override.get(namespace + "ilvl"))
+                    level, start = override.find(namespace + "lvl"), override.find(namespace + "startOverride")
+                    if level is not None:
+                        levels[index] = level
+                    if start is not None:
+                        starts[index] = int(start.get(namespace + "val"))
+                numbers[node.get(namespace + "numId")] = (levels, starts)
+        if "word/styles.xml" in names:
+            styles = {node.get(namespace + "styleId"): node
+                      for node in ET.fromstring(archive.read("word/styles.xml")).findall(namespace + "style")}
         count = 0
         for part in parts:
             paragraph = 0
@@ -328,6 +350,46 @@ def _parse_docx(document, content):
 
                     accepted_text(element)
                     text = "".join(chunks)
+                    properties = element.find(namespace + "pPr")
+                    num_properties = properties.find(namespace + "numPr") if properties is not None else None
+                    style = properties.find(namespace + "pStyle") if properties is not None else None
+                    seen = set()
+                    while num_properties is None and style is not None and style.get(namespace + "val") not in seen:
+                        style_id = style.get(namespace + "val")
+                        seen.add(style_id)
+                        definition = styles.get(style_id)
+                        if definition is None:
+                            break
+                        num_properties = definition.find(f"{namespace}pPr/{namespace}numPr")
+                        style = definition.find(namespace + "basedOn")
+                    if num_properties is not None:
+                        number_id = num_properties.find(namespace + "numId")
+                        level_id = num_properties.find(namespace + "ilvl")
+                        number_id = number_id.get(namespace + "val") if number_id is not None else None
+                        level_id = int(level_id.get(namespace + "val")) if level_id is not None else 0
+                        if number_id and number_id != "0":
+                            levels, starts = numbers.get(number_id, ({}, {}))
+                            level = levels.get(level_id)
+                            fmt = level.find(namespace + "numFmt") if level is not None else None
+                            if fmt is None or fmt.get(namespace + "val") != "decimal" or not 0 <= level_id <= 8:
+                                _disclose(document, "numbering_unsupported", locator)
+                            else:
+                                values = counters.setdefault((part, number_id), {})
+                                start = level.find(namespace + "start")
+                                initial = starts.get(level_id, int(start.get(namespace + "val")) if start is not None else 1)
+                                values[level_id] = values.get(level_id, initial - 1) + 1
+                                for deeper in list(values):
+                                    if deeper > level_id:
+                                        del values[deeper]
+                                pattern = level.find(namespace + "lvlText")
+                                pattern = pattern.get(namespace + "val") if pattern is not None else f"%{level_id + 1}."
+                                indices = [int(index) - 1 for index in re.findall(r"%([1-9])", pattern)]
+                                if any(index not in levels or levels[index].find(namespace + "numFmt").get(namespace + "val") != "decimal" for index in indices):
+                                    _disclose(document, "numbering_unsupported", locator)
+                                else:
+                                    prefix = re.sub(r"%([1-9])", lambda match: str(values.get(int(match[1]) - 1,
+                                        starts.get(int(match[1]) - 1, 1))), pattern)
+                                    text = prefix + " " + text
                     if not _append(document, f"{part}/paragraph:{paragraph}", text):
                         return
                     document.units_read += 1

@@ -120,3 +120,34 @@ class FidelityTests(SimpleTestCase):
             self.assertTrue(disclosures[code]["locators"])
         self.assertIn("Readable body", document.text)
         self.assertNotIn("synthetic attachment", document.text)
+
+    def test_word_renders_decimal_multilevel_numbering_and_declares_other_formats(self):
+        word = WordDocument()
+        definition = OxmlElement("w:abstractNum")
+        definition.set(qn("w:abstractNumId"), "42")
+        for level in range(3):
+            node = OxmlElement("w:lvl")
+            node.set(qn("w:ilvl"), str(level))
+            for name, value in (("start", "1"), ("numFmt", "decimal" if level < 2 else "lowerRoman"),
+                                ("lvlText", "%1." if level == 0 else "%1.%2.")):
+                child = OxmlElement("w:" + name)
+                child.set(qn("w:val"), value)
+                node.append(child)
+            definition.append(node)
+        word.part.numbering_part.element.append(definition)
+        numbering = OxmlElement("w:num")
+        numbering.set(qn("w:numId"), "42")
+        abstract = OxmlElement("w:abstractNumId")
+        abstract.set(qn("w:val"), "42")
+        numbering.append(abstract)
+        word.part.numbering_part.element.append(numbering)
+        for level, text in ((0, "First"), (1, "Child"), (1, "Next child"), (0, "Second"), (1, "Reset child"), (2, "Roman")):
+            paragraph = word.add_paragraph(text)
+            properties = paragraph._p.get_or_add_pPr().get_or_add_numPr()
+            properties.get_or_add_numId().val = 42
+            properties.get_or_add_ilvl().val = level
+        document = self.extract("numbered.docx", self.word_bytes(word))
+        self.assertEqual(document.status, "complete_text_only")
+        self.assertEqual(document.text, "1. First\n1.1. Child\n1.2. Next child\n2. Second\n2.1. Reset child\nRoman")
+        self.assertEqual(document.disclosures, [{"code": "numbering_unsupported", "count": 1,
+            "locators": ["word/document.xml/paragraph:6"]}])
