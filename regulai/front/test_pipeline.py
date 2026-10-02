@@ -162,12 +162,12 @@ class PipelineTests(test_chat_flow.ChatFixture):
         def answer(messages, **kwargs):
             sources = json.loads(messages[-1].content.split('Sources:\n', 1)[1])
             return ChatResponse(json.dumps({'claims': [{'text': 'The code is 42.', 'citations': [
-                {'id': sources[0]['id'], 'quote': 'Code: 42'}]}]}), 30, 'synthetic-v1', 'stop', 20, 10)
+                {'id': sources[0]['id'], 'quote': 'The code is 42.'}]}]}), 30, 'synthetic-v1', 'stop', 20, 10)
         self.provider.side_effect = answer
-        result = self.send('/api/chat/send/', 'What is the code?', file=SimpleUploadedFile('code.txt', b'Code: 42')).json()
+        result = self.send('/api/chat/send/', 'What is the code?', file=SimpleUploadedFile('code.txt', b'The code is 42.')).json()
         self.assertEqual(result['status'], 'completed', result)
         self.assertEqual(result['assistant_message']['content'], 'The code is 42. [1]')
-        self.assertEqual(result['evidence']['items'][0]['excerpt'], 'Code: 42')
+        self.assertEqual(result['evidence']['items'][0]['excerpt'], 'The code is 42.')
         self.assertEqual(result['evidence']['items'][0]['locator'], 'line:1')
 
     def test_judge_cannot_receive_a_response_blocked_by_yara(self):

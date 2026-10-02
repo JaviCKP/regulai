@@ -97,3 +97,26 @@ class VerificationTests(SimpleTestCase):
         duplicate = self.document().replace('"claims":', '"claims": [], "claims":')
         result = verify_response(duplicate, "stop", fragments=self.fragments)
         self.assertEqual(result["status"], "failed")
+
+    def test_quotes_need_twelve_nonspace_characters_or_three_words(self):
+        for quote in ("e", "10 euros.", "   e   "):
+            with self.subTest(quote=quote):
+                result = verify_response(self.document(quote=quote), "stop", fragments=self.fragments)
+                self.assertEqual(result["local_status"], "failed")
+                self.assertEqual(result["checks"][-2]["reason"], "invalid_quote")
+        short_words = [{**self.fragments[0], "text": "a b c"}]
+        result = verify_response(self.document(quote="a b c"), "stop", fragments=short_words)
+        self.assertEqual(result["local_status"], "passed")
+
+    def test_configurable_quote_limits_cannot_accept_a_single_character(self):
+        for quote, chars, words, expected in [("10 euros.", 8, 3, "passed"),
+                                               ("revenue is 10 euros.", 40, 5, "failed"),
+                                               ("e", 1, 1, "failed")]:
+            with self.subTest(quote=quote):
+                result = verify_response(self.document(quote=quote), "stop", fragments=self.fragments,
+                                         min_quote_chars=chars, min_quote_words=words)
+                self.assertEqual(result["local_status"], expected)
+        for limit in (0, True, "12"):
+            result = verify_response(self.document(), "stop", fragments=self.fragments,
+                                     min_quote_chars=limit)
+            self.assertEqual(result["checks"][-2]["reason"], "invalid_quote_limits")

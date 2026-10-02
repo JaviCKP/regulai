@@ -30,7 +30,7 @@ def _unique_fields(pairs):
     return fields
 
 
-def _document_claims(content, fragments):
+def _document_claims(content, fragments, min_quote_chars, min_quote_words):
     """Resolve only request-supplied fragment IDs; no URL/path/HTML interpretation."""
     sources = {}
     for fragment in fragments:
@@ -69,7 +69,10 @@ def _document_claims(content, fragments):
             if source is None:
                 raise ValueError("unknown_citation")
             quote = _normalize_quote(citation["quote"])
-            if not quote or len(quote) > 1600:
+            words = quote.split()
+            quote_chars = sum(len(word) for word in words)
+            if (quote_chars <= 1 or len(quote) > 1600
+                    or (quote_chars < min_quote_chars and len(words) < min_quote_words)):
                 raise ValueError("invalid_quote")
             source_text = _normalize_quote(source["text"])
             position = source_text.find(quote)
@@ -85,7 +88,8 @@ def _document_claims(content, fragments):
     return claims, evidence
 
 
-def verify_response(content, finish_reason, *, fragments=None, require_semantic=True):
+def verify_response(content, finish_reason, *, fragments=None, require_semantic=True,
+                    min_quote_chars=12, min_quote_words=3):
     """Return serializable checks. A semantic judge is required by default.
 
     fragments=None checks prose; a list requires the exact document JSON contract.
@@ -106,7 +110,9 @@ def verify_response(content, finish_reason, *, fragments=None, require_semantic=
             checks.append({"code": "response_encoding", "status": "failed"})
     if fragments is not None and all(check["status"] == "passed" for check in checks):
         try:
-            claims, evidence = _document_claims(content, fragments)
+            if any(type(value) is not int or value < 1 for value in (min_quote_chars, min_quote_words)):
+                raise ValueError("invalid_quote_limits")
+            claims, evidence = _document_claims(content, fragments, min_quote_chars, min_quote_words)
             checks.append({"code": "citations", "status": "passed"})
         except ValueError as error:
             checks.append({"code": "citations", "status": "failed", "reason": str(error)})
