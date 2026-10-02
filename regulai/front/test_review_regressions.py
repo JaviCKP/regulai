@@ -212,8 +212,7 @@ class ReviewRegressionTests(ChatFixture):
     @unittest.expectedFailure
     def test_b10_chat_can_submit_without_crypto_random_uuid(self):
         node = shutil.which('node')
-        if node is None:
-            self.skipTest('Node is required to exercise browser JavaScript without dependencies.')
+        self.assertIsNotNone(node, 'Node is required to exercise browser JavaScript without dependencies.')
         response = self.client.get('/chat/')
         self.assertEqual(response.status_code, 200)
         scripts = re.findall(r'<script\b[^>]*>(.*?)</script>', response.content.decode(), re.S | re.I)
