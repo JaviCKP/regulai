@@ -102,7 +102,6 @@ class ReviewRegressionTests(ChatFixture):
         self.assertNotContains(response, 'OTHER_TENANT_PRIVATE_RULE')
         self.assertNotContains(response, 'OTHER_TENANT_PRIVATE_ALERT')
 
-    @unittest.expectedFailure
     def test_b03_missing_mask_cost_bound_is_rejected_before_any_external_call(self):
         self.configure()
         self.enable_mask({'12345678Z': '<DNI_1>'})
