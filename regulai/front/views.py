@@ -21,7 +21,6 @@ import base64
 import hashlib
 import re
 import requests
-import PyPDF2
 import docx
 import openpyxl
 try:
