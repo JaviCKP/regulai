@@ -1,5 +1,10 @@
 from django.contrib import admin
+from .access import is_platform_operator
 from .models import Company, Engine, EngineModel, CompanyEngine, Profile, Role, Department, RulesGroup, Rule, Prompt, Response, AuditLog, Alert, ObfuscationConfig
+
+# Company administrators use the tenant-scoped application screens. This console
+# controls every tenant, Django users and permissions: opt in explicit operators.
+admin.site.has_permission = lambda request: is_platform_operator(request.user)
 
 
 @admin.register(Company)

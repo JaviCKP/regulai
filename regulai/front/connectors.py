@@ -7,7 +7,7 @@ Each connector implements the same interface for sending chat messages.
 
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -24,6 +24,10 @@ class ChatResponse:
     tokens_used: int = 0
     model: str = ""
     finish_reason: str = ""
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    provider_request_id: str | None = None
+    usage: dict = field(default_factory=dict)
 
 
 class BaseConnector(ABC):
@@ -56,11 +60,9 @@ class OpenAIConnector(BaseConnector):
 
     def __init__(self, api_key: str, base_url: Optional[str] = None):
         super().__init__(api_key, base_url)
-        from openai import OpenAI
-        if base_url:
-            self.client = OpenAI(api_key=api_key, base_url=base_url)
-        else:
-            self.client = OpenAI(api_key=api_key)
+        from openai import OpenAI, DefaultHttpxClient
+        self.client = OpenAI(api_key=api_key, base_url=base_url, max_retries=0, timeout=30,
+                            http_client=DefaultHttpxClient(follow_redirects=False))
 
     def chat(
         self,
@@ -84,13 +86,19 @@ class OpenAIConnector(BaseConnector):
             messages=api_messages,
             max_tokens=max_tokens,
             temperature=temperature,
+            timeout=kwargs.get('timeout', 30),
+            **({'extra_body': kwargs['extra_body']} if 'extra_body' in kwargs else {}),
         )
 
         return ChatResponse(
             content=response.choices[0].message.content,
             tokens_used=response.usage.total_tokens if response.usage else 0,
             model=response.model if hasattr(response, 'model') else model,
-            finish_reason=response.choices[0].finish_reason if response.choices else ""
+            finish_reason=response.choices[0].finish_reason if response.choices else "",
+            input_tokens=response.usage.prompt_tokens if response.usage else None,
+            output_tokens=response.usage.completion_tokens if response.usage else None,
+            provider_request_id=getattr(response, 'id', None),
+            usage=response.usage.model_dump() if response.usage else {},
         )
 
     def supports_vision(self) -> bool:
@@ -104,10 +112,8 @@ class AnthropicConnector(BaseConnector):
         super().__init__(api_key, base_url)
         try:
             import anthropic
-            if base_url:
-                self.client = anthropic.Anthropic(api_key=api_key, base_url=base_url)
-            else:
-                self.client = anthropic.Anthropic(api_key=api_key)
+            self.client = anthropic.Anthropic(api_key=api_key, base_url=base_url, max_retries=0, timeout=30,
+                http_client=anthropic.DefaultHttpxClient(follow_redirects=False))
             self._available = True
         except ImportError:
             self._available = False
@@ -127,12 +133,12 @@ class AnthropicConnector(BaseConnector):
 
         # Anthropic has different message format
         # System messages are passed separately
-        system_message = None
+        system_messages = []
         api_messages = []
 
         for msg in messages:
             if msg.role == 'system':
-                system_message = msg.content if isinstance(msg.content, str) else str(msg.content)
+                system_messages.append(msg.content if isinstance(msg.content, str) else str(msg.content))
             else:
                 # Handle multimodal content for Anthropic
                 if isinstance(msg.content, list):
@@ -193,11 +199,12 @@ class AnthropicConnector(BaseConnector):
             "messages": api_messages,
             "max_tokens": max_tokens,
             "temperature": temperature,
+            "timeout": kwargs.get('timeout', 30),
         }
 
         # Add system message if present
-        if system_message:
-            request_kwargs["system"] = system_message
+        if system_messages:
+            request_kwargs["system"] = '\n\n'.join(system_messages)
 
         response = self.client.messages.create(**request_kwargs)
 
@@ -212,7 +219,11 @@ class AnthropicConnector(BaseConnector):
             content=content_text,
             tokens_used=(response.usage.input_tokens + response.usage.output_tokens) if response.usage else 0,
             model=response.model if hasattr(response, 'model') else model,
-            finish_reason=response.stop_reason if hasattr(response, 'stop_reason') else ""
+            finish_reason=response.stop_reason if hasattr(response, 'stop_reason') else "",
+            input_tokens=response.usage.input_tokens if response.usage else None,
+            output_tokens=response.usage.output_tokens if response.usage else None,
+            provider_request_id=getattr(response, 'id', None),
+            usage=response.usage.model_dump() if response.usage else {},
         )
 
     def supports_vision(self) -> bool:

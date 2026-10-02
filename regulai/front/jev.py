@@ -296,7 +296,10 @@ def evaluate(api_key, model, state, questions, *, timeout=(3.0, 15.0), max_respo
             payload = json.loads(raw, object_pairs_hook=_unique_object)
             result = _Envelope.model_validate(payload)
             answers = _validate_answers(result, model, questions)
-            metadata = _gateway_metadata(payload.get('provider_metadata')) if transport == 'vercel' else {}
+            if ('provider_metadata' in payload and 'providerMetadata' in payload
+                    and payload['provider_metadata'] != payload['providerMetadata']):
+                raise ValueError('conflicting gateway metadata')
+            metadata = _gateway_metadata(payload.get('provider_metadata', payload.get('providerMetadata'))) if transport == 'vercel' else {}
         except (ValidationError, ValueError, KeyError, TypeError, RecursionError, InvalidOperation):
             raise JevError('invalid_response', outcome_unknown=True) from None
         request_id = response.headers.get('x-request-id')

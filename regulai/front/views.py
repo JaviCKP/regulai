@@ -10,6 +10,7 @@ from functools import wraps
 from django.utils import timezone
 
 from front.models import *
+from front.access import actor_company, authorized_conversations, platform_required, protect_operator
 from front.connectors import get_connector, ChatMessage, ChatResponse
 from front.rate_limit import (
     login_rate_limit, chat_rate_limit, signup_rate_limit,
@@ -68,21 +69,7 @@ def admin_required(view_func):
 # ==================== HELPER FUNCTIONS ====================
 
 def get_user_company(user):
-    """
-    Gets the user's company safely.
-    Returns the user's company or Default Company if not set.
-    """
-    if hasattr(user, 'profile') and user.profile and user.profile.company:
-        return user.profile.company
-    # Return Default Company as fallback
-    default_company, _ = Company.objects.get_or_create(name="Default Company")
-    # Ensure default company has a default rules group
-    RulesGroup.objects.get_or_create(
-        name='Default',
-        company=default_company,
-        defaults={'description': 'Default rules group'}
-    )
-    return default_company
+    return actor_company(user)
 
 
 def log_action(user, action, details=None, request=None):
@@ -103,6 +90,7 @@ def log_action(user, action, details=None, request=None):
 
     AuditLog.objects.create(
         user=user if user and user.is_authenticated else None,
+        company_id=Profile.objects.filter(user=user).values_list('company', flat=True).first() if user and user.is_authenticated else None,
         action=action,
         details=details
     )
@@ -141,8 +129,8 @@ def home_view(request):
     if user.is_staff or user.is_superuser:
         user_company = get_user_company(user)
         context['stats'] = {
-            'total_prompts': Prompt.objects.filter(user__profile__company=user_company).count(),
-            'blocked_prompts': Prompt.objects.filter(user__profile__company=user_company, filtered=True).count(),
+            'total_prompts': Prompt.objects.filter(company=user_company).count(),
+            'blocked_prompts': Prompt.objects.filter(company=user_company, filtered=True).count(),
             'active_rules': Rule.objects.filter(
                 Q(rules_group__company=user_company) | Q(rules_group__company__isnull=True),
                 active=True
@@ -406,16 +394,17 @@ def profile_view(request):
             # Handle avatar upload
             if 'avatar' in request.FILES:
                 avatar_file = request.FILES['avatar']
-                # Validate file type
-                allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-                if avatar_file.content_type in allowed_types:
-                    # Delete old avatar if exists
-                    if profile.avatar:
-                        profile.avatar.delete(save=False)
-                    profile.avatar = avatar_file
-                else:
+                from .file_security import validate_uploaded_file, validate_file_size
+                from django.core.exceptions import ValidationError
+                try:
+                    validate_file_size(avatar_file.size, 'image/png')
+                    validate_uploaded_file(avatar_file, allowed_types='image', require_image=True)
+                    avatar_file.seek(0)
+                except ValidationError:
                     messages.error(request, 'Invalid image format. Please use JPEG, PNG, GIF or WebP.')
                     return redirect('front:profile')
+                # Save the replacement before any later cleanup of the old file.
+                profile.avatar = avatar_file
 
             # Handle avatar removal
             if request.POST.get('remove_avatar') == 'true' and profile.avatar:
@@ -605,6 +594,7 @@ def user_edit(request, pk):
     """Edit an existing user (only from admin's company)."""
     company = request.user.profile.company
     profile = get_object_or_404(Profile, pk=pk, company=company)
+    protect_operator(request.user, profile.user_id)
     user = profile.user
     roles = Role.objects.all()
     departments = Department.objects.filter(company=company)
@@ -677,6 +667,7 @@ def user_delete(request, pk):
     """Delete a user (only from admin's company)."""
     company = request.user.profile.company
     profile = get_object_or_404(Profile, pk=pk, company=company)
+    protect_operator(request.user, profile.user_id)
     user = profile.user
 
     # Prevent self-deletion
@@ -1032,6 +1023,7 @@ def engine_toggle(request, pk):
 # ==================== ENGINE MODELS VIEWS ====================
 
 @admin_required
+@platform_required
 def model_create(request, engine_pk):
     """Create a new model for an engine."""
     engine = get_object_or_404(Engine, pk=engine_pk)
@@ -1077,6 +1069,7 @@ def model_create(request, engine_pk):
 
 
 @admin_required
+@platform_required
 def model_edit(request, pk):
     """Edit an existing model."""
     model = get_object_or_404(EngineModel, pk=pk)
@@ -1120,6 +1113,7 @@ def model_edit(request, pk):
 
 
 @admin_required
+@platform_required
 def model_toggle(request, pk):
     """Toggle model active status."""
     model = get_object_or_404(EngineModel, pk=pk)
@@ -1139,6 +1133,7 @@ def model_toggle(request, pk):
 
 
 @admin_required
+@platform_required
 def model_delete(request, pk):
     """Delete a model."""
     model = get_object_or_404(EngineModel, pk=pk)
@@ -1167,7 +1162,7 @@ def dashboard_view(request):
     user_company = get_user_company(request.user)
 
     # Basic statistics - filtered by company
-    total_prompts = Prompt.objects.filter(user__profile__company=user_company).count()
+    total_prompts = Prompt.objects.filter(company=user_company).count()
     total_alerts = Alert.objects.filter(company=user_company).count()
     # Rules: company rules + global rules (company=null)
     total_rules = Rule.objects.filter(
@@ -1184,7 +1179,7 @@ def dashboard_view(request):
 
     # Recent prompts - filtered by company
     recent_prompts = Prompt.objects.filter(
-        user__profile__company=user_company
+        company=user_company
     ).select_related('user').order_by('-created_at')[:5]
 
     # Alerts by severity - filtered by company
@@ -1210,7 +1205,7 @@ def dashboard_view(request):
 
     # Prompts timeline for the last 5 days (for line overlay on bar chart)
     prompts_timeline = Prompt.objects.filter(
-        user__profile__company=user_company,
+        company=user_company,
         created_at__gte=five_days_ago
     ).annotate(
         date=TruncDate('created_at')
@@ -1237,18 +1232,20 @@ def dashboard_view(request):
 
 
 @login_required
+@chat_rate_limit
 def chat_view(request, conversation_id=None):
     """Chat view with conversation support."""
+    if request.method == 'POST':
+        from .chat_service import send_chat_message
+        result = send_chat_message(request.user, _web_command(request, conversation_id))
+        if result.data['status'] == 'completed':
+            return redirect('front:chat_conversation', conversation_id=result.data['conversation_id'])
+        return JsonResponse(result.data, status=result.http_status)
     user = request.user
     blocked = False
     blocked_rules = []
 
-    # Ensure Profile and Company exist
-    if not hasattr(user, 'profile'):
-        default_company, _ = Company.objects.get_or_create(name="Default Company")
-        Profile.objects.create(user=user, company=default_company)
-        user.refresh_from_db()
-
+    actor_company(user)
     profile = user.profile
 
     # Get available engines for user's company
@@ -1296,355 +1293,10 @@ def chat_view(request, conversation_id=None):
     if current_model:
         supports_vision = current_model.supports_vision
 
-    # Get API Key and settings from selected engine/model for connector
-    api_key = settings.OPENAI_API_KEY
-    base_url = None
-    model_name = "gpt-4o-mini"
-    connector_type = "openai"
-
-    if current_engine:
-        api_key = current_engine.api_key
-        if current_engine.engine.base_url:
-            base_url = current_engine.engine.base_url
-        connector_type = current_engine.engine.connector_type or "openai"
-
-        if current_model:
-            model_name = current_model.model_id
-        elif current_engine.engine.default_model:
-            model_name = current_engine.engine.default_model
-
-    # Create connector based on engine type (needed for POST processing)
-    connector = None
-    if api_key and api_key.strip():
-        connector = get_connector(connector_type, api_key, base_url)
-
-    # Get or create conversation
     conversation = None
     if conversation_id:
-        conversation = get_object_or_404(Conversation, id=conversation_id, user=user)
-
-    # Get user's conversations for sidebar
-    conversations = Conversation.objects.filter(user=user).order_by('-updated_at')[:20]
-
-    if request.method == "POST":
-        prompt_text = request.POST.get("prompt", "").strip()
-        uploaded_file = request.FILES.get('file')
-
-        # Read file content if uploaded
-        file_content_text = None
-        file_name = None
-        file_size = 0
-        file_hashes = None
-        is_image = False
-        image_base64 = None
-        image_mime_type = None
-
-        if uploaded_file:
-            file_name = uploaded_file.name
-            file_size = uploaded_file.size
-            file_extension = file_name.lower().split('.')[-1] if '.' in file_name else ''
-
-            # Check if it's an image
-            image_extensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']
-            is_image = file_extension in image_extensions
-            mime_types = {
-                'png': 'image/png',
-                'jpg': 'image/jpeg',
-                'jpeg': 'image/jpeg',
-                'gif': 'image/gif',
-                'bmp': 'image/bmp',
-                'webp': 'image/webp'
-            }
-            if is_image:
-                image_mime_type = mime_types.get(file_extension, 'image/png')
-
-            try:
-                # Read file content
-                file_content = uploaded_file.read()
-
-                # Calculate file hashes
-                file_hashes = {
-                    'md5': hashlib.md5(file_content).hexdigest(),
-                    'sha1': hashlib.sha1(file_content).hexdigest(),
-                    'sha256': hashlib.sha256(file_content).hexdigest(),
-                }
-
-                # Handle PDF files - extract text
-                if file_extension == 'pdf':
-                    try:
-                        pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_content))
-                        extracted_text = []
-                        for page_num, page in enumerate(pdf_reader.pages, 1):
-                            page_text = page.extract_text()
-                            if page_text:
-                                extracted_text.append(f"--- Page {page_num} ---\n{page_text}")
-                        file_content_text = "\n\n".join(extracted_text) if extracted_text else "[PDF without extractable text]"
-                    except Exception as pdf_error:
-                        file_content_text = f"[Error extracting PDF text: {str(pdf_error)}]"
-
-                # Handle DOCX files - extract text
-                elif file_extension == 'docx':
-                    try:
-                        doc = docx.Document(io.BytesIO(file_content))
-                        paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
-                        # Also extract text from tables
-                        for table in doc.tables:
-                            for row in table.rows:
-                                row_text = [cell.text.strip() for cell in row.cells if cell.text.strip()]
-                                if row_text:
-                                    paragraphs.append(" | ".join(row_text))
-                        file_content_text = "\n\n".join(paragraphs) if paragraphs else "[DOCX without extractable text]"
-                    except Exception as docx_error:
-                        file_content_text = f"[Error extracting DOCX text: {str(docx_error)}]"
-
-                # Handle Excel files (xlsx, xls)
-                elif file_extension in ['xlsx', 'xls']:
-                    try:
-                        workbook = openpyxl.load_workbook(io.BytesIO(file_content), data_only=True)
-                        extracted_text = []
-                        for sheet_name in workbook.sheetnames:
-                            sheet = workbook[sheet_name]
-                            sheet_text = [f"--- Sheet: {sheet_name} ---"]
-                            for row in sheet.iter_rows(values_only=True):
-                                # Filter out empty cells and convert to strings
-                                row_values = [str(cell) if cell is not None else "" for cell in row]
-                                if any(v.strip() for v in row_values):
-                                    sheet_text.append(" | ".join(row_values))
-                            if len(sheet_text) > 1:  # Has content beyond header
-                                extracted_text.append("\n".join(sheet_text))
-                        file_content_text = "\n\n".join(extracted_text) if extracted_text else "[Excel without extractable data]"
-                    except Exception as excel_error:
-                        file_content_text = f"[Error extracting Excel data: {str(excel_error)}]"
-
-                # Handle CSV files
-                elif file_extension == 'csv':
-                    try:
-                        file_content_text = file_content.decode('utf-8')
-                    except UnicodeDecodeError:
-                        file_content_text = file_content.decode('latin-1')
-
-                # Handle image files - OCR extraction + send to vision API
-                elif file_extension in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']:
-                    # Store base64 for vision API
-                    image_base64 = base64.b64encode(file_content).decode('utf-8')
-
-                    # Extract text via OCR if pytesseract is available (for YARA validation)
-                    if PYTESSERACT_AVAILABLE:
-                        try:
-                            image = Image.open(io.BytesIO(file_content))
-                            ocr_text = pytesseract.image_to_string(image)
-                            file_content_text = ocr_text.strip() if ocr_text.strip() else "[Image without detected text]"
-                        except Exception as ocr_error:
-                            file_content_text = f"[OCR error: {str(ocr_error)}]"
-                    else:
-                        file_content_text = "[Image file]"
-
-                # Handle text-based files
-                else:
-                    try:
-                        file_content_text = file_content.decode('utf-8')
-                    except UnicodeDecodeError:
-                        try:
-                            file_content_text = file_content.decode('latin-1')
-                        except:
-                            file_content_text = f"[Binary file: {file_name}]"
-
-            except Exception as e:
-                file_content_text = f"[Error reading file: {str(e)}]"
-
-        # Need either prompt or file
-        if not prompt_text and not uploaded_file:
-            return redirect('front:chat_conversation', conversation_id=conversation.id) if conversation else redirect('front:chat')
-
-        # Build the full content for the message
-        if file_content_text and prompt_text:
-            full_content = f"{prompt_text}\n\n--- Attached File: {file_name} ---\n{file_content_text[:10000]}"
-            display_content = prompt_text
-        elif file_content_text:
-            full_content = f"Please analyze this file:\n\n--- File: {file_name} ---\n{file_content_text[:10000]}"
-            display_content = f"[Attached file: {file_name}]"
-            prompt_text = display_content
-        else:
-            full_content = prompt_text
-            display_content = prompt_text
-
-        # Create new conversation if needed
-        if not conversation:
-            title = prompt_text[:50] if prompt_text else file_name[:50] if file_name else "New conversation"
-            conversation = Conversation.objects.create(
-                user=user,
-                title=title + ('...' if len(title) > 50 else '')
-            )
-
-        # Create user message
-        user_message = Message.objects.create(
-            conversation=conversation,
-            role='user',
-            content=display_content,
-            file_name=file_name,
-            file_size=file_size
-        )
-
-        # Create prompt for audit/tracking
-        prompt_obj = Prompt.objects.create(
-            user=user,
-            conversation=conversation,
-            content=prompt_text or f"[File: {file_name}]",
-            file_name=file_name,
-            file_size=file_size,
-            file_md5=file_hashes.get('md5') if file_hashes else None,
-            file_sha1=file_hashes.get('sha1') if file_hashes else None,
-            file_sha256=file_hashes.get('sha256') if file_hashes else None
-        )
-
-        # Validate prompt against rules (for prompts type)
-        prompt_matches, prompt_matched_rules = validate_prompt(user, prompt_text, prompt_obj, None, 'prompts')
-
-        # Validate file content against rules (for files type) if file uploaded
-        file_matches = []
-        file_matched_rules = []
-        if file_content_text:
-            import logging
-            logging.info(f"Validating file content. Length: {len(file_content_text)}, Content preview: {file_content_text[:200]}")
-            file_info = {'name': file_name, 'size': file_size, 'hashes': file_hashes} if file_hashes else None
-            file_matches, file_matched_rules = validate_prompt(user, file_content_text, prompt_obj, None, 'files', file_info)
-            logging.info(f"File validation results: {len(file_matches)} matches, {len(file_matched_rules)} matched rules")
-
-        # Combine matches
-        all_matches = (prompt_matches or []) + (file_matches or [])
-        all_matched_rules = prompt_matched_rules + file_matched_rules
-
-        if all_matched_rules:
-            # Create alerts for all matched rules
-            for rule_data in all_matched_rules:
-                try:
-                    from front.models import Rule
-                    rule = Rule.objects.get(id=rule_data['id'])
-
-                    alert_description = (
-                        f"Prompt blocked by rule '{rule.name}'. "
-                        f"The message was not sent to the LLM."
-                    )
-
-                    Alert.objects.create(
-                        user=user,
-                        company=profile.company,
-                        prompt=prompt_obj,
-                        rule=rule,
-                        severity=rule_data.get('severity', 'medium'),
-                        description=alert_description
-                    )
-
-                    log_action(user, 'blocking_alert_created', {
-                        'rule_name': rule.name,
-                        'severity': rule_data.get('severity', 'medium'),
-                        'prompt_id': prompt_obj.id,
-                        'conversation_id': conversation.id
-                    }, request)
-
-                except Rule.DoesNotExist:
-                    import logging
-                    logging.warning(f"Rule {rule_data.get('name', 'unknown')} not found for alert creation")
-
-            # Mark as blocked
-            prompt_obj.filtered = True
-            prompt_obj.save()
-            user_message.blocked = True
-            user_message.save()
-            blocked = True
-            blocked_rules = all_matched_rules
-
-        # Log the action
-        log_action(user, 'prompt_sent', {
-            'prompt_id': prompt_obj.id,
-            'conversation_id': conversation.id,
-            'content_length': len(prompt_text) if prompt_text else 0,
-            'has_file': bool(uploaded_file),
-            'file_name': file_name,
-            'file_size': file_size,
-            'rules_matched': len(all_matches) if all_matches else 0,
-            'blocked': blocked
-        }, request)
-
-        # Only send to LLM if not blocked and connector is available
-        if not blocked and connector:
-            try:
-                # Build messages history for context using ChatMessage objects
-                chat_messages = []
-
-                # Inject company and department system prompts
-                if profile.company and profile.company.system_prompt:
-                    chat_messages.append(ChatMessage(role='system', content=profile.company.system_prompt))
-                if profile.department and profile.department.system_prompt:
-                    chat_messages.append(ChatMessage(role='system', content=profile.department.system_prompt))
-
-                for msg in conversation.messages.exclude(id=user_message.id):
-                    if msg.role in ['user', 'assistant']:
-                        chat_messages.append(ChatMessage(
-                            role=msg.role,
-                            content=msg.content
-                        ))
-
-                # Add current message - handle images with vision API
-                if is_image and image_base64:
-                    # Build multimodal content for vision API
-                    user_content = []
-                    if prompt_text and prompt_text != f"[Attached file: {file_name}]":
-                        user_content.append({
-                            "type": "text",
-                            "text": prompt_text
-                        })
-                    else:
-                        user_content.append({
-                            "type": "text",
-                            "text": "Please analyze this image."
-                        })
-                    user_content.append({
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:{image_mime_type};base64,{image_base64}"
-                        }
-                    })
-                    chat_messages.append(ChatMessage(
-                        role="user",
-                        content=user_content
-                    ))
-                else:
-                    # Regular text message
-                    chat_messages.append(ChatMessage(
-                        role="user",
-                        content=full_content
-                    ))
-
-                # Use connector to send message
-                ai_response = connector.chat(
-                    messages=chat_messages,
-                    model=model_name,
-                    max_tokens=1000,
-                    temperature=0.6,
-                )
-
-                # Save assistant response as message
-                Message.objects.create(
-                    conversation=conversation,
-                    role='assistant',
-                    content=ai_response.content,
-                    tokens_used=ai_response.tokens_used
-                )
-
-                # Update conversation timestamp
-                conversation.save()
-
-            except Exception as e:
-                # Save error as system message
-                Message.objects.create(
-                    conversation=conversation,
-                    role='system',
-                    content=f"Error: {str(e)}"
-                )
-
-        # Redirect to conversation view to avoid form resubmission
-        return redirect('front:chat_conversation', conversation_id=conversation.id)
+        conversation = get_object_or_404(authorized_conversations(user), id=conversation_id)
+    conversations = authorized_conversations(user).order_by('-updated_at')[:20]
 
     # Get messages for current conversation
     chat_messages = []
@@ -1661,6 +1313,7 @@ def chat_view(request, conversation_id=None):
         "current_engine": current_engine,
         "available_models": available_models,
         "current_model": current_model,
+        "automatic_routing": profile.company.ai_config.get('routing', {}).get('mode') == 'auto',
     })
 
 
@@ -1673,7 +1326,7 @@ def chat_new(request):
 @login_required
 def chat_delete(request, conversation_id):
     """Deletes a conversation."""
-    conversation = get_object_or_404(Conversation, id=conversation_id, user=request.user)
+    conversation = get_object_or_404(authorized_conversations(request.user), id=conversation_id)
 
     if request.method == 'POST':
         log_action(request.user, 'conversation_delete', {
@@ -1842,646 +1495,44 @@ def extract_file_from_ai_response(content):
 @require_POST
 @chat_rate_limit
 def chat_send_message(request, conversation_id=None):
-    """API endpoint for sending chat messages asynchronously (rate limited to 30 per minute)."""
-    user = request.user
-    blocked = False
-    blocked_rules = []
+    from .chat_service import send_chat_message
+    result = send_chat_message(request.user, _web_command(request, conversation_id))
+    return JsonResponse(result.data, status=result.http_status)
 
-    # Ensure Profile and Company exist
-    if not hasattr(user, 'profile'):
-        default_company, _ = Company.objects.get_or_create(name="Default Company")
-        Profile.objects.create(user=user, company=default_company)
-        user.refresh_from_db()
 
-    profile = user.profile
-    company = profile.company
-
-    # Get available engines for user's company
-    available_engines = CompanyEngine.objects.filter(
-        company=profile.company,
-        active=True
-    ).select_related('engine').prefetch_related('engine__models')
-
-    # Determine which engine to use (same logic as chat_view)
-    # Priority: 1. Session selected, 2. User's default, 3. First available
-    selected_engine_id = request.session.get('selected_engine_id')
-    current_engine = None
-
-    if selected_engine_id:
-        current_engine = available_engines.filter(id=selected_engine_id).first()
-
-    if not current_engine and profile.default_engine:
-        current_engine = available_engines.filter(id=profile.default_engine.id).first()
-
-    if not current_engine:
-        current_engine = available_engines.first()
-
-    # Determine which model to use
-    selected_model_id = request.session.get('selected_model_id')
-    current_model = None
-
-    if current_engine:
-        available_models = current_engine.engine.models.filter(active=True)
-
-        if selected_model_id:
-            current_model = available_models.filter(id=selected_model_id).first()
-
-        if not current_model and profile.default_model:
-            if profile.default_model.engine_id == current_engine.engine_id:
-                current_model = available_models.filter(id=profile.default_model.id).first()
-
-        if not current_model:
-            current_model = available_models.first()
-
-    # Get API Key and settings from selected engine/model
-    api_key = settings.OPENAI_API_KEY
-    base_url = None
-    model_name = "gpt-4o-mini"
-    connector_type = "openai"
-
-    if current_engine:
-        api_key = current_engine.api_key
-        if current_engine.engine.base_url:
-            base_url = current_engine.engine.base_url
-        connector_type = current_engine.engine.connector_type or "openai"
-
-        if current_model:
-            model_name = current_model.model_id
-        elif current_engine.engine.default_model:
-            model_name = current_engine.engine.default_model
-
-    # Validate API key before proceeding
-    if not api_key or api_key.strip() == '':
-        return JsonResponse({
-            'success': False,
-            'error_type': 'no_api_key',
-            'error': 'No API key configured for the selected AI engine.',
-            'engine_name': current_engine.name if current_engine else 'Default',
-        })
-
-    # Create connector based on engine type
-    connector = get_connector(connector_type, api_key, base_url)
-
-    # Get or create conversation
-    conversation = None
-    if conversation_id:
-        conversation = get_object_or_404(Conversation, id=conversation_id, user=user)
-
-    prompt_text = request.POST.get("prompt", "").strip()
-    uploaded_file = request.FILES.get('file')
-
-    # Read file content if uploaded
-    file_content_text = None
-    file_name = None
-    file_size = 0
-    file_hashes = None
-    is_image = False
-    image_base64 = None
-    image_mime_type = None
-
-    if uploaded_file:
-        file_name = uploaded_file.name
-        file_size = uploaded_file.size
-        file_extension = file_name.lower().split('.')[-1] if '.' in file_name else ''
-
-        # Check if it's an image
-        image_extensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']
-        is_image = file_extension in image_extensions
-        mime_types = {
-            'png': 'image/png',
-            'jpg': 'image/jpeg',
-            'jpeg': 'image/jpeg',
-            'gif': 'image/gif',
-            'bmp': 'image/bmp',
-            'webp': 'image/webp'
-        }
-        if is_image:
-            image_mime_type = mime_types.get(file_extension, 'image/png')
-
-        try:
-            file_content = uploaded_file.read()
-
-            # Calculate file hashes
-            file_hashes = {
-                'md5': hashlib.md5(file_content).hexdigest(),
-                'sha1': hashlib.sha1(file_content).hexdigest(),
-                'sha256': hashlib.sha256(file_content).hexdigest(),
-            }
-
-            if file_extension == 'pdf':
-                try:
-                    pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_content))
-                    extracted_text = []
-                    for page_num, page in enumerate(pdf_reader.pages, 1):
-                        page_text = page.extract_text()
-                        if page_text:
-                            extracted_text.append(f"--- Page {page_num} ---\n{page_text}")
-                    file_content_text = "\n\n".join(extracted_text) if extracted_text else "[PDF without extractable text]"
-                except Exception as pdf_error:
-                    file_content_text = f"[Error extracting PDF text: {str(pdf_error)}]"
-
-            elif file_extension == 'docx':
-                try:
-                    doc = docx.Document(io.BytesIO(file_content))
-                    paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
-                    for table in doc.tables:
-                        for row in table.rows:
-                            row_text = [cell.text.strip() for cell in row.cells if cell.text.strip()]
-                            if row_text:
-                                paragraphs.append(" | ".join(row_text))
-                    file_content_text = "\n\n".join(paragraphs) if paragraphs else "[DOCX without extractable text]"
-                except Exception as docx_error:
-                    file_content_text = f"[Error extracting DOCX text: {str(docx_error)}]"
-
-            elif file_extension in ['xlsx', 'xls']:
-                try:
-                    workbook = openpyxl.load_workbook(io.BytesIO(file_content), data_only=True)
-                    extracted_text = []
-                    for sheet_name in workbook.sheetnames:
-                        sheet = workbook[sheet_name]
-                        sheet_text = [f"--- Sheet: {sheet_name} ---"]
-                        for row in sheet.iter_rows(values_only=True):
-                            row_values = [str(cell) if cell is not None else "" for cell in row]
-                            if any(v.strip() for v in row_values):
-                                sheet_text.append(" | ".join(row_values))
-                        if len(sheet_text) > 1:
-                            extracted_text.append("\n".join(sheet_text))
-                    file_content_text = "\n\n".join(extracted_text) if extracted_text else "[Excel without extractable data]"
-                except Exception as excel_error:
-                    file_content_text = f"[Error extracting Excel data: {str(excel_error)}]"
-
-            elif file_extension == 'csv':
-                try:
-                    file_content_text = file_content.decode('utf-8')
-                except UnicodeDecodeError:
-                    file_content_text = file_content.decode('latin-1')
-
-            elif file_extension in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']:
-                image_base64 = base64.b64encode(file_content).decode('utf-8')
-                if PYTESSERACT_AVAILABLE:
-                    try:
-                        image = Image.open(io.BytesIO(file_content))
-                        ocr_text = pytesseract.image_to_string(image)
-                        file_content_text = ocr_text.strip() if ocr_text.strip() else "[Image without detected text]"
-                    except Exception as ocr_error:
-                        file_content_text = f"[OCR error: {str(ocr_error)}]"
-                else:
-                    file_content_text = "[Image file]"
-
-            else:
-                try:
-                    file_content_text = file_content.decode('utf-8')
-                except UnicodeDecodeError:
-                    try:
-                        file_content_text = file_content.decode('latin-1')
-                    except:
-                        file_content_text = f"[Binary file: {file_name}]"
-
-        except Exception as e:
-            file_content_text = f"[Error reading file: {str(e)}]"
-
-    # Need either prompt or file
-    if not prompt_text and not uploaded_file:
-        return JsonResponse({'error': 'Please enter a message or attach a file.'}, status=400)
-
-    # Build the full content for the message
-    if file_content_text and prompt_text:
-        full_content = f"{prompt_text}\n\n--- Attached File: {file_name} ---\n{file_content_text[:10000]}"
-        display_content = prompt_text
-    elif file_content_text:
-        full_content = f"Please analyze this file:\n\n--- File: {file_name} ---\n{file_content_text[:10000]}"
-        display_content = f"[Attached file: {file_name}]"
-        prompt_text = display_content
-    else:
-        full_content = prompt_text
-        display_content = prompt_text
-
-    # --- Obfuscation ---
-    obfuscation_context = None
-    try:
-        obfuscated_text, obfuscation_context = obfuscate_text(full_content, company)
-        if obfuscation_context:
-            full_content = obfuscated_text
-            display_content = obfuscated_text
-            if prompt_text:
-                prompt_text = obfuscated_text
-    except Exception as obf_error:
-        import logging
-        logging.error(f"Obfuscation error: {obf_error}")
-
-    # Create new conversation if needed
-    if not conversation:
-        title = prompt_text[:50] if prompt_text else file_name[:50] if file_name else "New conversation"
-        conversation = Conversation.objects.create(
-            user=user,
-            title=title + ('...' if len(title) > 50 else '')
-        )
-
-    # Create user message
-    user_message = Message.objects.create(
-        conversation=conversation,
-        role='user',
-        content=display_content,
-        file_name=file_name,
-        file_size=file_size
-    )
-
-    # Create prompt for audit/tracking
-    prompt_obj = Prompt.objects.create(
-        user=user,
-        conversation=conversation,
-        content=prompt_text or f"[File: {file_name}]",
-        file_name=file_name,
-        file_size=file_size,
-        file_md5=file_hashes.get('md5') if file_hashes else None,
-        file_sha1=file_hashes.get('sha1') if file_hashes else None,
-        file_sha256=file_hashes.get('sha256') if file_hashes else None
-    )
-
-    # Create obfuscation alert if data was obfuscated
-    if obfuscation_context:
-        entities_detected = list(obfuscation_context.keys())
-        entity_count = len(entities_detected)
-        entity_types = set()
-        for key in entities_detected:
-            parts = key.strip('[]').rsplit('_', 1)
-            if len(parts) > 1:
-                entity_types.add(parts[0])
-
-        Alert.objects.create(
-            user=user,
-            company=company,
-            prompt=prompt_obj,
-            rule=None,
-            severity='medium',
-            source='obfuscation',
-            description=f"Prompt obfuscated: {entity_count} entities detected ({', '.join(sorted(entity_types))}). Sensitive data was masked before sending to AI engine."
-        )
-
-        log_action(user, 'obfuscation_alert_created', {
-            'prompt_id': prompt_obj.id,
-            'conversation_id': conversation.id,
-            'entities_count': entity_count,
-            'entity_types': list(entity_types),
-        }, request)
-
-    # Check if user already confirmed consent
-    consent_confirmed = request.POST.get('consent_confirmed') == 'true'
-
-    # Validate prompt against rules
-    requires_consent = False
-    consent_rules_data = []
-    try:
-        prompt_matches, prompt_matched_rules = validate_prompt(user, prompt_text, prompt_obj, None, 'prompts')
-
-        # Validate file content against rules
-        file_matches = []
-        file_matched_rules = []
-        if file_content_text:
-            file_info = {'name': file_name, 'size': file_size, 'hashes': file_hashes} if file_hashes else None
-            file_matches, file_matched_rules = validate_prompt(user, file_content_text, prompt_obj, None, 'files', file_info)
-
-        # Combine matches
-        all_matches = (prompt_matches or []) + (file_matches or [])
-        all_matched_rules = prompt_matched_rules + file_matched_rules
-
-        # Separate rules by action type
-        blocking_rules = [r for r in all_matched_rules if r.get('action', 'block') == 'block']
-        consent_rules = [r for r in all_matched_rules if r.get('action') == 'consent']
-        blocked_rules_data = []
-
-        # Block rules always take priority
-        if blocking_rules:
-            for rule_data in blocking_rules:
-                try:
-                    from front.models import Rule
-                    rule = Rule.objects.get(id=rule_data['id'])
-
-                    Alert.objects.create(
-                        user=user,
-                        company=company,
-                        prompt=prompt_obj,
-                        rule=rule,
-                        severity=rule_data.get('severity', 'medium'),
-                        description=f"Prompt blocked by rule '{rule.name}'. The message was not sent to the LLM."
-                    )
-
-                    log_action(user, 'blocking_alert_created', {
-                        'rule_name': rule.name,
-                        'severity': rule_data.get('severity', 'medium'),
-                        'prompt_id': prompt_obj.id,
-                        'conversation_id': conversation.id
-                    }, request)
-
-                except Rule.DoesNotExist:
-                    import logging
-                    logging.warning(f"Rule {rule_data.get('name', 'unknown')} not found for alert creation")
-
-            # Mark as blocked
-            prompt_obj.filtered = True
-            prompt_obj.save()
-            user_message.blocked = True
-            user_message.save()
-            blocked = True
-            blocked_rules_data = [{'name': r['name'], 'severity': r['severity'], 'description': r['description']} for r in blocking_rules]
-
-        # Consent rules: ask for confirmation (only if no blocking rules)
-        elif consent_rules and not consent_confirmed:
-            requires_consent = True
-            consent_rules_data = [{'name': r['name'], 'severity': r['severity'], 'description': r['description']} for r in consent_rules]
-
-        # User confirmed consent: create consent alerts and proceed
-        elif consent_rules and consent_confirmed:
-            for rule_data in consent_rules:
-                try:
-                    from front.models import Rule
-                    rule = Rule.objects.get(id=rule_data['id'])
-
-                    Alert.objects.create(
-                        user=user,
-                        company=company,
-                        prompt=prompt_obj,
-                        rule=rule,
-                        severity=rule_data.get('severity', 'medium'),
-                        description=f"User consented to send message despite rule '{rule.name}' match."
-                    )
-
-                    log_action(user, 'consent_alert_created', {
-                        'rule_name': rule.name,
-                        'severity': rule_data.get('severity', 'medium'),
-                        'prompt_id': prompt_obj.id,
-                        'conversation_id': conversation.id
-                    }, request)
-
-                except Rule.DoesNotExist:
-                    import logging
-                    logging.warning(f"Rule {rule_data.get('name', 'unknown')} not found for alert creation")
-
-    except Exception as validation_error:
-        # Log validation error but don't block the request
-        import logging
-        logging.error(f"Error validating prompt: {validation_error}")
-        all_matches = []
-        blocked_rules_data = []
-
-    # Log the action
-    log_action(user, 'prompt_sent', {
-        'prompt_id': prompt_obj.id,
-        'conversation_id': conversation.id,
-        'content_length': len(prompt_text) if prompt_text else 0,
-        'has_file': bool(uploaded_file),
-        'file_name': file_name,
-        'file_size': file_size,
-        'rules_matched': len(all_matches) if all_matches else 0,
-        'blocked': blocked
-    }, request)
-
-    response_data = {
-        'success': True,
-        'conversation_id': conversation.id,
-        'blocked': blocked,
-        'blocked_rules': blocked_rules_data,
-        'requires_consent': requires_consent,
-        'consent_rules': consent_rules_data,
-        'user_message': {
-            'id': user_message.id,
-            'content': display_content,
-            'file_name': file_name,
-            'file_size': file_size,
-            'blocked': blocked
-        }
+def _web_command(request, conversation_id):
+    automatic = request.POST.get('auto_route') == 'true'
+    return {
+        'content': request.POST.get('prompt', ''),
+        'file': request.FILES.get('file'),
+        'conversation_id': conversation_id,
+        'engine_id': None if automatic else request.POST.get('engine_id') or request.session.get('selected_engine_id'),
+        'model_id': None if automatic else request.POST.get('model_id') or request.session.get('selected_model_id'),
+        'request_id': request.POST.get('request_id'),
+        'consent_token': request.POST.get('consent_token'),
+        'action': request.POST.get('action'),
     }
-
-    # If consent is required, return early without sending to LLM
-    if requires_consent:
-        return JsonResponse(response_data)
-
-    # Only send to LLM if not blocked
-    if not blocked:
-        try:
-            # Build messages history for context using ChatMessage objects
-            chat_messages = []
-
-            # Inject company and department system prompts
-            if profile.company and profile.company.system_prompt:
-                chat_messages.append(ChatMessage(role='system', content=profile.company.system_prompt))
-            if profile.department and profile.department.system_prompt:
-                chat_messages.append(ChatMessage(role='system', content=profile.department.system_prompt))
-
-            for msg in conversation.messages.exclude(id=user_message.id):
-                if msg.role in ['user', 'assistant']:
-                    chat_messages.append(ChatMessage(
-                        role=msg.role,
-                        content=msg.content
-                    ))
-
-            # Add current message - handle images with vision API
-            if is_image and image_base64:
-                user_content = []
-                if prompt_text and prompt_text != f"[Attached file: {file_name}]":
-                    user_content.append({
-                        "type": "text",
-                        "text": prompt_text
-                    })
-                else:
-                    user_content.append({
-                        "type": "text",
-                        "text": "Please analyze this image."
-                    })
-                user_content.append({
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:{image_mime_type};base64,{image_base64}"
-                    }
-                })
-                chat_messages.append(ChatMessage(
-                    role="user",
-                    content=user_content
-                ))
-            else:
-                chat_messages.append(ChatMessage(
-                    role="user",
-                    content=full_content
-                ))
-
-            # Use connector to send message
-            ai_response = connector.chat(
-                messages=chat_messages,
-                model=model_name,
-                max_tokens=1000,
-                temperature=0.6,
-            )
-
-            # Save assistant response as message
-            assistant_message = Message.objects.create(
-                conversation=conversation,
-                role='assistant',
-                content=ai_response.content,
-                tokens_used=ai_response.tokens_used
-            )
-
-            # Detect and save structured file content from the response
-            file_info = extract_file_from_ai_response(ai_response.content)
-            file_url = None
-            if file_info:
-                from django.core.files.base import ContentFile
-                file_bytes, gen_file_name, mime_type = file_info
-                assistant_message.file_name = gen_file_name
-                assistant_message.file_size = len(file_bytes)
-                assistant_message.response_file.save(gen_file_name, ContentFile(file_bytes), save=True)
-                file_url = request.build_absolute_uri(
-                    f'/chat/download/{assistant_message.id}/'
-                )
-
-            # Update conversation timestamp
-            conversation.save()
-
-            response_data['assistant_message'] = {
-                'id': assistant_message.id,
-                'content': ai_response.content,
-                'file_name': assistant_message.file_name,
-                'file_size': assistant_message.file_size,
-                'file_url': file_url,
-            }
-
-        except Exception as e:
-            error_str = str(e).lower()
-            # Detect authentication/API key errors
-            is_auth_error = any(keyword in error_str for keyword in [
-                'authentication', 'auth', 'api key', 'api_key', 'apikey',
-                'unauthorized', '401', 'invalid_api_key', 'invalid api key',
-                'incorrect api key', 'invalid x-api-key',
-            ])
-
-            if is_auth_error:
-                response_data['error_type'] = 'invalid_api_key'
-                response_data['error'] = str(e)
-                response_data['engine_name'] = current_engine.name if current_engine else 'Default'
-                # Save error as system message
-                error_message = Message.objects.create(
-                    conversation=conversation,
-                    role='system',
-                    content=f"Error: Invalid API key for the configured AI engine."
-                )
-                response_data['error_message'] = {
-                    'id': error_message.id,
-                    'content': f"Error: Invalid API key for the configured AI engine."
-                }
-            else:
-                # Save error as system message
-                error_message = Message.objects.create(
-                    conversation=conversation,
-                    role='system',
-                    content=f"Error: {str(e)}"
-                )
-                response_data['error_message'] = {
-                    'id': error_message.id,
-                    'content': f"Error: {str(e)}"
-                }
-
-    return JsonResponse(response_data)
 
 
 @login_required
 def chat_download_file(request, message_id):
     """Download a file generated by the AI for an assistant message."""
     from django.http import FileResponse, Http404
-    message = get_object_or_404(Message, id=message_id, role='assistant')
-    # Ensure the message belongs to the current user's conversation
-    if message.conversation.user != request.user:
-        raise PermissionDenied
+    message = get_object_or_404(Message, id=message_id, role='assistant',
+        conversation__in=authorized_conversations(request.user))
     if not message.response_file:
         raise Http404
     response = FileResponse(message.response_file.open('rb'), as_attachment=True, filename=message.file_name or 'response.bin')
+    response['Content-Type'] = 'application/octet-stream'
+    response['X-Content-Type-Options'] = 'nosniff'
+    response['Cache-Control'] = 'private, no-store'
     return response
 
 
 def validate_prompt(user, prompt_text, prompt_instance=None, file=None, content_type='prompts', file_info=None):
-    """
-    Validates a prompt or file content against YARA rules in the DB.
-
-    :param user: User sending the prompt
-    :param prompt_text: Prompt text or file content
-    :param prompt_instance: (optional) related Prompt object, to link in alerts
-    :param file: (optional) uploaded file (not used currently)
-    :param content_type: 'prompts' or 'files' - type of content being validated
-    :param file_info: (optional) dict with file info including hashes {'name', 'size', 'hashes': {'md5', 'sha1', 'sha256'}}
-    :return: tuple (list of matches, list of rules that matched)
-    """
-    if not prompt_text:
-        return [], []
-
-    # 1. Get active rules from company and user that apply to this content type
-    # Rules apply if: applies_to == content_type OR applies_to == 'both'
-    valid_applies_to = [content_type, 'both']
-
-    import logging
-    logging.info(f"validate_prompt called: content_type={content_type}, text_length={len(prompt_text) if prompt_text else 0}")
-
-    company_rules = []
-    if hasattr(user, 'profile') and user.profile.company:
-        company_rules = Rule.objects.filter(
-            rules_group__company=user.profile.company,
-            active=True,
-            applies_to__in=valid_applies_to
-        )
-        logging.info(f"Found {company_rules.count()} company rules for content_type={content_type}")
-
-    user_rules = Rule.objects.filter(
-        rules_group__user=user,
-        active=True,
-        applies_to__in=valid_applies_to
-    )
-    logging.info(f"Found {user_rules.count()} user rules for content_type={content_type}")
-
-    all_rules = list(company_rules) + list(user_rules)
-
-    if not all_rules:
-        logging.info(f"No rules found for content_type={content_type}")
-        return [], []  # no rules, no validation
-
-    logging.info(f"Total rules to validate: {len(all_rules)}")
-
-    # 2. Prepare dictionary to compile all rules
-    rules_dict = {}
-    for r in all_rules:
-        rules_dict[f"rule_{r.id}"] = r.yara_rule
-
-    try:
-        compiled_rules = yara.compile(sources=rules_dict)
-    except Exception as e:
-        raise ValueError(f"Error compiling YARA rules: {e}")
-
-    # 3. Execute match against the prompt
-    matches = compiled_rules.match(data=prompt_text)
-    logging.info(f"YARA matching completed: {len(matches)} matches found")
-
-    # 4. Process matches and gather rule information
-    # Create a dictionary of rules by ID for quick access
-    rules_by_id = {r.id: r for r in all_rules}
-
-    # List to store information about rules that matched
-    matched_rules_info = []
-
-    for match in matches:
-        # Get the rule ID and its severity
-        rule_id = int(match.namespace.split('_')[1])
-        rule = rules_by_id.get(rule_id)
-        severity = rule.severity if rule else "medium"
-
-        # Save rule information to display in the modal
-        matched_rules_info.append({
-            'id': rule.id if rule else None,
-            'name': rule.name if rule else 'Unknown Rule',
-            'description': rule.description if rule else '',
-            'severity': severity,
-            'action': rule.action if rule else 'block',
-        })
-
-    # NOTE: No creamos alertas aquí - se crean en chat_send_message según el tipo de regla
-    # (bloqueo vs ofuscación)
-
-    return matches, matched_rules_info
+    """Compatibility evaluation API; effects belong to send_chat_message."""
+    from .policy import active_rules, scan_rules
+    return scan_rules(active_rules(user), [(content_type, prompt_text or '')])
 
 
 # ==================== RULES GROUPS VIEWS ====================
@@ -3507,7 +2558,7 @@ def auditlogs_list(request):
     user_company = get_user_company(request.user)
 
     # Filter logs by company (through user's profile) or system logs (user=None)
-    company_or_system = Q(user__profile__company=user_company) | Q(user__isnull=True)
+    company_or_system = Q(company=user_company)
     logs = AuditLog.objects.filter(
         company_or_system
     ).select_related('user').order_by('-timestamp')
@@ -3580,7 +2631,7 @@ def auditlog_detail(request, pk):
     user_company = get_user_company(request.user)
 
     # Only allow access to logs from user's company or system logs
-    company_or_system = Q(user__profile__company=user_company) | Q(user__isnull=True)
+    company_or_system = Q(company=user_company)
     log = get_object_or_404(
         AuditLog.objects.filter(company_or_system).select_related('user'),
         pk=pk,
@@ -3601,7 +2652,7 @@ def auditlogs_clear(request):
 
         cutoff_date = timezone.now() - timezone.timedelta(days=30)
         # Delete logs from user's company or system logs
-        company_or_system = Q(user__profile__company=user_company) | Q(user__isnull=True)
+        company_or_system = Q(company=user_company)
         count = AuditLog.objects.filter(
             company_or_system,
             timestamp__lt=cutoff_date
@@ -3618,7 +2669,7 @@ def auditlog_delete(request, pk):
     user_company = get_user_company(request.user)
 
     # Only allow access to logs from user's company or system logs
-    company_or_system = Q(user__profile__company=user_company) | Q(user__isnull=True)
+    company_or_system = Q(company=user_company)
     log = get_object_or_404(AuditLog.objects.filter(company_or_system), pk=pk)
 
     if request.method == 'POST':
@@ -3640,7 +2691,7 @@ def prompts_list(request):
 
     # Filter prompts by company (through user's profile)
     prompts = Prompt.objects.filter(
-        user__profile__company=user_company
+        company=user_company
     ).select_related('user', 'user__profile', 'user__profile__department').order_by('-created_at')
 
     # Filters
@@ -3676,13 +2727,13 @@ def prompts_list(request):
         prompts = prompts.filter(content__icontains=search)
 
     # Statistics - filtered by company
-    total_prompts = Prompt.objects.filter(user__profile__company=user_company).count()
+    total_prompts = Prompt.objects.filter(company=user_company).count()
     today_prompts = Prompt.objects.filter(
-        user__profile__company=user_company,
+        company=user_company,
         created_at__date=timezone.now().date()
     ).count()
     filtered_prompts = Prompt.objects.filter(
-        user__profile__company=user_company,
+        company=user_company,
         filtered=True
     ).count()
 
@@ -3694,12 +2745,12 @@ def prompts_list(request):
 
     # Unique models for the filter - from company's prompts
     models = Prompt.objects.filter(
-        user__profile__company=user_company
+        company=user_company
     ).values_list('model_used', flat=True).distinct()
 
     # Prompts per day (last 7 days) - filtered by company
     prompts_by_day = Prompt.objects.filter(
-        user__profile__company=user_company,
+        company=user_company,
         created_at__gte=timezone.now() - timezone.timedelta(days=7)
     ).annotate(
         date=TruncDate('created_at')
@@ -3735,7 +2786,7 @@ def prompt_detail(request, pk):
     prompt = get_object_or_404(
         Prompt.objects.select_related('user'),
         pk=pk,
-        user__profile__company=user_company
+        company=user_company
     )
 
     # Get the associated response if it exists
@@ -3758,13 +2809,13 @@ def prompt_detail(request, pk):
 
 # ==================== OBFUSCATION ====================
 
-def obfuscate_text(text, company):
+def obfuscate_text(text, company, *, configs=None, before_call=None, after_call=None, timeout=10):
     """
     Ofusca texto encadenando todas las configs activas de la company.
     Retorna (texto_ofuscado, contexto_map_combinado) o (texto_original, None) si no hay configs.
     """
-    configs = ObfuscationConfig.objects.filter(company=company, active=True).order_by("created_at")
-    if not configs.exists():
+    configs = list(configs) if configs is not None else list(ObfuscationConfig.objects.filter(company=company, active=True).order_by("created_at"))
+    if not configs:
         return text, None
 
     current_text = text
@@ -3784,9 +2835,14 @@ def obfuscate_text(text, company):
             payload["startFrom"] = counters
 
         api_endpoint = config.api_url.rstrip('/') + '/api/mask'
-        response = requests.post(api_endpoint, json=payload, timeout=10)
+        call_timeout = before_call(config, current_text) if before_call else timeout
+        response = requests.post(api_endpoint, json=payload, timeout=call_timeout, allow_redirects=False)
         response.raise_for_status()
         result = response.json()
+        if not isinstance(result, dict) or not isinstance(result.get('masked'), str):
+            raise ValueError('Invalid masking response')
+        if after_call:
+            after_call(config)
 
         current_text = result.get("masked", current_text)
         combined_context.update(result.get("context", {}))

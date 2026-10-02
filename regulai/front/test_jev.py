@@ -234,6 +234,17 @@ class JevContractTests(SimpleTestCase):
                 self.assertEqual(str(error.exception), 'invalid_request')
                 post.assert_not_called()
 
+    def test_gateway_camelcase_metadata_is_validated_and_conflicting_aliases_fail(self):
+        payload = {'model': 'typesafe-ai/jev', 'answers': {'signal': {'type': 'noul', 'noul': 0}},
+                   'providerMetadata': {'gateway': {'cost': '0.001'}}}
+        questions = {'signal': {'type': 'noul', 'instructions': 'Signal?'}}
+        with patch('requests.post', return_value=self.response(payload)):
+            result = jev.evaluate('synthetic-key', 'typesafe-ai/jev', 'Synthetic', questions, transport='vercel')
+        self.assertEqual(result.provider_metadata['gateway']['cost'], '0.001')
+        payload['provider_metadata'] = {'gateway': {'cost': '0'}}
+        with patch('requests.post', return_value=self.response(payload)), self.assertRaises(jev.JevError):
+            jev.evaluate('synthetic-key', 'typesafe-ai/jev', 'Synthetic', questions, transport='vercel')
+
     def test_gateway_costs_and_provider_metadata_cannot_be_malformed_or_redirected(self):
         for gateway in [{'cost': 'NaN'}, {'cost': '-1'}, {'cost': 'synthetic-secret'},
                         {'routing': {'finalProvider': 'unknown-provider'}}]:

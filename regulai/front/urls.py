@@ -1,4 +1,6 @@
 from django.urls import path
+from .chat_ui import request_receipt, request_evidence
+from .policy_simulator import policy_simulator, policy_simulator_activate
 from .views import (
     home_view, login_view, logout_view, signup_view, profile_view,
     chat_view, chat_new, chat_delete, chat_send_message, chat_download_file, chat_select_engine, chat_select_model, dashboard_view,
@@ -31,10 +33,14 @@ urlpatterns = [
 
     # Dashboard & Chat
     path("dashboard/", dashboard_view, name="dashboard"),
+    path("policies/simulator/", policy_simulator, name="policy_simulator"),
+    path("policies/simulator/activate/", policy_simulator_activate, name="policy_simulator_activate"),
     path("index", chat_view, name="index"),
     path("chat/", chat_view, name="chat"),
     path("chat/new/", chat_new, name="chat_new"),
     path("chat/send/", chat_send_message, name="chat_send"),
+    path("chat/requests/<uuid:request_id>/receipt/", request_receipt, name="chat_request_receipt"),
+    path("chat/requests/<uuid:request_id>/evidence/", request_evidence, name="chat_request_evidence"),
     path("chat/select-engine/", chat_select_engine, name="chat_select_engine"),
     path("chat/select-model/", chat_select_model, name="chat_select_model"),
     path("chat/<int:conversation_id>/send/", chat_send_message, name="chat_send_conversation"),
