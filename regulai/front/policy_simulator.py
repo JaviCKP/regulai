@@ -3,6 +3,7 @@ import json
 import copy
 import time
 from decimal import Decimal
+from dataclasses import replace
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core import signing
@@ -12,7 +13,8 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods, require_POST
 
 from .access import actor_company
-from .chat_service import PipelineStop, candidates_for, classification_signals
+from .chat_service import PipelineStop, candidates_for
+from .classification import decide
 from . import jev
 from .models import AuditLog, Company, CompanyEngine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
 from .policy import AIConfig, active_rules, digest, evaluate_policy, validate_yara
@@ -37,6 +39,8 @@ def _config(source, company):
     destinations = {item for items in config['destinations'].values() for item in items}
     owned_engines = set(CompanyEngine.objects.filter(company=company, active=True).values_list('pk', flat=True))
     owned_masks = set(ObfuscationConfig.objects.filter(company=company, active=True).values_list('pk', flat=True))
+    if owned_masks and config['limits']['budget'] is not None and config['masking']['max_call_cost'] is None:
+        raise ValueError('unbounded_masking_cost')
     for destination in destinations:
         if destination == 'jev':
             continue
@@ -120,22 +124,34 @@ def _outcome(actor, config, sample, rules, signals):
     if local.status in {'block', 'unavailable'}:
         return {'policy': local.as_dict(), 'route': {'status': 'not_evaluated',
             'origin': origin, 'reason_codes': ['security_not_allowed']}}
-    if signals['origin'] == 'jev':
-        cfg = AIConfig.model_validate(config)
-        try:
-            sensitivity, task, difficulty = classification_signals(signals['answers'], cfg.jev.threshold, local.sensitivity)
-        except PipelineStop as error:
+    cfg = AIConfig.model_validate(config)
+    notices, plausible_tasks = [], [task]
+    if (cfg.limits.budget is not None and cfg.masking.max_call_cost is None
+            and ObfuscationConfig.objects.filter(company=actor.profile.company, active=True).exists()):
+        policy = local.as_dict()
+        policy.update(status='unavailable', reason_codes=['policy_configuration_invalid'], allowed_destinations=[])
+        return {'policy': policy, 'route': {'status': 'not_evaluated', 'origin': origin,
+            'reason_codes': ['security_not_allowed']}}
+    if signals['origin'] == 'jev' and (cfg.classification == 'required' or cfg.routing.mode == 'auto'):
+        classification = decide(signals['answers'], cfg, local.sensitivity)
+        sensitivity, task, difficulty = classification.sensitivity, classification.task, classification.difficulty
+        notices, plausible_tasks = classification.notices, classification.plausible_tasks
+        if classification.stop_code:
             policy = local.as_dict()
-            policy.update(status='block' if error.status == 'blocked' else 'unavailable',
-                reason_codes=[error.code], allowed_destinations=[])
-            return {'policy': policy, 'route': {'status': 'not_evaluated',
+            policy.update(status='block' if classification.stop_status == 'blocked' else 'unavailable',
+                sensitivity=sensitivity, reason_codes=[classification.stop_code], allowed_destinations=[])
+            return {'policy': policy, 'notices': notices, 'route': {'status': 'not_evaluated',
                 'origin': 'jev_signals', 'reason_codes': ['security_not_allowed']}}
+    elif signals['origin'] == 'jev':
+        sensitivity, task, difficulty = local.sensitivity, 'general', 'economy'
+        plausible_tasks = [task]
     else:
         ranks = {'public': 0, 'internal': 1, 'confidential': 2, 'restricted': 3}
         if sensitivity in ranks and local.sensitivity in ranks:
             sensitivity = max((sensitivity, local.sensitivity), key=ranks.get)
     policy = evaluate_policy(actor, [('prompts', sample)], config=config, rules=rules, sensitivity=sensitivity)
-    result = {'policy': policy.as_dict(), 'route': {'status': 'not_evaluated',
+    result = {'policy': policy.as_dict(), 'notices': notices, 'task': task, 'difficulty': difficulty,
+        'plausible_tasks': plausible_tasks, 'route': {'status': 'not_evaluated',
         'origin': 'jev_signals' if signals['origin'] == 'jev' else 'synthetic_signals'}}
     if policy.status not in {'allow', 'consent_required'}:
         result['route']['reason_codes'] = ['security_not_allowed']
@@ -143,6 +159,10 @@ def _outcome(actor, config, sample, rules, signals):
     try:
         cfg = AIConfig.model_validate(config)
         candidates = candidates_for(actor, cfg, task)
+        if len(plausible_tasks) > 1:
+            qualities = {(item.company_engine_id, item.model_id): item.quality for item in cfg.routing.candidates}
+            candidates = [replace(item, quality=min(qualities.get((item.company_engine_id, item.model_pk), {}).get(name, 0)
+                for name in plausible_tasks)) for item in candidates]
         result['candidates'] = [{'company_engine_id': item.company_engine_id, 'model': item.model_id,
             'level': item.level, 'quality': item.quality} for item in candidates
             if f'engine:{item.company_engine_id}' in policy.allowed_destinations]
@@ -154,6 +174,12 @@ def _outcome(actor, config, sample, rules, signals):
             budget -= Decimal(cfg.jev.max_call_cost) * required_checks
             if budget < 0:
                 raise RoutingError('budget_exhausted')
+        if budget is not None:
+            mask_count = ObfuscationConfig.objects.filter(company=actor.profile.company, active=True).count()
+            if mask_count:
+                budget -= Decimal(cfg.masking.max_call_cost) * mask_count
+                if budget < 0:
+                    raise RoutingError('budget_exhausted')
         selected = route(candidates, [sample], allowed_destinations=policy.allowed_destinations,
             min_quality=cfg.routing.min_quality[difficulty], max_output_tokens=cfg.routing.max_output_tokens,
             budget=budget)
@@ -220,8 +246,12 @@ def _semantic(actor, company, sample, rules):
         if cost is not None and cost > bound:
             call['cost_bound'] = str(cost)
             raise PipelineStop('budget_bound_exceeded')
-        sensitivity, task, difficulty = classification_signals(result.answers, cfg.jev.threshold, decision.sensitivity)
-        signals.update(sensitivity=sensitivity, task=task, level=difficulty)
+        classification = decide(result.answers, cfg, decision.sensitivity)
+        signals.update(sensitivity=classification.sensitivity, task=classification.task,
+            level=classification.difficulty, notices=classification.notices,
+            plausible_tasks=classification.plausible_tasks)
+        if classification.stop_code:
+            raise PipelineStop(classification.stop_code, classification.stop_status)
     except jev.JevError as error:
         call.update(status='failed', reason_codes=[error.code], outcome_unknown=error.outcome_unknown)
         semantic = {'status': 'unavailable', 'reason_codes': [error.code]}

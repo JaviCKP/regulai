@@ -14,20 +14,20 @@ Sensitivity = Literal['public', 'internal', 'confidential', 'restricted', 'unkno
 
 
 class StrictConfig(BaseModel):
-    model_config = ConfigDict(extra='forbid', strict=True)
+    model_config = ConfigDict(extra='forbid', strict=True, allow_inf_nan=False)
 
 
 class JevConfig(StrictConfig):
     transport: Literal['vercel', 'typesafe'] = 'vercel'
     model: str = 'typesafe-ai/jev'
-    input_price: str | None = None
-    output_price: str | None = None
+    input_price: str | None = Field(default=None, description='USD per million input tokens.')
+    output_price: str | None = Field(default=None, description='USD per million output tokens.')
     currency: Literal['USD'] = 'USD'
     price_date: str | None = None
     # A provider/account contractual ceiling, not a response-size estimate.
     max_call_cost: str | None = None
     threshold: float = Field(default=0.8, ge=0, le=1)
-    rubric_version: str = 'sensitivity-v1'
+    rubric_version: str = 'sensitivity-v2'
 
     @field_validator('input_price', 'output_price', 'max_call_cost')
     @classmethod
@@ -37,6 +37,13 @@ class JevConfig(StrictConfig):
                 raise ValueError('Invalid nonnegative decimal.')
         except InvalidOperation:
             raise ValueError('Invalid nonnegative decimal.') from None
+        return value
+
+    @field_validator('input_price', 'output_price')
+    @classmethod
+    def per_million_price(cls, value):
+        if value is not None and 0 < Decimal(value) < Decimal('0.0001'):
+            raise ValueError('Configure prices per million tokens, not per token.')
         return value
 
     @model_validator(mode='after')
@@ -64,6 +71,7 @@ class CandidateConfig(StrictConfig):
 
 class RoutingConfig(StrictConfig):
     mode: Literal['manual', 'auto'] = 'manual'
+    allow_cross_engine_fallback: bool = False
     candidates: list[CandidateConfig] = Field(default_factory=list, max_length=64)
     min_quality: dict[Literal['economy', 'balanced', 'strong'], float] = Field(
         default_factory=lambda: {'economy': 0.0, 'balanced': 0.0, 'strong': 0.0})
@@ -81,22 +89,54 @@ class VerificationConfig(StrictConfig):
     mode: Literal['local', 'advisory', 'enforce'] = 'local'
     threshold: float = Field(default=0.8, ge=0, le=1)
     rubric_version: str = 'verification-v1'
+    min_quote_chars: int = Field(default=12, ge=1, le=10000)
+    min_quote_words: int = Field(default=3, ge=1, le=1000)
 
 
 class LimitsConfig(StrictConfig):
     budget: str | None = None
     deadline_seconds: int = Field(default=90, ge=1, le=180)
+    call_timeout_seconds: int = Field(default=30, ge=1, le=180)
 
     @field_validator('budget')
     @classmethod
     def money(cls, value):
         return JevConfig.money(value)
 
+    @model_validator(mode='after')
+    def coherent_timeout(self):
+        if self.call_timeout_seconds > self.deadline_seconds:
+            raise ValueError('Call timeout cannot exceed the request deadline.')
+        return self
+
+
+class ClassificationPolicyConfig(StrictConfig):
+    unknown_level: Literal['public', 'internal', 'confidential', 'restricted'] = 'confidential'
+    signal_threshold: float = Field(default=0.2, gt=0, le=1)
+    on_ambiguity: Literal['warn', 'stop'] = 'warn'
+
+
+class MaskingConfig(StrictConfig):
+    max_call_cost: str | None = None
+
+    @field_validator('max_call_cost')
+    @classmethod
+    def money(cls, value):
+        return JevConfig.money(value)
+
+
+class HistoryConfig(StrictConfig):
+    max_turns: int = Field(default=20, ge=0, le=1000)
+    max_bytes: int = Field(default=32768, ge=0, le=1048576)
+
 
 class AIConfig(StrictConfig):
     version: Literal[1] = 1
     revision: int = Field(default=1, ge=1)
     classification: Literal['local', 'required'] = 'local'
+    classification_policy: ClassificationPolicyConfig = Field(default_factory=ClassificationPolicyConfig)
+    masking: MaskingConfig = Field(default_factory=MaskingConfig)
+    history: HistoryConfig = Field(default_factory=HistoryConfig)
     local_sensitivity: Sensitivity = 'unknown'
     allow_empty_rules: bool = False
     destinations: dict[Sensitivity, list[str]] = Field(default_factory=dict)
@@ -113,6 +153,14 @@ class AIConfig(StrictConfig):
                for items in value.values() for item in items):
             raise ValueError('Use explicit engine/obfuscation IDs or jev.')
         return value
+
+    @model_validator(mode='after')
+    def bounded_masking(self):
+        if (self.limits.budget is not None and self.masking.max_call_cost is None
+                and any(destination.startswith('obfuscation:')
+                        for items in self.destinations.values() for destination in items)):
+            raise ValueError('Budgeted masking requires max_call_cost.')
+        return self
 
 
 def digest(value):

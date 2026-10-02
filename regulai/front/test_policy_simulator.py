@@ -239,11 +239,12 @@ class PolicySimulatorTests(TestCase):
         self.assertEqual(self.client.post(self.url, self.command(proposed_config=duplicate)).status_code, 400)
 
     def test_semantic_signals_apply_each_policy_threshold_and_restricted_blocks(self):
-        self.company.ai_config.update(jev={'input_price': '1', 'output_price': '1',
+        self.company.ai_config.update(classification='required', jev={'input_price': '1', 'output_price': '1',
             'max_call_cost': '0.001'}, limits={'budget': '0.002'})
         self.company.jev_api_key = 'synthetic-key'
         self.company.save()
-        proposed = dict(self.company.ai_config, jev=dict(self.company.ai_config['jev'], threshold=0.99))
+        proposed = dict(self.company.ai_config, classification_policy={'on_ambiguity': 'stop'},
+            jev=dict(self.company.ai_config['jev'], threshold=0.99))
         with patch('requests.sessions.Session.request', return_value=jev_response()):
             response = self.client.post(self.url, self.command(mode='semantic', proposed_config=json.dumps(proposed)))
         self.assertEqual(response.context['comparison']['current']['policy']['status'], 'allow')
