@@ -242,8 +242,6 @@ def _parse_xlsx(document, content):
                             raise _Rejected("column_limit")
                     elif tag == "si":
                         strings += 1
-                    elif tag == "hyperlink":
-                        document.warnings.append("external_content_unread")
                     elif tag == "sheet":
                         sheets += 1
                         if len(element.attrib.get("name", "")) > 31:
@@ -254,25 +252,44 @@ def _parse_xlsx(document, content):
                         raise _Rejected("cell_limit")
                     element.clear()
     workbook = load_workbook(io.BytesIO(content), read_only=True, data_only=False, keep_links=False)
+    cached_workbook = load_workbook(io.BytesIO(content), read_only=True, data_only=True, keep_links=False)
     try:
-        for sheet in workbook.worksheets:
+        for sheet, cached_sheet in zip(workbook.worksheets, cached_workbook.worksheets):
             # Ignore producer-supplied dimensions: they can hide later cells.
             sheet.reset_dimensions()
-            for row in sheet.iter_rows():
+            cached_sheet.reset_dimensions()
+            for row_number, (row, cached_row) in enumerate(zip(sheet.iter_rows(), cached_sheet.iter_rows()), 1):
                 if document.units_read >= MAX_UNITS:
                     document.warnings.append("unit_limit")
                     return
-                for cell in row:
+                values, coordinates = [], []
+                for cell, cached_cell in zip(row, cached_row):
                     if cell.value is None:
                         continue
+                    locator = f"sheet:{sheet.title}/cell:{cell.coordinate}"
+                    value = cell.value
                     if cell.data_type == "f":
-                        document.warnings.append("formula_coverage_unknown")
-                    if not _append(document, f"sheet:{sheet.title}/cell:{cell.coordinate}", str(cell.value)):
-                        return
+                        formula = str(cell.value)
+                        if document._characters + len(formula) + 1 > MAX_TEXT_CHARS:
+                            document.warnings.append("text_limit")
+                            return
+                        document.text += "\n" + formula
+                        document._characters += len(formula) + 1
+                        _disclose(document, "formula_expression_security_only", locator)
+                        value = cached_cell.value
+                        if value is None or (workbook.calculation and workbook.calculation.fullCalcOnLoad):
+                            _disclose(document, "formula_coverage_unknown", locator)
+                        if value is None:
+                            continue
+                    coordinates.append(cell.coordinate)
+                    values.append(f"{cell.coordinate}: {value}")
+                if values and not _append(document, f"sheet:{sheet.title}/row:{row_number}/cells:{coordinates[0]}-{coordinates[-1]}", "\t".join(values)):
+                    return
                 document.units_read += 1
         document.units_total = document.units_read
     finally:
         workbook.close()
+        cached_workbook.close()
 
 
 def _parse_docx(document, content):
@@ -467,7 +484,7 @@ def _worker(format, content):
     except Exception:
         document.warnings.append("corrupt_document")
         document.status = "partial" if document.units_read else "unreadable"
-    document.text = "\n".join(fragment["text"] for fragment in document.fragments)
+    document.text = "\n".join(fragment["text"] for fragment in document.fragments) + document.text
     if not document.warnings and not document.text.strip():
         document.warnings.append("empty_document")
         document.status = "unreadable"

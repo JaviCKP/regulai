@@ -1,6 +1,9 @@
 """Public extraction regressions; fixtures contain synthetic content only."""
 import io
 import zipfile
+from datetime import datetime
+from openpyxl import Workbook
+from openpyxl.workbook.properties import CalcProperties
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
@@ -151,3 +154,35 @@ class FidelityTests(SimpleTestCase):
         self.assertEqual(document.text, "1. First\n1.1. Child\n1.2. Next child\n2. Second\n2.1. Reset child\nRoman")
         self.assertEqual(document.disclosures, [{"code": "numbering_unsupported", "count": 1,
             "locators": ["word/document.xml/paragraph:6"]}])
+
+    def xlsx_bytes(self, workbook, cache=None):
+        output = io.BytesIO()
+        workbook.save(output)
+        if cache is None:
+            return output.getvalue()
+        with zipfile.ZipFile(io.BytesIO(output.getvalue())) as source:
+            files = {name: source.read(name) for name in source.namelist()}
+        files["xl/worksheets/sheet1.xml"] = files["xl/worksheets/sheet1.xml"].replace(b"<v></v>", f"<v>{cache}</v>".encode())
+        return self.archive(files)
+
+    def test_xlsx_cached_formula_sends_value_but_keeps_expression_for_security(self):
+        workbook = Workbook()
+        workbook.calculation = CalcProperties(fullCalcOnLoad=False)
+        sheet = workbook.active
+        sheet["A1"], sheet["B1"], sheet["C1"] = 2, 3, "=A1+B1"
+        sheet["A2"] = "Linked evidence"
+        sheet["A2"].hyperlink = "https://example.invalid/never-called"
+        document = self.extract("cached.xlsx", self.xlsx_bytes(workbook, cache=5))
+        self.assertEqual(document.status, "complete")
+        self.assertIn("=A1+B1", document.text)
+        self.assertEqual(document.fragments[0]["locator"], "sheet:Sheet/row:1/cells:A1-C1")
+        self.assertEqual(document.fragments[0]["text"], "A1: 2\tB1: 3\tC1: 5")
+        self.assertNotIn("=A1+B1", str(document.fragments))
+        self.assertIn("formula_expression_security_only", document.warnings)
+        self.assertIn("Linked evidence", document.text)
+        for full_calc, cache in ((False, None), (True, 5)):
+            workbook.calculation.fullCalcOnLoad = full_calc
+            partial = self.extract("uncertain.xlsx", self.xlsx_bytes(workbook, cache=cache))
+            self.assertEqual(partial.status, "partial")
+            self.assertIn("formula_coverage_unknown", partial.warnings)
+            self.assertIn("=A1+B1", partial.text)

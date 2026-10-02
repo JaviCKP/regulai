@@ -170,8 +170,8 @@ class DocumentTests(SimpleTestCase):
         document = self.extract("evidence.xlsx", output.getvalue())
         self.assertEqual(document.status, "complete")
         self.assertIn("Hidden restricted evidence", document.text)
-        cell = next(fragment for fragment in document.fragments if fragment["locator"] == "sheet:Evidence/cell:B3")
-        self.assertEqual(cell["text"], "Late evidence")
+        row = next(fragment for fragment in document.fragments if fragment["locator"] == "sheet:Evidence/row:3/cells:B3-B3")
+        self.assertEqual(row["text"], "B3: Late evidence")
         hidden["A2"] = '=WEBSERVICE("https://example.invalid/never-called")'
         output = io.BytesIO()
         workbook.save(output)
