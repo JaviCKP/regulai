@@ -1,6 +1,12 @@
 # 06. Elegir proveedor y modelo según tarea, calidad y coste
 
-**Estado:** pendiente. **Prioridad:** P1. **Depende de:** [05](05-clasificacion-documental.md). **Resultado:** la aplicación elige una alternativa autorizada y explica la elección; el ahorro se contrasta con una referencia real.
+**Estado:** integrado y probado localmente; calidad y ahorro reales pendientes. **Prioridad:** P1. **Depende de:** [05](05-clasificacion-documental.md). **Resultado:** la aplicación elige una alternativa autorizada y explica la elección; el ahorro se contrasta con una referencia real.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+front.test_routing; front.test_pipeline. Catálogo activo de la empresa, capacidades, calidad configurada, tarifas y presupuesto. Las calidades del banco son fixtures, no calibración.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Decisión principal
 
@@ -29,14 +35,14 @@ Si Jev falla como orientador de dificultad, puede usarse una ruta fija previamen
 
 ## Aceptación y pruebas
 
-- [ ] Con señales idénticas y catálogo idéntico, la ruta es reproducible.
-- [ ] Un modelo barato sin visión/contexto necesario o sin autorización nunca es elegido.
-- [ ] Un modelo de otra empresa o inactivo no puede seleccionarse por ID manual.
-- [ ] Una petición ambigua solicita aclaración cuando esa sea la política.
-- [ ] Precios ausentes, presupuesto agotado y ausencia de candidatos generan motivos distintos.
-- [ ] Con tarifas sintéticas conocidas, el coste coincide con un cálculo independiente.
-- [ ] El modelo efectivo se registra aunque el proveedor resuelva un alias.
-- [ ] La pérdida del orientador no evita los controles de seguridad.
+- [x] Con señales idénticas y catálogo idéntico, la ruta es reproducible.
+- [x] Un modelo barato sin visión/contexto necesario o sin autorización nunca es elegido.
+- [x] Un modelo de otra empresa o inactivo no puede seleccionarse por ID manual.
+- [x] Una petición ambigua solicita aclaración cuando esa sea la política.
+- [x] Precios ausentes, presupuesto agotado y ausencia de candidatos generan motivos distintos.
+- [x] Con tarifas sintéticas conocidas, el coste coincide con un cálculo independiente.
+- [x] El modelo efectivo se registra aunque el proveedor resuelva un alias.
+- [x] La pérdida del orientador no evita los controles de seguridad.
 
 ## Entrega y recuperación
 

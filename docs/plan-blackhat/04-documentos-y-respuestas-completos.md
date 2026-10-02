@@ -1,6 +1,12 @@
 # 04. Saber qué se ha leído y cuándo una respuesta quedó cortada
 
-**Estado:** pendiente. **Prioridad:** P0. **Depende de:** [03](03-flujo-unico-web-api.md). **Resultado:** el usuario distingue un documento analizado, uno parcialmente legible y uno que no pudo analizarse; una respuesta cortada no aparece como completa.
+**Estado:** implementado para formatos acotados, probado localmente. **Prioridad:** P0. **Depende de:** [03](03-flujo-unico-web-api.md). **Resultado:** el usuario distingue un documento analizado, uno parcialmente legible y uno que no pudo analizarse; una respuesta cortada no aparece como completa.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+front.test_documents; front.test_pipeline. TXT/MD/JSON/PY/JS, CSV, PDF textual, DOCX y XLSX. Límites de bytes, expansión, unidades, texto y proceso; sin recorte silencioso. Imágenes y XLS no admitidos; no hay OCR.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Problema concreto
 
@@ -27,12 +33,12 @@ Contabilizar instrucciones de sistema, historial elegible, pregunta, documento, 
 
 ## Aceptación y pruebas
 
-- [ ] Una evidencia después del carácter 10.000 se analiza o causa un límite explícito, nunca una falsa lectura completa.
-- [ ] PDF parcialmente escaneado, corrupto o cifrado: no se etiqueta como totalmente revisado.
-- [ ] Archivo con extensión falsa, expansión excesiva o formato `.xls`: rechazo controlado.
-- [ ] Los fragmentos conservan página, párrafo o celda sin mezclar documentos.
-- [ ] Un final por longitud se muestra como incompleto y no pasa la verificación del plan 07.
-- [ ] La misma extracción y cobertura se observan en web y API.
+- [x] Una evidencia después del carácter 10.000 se analiza o causa un límite explícito, nunca una falsa lectura completa.
+- [x] PDF parcialmente escaneado, corrupto o cifrado: no se etiqueta como totalmente revisado.
+- [x] Archivo con extensión falsa, expansión excesiva o formato `.xls`: rechazo controlado.
+- [x] Los fragmentos conservan página, párrafo o celda sin mezclar documentos.
+- [x] Un final por longitud se muestra como incompleto y no pasa la verificación del plan 07.
+- [x] La misma extracción y cobertura se observan en web y API.
 
 Usar archivos pequeños sintéticos, incluyendo un caso real de cada formato anunciado. No basta con simular que el extractor devuelve `complete`.
 

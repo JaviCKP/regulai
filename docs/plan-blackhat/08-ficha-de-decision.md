@@ -1,6 +1,12 @@
 # 08. Una ficha que explique cada decisión
 
-**Estado:** pendiente. **Prioridad:** P1. **Depende de:** [03](03-flujo-unico-web-api.md); ampliar al terminar 04–07. **Resultado:** debajo de la conversación se puede entender qué se decidió, por qué y cuánto costó, sin abrir logs internos.
+**Estado:** ficha y exportación implementadas; ficha comprobada en navegador y con teclado. **Prioridad:** P1. **Depende de:** [03](03-flujo-unico-web-api.md); ampliar al terminar 04–07. **Resultado:** debajo de la conversación se puede entender qué se decidió, por qué y cuánto costó, sin abrir logs internos.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+`front.test_chat_ui`; `front.test_pipeline`. Recibos filtrados sin decisión privada ni token, costes desconocidos explícitos, permisos de propietario y empresa actual. En navegador se comprobó `policy_configuration_invalid`/503 con cero llamadas. En demo se recorrieron saludo automático, bloqueo y contrato; este último tuvo dos generaciones/cinco llamadas simuladas y persistencia de ficha/cita al recargar. Cancelación y confirmación con archivo original comprobadas, sin duplicar el turno. Enter abrió el detalle de la ficha; Enter envió el mensaje y Espacio alternó la ruta automática. La apertura de citas con teclado permanece pendiente en 09. [Capturas y pendientes](estado-ejecucion.md).
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Primera versión visible
 
@@ -34,13 +40,13 @@ Validar el JSON en servidor y tolerar versiones anteriores al leer. Los clientes
 
 ## Aceptación y pruebas
 
-- [ ] Una petición bloqueada tiene motivo comprensible y cero coste de generación; un coste previo solo aparece si realmente ocurrió.
-- [ ] Una petición con escalado suma todos los intentos y juicios.
-- [ ] Un timeout no presenta gasto desconocido como gratuito.
-- [ ] Cambiar la tarifa actual no modifica fichas históricas.
-- [ ] Otra empresa no puede obtener la ficha ni su exportación mediante un ID.
-- [ ] Nombres de archivo y mensajes con HTML se muestran como texto.
-- [ ] La ficha se puede recorrer con teclado y coincide con la API.
+- [x] Una petición bloqueada tiene motivo comprensible y cero coste de generación; un coste previo solo aparece si realmente ocurrió.
+- [x] Una petición con escalado suma todos los intentos y juicios.
+- [x] Un timeout no presenta gasto desconocido como gratuito.
+- [x] Cambiar la tarifa actual no modifica fichas históricas.
+- [x] Otra empresa no puede obtener la ficha ni su exportación mediante un ID.
+- [x] Nombres de archivo y mensajes con HTML se muestran como texto.
+- [x] La ficha se abre con teclado; el contrato público de ficha/API se comprueba en tests.
 
 Verificar renderizando la interfaz; revisar solo el HTML no demuestra accesibilidad ni ausencia de problemas visuales. Comprobar el cálculo con tarifas sintéticas y resultados independientes.
 

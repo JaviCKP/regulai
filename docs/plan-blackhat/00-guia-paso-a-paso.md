@@ -1,6 +1,8 @@
 # Guía paso a paso: de los planes a una demo que funciona
 
-**Estado:** ejecución en curso; entorno y skills preparados. El [registro de ejecución](estado-ejecucion.md) indica comprobaciones reales y pendientes. **Fecha:** 2 de octubre de 2026. Leer junto al [índice](README.md) y la [investigación de skills](metodo-matt-pocock.md).
+**Estado:** secuencia original conservada como método; implementación local disponible. Para comandos actuales, usar [arranque y demo](arranque-y-demo.md); los resultados y pendientes están en el [registro de ejecución](estado-ejecucion.md). **Fecha:** 2 de octubre de 2026. Leer junto al [índice](README.md) y la [investigación de skills](metodo-matt-pocock.md).
+
+Las referencias posteriores a Django 4.2 y a trabajo por empezar describen el punto de partida. Actualmente hay 45 dependencias fijadas en la lista raíz, Django 5.2.17 y DRF 3.18.1. No repetir la preparación sobre datos existentes ni sustituir claves de cifrado.
 
 El orden es: preparar una base reproducible → cerrar los fallos de seguridad → comprobar la integración de Jev → implementar clasificación, selección y verificación → medir → ensayar. Terminar una entrega comprobable antes de abrir la siguiente.
 
@@ -36,7 +38,7 @@ Guardar el commit base en la primera tarea: permitirá distinguir cambios propio
 Preparar entorno virtual, configuración local y base de datos de desarrollo. La revisión analizada usa Django 4.2.28; para reproducirla, seleccionar un Python compatible, por ejemplo 3.12. Con ese intérprete disponible, desde la raíz:
 
 ```powershell
-rtk proxy py -3.12 -m venv .venv
+rtk proxy uv venv --python 3.12.11 .venv
 rtk proxy .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 

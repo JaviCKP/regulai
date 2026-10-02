@@ -1,6 +1,12 @@
 # 05. Clasificar sensibilidad con YARA y Jev antes de generar
 
-**Estado:** pendiente. **Prioridad:** P1. **Depende de:** [03](03-flujo-unico-web-api.md) y [04](04-documentos-y-respuestas-completos.md). **Resultado:** una decisión explicable sobre qué destinos pueden recibir el contenido, con bloqueo conservador cuando no se puede comprobar.
+**Estado:** integrado y probado con HTTP simulado; calibración real bloqueada. **Prioridad:** P1. **Depende de:** [03](03-flujo-unico-web-api.md) y [04](04-documentos-y-respuestas-completos.md). **Resultado:** una decisión explicable sobre qué destinos pueden recibir el contenido, con bloqueo conservador cuando no se puede comprobar.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+`front.test_jev`; `front.test_pipeline`. Señales validadas, control de destinos y política antes de cada llamada. Regresión de metadatos reproducida en rojo y corregida: se aceptan `provider_metadata`/`providerMetadata` con validación equivalente; discrepancias entre ambos se rechazan. Gateway respondió 403 en tres intentos reales; no hay evaluación semántica real aprobada. Suite final de 129 pruebas y [estado observado](estado-ejecucion.md).
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Papel de cada pieza
 
@@ -40,11 +46,11 @@ El texto del documento es entrada no confiable. Jev reconoce limitaciones frente
 
 ## Aceptación, datos y recuperación
 
-- [ ] Una credencial sintética bloqueada por YARA genera cero tráfico externo.
-- [ ] Una empresa sin autorización para TypeSafe no le envía datos.
-- [ ] Un documento con una orden de “ignorar las normas” no altera destinos ni permisos.
-- [ ] Las categorías ambiguas y los errores del proveedor detienen las comprobaciones obligatorias.
-- [ ] No existe contaminación de políticas o credenciales entre empresas.
-- [ ] Se registran versión de modelo, rúbrica, política, cobertura y coste de clasificación.
+- [x] Una credencial sintética bloqueada por YARA genera cero tráfico externo.
+- [x] Una empresa sin autorización para TypeSafe no le envía datos.
+- [x] Un documento con una orden de “ignorar las normas” no altera destinos ni permisos.
+- [x] Las categorías ambiguas y los errores del proveedor detienen las comprobaciones obligatorias.
+- [x] No existe contaminación de políticas o credenciales entre empresas.
+- [x] Se registran versión de modelo, rúbrica, política, cobertura y coste de clasificación.
 
 Migración aditiva de configuración y credencial; nuevos campos de control solo editables por administradores autorizados. Documentar casos permitidos, rechazados y abstenciones. Desactivar la parte semántica solo es válido para una política explícitamente local; no convertir una exigencia semántica fallida en permiso automático.

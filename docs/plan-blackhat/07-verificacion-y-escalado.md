@@ -1,6 +1,12 @@
 # 07. Verificar la respuesta y escalar una sola vez
 
-**Estado:** pendiente. **Prioridad:** P1. **Depende de:** [06](06-enrutamiento-modelos.md). **Resultado:** una respuesta que incumple criterios concretos puede regenerarse con una alternativa mejor evaluada; si sigue fallando, el sistema lo dice.
+**Estado:** integrado y probado con respuestas y juicios simulados. **Prioridad:** P1. **Depende de:** [06](06-enrutamiento-modelos.md). **Resultado:** una respuesta que incumple criterios concretos puede regenerarse con una alternativa mejor evaluada; si sigue fallando, el sistema lo dice.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+front.test_verification; front.test_pipeline. Modos local/advisory/enforce, respuesta cortada rechazada, cada intento verificado y máximo dos generaciones. Calibración factual de Jev pendiente.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Qué se verifica
 
@@ -29,14 +35,14 @@ No hacer streaming de una respuesta que deba superar una verificación previa: u
 
 ## Aceptación y pruebas
 
-- [ ] Una respuesta válida se entrega tras un único intento de generación.
-- [ ] Una respuesta plausible pero contradictoria con el documento provoca un segundo intento permitido.
-- [ ] Dos respuestas fallidas terminan sin tercero y sin etiqueta de éxito.
-- [ ] Una respuesta cortada falla aunque el juez la valore favorablemente.
-- [ ] Una pregunta incompleta puede pedir aclaración sin aumentar gasto en otro modelo.
-- [ ] Juez caído, JSON inválido o presupuesto insuficiente nunca producen `passed`.
-- [ ] La segunda ruta no recibe contenido si no está autorizada.
-- [ ] Los costes incluyen candidatos descartados y juicios de ambos intentos.
+- [x] Una respuesta válida se entrega tras un único intento de generación.
+- [x] Una respuesta plausible pero contradictoria con el documento provoca un segundo intento permitido.
+- [x] Dos respuestas fallidas terminan sin tercero y sin etiqueta de éxito.
+- [x] Una respuesta cortada falla aunque el juez la valore favorablemente.
+- [x] Una pregunta incompleta puede pedir aclaración sin aumentar gasto en otro modelo.
+- [x] Juez caído, JSON inválido o presupuesto insuficiente nunca producen `passed`.
+- [x] La segunda ruta no recibe contenido si no está autorizada.
+- [x] Los costes incluyen candidatos descartados y juicios de ambos intentos.
 
 Las pruebas deterministas utilizan respuestas externas prefijadas y casos con respuesta esperada humana. El benchmark posterior comprueba que el juez distingue errores reales; pasar tests de control de flujo no demuestra calidad semántica.
 

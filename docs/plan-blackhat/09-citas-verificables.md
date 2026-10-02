@@ -1,6 +1,12 @@
 # 09. Respuestas documentales con citas que se puedan comprobar
 
-**Estado:** pendiente. **Prioridad:** P1. **Depende de:** [04](04-documentos-y-respuestas-completos.md) y [07](07-verificacion-y-escalado.md). **Resultado:** una afirmación importante de una respuesta documental lleva a un fragmento real, con localización y respaldo comprobado.
+**Estado:** evidencias implementadas y probadas localmente; juicio real pendiente. **Prioridad:** P1. **Depende de:** [04](04-documentos-y-respuestas-completos.md) y [07](07-verificacion-y-escalado.md). **Resultado:** una afirmación importante de una respuesta documental lleva a un fragmento real, con localización y respaldo comprobado.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+`front.test_verification`; `front.test_chat_ui`; `front.test_pipeline`. IDs vinculados al documento, citas literales y localización validadas, evidencias solo del propietario y empresa actual. En navegador se abrió con clic la cita de la línea 2 que respalda los 10 euros del contrato y se comprobó persistencia al recargar; [captura](../../evals/reports/ui-2026-10-02/document-evidence.jpg). Confirmar el multipart conservó el archivo original y devolvió la misma evidencia, con un turno de usuario y uno de asistente. Una cita literal no demuestra por sí sola respaldo semántico; el juez se probó con fixtures. La verificación documental en vivo permanece bloqueada por el acceso Jev; abrir citas con teclado sigue sin comprobar porque la herramienta rechazó reabrir la URL local. La ficha sí se abrió con Enter.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Alcance pequeño
 
@@ -21,13 +27,14 @@ Si se necesita comprobar de nuevo una cita tras borrar el original, pedir que se
 
 ## Aceptación y pruebas
 
-- [ ] Cada ID de cita corresponde a una fuente de la petición actual.
-- [ ] Una página o un extracto inventados invalidan la respuesta documental.
-- [ ] Un texto literal real que no respalda la afirmación no basta para aprobarla.
-- [ ] No encontrar la respuesta en las fuentes produce abstención, no una cita decorativa.
-- [ ] Referencias con instrucciones, rutas externas o HTML se rechazan o muestran como texto inocuo.
-- [ ] Citas de otra empresa o conversación no pueden resolverse.
-- [ ] El usuario puede abrir las evidencias con teclado; API y web devuelven las mismas referencias.
+- [x] Cada ID de cita corresponde a una fuente de la petición actual.
+- [x] Una página o un extracto inventados invalidan la respuesta documental.
+- [x] Un texto literal real que no respalda la afirmación no basta para aprobarla.
+- [x] No encontrar la respuesta en las fuentes produce abstención, no una cita decorativa.
+- [x] Referencias con instrucciones, rutas externas o HTML se rechazan o muestran como texto inocuo.
+- [x] Citas de otra empresa o conversación no pueden resolverse.
+- [x] API y web devuelven las mismas referencias; la evidencia se abrió con clic y persistió tras recargar.
+- [ ] El usuario puede abrir las evidencias con teclado: comprobación bloqueada por la herramienta de navegador.
 
 Tests deterministas para resolución, permisos y formato; conjunto humano de afirmación/fuente para medir la verificación semántica. No usar exclusivamente el mismo juez como referencia de su propia calidad.
 

@@ -1,8 +1,10 @@
 # regulAI Community: plan de implementación para Black Hat
 
-**Estado: planes redactados; funcionalidades pendientes de implementar.** Revisión: 2 de octubre de 2026. Código analizado: [Regulai/platform, commit 6a0f667](https://github.com/Regulai/platform/tree/6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda). Las referencias al código describen esa revisión; hay que comprobarlas al empezar cada cambio.
+**Estado: implementación local y controles automatizados disponibles; calibración real de Jev, apertura de citas con teclado y ensayos humanos pendientes.** Revisión: 2 de octubre de 2026. Base original: [Regulai/platform, commit 6a0f667](https://github.com/Regulai/platform/tree/6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda). Las especificaciones originales se conservan; cada plan distingue la implementación de sus límites reales.
 
-**Empieza aquí:** [guía paso a paso](00-guia-paso-a-paso.md): preparación, instalación de skills, ciclo de trabajo, orden de implementación y primer prompt para el agente.
+**Empieza aquí:** [arranque, configuración y demo actuales](arranque-y-demo.md). Consulta el [estado observado](estado-ejecucion.md) y las [tareas locales](tareas/00-base.md). La [guía original](00-guia-paso-a-paso.md) conserva el método y la secuencia de implementación.
+
+El flujo compartido, historial autorizado, extracción acotada, Jev, router, verificación, ficha, citas y simulador tienen pruebas locales: 129 correctas en el entorno existente y en uno nuevo con 45 dependencias fijadas. Las tres escenas, consentimiento y simulador se comprobaron en navegador. El banco offline ejecutó 50 casos en tres configuraciones, con 150 controles correctos y cero salidas prohibidas. Sus respuestas y juicios son prefijados: **no mide calidad semántica ni ahorro real**. Una llamada DeepSeek sintética respondió `4` a `2 + 2`; tres intentos Jev mediante Gateway recibieron 403 por falta de acceso del nivel gratuito. Las instrucciones vigentes excluyen nuevas llamadas pagadas y compras automáticas. Véanse [resultados y pendientes](estado-ejecucion.md).
 
 ## Qué queremos enseñar
 
@@ -31,9 +33,11 @@ Cada documento incluye trabajo concreto, aceptación, pruebas y salida reversibl
 
 **Método de ejecución:** [skills y workflows de Matt Pocock](metodo-matt-pocock.md). Incluye nombres actuales, fuentes originales, adaptación a Django y un prompt para iniciar cada entrega.
 
+**Entregas locales:** [base](tareas/00-base.md), [envío seguro](tareas/01-envio-seguro.md), [documentos](tareas/02-documentos.md), [pipeline](tareas/03-pipeline.md), [ficha y evidencias](tareas/04-ficha-y-evidencias.md), [simulador](tareas/05-simulador.md), [evaluación offline](tareas/06-evaluacion-offline.md), [demo](tareas/07-demo.md) y [calibración real bloqueada](tareas/08-calibracion-real.md).
+
 Orden práctico: preparar los primeros casos de 11 → completar 01–04 → comprobar con un pequeño experimento que Jev encaja → 05–07 → terminar 08–09 → comparar y ensayar. La ficha 08 empieza sencilla junto a 03. Si falta tiempo, recortar 10 y formatos documentales; mantener seguridad y comprobaciones.
 
-## Qué está comprobado en el repositorio
+## Observaciones de la revisión original, antes de implementar
 
 | Observación por lectura de código | Consecuencia para el plan |
 | --- | --- |
@@ -47,7 +51,7 @@ Orden práctico: preparar los primeros casos de 11 → completar 01–04 → com
 | Los dos `requirements.txt` fijan Django 4.2.28, con otras diferencias entre ellos; el README anuncia otra versión | Establecer una instalación reproducible antes de implementar y verificar soporte antes de publicar |
 | [front/tests.py](../../regulai/front/tests.py) espera que `validate_prompt` cree una alerta, pero esa función devuelve coincidencias | Revisar la prueba con una ejecución inicial; esta observación estática no es un resultado de tests |
 
-No se ha ejecutado la aplicación ni un benchmark de proveedores para redactar estos planes. Los hallazgos de funcionamiento deben convertirse en reproducciones automatizadas durante la implementación.
+Esta tabla describe la base original, no el comportamiento actual. Los hallazgos se convirtieron en pruebas HTTP, de proveedores y de migración; el [registro actual](estado-ejecucion.md) recoge los resultados. La instalación actual usa una fuente única, Django 5.2.17 y DRF 3.18.1.
 
 ## Decisiones compartidas para evitar soluciones incompatibles
 

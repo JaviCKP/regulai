@@ -1,6 +1,12 @@
 # 01. Si falla la comprobación de seguridad, no sale información
 
-**Estado:** pendiente. **Prioridad:** P0. **Depende de:** nada. **Resultado:** un fallo de YARA, de lectura o de una comprobación obligatoria produce un error claro y cero envíos posteriores a servicios externos.
+**Estado:** implementado y probado localmente. **Prioridad:** P0. **Depende de:** nada. **Resultado:** un fallo de YARA, de lectura o de una comprobación obligatoria produce un error claro y cero envíos posteriores a servicios externos.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+front.test_chat_flow; front.test_pipeline. YARA inválida, lectura fallida y destino denegado detienen las tres entradas antes de enviar.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Por qué merece hacerse primero
 
@@ -26,12 +32,12 @@ No presentar una regla concreta como causante cuando lo que falló fue el sistem
 
 ## Aceptación y pruebas
 
-- [ ] Regla inválida y timeout: cero peticiones externas en web asíncrona, POST antiguo y API.
-- [ ] Si falla la lectura, no se usa el mensaje de error de extracción como si fuera el documento.
-- [ ] Un bloqueo local impide también llamar a Jev cuando se añada en el plan 05.
-- [ ] Un caso autorizado se envía una sola vez; una combinación `block` + `consent` queda bloqueada.
-- [ ] La ausencia autorizada de reglas y el fallo al cargarlas tienen resultados distintos.
-- [ ] El error no expone claves, documento ni configuración de otra empresa.
+- [x] Regla inválida y timeout: cero peticiones externas en web asíncrona, POST antiguo y API.
+- [x] Si falla la lectura, no se usa el mensaje de error de extracción como si fuera el documento.
+- [x] Un bloqueo local impide también llamar a Jev cuando se añada en el plan 05.
+- [x] Un caso autorizado se envía una sola vez; una combinación `block` + `consent` queda bloqueada.
+- [x] La ausencia autorizada de reglas y el fallo al cargarlas tienen resultados distintos.
+- [x] El error no expone claves, documento ni configuración de otra empresa.
 
 Comprobar en la frontera HTTP y en la frontera de red, usando el validador real cuando sea posible. La prueba actual de alertas no justifica mover creación de alertas dentro del evaluador: la orquestación conserva ese efecto.
 

@@ -7,9 +7,10 @@ El 2 de octubre de 2026, `pip-audit` detectó 96 avisos en 12 paquetes fijados e
 
 Comprobaciones realizadas:
 
-- Instalación de los 45 paquetes desde la lista única con `uv pip install --python .venv/Scripts/python.exe -r requirements.txt`.
-- Auditoría posterior: `uv tool run pip-audit -r requirements.txt`: **ninguna vulnerabilidad conocida encontrada**. Es el resultado de esa base de avisos en esa fecha, no una garantía de ausencia de vulnerabilidades.
+- Instalación inicial desde la lista única y sincronización exacta posterior de los 45 paquetes con `rtk proxy uv pip sync --python .venv/Scripts/python.exe requirements.txt`.
+- Auditoría posterior: `rtk proxy uv tool run pip-audit -r requirements.txt`: **ninguna vulnerabilidad conocida encontrada**. Es el resultado de esa base de avisos en esa fecha, no una garantía de ausencia de vulnerabilidades.
 - 45 pruebas de documentos sintéticos, conectores, Jev, selección, verificación y runtime: correctas tras las actualizaciones.
+- Comprobación final: 45 paquetes compatibles mediante `uv pip check`, 129 pruebas `front api` correctas en 19,891 s. Entorno nuevo `.claude/reproduction-venv-20261002`, creado con `uv venv --python 3.12.11` y sincronizado desde la misma lista: 129 pruebas correctas en 39,764 s, `check` sin incidencias y siembra de demo correcta. El lanzador `py -3.12` no funcionó en esta máquina; la guía utiliza uv.
 
 La auditoría se ejecuta mediante la caché aislada de herramientas de uv; no se instala globalmente ni forma parte de las dependencias de producción.
 

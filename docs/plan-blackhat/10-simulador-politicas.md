@@ -1,6 +1,14 @@
 # 10. Probar una política antes de activarla
 
-**Estado:** pendiente. **Prioridad:** P2; se puede posponer sin impedir la demo principal. **Depende de:** [05](05-clasificacion-documental.md) y [06](06-enrutamiento-modelos.md). **Resultado:** el administrador comprueba qué bloquearía o permitiría una propuesta, sin generar una respuesta ni cambiar la política vigente.
+**Estado:** simulador implementado y recorrido local en navegador comprobado. **Prioridad:** P2; se puede posponer sin impedir la demo principal. **Depende de:** [05](05-clasificacion-documental.md) y [06](06-enrutamiento-modelos.md). **Resultado:** el administrador comprueba qué bloquearía o permitiría una propuesta, sin generar una respuesta ni cambiar la política vigente.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+`front.test_policy_simulator`: 14 pruebas correctas. Borrador JSON/YARA temporal, señales explícitas que respetan el mínimo local de sensibilidad, reserva del coste de clasificación/jueces obligatorios, autorización semántica con política actual, una llamada Jev acotada y auditada, cero generador, activación separada con versión/digests. AuditLog de empresa conserva configuración y fuentes YARA antes/después para recuperación, sin muestra ni credenciales.
+
+En navegador se comparó una política interna con otra restringida en una empresa separada sin credenciales ni destinos: ambas bloquearon con sus motivos, sin clasificación semántica y con cero llamadas reales. La activación separada mostró éxito y revisión 2. Se comprobó en SQLite la auditoría con configuración anterior/revisión 1 y nueva/revisión 2, disponible para recuperación; no hubo intentos semánticos ni `Prompt`. [Captura](../../evals/reports/ui-2026-10-02/simulator-activated.jpg).
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Versión útil y pequeña
 
@@ -26,13 +34,13 @@ Una política de ejemplo no debe enviar datos restringidos para comprobar si la 
 
 ## Aceptación y pruebas
 
-- [ ] Mismo contenido, política y señales producen la misma decisión en simulación y ejecución real.
-- [ ] Una simulación no crea conversación, mensaje, respuesta ni alerta operativa.
-- [ ] Una regla inválida no se activa ni afecta a otros usuarios.
-- [ ] Un borrador más permisivo no autoriza una llamada Jev prohibida por la política vigente.
-- [ ] Una edición concurrente invalida la activación basada en una versión anterior.
-- [ ] El generador recibe cero llamadas en todos los modos del simulador.
-- [ ] Se indica si hubo consumo real, señales prefijadas o partes no evaluadas.
+- [x] Mismo contenido, política y señales producen la misma decisión en simulación y ejecución real.
+- [x] Una simulación no crea conversación, mensaje, respuesta ni alerta operativa.
+- [x] Una regla inválida no se activa ni afecta a otros usuarios.
+- [x] Un borrador más permisivo no autoriza una llamada Jev prohibida por la política vigente.
+- [x] Una edición concurrente invalida la activación basada en una versión anterior.
+- [x] El generador recibe cero llamadas en todos los modos del simulador.
+- [x] Se indica si hubo consumo real, señales prefijadas o partes no evaluadas.
 
 Las pruebas observan decisiones y ausencia de efectos externos. No basta comparar dos funciones que comparten el mismo error: incluir resultados esperados de casos revisados por una persona.
 

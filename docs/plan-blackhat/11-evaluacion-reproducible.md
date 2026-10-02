@@ -1,6 +1,12 @@
 # 11. Demostrar calidad y ahorro con una evaluación reproducible
 
-**Estado:** pendiente. **Prioridad:** P0 transversal. **Depende de:** los casos pueden prepararse ya; la comparación final necesita 05–09. **Resultado:** una tabla reproducible que diga dónde mejora el sistema, cuánto cuesta y qué sigue fallando.
+**Estado:** banco offline ejecutado; benchmark y calibración reales pendientes. **Prioridad:** P0 transversal. **Depende de:** los casos pueden prepararse ya; la comparación final necesita 05–09. **Resultado:** una tabla reproducible que diga dónde mejora el sistema, cuánto cuesta y qué sigue fallando.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+50 casos × economy/strong/router = 150 ejecuciones, 150 controles correctos y cero salidas prohibidas. Ver [informe final offline-2026-10-02-04](../../evals/reports/offline-2026-10-02-04/report.md), ejecutado tras los cambios finales y con hashes SHA-256 de los bytes exactos de los archivos probados; los seis coinciden con los archivos actuales. Los proveedores y jueces son prefijados; calidad y ahorro reales no medidos. `evaluate_ai --real` sigue desactivado.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Banco inicial: 50 casos pequeños
 
@@ -57,10 +63,10 @@ Cincuenta casos son un punto de partida y una prueba de concepto medible, no una
 
 ## Aceptación, documentación y recuperación
 
-- [ ] El modo sin red funciona sin credenciales y detecta los fallos de control previstos.
-- [ ] Mismo manifiesto produce resultados deterministas en simulación.
+- [x] El modo sin red funciona sin credenciales y detecta los fallos de control previstos.
+- [x] Mismo manifiesto produce resultados deterministas en simulación.
 - [ ] El modo real respeta presupuesto y registra toda llamada, también fallida o descartada.
-- [ ] Hay separación visible entre datos reales, simulados y reproducidos desde captura.
-- [ ] El informe permite localizar los casos que originan cada métrica.
+- [x] Hay separación visible entre datos reales, simulados y reproducidos desde captura.
+- [x] El informe permite localizar los casos que originan cada métrica.
 
 Documentar un comando reproducible, etiquetas, límites y resultados reales. No es necesario migrar producción ni desplegar servicios. Si no hay acceso o presupuesto para APIs, entregar regresiones y marcar la comparación real pendiente; nunca rellenar ahorros supuestos.

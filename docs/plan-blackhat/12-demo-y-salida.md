@@ -1,6 +1,14 @@
 # 12. Una demo breve, verificable y preparada para fallos
 
-**Estado:** pendiente. **Prioridad:** P1. **Depende de:** 01–09 y [11](11-evaluacion-reproducible.md); simulador opcional. **Resultado:** presentar tres mejoras comprensibles, con evidencias reales y una recuperación ensayada.
+**Estado:** demo aislada reproducida; tres escenas, consentimiento y simulador comprobados en navegador. Apertura de citas con teclado y dos ensayos humanos pendientes. **Prioridad:** P1. **Depende de:** 01–09 y [11](11-evaluacion-reproducible.md); simulador opcional. **Resultado:** presentar tres mejoras comprensibles, con evidencias reales y una recuperación ensayada.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+`run_demo` siembra una base separada y bloquea las conexiones HTTP/socket del servidor a proveedores; el navegador puede pedir glifos a Iconify. Instalación nueva en `.claude/reproduction-venv-20261002`, creada con uv/Python 3.12.11 y 45 paquetes fijados: `front api`, 129 pruebas correctas en 39,764 s; `check`, cero incidencias; siembra de demo correcta. Las tres escenas se prueban automáticamente en la suite. El recorrido de navegador usó el entorno original con la misma fuente de dependencias: saludo automático `Hola` con tres llamadas simuladas; bloqueo con cero llamadas; contrato con primer resultado erróneo de 900 euros rechazado, segundo resultado de 10 euros y cita en línea 2, dos generaciones/cinco llamadas simuladas y persistencia al recargar. No se atribuye este recorrido visual al entorno nuevo.
+
+Consentimiento: cero llamadas antes de confirmar; cancelar terminó en `cancelled` sin respuesta; confirmar conservó el archivo y un único turno de usuario/asistente. Simulador: comparación y activación local en otra empresa sin claves ni destinos, cero llamadas reales y revisión 2. Enter envió el mensaje y abrió la ficha; Espacio alternó la ruta automática. Abrir citas con teclado quedó sin comprobar por rechazo de URL de la herramienta. [Guion y recuperación](arranque-y-demo.md), [capturas y pendientes](estado-ejecucion.md). Los dos ensayos con otra persona están pendientes externos.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Guion propuesto: unos cinco minutos
 
@@ -24,9 +32,9 @@ Si sobra tiempo, enseñar el simulador del plan 10 con un falso positivo y su co
 
 ## Comprobación de publicación
 
-La aplicación revisada fija Django 4.2.28. El calendario oficial sitúa el fin del soporte extendido de la rama 4.2 en abril de 2026; la revisión de este plan es posterior. Antes de una publicación o despliegue público, abrir una entrega acotada para migrar a una rama soportada y comprobar compatibilidad de Django, DRF, middleware y dependencias. No mezclar esa actualización a ciegas con la construcción del router. [Calendario oficial de Django](https://www.djangoproject.com/download/#supported-versions).
+La base original fijaba Django 4.2.28; la implementación local actual usa Django 5.2.17 LTS y DRF 3.18.1. La compatibilidad se comprobó con la suite de 129 pruebas en el entorno existente y en otro recién creado. [Dependencias y auditoría](dependencias-verificadas.md).
 
-Comprobar también que la instalación documentada corresponde al repo actual: sus dos listas de dependencias difieren. El candidato de demo debe instalarse desde una fuente de dependencias definida y probarse en el entorno que se llevará a la presentación. Registrar el resultado, no solo que se ejecutó `pip install`.
+`requirements.txt` raíz fija los 45 paquetes; la lista interior remite a ella. Se reprodujo con `uv venv --python 3.12.11` y `uv pip sync`; `py -3.12` no está disponible en esta máquina. No hay despliegue ni publicación autorizados, por lo que comprobar una revisión desplegada queda fuera de esta entrega local.
 
 Esta comprobación de publicación no sustituye a la revisión de seguridad de los cambios, ni convierte el benchmark de 50 casos en una auditoría completa del producto.
 
@@ -38,15 +46,27 @@ Esta comprobación de publicación no sustituye a la revisión de seguridad de l
 - Una ficha real de decisión permitida para compartir y un ejemplo de bloqueo.
 - Tabla clara de capacidades Community y propuesta de evolución a Vigía13, sin atribuirle funciones no verificadas.
 
+| Capacidad | Community observada | Vigía13 propuesta, sin implementar aquí |
+| --- | --- | --- |
+| Seguridad y permisos | Bloqueo antes de cada destino, confirmaciones firmadas y ámbitos de empresa/propietario | Gobierno centralizado e integraciones corporativas |
+| Clasificación y ruta | YARA y cliente Jev, tres niveles de ruta, presupuesto/plazo por petición y una escalada; Jev real pendiente de acceso/calibración | Optimización adaptativa con histórico amplio y presupuestos organizativos avanzados |
+| Verificación y evidencia | Verificación obligatoria configurable, ficha/exportación y citas con fragmentos validados; calidad semántica real pendiente | Aprobaciones entre responsables |
+| Administración y evaluación | Empresas/roles, simulador local con activación auditada, banco offline reproducible y demo sintética aislada | Extensiones corporativas pendientes de decisión comercial |
+
+La columna Vigía13 recoge candidatos del [límite de producto](README.md#límite-propuesto-entre-community-y-vigía13), no capacidades verificadas de una edición existente. La seguridad básica permanece completa en Community; no se ha añadido ofuscación inteligente reversible.
+
 No prometer ahorro porcentual sin medición ni “respuestas siempre correctas”. La parte convincente es enseñar una decisión, su consecuencia y la evidencia que la respalda.
 
 ## Aceptación y recuperación
 
-- [ ] Las tres escenas funcionan desde una instalación reproducida siguiendo la guía.
-- [ ] El público puede distinguir directo, simulación y reproducción anterior.
-- [ ] Un fallo externo termina con explicación y sin envío prohibido.
-- [ ] La cuenta de demo no accede a datos, claves ni historial de producción.
-- [ ] Se conocen el coste máximo del ensayo y el gasto observado.
-- [ ] La revisión desplegada cumple los criterios de seguridad, pruebas y soporte acordados.
+- [x] Instalación reproducida siguiendo la guía y tres escenas en tests; recorrido visual en el entorno original con la misma fuente fijada.
+- [x] Banner y guion identifican simulación y reproducción; no se presenta como calidad de modelos reales.
+- [x] Los fallos de proveedor/validación se prueban con estado explícito y sin envío prohibido.
+- [x] La cuenta de demo usa base, medios y cookies propios, con identidad y credenciales sintéticas.
+- [x] Coste de demo simulado y registro de las pruebas reales previas separados; no se harán nuevas llamadas pagadas.
+- [ ] Apertura de citas con teclado: herramienta de navegador bloqueada.
+- [ ] Dos ensayos completos cronometrados con otra persona; incluida su comprensión de las etiquetas.
+
+Publicar o comprobar una revisión desplegada no forma parte del alcance autorizado.
 
 Recuperación: volver a la última revisión segura ensayada o usar la reproducción identificada. Mantener cerrada la salida de datos si no se puede validar. Después, revocar las credenciales temporales y retirar el entorno de demo que ya no se use, conservando únicamente los artefactos aprobados para compartir.

@@ -1,6 +1,12 @@
 # 02. Historial autorizado y confirmaciones que no se pueden saltar
 
-**Estado:** pendiente. **Prioridad:** P0. **Depende de:** [01](01-seguridad-ante-fallos.md). **Resultado:** bloquear un mensaje sigue protegiéndolo en el turno siguiente; confirmar una advertencia no duplica el envío ni permite cambiar el documento autorizado.
+**Estado:** implementado y probado localmente. **Prioridad:** P0. **Depende de:** [01](01-seguridad-ante-fallos.md). **Resultado:** bloquear un mensaje sigue protegiéndolo en el turno siguiente; confirmar una advertencia no duplica el envío ni permite cambiar el documento autorizado.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+front.test_state; front.test_access. Confirmación firmada, request_id estable, carrera de confirmaciones y migración legacy conservadora. Los mensajes legacy del propietario siguen visibles pero se excluyen del contexto.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Problema observado
 
@@ -35,14 +41,14 @@ Si se reutiliza un `request_id` con un contenido distinto, devolver conflicto; n
 
 ## Aceptación y pruebas
 
-- [ ] Bloquear A, enviar B y capturar su payload: no aparece A ni su respuesta asociada.
-- [ ] Un pendiente cancelado nunca forma parte del historial.
-- [ ] Una bandera `consent_confirmed` sin prueba válida no autoriza nada.
-- [ ] Reutilizar prueba en otra cuenta, archivo, empresa, política o destino falla.
-- [ ] Dos confirmaciones concurrentes producen como máximo un comienzo de generación.
-- [ ] Un doble clic devuelve la misma respuesta y no duplica mensajes ni alertas.
-- [ ] Una migración con conversaciones antiguas conserva su contenido sin autorizarlo.
-- [ ] Un timeout de resultado incierto no provoca un reenvío automático.
+- [x] Bloquear A, enviar B y capturar su payload: no aparece A ni su respuesta asociada.
+- [x] Un pendiente cancelado nunca forma parte del historial.
+- [x] Una bandera `consent_confirmed` sin prueba válida no autoriza nada.
+- [x] Reutilizar prueba en otra cuenta, archivo, empresa, política o destino falla.
+- [x] Dos confirmaciones concurrentes producen como máximo un comienzo de generación.
+- [x] Un doble clic devuelve la misma respuesta y no duplica mensajes ni alertas.
+- [x] Una migración con conversaciones antiguas conserva su contenido sin autorizarlo.
+- [x] Un timeout de resultado incierto no provoca un reenvío automático.
 
 Usar pruebas transaccionales de Django para la carrera real; una prueba secuencial no demuestra concurrencia. Probar el motor del despliegue, además de SQLite si corresponde.
 

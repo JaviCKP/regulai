@@ -1,6 +1,12 @@
 # 03. La misma política en la web y en la API
 
-**Estado:** pendiente. **Prioridad:** P0. **Depende de:** [01](01-seguridad-ante-fallos.md) y [02](02-historial-y-confirmaciones.md). **Resultado:** una petición equivalente obtiene la misma decisión y el mismo contexto, independientemente de cómo entre.
+**Estado:** implementado y probado localmente. **Prioridad:** P0. **Depende de:** [01](01-seguridad-ante-fallos.md) y [02](02-historial-y-confirmaciones.md). **Resultado:** una petición equivalente obtiene la misma decisión y el mismo contexto, independientemente de cómo entre.
+
+## Evidencia de implementación — 2 de octubre de 2026
+
+front.test_chat_flow; front.test_pipeline; front.test_connectors. Las tres entradas llaman al mismo servicio; se probaron también los límites HTTP/SDK y la conservación de descargas.
+
+Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Punto de partida
 
@@ -30,13 +36,13 @@ La autenticación REST observada vive en `/api/auth/login/`; no copiar ejemplos 
 
 ## Aceptación y pruebas
 
-- [ ] La misma matriz de casos pasa por las tres entradas y produce igual decisión.
-- [ ] Coincidir con una regla `consent` significa confirmar en las tres, sin rebajar una regla `block`.
-- [ ] Usuario A no utiliza conversación, credencial o estado de petición de empresa B.
-- [ ] Una escritura por CRUD no inyecta mensajes aprobados en el historial.
-- [ ] Los prompts de empresa y departamento llegan según un orden definido; comprobar también Anthropic, cuyo tratamiento de mensajes `system` debe conservar ambos.
-- [ ] No se pierden descargas de respuestas ni manejo de adjuntos ya soportados.
-- [ ] No quedan tres copias del envío ni consultas internas por HTTP.
+- [x] La misma matriz de casos pasa por las tres entradas y produce igual decisión.
+- [x] Coincidir con una regla `consent` significa confirmar en las tres, sin rebajar una regla `block`.
+- [x] Usuario A no utiliza conversación, credencial o estado de petición de empresa B.
+- [x] Una escritura por CRUD no inyecta mensajes aprobados en el historial.
+- [x] Los prompts de empresa y departamento llegan según un orden definido; comprobar también Anthropic, cuyo tratamiento de mensajes `system` debe conservar ambos.
+- [x] No se pierden descargas de respuestas ni manejo de adjuntos ya soportados.
+- [x] No quedan tres copias del envío ni consultas internas por HTTP.
 
 Probar HTTP real con cliente de Django y sustitutos de SDK/HTTP externos. La configuración del sustituto no debe reproducir el algoritmo que se está probando.
 
