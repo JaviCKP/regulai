@@ -1,0 +1,95 @@
+# regulAI Community: plan de implementación para Black Hat
+
+**Estado: planes redactados; funcionalidades pendientes de implementar.** Revisión: 2 de octubre de 2026. Código analizado: [Regulai/platform, commit 6a0f667](https://github.com/Regulai/platform/tree/6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda). Las referencias al código describen esa revisión; hay que comprobarlas al empezar cada cambio.
+
+**Empieza aquí:** [guía paso a paso](00-guia-paso-a-paso.md): preparación, instalación de skills, ciclo de trabajo, orden de implementación y primer prompt para el agente.
+
+## Qué queremos enseñar
+
+regulAI es una aplicación Django que permite conversar con distintos proveedores de IA bajo reglas de una organización. Ya tiene empresas, usuarios, motores, modelos, conversaciones, reglas YARA y alertas. La evolución propuesta añade una explicación verificable de tres decisiones: **qué información puede salir, qué modelo conviene utilizar y si la respuesta supera las comprobaciones exigidas**.
+
+La demostración debe permitir ver una consulta sencilla resuelta económicamente, un documento restringido detenido antes de enviarse y una respuesta defectuosa detectada y, cuando proceda, mejorada con un segundo modelo. Cada resultado tendrá un motivo y un coste conocido o declarado como desconocido. La mejora de calidad y ahorro se medirá: no se dará por supuesta.
+
+## Planes, prioridades y dependencias
+
+Cada documento incluye trabajo concreto, aceptación, pruebas y salida reversible. Los pasos internos son propuestas de entregas pequeñas; no hay que abrir doce frentes a la vez.
+
+| Plan | Resultado visible | Depende de | Prioridad |
+| --- | --- | --- | --- |
+| [01. Seguridad ante fallos](01-seguridad-ante-fallos.md) | Un error al comprobar seguridad impide enviar datos | Ninguno | P0 |
+| [02. Historial y confirmaciones](02-historial-y-confirmaciones.md) | Lo bloqueado o pendiente no reaparece en consultas posteriores | 01 | P0 |
+| [03. Un único flujo web/API](03-flujo-unico-web-api.md) | Las mismas decisiones desde todas las entradas | 01, 02 | P0 |
+| [04. Documentos y respuestas completos](04-documentos-y-respuestas-completos.md) | Se detectan lecturas parciales y respuestas cortadas | 03 | P0 |
+| [05. Clasificación YARA + Jev](05-clasificacion-documental.md) | Peligrosidad y acción explicadas, antes de la generación | 03, 04 | P1 |
+| [06. Enrutamiento por tarea y coste](06-enrutamiento-modelos.md) | Selección reproducible de proveedor y modelo autorizados | 05 | P1 |
+| [07. Verificación y escalado](07-verificacion-y-escalado.md) | Un fallo de calidad puede provocar un único segundo intento | 06 | P1 |
+| [08. Ficha de decisión](08-ficha-de-decision.md) | Riesgo, ruta, comprobaciones y coste visibles | 03; se amplía con 04–07 | P1 |
+| [09. Citas verificables](09-citas-verificables.md) | La respuesta documental permite abrir su evidencia | 04, 07 | P1 |
+| [10. Simulador de políticas](10-simulador-politicas.md) | Un administrador prueba una regla antes de activarla | 05, 06 | P2 |
+| [11. Evaluación reproducible](11-evaluacion-reproducible.md) | Comparación honesta de calidad, coste y latencia | Casos desde el inicio; comparación final tras 05–09 | P0 transversal |
+| [12. Demo y salida](12-demo-y-salida.md) | Tres recorridos ensayados y recuperación preparada | 01–09 y 11; 10 opcional | P1 |
+
+**Método de ejecución:** [skills y workflows de Matt Pocock](metodo-matt-pocock.md). Incluye nombres actuales, fuentes originales, adaptación a Django y un prompt para iniciar cada entrega.
+
+Orden práctico: preparar los primeros casos de 11 → completar 01–04 → comprobar con un pequeño experimento que Jev encaja → 05–07 → terminar 08–09 → comparar y ensayar. La ficha 08 empieza sencilla junto a 03. Si falta tiempo, recortar 10 y formatos documentales; mantener seguridad y comprobaciones.
+
+## Qué está comprobado en el repositorio
+
+| Observación por lectura de código | Consecuencia para el plan |
+| --- | --- |
+| [front/views.py](../../regulai/front/views.py) contiene `chat_view`, `chat_send_message` y `validate_prompt`; [api/views.py](../../regulai/api/views.py) añade otra implementación de envío | Hay tres entradas que cubrir, incluido el POST antiguo de la web |
+| En los envíos asíncrono y REST, excepciones de validación pueden terminar continuando hacia el proveedor | La primera entrega prueba y cierra ese comportamiento |
+| El historial se construye a partir de mensajes sin una decisión persistida de elegibilidad | `blocked=False` no demuestra que un mensaje pueda enviarse |
+| La web reconoce reglas `consent`, mientras REST bloquea las coincidencias | Debe existir una interpretación compartida de la política |
+| La web recorta a 10.000 caracteres el texto de archivo incluido en `full_content` | Hay que informar de cobertura y dejar de responder como si se hubiera leído todo; YARA sí recibe el texto extraído completo en ese recorrido |
+| [connectors.py](../../regulai/front/connectors.py) ya proporciona conectores OpenAI, Anthropic y OpenAI compatible, y devuelve `finish_reason` | Ampliar ese contrato; no crear otro framework de proveedores |
+| [models.py](../../regulai/front/models.py) ya tiene `Prompt`, `Response`, `EngineModel`, `CompanyEngine`, `Alert` y `AuditLog` | Ampliar lo existente; no duplicar entidades equivalentes |
+| Los dos `requirements.txt` fijan Django 4.2.28, con otras diferencias entre ellos; el README anuncia otra versión | Establecer una instalación reproducible antes de implementar y verificar soporte antes de publicar |
+| [front/tests.py](../../regulai/front/tests.py) espera que `validate_prompt` cree una alerta, pero esa función devuelve coincidencias | Revisar la prueba con una ejecución inicial; esta observación estática no es un resultado de tests |
+
+No se ha ejecutado la aplicación ni un benchmark de proveedores para redactar estos planes. Los hallazgos de funcionamiento deben convertirse en reproducciones automatizadas durante la implementación.
+
+## Decisiones compartidas para evitar soluciones incompatibles
+
+1. **Django sigue siendo la aplicación.** Un módulo de envío compartido, funciones concretas para decisiones y los conectores actuales. Sin microservicios, colas, nueva interfaz React, base vectorial ni motor de workflows para esta edición.
+2. **Las normas obligatorias las aplica Python.** Jev aporta señales; no puede desactivar un bloqueo, inventar un proveedor o concederse acceso a datos. `confidence` no es un porcentaje de verdad de la respuesta.
+3. **Control de salida antes de cada destino externo.** Incluye generador, Jev, juez y la integración de ofuscación ya presente si está habilitada. La ausencia de coincidencias YARA no equivale a permiso para enviar información a cualquiera.
+4. **Una petición, un registro principal.** Ampliar `Prompt` con identificador de petición, empresa de origen, estado, enlace al mensaje de usuario y metadatos de decisión versionados. `Response` se enlaza a su mensaje de asistente. El plan 02 introduce estos campos; 08 amplía su contenido sin crear otro sistema de trazas.
+5. **Un contrato común.** `PolicyDecision` distingue `allow`, `block`, `consent_required` y `unavailable`, con códigos de motivo y destinos permitidos. `ChatResult` separa estado de ejecución, decisión de seguridad y resultado de calidad. Usar tipos pequeños, no una jerarquía de clases.
+6. **Configuración concreta por empresa.** Ampliar `Company` con una configuración de IA versionada y validada en servidor; reutilizar el campo cifrado existente para la credencial de Jev. No guardar claves en JSON ni incorporar un lenguaje de reglas nuevo. Los modelos siguen en `EngineModel` y las credenciales de generación en `CompanyEngine`.
+7. **Dos intentos de generación como máximo.** La configuración impone además presupuesto y plazo total. Cada petición externa se registra; ningún reintento del SDK puede quedar oculto. Un resultado incierto no se etiqueta como verificado.
+8. **Datos mínimos.** Las trazas guardan motivos, identificadores, versiones y cantidades, no documentos, claves ni razonamientos privados del modelo. El contenido de conversación y las citas autorizadas conservan sus propios permisos y política de borrado.
+
+Las llamadas de red se hacen fuera de transacciones largas. Para evitar dobles envíos se usan restricciones únicas y actualizaciones condicionales de estado; SQLite no proporciona bloqueo de filas mediante `select_for_update()`. Véanse las referencias de Django del plan 02.
+
+## Vocabulario que utilizaremos
+
+| Término | Significado |
+| --- | --- |
+| Sensibilidad | Qué exposición tendría el contenido al salir de la organización |
+| Autorización de salida | Permiso de la organización para enviar ese contenido a un destino concreto |
+| Confirmación | Aceptación por el usuario de una advertencia permitida por la política; nunca levanta un bloqueo obligatorio |
+| Dificultad | Estimación de la capacidad necesaria para la tarea, distinta de su sensibilidad |
+| Ruta | Proveedor y modelo elegidos entre los disponibles y autorizados |
+| Verificación | Comprobaciones concretas superadas; no garantía universal de exactitud |
+| Escalado | Segundo intento con una alternativa cuya mejora para esa tarea tenga evidencia |
+| Cobertura | Qué páginas, fragmentos o partes pudieron analizarse y cuáles no |
+
+## Límite propuesto entre Community y Vigía13
+
+**Community:** seguridad básica completa, proveedores configurables, clasificación y tres niveles de ruta, una escalada, evidencias, simulación sencilla y evaluación reproducible. Se conservan las funciones existentes de empresas, roles y administración.
+
+**Candidatos para Vigía13:** optimización adaptativa con histórico amplio, presupuestos organizativos avanzados, aprobaciones entre responsables, integración corporativa y gobierno centralizado. Esta división es una propuesta de producto, pendiente de decisión comercial; no describe capacidades verificadas de Vigía13.
+
+Queda excluida la nueva ofuscación inteligente reversible solicitada por el usuario. No se ampliará ni eliminará gratuitamente la integración de enmascarado que ya aparece en el código. La seguridad fundamental no se reserva para una edición superior.
+
+## Condición de terminado de cada entrega
+
+- Un comportamiento observable funciona de extremo a extremo y tiene una prueba que habría detectado su fallo.
+- Las entradas web y API afectadas respetan permisos, empresa, límites y errores explícitos.
+- Las migraciones conservan datos y no convierten registros antiguos en autorizaciones nuevas.
+- La documentación explica configuración, ejemplo, limitaciones y recuperación; no quedan `TODO` en el camino crítico.
+- El diff elimina duplicación que sustituye, conserva contratos necesarios y no añade infraestructura especulativa.
+- Se anotan los comandos ejecutados y sus resultados reales. Una función marcada como pendiente no se presenta como implementada.
+
+“Sin deuda técnica” se traduce aquí en estos criterios y en límites explícitos. Nadie puede prometer ausencia permanente de deuda; sí evitar atajos conocidos en seguridad y dejar cada entrega mantenible.
