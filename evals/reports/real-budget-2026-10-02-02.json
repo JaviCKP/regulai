@@ -1,0 +1,105 @@
+{
+  "cap_usd": "1",
+  "known_cost_usd": "0.000086946",
+  "uncertain_reservations_usd": "0.03",
+  "calls": [
+    {
+      "id": "d295e066-1b8e-4bc0-9564-a8c9c8067ba2",
+      "at": "2026-10-02T18:34:52.289547+00:00",
+      "purpose": "generation",
+      "reserved": "0.05",
+      "status": "completed",
+      "cost": "0.00000870",
+      "metadata": {
+        "kind": "peak_tariff_upper_estimate",
+        "model": "deepseek-flash",
+        "input_tokens": 25,
+        "output_tokens": 1
+      }
+    },
+    {
+      "id": "a1c0e11f-4eaf-4310-b50f-29a4788a3ef0",
+      "at": "2026-10-02T18:34:53.773189+00:00",
+      "purpose": "jev",
+      "reserved": "0.01",
+      "status": "outcome_unknown",
+      "cost": null,
+      "metadata": {}
+    },
+    {
+      "id": "99673fa1-47eb-4ae5-9e43-23be8d4e2087",
+      "at": "2026-10-02T18:36:30.524068+00:00",
+      "purpose": "jev",
+      "reserved": "0.01",
+      "status": "outcome_unknown",
+      "cost": null,
+      "metadata": {
+        "error_code": "http_403"
+      }
+    },
+    {
+      "id": "27da421e-9f30-4fdc-b42c-eab2c76289d9",
+      "at": "2026-10-02T18:37:10.150271+00:00",
+      "purpose": "jev_diagnostic",
+      "reserved": "0.01",
+      "status": "outcome_unknown",
+      "cost": null,
+      "metadata": {
+        "status": 403,
+        "diagnostic": "{\"error\":{\"message\":\"Free tier users do not have access to this model. Upgrade to paid credits at https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dtop-up for unrestricted access.\",\"type\":\"no_providers_available\",\"param\":{\"error\":\"Free tier users do not have access to this model. Upgrade to paid credits at https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dtop-up for unrestricted access.\",\"type\":\"no_providers_available\",\"statusCode\":403,\"name\":\"RestrictedModelsError\",\"message\":\"Free tier users do not have access to this model. Upgrade to paid credits at https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dtop-up for unrestricted access.\"}},\"providerMetadata\":{\"gateway\":{\"routing\":{\"originalModelId\":\"typesafe-ai/jev\",\"resolvedProvider\":\"typesafe-ai\",\"fallbacksAvailable\":[],\"canonicalSlug\":\"typesafe-ai/jev\",\"modelAttemptCount\":1,\"modelAttempts\":[{\"canonicalSlug\":\"typesafe-ai/jev\",\"success\":false,\"providerAttemptCount\":0,\"providerAttempts\":[]}],\"totalProviderAttemptCount\":0},\"generationId\":\"gen_01M3YYFWRVVTTB8RRWEK4P4JDQ\"}}}"
+      }
+    },
+    {
+      "id": "4910b047-a9f5-4fc4-b584-c1b0e6c9c681",
+      "at": "2026-10-02T21:09:25.090041+00:00",
+      "purpose": "jev",
+      "reserved": "0.01",
+      "status": "completed",
+      "cost": "0.000038514",
+      "metadata": {
+        "kind": "gateway_reported",
+        "model": "typesafe-ai/jev",
+        "input_tokens": 917,
+        "output_tokens": 251
+      }
+    },
+    {
+      "id": "113205fe-8b73-4ee1-9e7e-cbf6d0d871ef",
+      "at": "2026-10-02T21:11:43.523287+00:00",
+      "purpose": "jev_verification_component",
+      "reserved": "0.01",
+      "status": "completed",
+      "cost": "0.000019866",
+      "metadata": {
+        "kind": "gateway_reported",
+        "model": "typesafe-ai/jev",
+        "input_tokens": 473,
+        "output_tokens": 62
+      }
+    },
+    {
+      "id": "aa2ab320-6bfc-42c1-8cf9-ad443f72aaea",
+      "at": "2026-10-02T21:11:44.200136+00:00",
+      "purpose": "jev_verification_component",
+      "reserved": "0.01",
+      "status": "completed",
+      "cost": "0.000019866",
+      "metadata": {
+        "kind": "gateway_reported",
+        "model": "typesafe-ai/jev",
+        "input_tokens": 473,
+        "output_tokens": 62
+      }
+    }
+  ],
+  "note": "Latest snapshot after the explicitly authorized retest. Gateway reports the three new charges; earlier DeepSeek cost remains a peak-tariff estimate. Earlier uncertain reservations are retained.",
+  "at": "2026-10-02T21:13:25.910200+00:00",
+  "jev_access_diagnostic": {
+    "status": "resolved",
+    "successful_calls_this_retest": 3,
+    "new_gateway_reported_cost_usd": "0.000078246",
+    "pipeline_document_status": "classification_ambiguous",
+    "component_verification_expected_results": "2/2",
+    "full_pipeline_and_calibration": "not_verified"
+  }
+}

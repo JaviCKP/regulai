@@ -6,6 +6,8 @@
 
 front.test_verification; front.test_pipeline. Modos local/advisory/enforce, respuesta cortada rechazada, cada intento verificado y máximo dos generaciones. Calibración factual de Jev pendiente.
 
+Ensayo real de componente autorizado: el juez aceptó una afirmación de 17 días y rechazó otra de 30 días frente a una fuente de 17 días, conservando las preguntas y el umbral de producción. [Dos casos y costes](../../evals/reports/real-jev-verification-2026-10-02-01/report.json). Las respuestas se redactaron previamente; no demuestra generación ni escalado en vivo ni sustituye la calibración.
+
 Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
 ## Qué se verifica

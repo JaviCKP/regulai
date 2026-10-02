@@ -66,7 +66,7 @@ Ejemplo de **un candidato**, con IDs de muestra que deben sustituirse por filas 
 {"company_engine_id": 101, "model_id": 201, "level": "economy", "quality": {"general": 0.5}}
 ```
 
-El ID 101 sería de `CompanyEngine`; 201 sería de `EngineModel` del mismo motor. El simulador revalida pertenencia y actividad. El valor de calidad anterior es ilustrativo, no calibrado. Para semántica requerida, también hacen falta permiso real hacia Jev, acceso de cuenta, tarifas y límite contractual por llamada. Esta cuenta Gateway devuelve 403: no usar esa ruta en vivo ni comprar créditos automáticamente.
+El ID 101 sería de `CompanyEngine`; 201 sería de `EngineModel` del mismo motor. El simulador revalida pertenencia y actividad. El valor de calidad anterior es ilustrativo, no calibrado. Para semántica requerida, también hacen falta permiso real hacia Jev, acceso de cuenta, tarifas y límite contractual por llamada. El acceso Gateway se comprobó tras la nueva autorización del usuario: tres llamadas Jev correctas. El flujo documental se detuvo por clasificación ambigua; la calibración y la comprobación completa en vivo siguen pendientes. No comprar créditos automáticamente ni confundir esta comprobación con la demo offline.
 
 La activación del simulador es un POST separado tras revisar la comparación. Revalida el borrador y comprueba versión/digests de política y reglas. Una edición concurrente o prueba expirada exige repetir la comparación.
 
@@ -87,4 +87,4 @@ El comando acepta SQLite en memoria, ejecuta 50 casos en tres configuraciones y 
 3. Error de proveedor o validación: mantener el estado explícito y la salida cerrada; usar la demo offline rotulada. No saltarse comprobaciones ni repetir automáticamente un resultado incierto.
 4. Cambio de código/esquema: conservar una copia consistente de SQLite y settings antes de migrar. Volver a una revisión solo con su esquema y copia compatibles; no ejecutar una migración destructiva sobre la única base. Las claves de cifrado deben conservarse para leer credenciales existentes.
 
-No hay despliegue autorizado. El presupuesto real de pruebas era 1 USD; una estimación DeepSeek de 0,00000870 USD y reservas Jev inciertas de 0,03 USD están documentadas en el [estado](estado-ejecucion.md). No confundir esas reservas con cobro confirmado o con llamadas gratuitas.
+No hay despliegue autorizado. El presupuesto real conjunto de pruebas es 1 USD. Tras la repetición autorizada, el [registro actualizado](../../evals/reports/real-budget-2026-10-02-02.json) suma 0,000086946 USD conocidos (incluye la estimación DeepSeek de 0,00000870 USD) y mantiene reservas inciertas de 0,03 USD. No confundir esas reservas con cobro confirmado o con llamadas gratuitas. [Alcance y pendientes](estado-ejecucion.md).

@@ -4,7 +4,7 @@
 
 **Empieza aquí:** [arranque, configuración y demo actuales](arranque-y-demo.md). Consulta el [estado observado](estado-ejecucion.md) y las [tareas locales](tareas/00-base.md). La [guía original](00-guia-paso-a-paso.md) conserva el método y la secuencia de implementación.
 
-El flujo compartido, historial autorizado, extracción acotada, Jev, router, verificación, ficha, citas y simulador tienen pruebas locales: 129 correctas en el entorno existente y en uno nuevo con 45 dependencias fijadas. Las tres escenas, consentimiento y simulador se comprobaron en navegador. El banco offline ejecutó 50 casos en tres configuraciones, con 150 controles correctos y cero salidas prohibidas. Sus respuestas y juicios son prefijados: **no mide calidad semántica ni ahorro real**. Una llamada DeepSeek sintética respondió `4` a `2 + 2`; tres intentos Jev mediante Gateway recibieron 403 por falta de acceso del nivel gratuito. Las instrucciones vigentes excluyen nuevas llamadas pagadas y compras automáticas. Véanse [resultados y pendientes](estado-ejecucion.md).
+El flujo compartido, historial autorizado, extracción acotada, Jev, router, verificación, ficha, citas y simulador tienen pruebas locales: 129 correctas en el entorno existente y en uno nuevo con 45 dependencias fijadas. Las tres escenas, consentimiento y simulador se comprobaron en navegador. El banco offline ejecutó 50 casos en tres configuraciones, con 150 controles correctos y cero salidas prohibidas. Sus respuestas y juicios son prefijados: **no mide calidad semántica ni ahorro real**. Una llamada DeepSeek sintética respondió `4` a `2 + 2`. Tras tres 403 históricos, la repetición autorizada confirmó acceso real a Jev: una clasificación válida pero ambigua detuvo la generación, y el juez distinguió dos afirmaciones sintéticas correcta/incorrecta. El flujo documental completo y la calibración siguen pendientes. No se compraron créditos automáticamente. Véanse [resultados y pendientes](estado-ejecucion.md).
 
 ## Qué queremos enseñar
 
@@ -33,7 +33,7 @@ Cada documento incluye trabajo concreto, aceptación, pruebas y salida reversibl
 
 **Método de ejecución:** [skills y workflows de Matt Pocock](metodo-matt-pocock.md). Incluye nombres actuales, fuentes originales, adaptación a Django y un prompt para iniciar cada entrega.
 
-**Entregas locales:** [base](tareas/00-base.md), [envío seguro](tareas/01-envio-seguro.md), [documentos](tareas/02-documentos.md), [pipeline](tareas/03-pipeline.md), [ficha y evidencias](tareas/04-ficha-y-evidencias.md), [simulador](tareas/05-simulador.md), [evaluación offline](tareas/06-evaluacion-offline.md), [demo](tareas/07-demo.md) y [calibración real bloqueada](tareas/08-calibracion-real.md).
+**Entregas locales:** [base](tareas/00-base.md), [envío seguro](tareas/01-envio-seguro.md), [documentos](tareas/02-documentos.md), [pipeline](tareas/03-pipeline.md), [ficha y evidencias](tareas/04-ficha-y-evidencias.md), [simulador](tareas/05-simulador.md), [evaluación offline](tareas/06-evaluacion-offline.md), [demo](tareas/07-demo.md) y [calibración real pendiente](tareas/08-calibracion-real.md).
 
 Orden práctico: preparar los primeros casos de 11 → completar 01–04 → comprobar con un pequeño experimento que Jev encaja → 05–07 → terminar 08–09 → comparar y ensayar. La ficha 08 empieza sencilla junto a 03. Si falta tiempo, recortar 10 y formatos documentales; mantener seguridad y comprobaciones.
 

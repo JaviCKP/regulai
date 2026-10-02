@@ -42,15 +42,21 @@ Banco final [offline-2026-10-02-04](../../evals/reports/offline-2026-10-02-04/re
 
 La regresión de metadatos Jev se reprodujo en rojo y pasó tras aceptar `provider_metadata` y `providerMetadata` con la misma validación; si ambos aparecen y discrepan, se rechaza la respuesta. No se convierten metadatos inválidos en uso/coste de confianza.
 
-## Pruebas reales acotadas y límite de cuenta
+## Pruebas reales acotadas y calibración pendiente
 
-Presupuesto histórico conjunto autorizado: **1 USD**, con registro persistente `.claude/real-provider-budget.sqlite3`. Las instrucciones vigentes excluyen nuevas llamadas pagadas, compra de créditos y recargas automáticas. No se harán nuevas llamadas reales Jev.
+Presupuesto conjunto autorizado: **1 USD**, con registro persistente `.claude/real-provider-budget.sqlite3`. El usuario autorizó la repetición («venga prueba ahora») como excepción puntual a la prohibición general de nuevas llamadas pagadas, manteniendo ese límite. No se compraron créditos ni se hicieron recargas automáticas.
 
 Una llamada sintética DeepSeek resolvió `2 + 2` como `4`: 25 tokens de entrada y uno de salida, estimación superior con tarifa punta **0,00000870 USD**. Es una comprobación de integración y contabilidad, no un benchmark. [Informe real 01](../../evals/reports/real-smoke-2026-10-02-01/report.json).
 
-Tres intentos Gateway/Jev devolvieron HTTP 403. El diagnóstico explícito fue «Free tier users do not have access to this model. Upgrade to paid credits…», con `providerAttempts: 0`. Que el catálogo enumere el modelo no demuestra acceso de la cuenta. La contabilidad conserva **0,03 USD de reservas inciertas** y no las convierte en gasto confirmado ni en cero. El [export final seguro de presupuesto](../../evals/reports/real-budget-2026-10-02.json) conserva límite de 1 USD, estimación conocida de 0,00000870 USD y reservas de 0,03 USD. Los informes reales 01/02 recogen los dos primeros intentos; el tercero fue diagnóstico de acceso. [Contrato y resultado Gateway](jev-gateway.md).
+Los tres intentos Gateway/Jev iniciales devolvieron HTTP 403: «Free tier users do not have access to this model. Upgrade to paid credits…», con `providerAttempts: 0`. Los informes reales 01/02 recogen los dos primeros; el tercero fue diagnóstico de acceso. El [export histórico](../../evals/reports/real-budget-2026-10-02.json) conserva esa evidencia y **0,03 USD de reservas inciertas**, que no se convierten en gasto confirmado ni en cero.
 
-Quedan bloqueados externamente: calibración real de sensibilidad y jueces, comparación real de economy/strong/router, ahorro observado y respuesta documental con citas verificada de extremo a extremo en vivo. Los umbrales y calidades sintéticos no se publican como calibración.
+En el [smoke real 03](../../evals/reports/real-smoke-2026-10-02-03/report.json), Jev completó la clasificación sin 403: **917 tokens de entrada/251 de salida**, coste comunicado por Gateway **0,000038514 USD**. La categoría obtuvo confianza **0,49 < 0,8** y el pipeline devolvió `classification_ambiguous` antes de generar: respuesta documental entregada **0/1**. Se restauró la configuración. El acceso está resuelto; la clasificación necesita revisión y calibración, sin rebajar umbrales.
+
+El [ensayo real de verificación de componente](../../evals/reports/real-jev-verification-2026-10-02-01/report.json) aceptó una afirmación de 17 días y rechazó otra de 30 frente a la misma fuente sintética de 17 días (**2/2 expectativas**). Usó las tres preguntas de producción, umbral **0,8**, con `noul` de omisión/contradicción/afirmación **0,13/0,05/0,03** para la correcta y **0,67/0,98/0,98** para la falsa. Cada llamada: **473 tokens de entrada/62 de salida**, **0,000019866 USD** comunicado por Gateway. Se enviaron estados y respuestas prefijadas solo a Jev, sin DeepSeek, generación ni clasificación del pipeline; no es un recorrido de extremo a extremo ni una calibración.
+
+Las tres nuevas llamadas suman **0,000078246 USD**; el [snapshot actualizado de presupuesto](../../evals/reports/real-budget-2026-10-02-02.json) registra **0,000086946 USD** conocidos (incluida la estimación DeepSeek anterior) y **0,03 USD** inciertos, dentro del límite de 1 USD. [Contrato y resultados Gateway](jev-gateway.md).
+
+Siguen pendientes la calibración real de sensibilidad y jueces con casos representativos y conjunto humano reservado, comparación de economy/strong/router, ahorro observado y respuesta documental con citas verificada de extremo a extremo en vivo. El impedimento actual es de verificación/calibración, no el 403 inicial. Los dos casos de componente y los umbrales/calidades sintéticos no demuestran calidad general ni ahorro real.
 
 ## Navegador y demo
 

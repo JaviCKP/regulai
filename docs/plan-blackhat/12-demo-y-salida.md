@@ -63,7 +63,7 @@ No prometer ahorro porcentual sin medición ni “respuestas siempre correctas�
 - [x] Banner y guion identifican simulación y reproducción; no se presenta como calidad de modelos reales.
 - [x] Los fallos de proveedor/validación se prueban con estado explícito y sin envío prohibido.
 - [x] La cuenta de demo usa base, medios y cookies propios, con identidad y credenciales sintéticas.
-- [x] Coste de demo simulado y registro de las pruebas reales previas separados; no se harán nuevas llamadas pagadas.
+- [x] Coste de demo simulado y registro de pruebas reales separados; las pruebas reales requieren autorización explícita y respetan el presupuesto conjunto.
 - [ ] Apertura de citas con teclado: herramienta de navegador bloqueada.
 - [ ] Dos ensayos completos cronometrados con otra persona; incluida su comprensión de las etiquetas.
 

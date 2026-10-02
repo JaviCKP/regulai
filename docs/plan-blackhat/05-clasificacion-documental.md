@@ -4,7 +4,7 @@
 
 ## Evidencia de implementación — 2 de octubre de 2026
 
-`front.test_jev`; `front.test_pipeline`. Señales validadas, control de destinos y política antes de cada llamada. Regresión de metadatos reproducida en rojo y corregida: se aceptan `provider_metadata`/`providerMetadata` con validación equivalente; discrepancias entre ambos se rechazan. Gateway respondió 403 en tres intentos reales; no hay evaluación semántica real aprobada. Suite final de 129 pruebas y [estado observado](estado-ejecucion.md).
+`front.test_jev`; `front.test_pipeline`. Señales validadas, control de destinos y política antes de cada llamada. Regresión de metadatos reproducida en rojo y corregida: se aceptan `provider_metadata`/`providerMetadata` con validación equivalente; discrepancias entre ambos se rechazan. Tras tres 403 históricos, la repetición autorizada obtuvo una clasificación real válida; su confianza 0,49 quedó por debajo del umbral 0,8 y el flujo se detuvo sin generar. El acceso funciona; la sensibilidad sigue sin calibrar. [Informe real 03](../../evals/reports/real-smoke-2026-10-02-03/report.json), suite final de 129 pruebas y [estado observado](estado-ejecucion.md).
 
 Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
