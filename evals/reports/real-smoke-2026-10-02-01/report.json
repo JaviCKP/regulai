@@ -1,0 +1,263 @@
+{
+  "at": "2026-10-02T18:34:55.410587+00:00",
+  "mode": "real_synthetic_smoke",
+  "models_are_mutable_aliases": true,
+  "quality_values_are_fixture_not_calibration": true,
+  "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+  "results": [
+    {
+      "case": "blocked",
+      "request_id": "8e66dd9e-4d4d-4335-8ffb-35b194768048",
+      "status": "blocked",
+      "score_exact": true,
+      "error": "local_rule_block",
+      "synthetic_response": "",
+      "receipt": {
+        "schema_version": 1,
+        "policy": {
+          "status": "block",
+          "reason_codes": [
+            "local_rule_block"
+          ],
+          "sensitivity": "unknown",
+          "allowed_destinations": [],
+          "rules": [
+            {
+              "id": 1,
+              "name": "Synthetic credential block",
+              "severity": "medium",
+              "description": "",
+              "action": "block"
+            }
+          ],
+          "fingerprint": ""
+        },
+        "calls": [],
+        "total": {
+          "known_cost": "0",
+          "cost": "0",
+          "currency": "USD",
+          "complete": true,
+          "cost_status": "estimated",
+          "attempts": 0,
+          "duration_ms": 16
+        }
+      },
+      "evidence": null
+    },
+    {
+      "case": "arithmetic",
+      "request_id": "d4172e18-4792-41d0-bdfa-66e2c7b359a9",
+      "status": "completed",
+      "score_exact": true,
+      "error": null,
+      "synthetic_response": "4",
+      "receipt": {
+        "schema_version": 1,
+        "policy": {
+          "status": "allow",
+          "reason_codes": [
+            "local_policy_allowed"
+          ],
+          "sensitivity": "internal",
+          "allowed_destinations": [
+            "engine:1",
+            "jev"
+          ],
+          "rules": [],
+          "fingerprint": "a95614a897530c398a378f900734deff88e0cc36dcbe2baae14357f0b7dbc5cb"
+        },
+        "route": {
+          "mode": "manual",
+          "company_engine_id": 1,
+          "model": "deepseek-flash",
+          "task": "general",
+          "level": "economy",
+          "quality": 0.5,
+          "reason_codes": [
+            "quality_cost_route"
+          ],
+          "input_tokens_bound": 329
+        },
+        "calls": [
+          {
+            "purpose": "generation",
+            "provider": "engine:1",
+            "model": "deepseek-flash",
+            "status": "completed",
+            "cost": "0.00000870",
+            "cost_bound": "0.00071310",
+            "price_snapshot": {
+              "input_price": "0.30000000",
+              "output_price": "1.20000000",
+              "currency": "USD",
+              "price_date": "2026-10-02"
+            },
+            "currency": "USD",
+            "duration_ms": 2047,
+            "model_effective": "deepseek-flash",
+            "input_tokens": 25,
+            "output_tokens": 1,
+            "provider_request_id": "f4546eb2-6828-4b61-a795-aafa120b72ab",
+            "usage": {
+              "completion_tokens": 1,
+              "prompt_tokens": 25,
+              "total_tokens": 26,
+              "prompt_cache_hit_tokens": 0,
+              "prompt_cache_miss_tokens": 25
+            },
+            "verification": {
+              "status": "passed",
+              "local_status": "passed",
+              "finish_reason": "complete",
+              "checks": [
+                {
+                  "code": "nonempty",
+                  "status": "passed"
+                },
+                {
+                  "code": "completion",
+                  "status": "passed",
+                  "reason": "complete"
+                }
+              ],
+              "mode": "local",
+              "rubric_version": "verification-v1",
+              "scope": "format_and_completion",
+              "attempt": 1
+            }
+          }
+        ],
+        "verification": {
+          "status": "passed",
+          "local_status": "passed",
+          "finish_reason": "complete",
+          "checks": [
+            {
+              "code": "nonempty",
+              "status": "passed"
+            },
+            {
+              "code": "completion",
+              "status": "passed",
+              "reason": "complete"
+            }
+          ],
+          "mode": "local",
+          "rubric_version": "verification-v1",
+          "scope": "format_and_completion",
+          "attempt": 1
+        },
+        "total": {
+          "known_cost": "0.00000870",
+          "cost": "0.00000870",
+          "currency": "USD",
+          "complete": true,
+          "cost_status": "estimated",
+          "attempts": 1,
+          "duration_ms": 2110
+        }
+      },
+      "evidence": {
+        "schema_version": 1,
+        "items": []
+      }
+    },
+    {
+      "case": "document",
+      "request_id": "fb9f98d9-3a6b-47f9-912a-1aa21272f8b7",
+      "status": "failed",
+      "score_exact": false,
+      "error": "security_check_failed",
+      "synthetic_response": "",
+      "receipt": {
+        "schema_version": 1,
+        "policy": {
+          "status": "allow",
+          "reason_codes": [
+            "local_policy_allowed"
+          ],
+          "sensitivity": "internal",
+          "allowed_destinations": [
+            "engine:1",
+            "jev"
+          ],
+          "rules": [],
+          "fingerprint": "81d9a9ea49c0e30290a53d0bcfb40429f18fa6accb1e1e0fc7cb0e435e251f73"
+        },
+        "coverage": {
+          "extractor_version": "1",
+          "digest": "dfff6ec8743890615ef4d9ae8bab0f0e9a8bcc6cf5c887676f4461eeb8738a9a",
+          "format": "txt",
+          "status": "complete",
+          "units_read": 1,
+          "units_total": 1,
+          "warnings": [],
+          "file_name": "synthetic-contract.txt",
+          "file_size": 53,
+          "fragment_hashes": [
+            "e766afd165f9fb772361a3ae286097f20e28385a8dc2baf760724c5fa488b019"
+          ]
+        },
+        "calls": [
+          {
+            "purpose": "classification",
+            "provider": "jev",
+            "model": "typesafe-ai/jev",
+            "status": "failed",
+            "cost": null,
+            "cost_bound": "0.01",
+            "price_snapshot": {
+              "input_price": ".042",
+              "output_price": "0",
+              "currency": "USD",
+              "price_date": "2026-10-02"
+            },
+            "currency": "USD",
+            "duration_ms": 1610
+          }
+        ],
+        "total": {
+          "known_cost": "0",
+          "cost": null,
+          "currency": "USD",
+          "complete": false,
+          "cost_status": "incomplete",
+          "attempts": 0,
+          "duration_ms": 1641
+        }
+      },
+      "evidence": null
+    }
+  ],
+  "budget": {
+    "cap_usd": "1",
+    "known_cost_usd": "0.00000870",
+    "uncertain_reservations_usd": "0.01",
+    "calls": [
+      {
+        "id": "d295e066-1b8e-4bc0-9564-a8c9c8067ba2",
+        "at": "2026-10-02T18:34:52.289547+00:00",
+        "purpose": "generation",
+        "reserved": "0.05",
+        "status": "completed",
+        "cost": "0.00000870",
+        "metadata": {
+          "kind": "peak_tariff_upper_estimate",
+          "model": "deepseek-flash",
+          "input_tokens": 25,
+          "output_tokens": 1
+        }
+      },
+      {
+        "id": "a1c0e11f-4eaf-4310-b50f-29a4788a3ef0",
+        "at": "2026-10-02T18:34:53.773189+00:00",
+        "purpose": "jev",
+        "reserved": "0.01",
+        "status": "outcome_unknown",
+        "cost": null,
+        "metadata": {}
+      }
+    ]
+  }
+}

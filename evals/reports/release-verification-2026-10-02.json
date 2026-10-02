@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-02",
+  "runtime_commit": "cfa29fa",
+  "branch": "codex/community-blackhat",
+  "python": "3.12.11",
+  "django": "5.2.17",
+  "djangorestframework": "3.18.1",
+  "requirements_source": "requirements.txt",
+  "pinned_packages": 45,
+  "full_test_command": "regulai/manage.py test front api --settings=regulai.test_settings",
+  "tests": [
+    {"environment": ".venv", "passed": 129, "seconds": 19.891},
+    {"environment": ".claude/reproduction-venv-20261002", "passed": 129, "seconds": 39.764}
+  ],
+  "reproduction": {
+    "create": "uv venv --python 3.12.11 .claude/reproduction-venv-20261002",
+    "install": "uv pip sync --python .claude/reproduction-venv-20261002/Scripts/python.exe requirements.txt",
+    "django_check": "passed",
+    "demo_seed_only": "passed; existing data retained",
+    "bootstrap_repeat": "existing local settings preserved"
+  },
+  "migration_check": "passed on normal isolated local database",
+  "makemigrations_dry_run": "no changes detected",
+  "pip_check": "45 installed packages compatible",
+  "dependency_audit": "0 known vulnerabilities after update; not proof of absence",
+  "offline_report": "offline-2026-10-02-04/report.md",
+  "offline_runs": 150,
+  "offline_failed_controls": 0,
+  "offline_real_calls": 0,
+  "real_budget_report": "real-budget-2026-10-02.json",
+  "ui_report": "ui-2026-10-02/README.md",
+  "unverified": [
+    "Real Jev calibration and document verification: Vercel account returns 403 for free-tier model access; new paid calls are not authorized.",
+    "Keyboard activation inside citation detail: browser tool URL policy blocked reopening the tab after session reset.",
+    "Two timed rehearsals with another person: no person available."
+  ],
+  "excluded": ["push", "deployment", "publication", "new reversible intelligent obfuscation"]
+}

@@ -1,0 +1,60 @@
+{
+  "cap_usd": "1",
+  "known_cost_usd": "0.00000870",
+  "uncertain_reservations_usd": "0.03",
+  "calls": [
+    {
+      "id": "d295e066-1b8e-4bc0-9564-a8c9c8067ba2",
+      "at": "2026-10-02T18:34:52.289547+00:00",
+      "purpose": "generation",
+      "reserved": "0.05",
+      "status": "completed",
+      "cost": "0.00000870",
+      "metadata": {
+        "kind": "peak_tariff_upper_estimate",
+        "model": "deepseek-flash",
+        "input_tokens": 25,
+        "output_tokens": 1
+      }
+    },
+    {
+      "id": "a1c0e11f-4eaf-4310-b50f-29a4788a3ef0",
+      "at": "2026-10-02T18:34:53.773189+00:00",
+      "purpose": "jev",
+      "reserved": "0.01",
+      "status": "outcome_unknown",
+      "cost": null,
+      "metadata": {}
+    },
+    {
+      "id": "99673fa1-47eb-4ae5-9e43-23be8d4e2087",
+      "at": "2026-10-02T18:36:30.524068+00:00",
+      "purpose": "jev",
+      "reserved": "0.01",
+      "status": "outcome_unknown",
+      "cost": null,
+      "metadata": {
+        "error_code": "http_403"
+      }
+    },
+    {
+      "id": "27da421e-9f30-4fdc-b42c-eab2c76289d9",
+      "at": "2026-10-02T18:37:10.150271+00:00",
+      "purpose": "jev_diagnostic",
+      "reserved": "0.01",
+      "status": "outcome_unknown",
+      "cost": null,
+      "metadata": {
+        "status": 403,
+        "diagnostic": "{\"error\":{\"message\":\"Free tier users do not have access to this model. Upgrade to paid credits at https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dtop-up for unrestricted access.\",\"type\":\"no_providers_available\",\"param\":{\"error\":\"Free tier users do not have access to this model. Upgrade to paid credits at https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dtop-up for unrestricted access.\",\"type\":\"no_providers_available\",\"statusCode\":403,\"name\":\"RestrictedModelsError\",\"message\":\"Free tier users do not have access to this model. Upgrade to paid credits at https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dtop-up for unrestricted access.\"}},\"providerMetadata\":{\"gateway\":{\"routing\":{\"originalModelId\":\"typesafe-ai/jev\",\"resolvedProvider\":\"typesafe-ai\",\"fallbacksAvailable\":[],\"canonicalSlug\":\"typesafe-ai/jev\",\"modelAttemptCount\":1,\"modelAttempts\":[{\"canonicalSlug\":\"typesafe-ai/jev\",\"success\":false,\"providerAttemptCount\":0,\"providerAttempts\":[]}],\"totalProviderAttemptCount\":0},\"generationId\":\"gen_01M3YYFWRVVTTB8RRWEK4P4JDQ\"}}}"
+      }
+    }
+  ],
+  "note": "DeepSeek cost is an upper estimate from observed usage and 2026-10-02 peak tariff; Vercel unsuccessful calls retain their reservation because billing was not returned.",
+  "jev_access_diagnostic": {
+    "http_status": 403,
+    "reason": "Free tier users do not have access to this model. Paid credits required by provider.",
+    "provider_attempt_count": 0,
+    "action": "No credit purchase or further real calls."
+  }
+}

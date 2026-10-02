@@ -55,42 +55,26 @@ User sends prompt ──▶ YARA Validation ──▶ Approved? ──▶ AI Pro
 
 **Complete Audit Trail** — Detailed logging of all interactions: who, what, when, and from where. Investigate and resolve security incidents from the dashboard.
 
-**File Scanning** — Analyze uploaded documents (PDF, Word, Excel, images) for sensitive content using the same rule engine.
+**File Scanning** — Analyze bounded text, textual PDF, DOCX, XLSX and CSV documents. Coverage checks stop incomplete extraction; images and legacy XLS require a readable supported document.
 
 **Multi-Tenant Architecture** — Independent data isolation per organization with separate rules, users, and configurations.
 
 ## Quick Start
 
-```bash
-git clone https://github.com/framirez/regulai.git
-cd regulai
+Community's current local workflow, configuration and recovery are documented in [the startup guide](docs/plan-blackhat/arranque-y-demo.md). From this repository on Windows, with `uv` installed, create `.venv` only if it does not already exist:
 
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-pip install -r requirements.txt
-cd regulai
-
-# Copy and edit local settings before running
-cp regulai/local_settings_template.py regulai/local_settings.py
-# Edit regulai/local_settings.py — update values marked with #CHANGE:
-
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
+```powershell
+rtk proxy uv venv --python 3.12.11 .venv
+rtk proxy uv pip sync --python .venv/Scripts/python.exe requirements.txt
+rtk proxy .venv/Scripts/python.exe regulai/manage.py run_demo --settings=regulai.demo_settings
 ```
 
-Open [localhost:8000](http://localhost:8000) and log in with your superuser credentials.
+Open [the isolated local demo](http://127.0.0.1:8001/login/): `community-demo` / `community-demo-only`. Provider responses and judges are simulated, clearly labelled, and isolated from normal startup. The server blocks outbound provider connections; browser icons may still use external assets. See [verified results and remaining checks](docs/plan-blackhat/estado-ejecucion.md).
 
 <details>
 <summary><strong>Initial Configuration</strong></summary>
 
-1. Access the admin panel at [localhost:8000/admin](http://localhost:8000/admin)
-2. Create a **Company** for your organization
-3. Add an **AI Engine** (OpenAI, Anthropic, or custom)
-4. Link the engine to your company with an **API key**
-5. Create **YARA rule groups** and add detection patterns
-6. Create user profiles and assign roles
+For normal local operation, follow the [startup and configuration guide](docs/plan-blackhat/arranque-y-demo.md). It preserves existing settings and encryption keys. Global catalogue/Django admin access requires an active staff superuser whose ID is explicitly listed in `PLATFORM_ADMIN_USER_IDS`; company administrators retain company-scoped access. Configure an owned provider, active model metadata, rules and an explicit AI policy before sending. The [example policy](docs/plan-blackhat/ai-config-example.json) starts with no outbound permission and contains no secrets.
 
 </details>
 
@@ -135,9 +119,9 @@ rule CreditCardNumber {
   <img src="https://regulai.a0.digital/img/screenshot-alerts.PNG" width="700" alt="Security Alerts Dashboard">
 </p>
 
-**Obfuscation** — Rules with `obfuscate="true"` metadata automatically redact matched content, replacing sensitive data before sending to the AI provider.
+**Existing masking integration** — Configured masking hooks are subject to the same explicit destination checks and request limits. New reversible intelligent obfuscation is outside this implementation.
 
-**File Scanning** — Uploaded documents (PDF, DOCX, XLSX, images) are scanned for sensitive content using the same rule engine.
+**File Scanning** — Extracted text from supported PDF, DOCX, XLSX, CSV and text files is checked by the shared policy engine, with explicit extraction coverage.
 
 ## Chat Interface
 
@@ -145,10 +129,10 @@ rule CreditCardNumber {
   <img src="https://regulai.a0.digital/img/screenshot-chat.PNG" width="700" alt="Secure AI Chat">
 </p>
 
-Modern chat UI with file uploads, vision-capable models, conversation history, and on-the-fly model switching.
+Chat UI with bounded document uploads, authorized conversation history, explicit confirmations, decision receipts and model selection.
 
-- Attach images, PDFs, Word documents, and Excel files
-- Send images to vision models for analysis
+- Attach supported text, PDF, DOCX, CSV and XLSX documents
+- Inspect coverage and retained citations; reattach originals for later document questions
 - Switch between AI models within a conversation
 - Persistent chat history with easy navigation
 

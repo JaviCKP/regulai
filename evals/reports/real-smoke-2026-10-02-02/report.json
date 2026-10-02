@@ -1,0 +1,116 @@
+{
+  "at": "2026-10-02T18:36:31.235485+00:00",
+  "mode": "real_synthetic_smoke",
+  "models_are_mutable_aliases": true,
+  "quality_values_are_fixture_not_calibration": true,
+  "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+  "results": [
+    {
+      "case": "document",
+      "request_id": "70acf9e8-5ad7-4061-b3c9-b92ebf694e4c",
+      "status": "failed",
+      "score_exact": false,
+      "error": "security_check_failed",
+      "synthetic_response": "",
+      "receipt": {
+        "schema_version": 1,
+        "policy": {
+          "status": "allow",
+          "reason_codes": [
+            "local_policy_allowed"
+          ],
+          "sensitivity": "internal",
+          "allowed_destinations": [
+            "engine:1",
+            "jev"
+          ],
+          "rules": [],
+          "fingerprint": "c0eaddc162b1a78a795dd7998e500f93f982b25036d4b869c082529b786e37a3"
+        },
+        "coverage": {
+          "extractor_version": "1",
+          "digest": "dfff6ec8743890615ef4d9ae8bab0f0e9a8bcc6cf5c887676f4461eeb8738a9a",
+          "format": "txt",
+          "status": "complete",
+          "units_read": 1,
+          "units_total": 1,
+          "warnings": [],
+          "file_name": "synthetic-contract.txt",
+          "file_size": 53,
+          "fragment_hashes": [
+            "e766afd165f9fb772361a3ae286097f20e28385a8dc2baf760724c5fa488b019"
+          ]
+        },
+        "calls": [
+          {
+            "purpose": "classification",
+            "provider": "jev",
+            "model": "typesafe-ai/jev",
+            "status": "failed",
+            "cost": null,
+            "cost_bound": "0.01",
+            "price_snapshot": {
+              "input_price": ".042",
+              "output_price": "0",
+              "currency": "USD",
+              "price_date": "2026-10-02"
+            },
+            "currency": "USD",
+            "duration_ms": 688
+          }
+        ],
+        "total": {
+          "known_cost": "0",
+          "cost": null,
+          "currency": "USD",
+          "complete": false,
+          "cost_status": "incomplete",
+          "attempts": 0,
+          "duration_ms": 734
+        }
+      },
+      "evidence": null
+    }
+  ],
+  "budget": {
+    "cap_usd": "1",
+    "known_cost_usd": "0.00000870",
+    "uncertain_reservations_usd": "0.02",
+    "calls": [
+      {
+        "id": "d295e066-1b8e-4bc0-9564-a8c9c8067ba2",
+        "at": "2026-10-02T18:34:52.289547+00:00",
+        "purpose": "generation",
+        "reserved": "0.05",
+        "status": "completed",
+        "cost": "0.00000870",
+        "metadata": {
+          "kind": "peak_tariff_upper_estimate",
+          "model": "deepseek-flash",
+          "input_tokens": 25,
+          "output_tokens": 1
+        }
+      },
+      {
+        "id": "a1c0e11f-4eaf-4310-b50f-29a4788a3ef0",
+        "at": "2026-10-02T18:34:53.773189+00:00",
+        "purpose": "jev",
+        "reserved": "0.01",
+        "status": "outcome_unknown",
+        "cost": null,
+        "metadata": {}
+      },
+      {
+        "id": "99673fa1-47eb-4ae5-9e43-23be8d4e2087",
+        "at": "2026-10-02T18:36:30.524068+00:00",
+        "purpose": "jev",
+        "reserved": "0.01",
+        "status": "outcome_unknown",
+        "cost": null,
+        "metadata": {
+          "error_code": "http_403"
+        }
+      }
+    ]
+  }
+}
