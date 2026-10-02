@@ -4,6 +4,8 @@
 
 **Empieza aquí:** [arranque, configuración y demo actuales](arranque-y-demo.md). Consulta el [estado observado](estado-ejecucion.md) y las [tareas locales](tareas/00-base.md). La [guía original](00-guia-paso-a-paso.md) conserva el método y la secuencia de implementación.
 
+Para explicar la entrega a un equipo de ingeniería: [informe técnico del antes, los cambios, las decisiones y los pendientes](C:/Users/javi/Documents/Codex/regulai-platform/docs/plan-blackhat/informe-tecnico-cambios.md), comparando `6a0f667` con `4b10778`.
+
 El flujo compartido, historial autorizado, extracción acotada, Jev, router, verificación, ficha, citas y simulador tienen pruebas locales: 129 correctas en el entorno existente y en uno nuevo con 45 dependencias fijadas. Las tres escenas, consentimiento y simulador se comprobaron en navegador. El banco offline ejecutó 50 casos en tres configuraciones, con 150 controles correctos y cero salidas prohibidas. Sus respuestas y juicios son prefijados: **no mide calidad semántica ni ahorro real**. Una llamada DeepSeek sintética respondió `4` a `2 + 2`. Tras tres 403 históricos, la repetición autorizada confirmó acceso real a Jev: una clasificación válida pero ambigua detuvo la generación, y el juez distinguió dos afirmaciones sintéticas correcta/incorrecta. El flujo documental completo y la calibración siguen pendientes. No se compraron créditos automáticamente. Véanse [resultados y pendientes](estado-ejecucion.md).
 
 ## Qué queremos enseñar
