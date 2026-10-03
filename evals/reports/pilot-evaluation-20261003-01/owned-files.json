@@ -1,0 +1,380 @@
+{
+  "note": "Exact C-owned file list. Inventory excludes itself to avoid recursive hashing. No git add/commit by C.",
+  "files": [
+    {
+      "path": "docs/plan-blackhat/ejecucion-real-y-calibracion-piloto.md",
+      "sha256": "356ce0bd94b2c4320c281908b684cf712604a6e7d0bc6c4eff92ad4fd80fa80c",
+      "bytes": 13303
+    },
+    {
+      "path": "docs/plan-blackhat/tareas/23-recorrido-real.md",
+      "sha256": "f13fb7f9357cc00d9e2b93d661429d550a79f900e08de0a6edb9b4cb2d54fb4b",
+      "bytes": 1922
+    },
+    {
+      "path": "docs/plan-blackhat/tareas/24-calibracion-humana.md",
+      "sha256": "07d55840b6d00802b138730a59247754a2701c3b85b8e8c5fae387df718c67d5",
+      "bytes": 2002
+    },
+    {
+      "path": "evals/pilot-human/cases.jsonl",
+      "sha256": "97b43a6452e05a7301d6b4354ab263074e5e73955620fd19ffad2b383f7e7c18",
+      "bytes": 8408
+    },
+    {
+      "path": "evals/pilot-human/development-labels.pending.jsonl",
+      "sha256": "b5595817e8f385ca378d0e965db73e53b9d17837a961bb07df7ffa4bd7d34825",
+      "bytes": 2030
+    },
+    {
+      "path": "evals/pilot-human/manifest.json",
+      "sha256": "4879ab40d339ccd3905d306ce93cb4b8ac635e95274eddcba6751b834538ef7c",
+      "bytes": 5925
+    },
+    {
+      "path": "evals/pilot-human/README.md",
+      "sha256": "cb39ff410174e0b38266f01e3ed40d4eb228ff9cdd0f64aa3f05ae43d9de1130",
+      "bytes": 2058
+    },
+    {
+      "path": "evals/pilot-human/reserved-labels.pending.jsonl",
+      "sha256": "0c2d46eff373aa50219e5dea9882e5c335f91bfa64c3e43555873288fa685d7e",
+      "bytes": 2098
+    },
+    {
+      "path": "evals/pilot-human/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+      "bytes": 3565
+    },
+    {
+      "path": "evals/pilot-real/authorization.pending.json",
+      "sha256": "d90b0d968358b0b040e5a194b53eb57989be64b251fe875e4b26a2fc369a6438",
+      "bytes": 1256
+    },
+    {
+      "path": "evals/pilot-real/cases.jsonl",
+      "sha256": "63e1754f6f6c3fdedc859a16f428ff7e6a21737c1091c1e7553ecf1daa1015f1",
+      "bytes": 2764
+    },
+    {
+      "path": "evals/pilot-real/manifest.json",
+      "sha256": "70086f93362e76e2110b8c67db2f703d6d53b43c53b7cb23c91da8963bcd0200",
+      "bytes": 5534
+    },
+    {
+      "path": "evals/pilot-real/README.md",
+      "sha256": "54f43e0cd5efaca3abd767073a8d3218091a1e8a0419a0938c578aee2fb9251c",
+      "bytes": 1191
+    },
+    {
+      "path": "evals/pilot-real/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+      "bytes": 3565
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/audit.json",
+      "sha256": "f6501a4893942029f98e7f4969c3d2a1a42be241756dac67674d3c719a579410",
+      "bytes": 585
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/checkpoint.md",
+      "sha256": "18af06adea7ad0b6f1774778ce60b129d76a740c07b5403cf0dbb513363338f8",
+      "bytes": 1644
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/gates.json",
+      "sha256": "649bf278c22fd0c942bdb8b323fab267159ab9a161240d17583fe125d17bb1e9",
+      "bytes": 2178
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/budget.json",
+      "sha256": "fb36c6d245775fedfcf260f281dfd0c02daaeccb7b3cf8618608d3fc9b9624d7",
+      "bytes": 168230
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/cases.executed.jsonl",
+      "sha256": "38efefef17d07ba94db25c32186ca238b7521e35d34b3562cf51163ec7b3c075",
+      "bytes": 8431
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/completed-cases.jsonl",
+      "sha256": "c5db5d0a18557fa2404143facecee048099bd88ef74d5c19b44c8d5aed6b226f",
+      "bytes": 518275
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/human-review.pending.json",
+      "sha256": "69ed76026d5e72a4981f789d7954f0ec58f61653cd190db4389145943cceeaed",
+      "bytes": 42506
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/manifest.json",
+      "sha256": "b0693aed5b04dcc392f9761118e6764e58719689a3c1906ef151f4cd5102b59c",
+      "bytes": 17947
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/plan.json",
+      "sha256": "a39ca5848a9c10ad38e5a64e8e599bf1ee524558a26e5692cf54f4a5f6803694",
+      "bytes": 13067
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/report.md",
+      "sha256": "d6e0794e16c27a730d2e88bb0174c62ca2d3349957c70af55ae346ec32e0b108",
+      "bytes": 1525
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/results.jsonl",
+      "sha256": "c5db5d0a18557fa2404143facecee048099bd88ef74d5c19b44c8d5aed6b226f",
+      "bytes": 518275
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+      "bytes": 3565
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/summary.csv",
+      "sha256": "fdd34f74bff22d6d26d239c018bcbde53ad1fb6ba8b1a3f5a85048610b12f8e7",
+      "bytes": 5183
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline/summary.json",
+      "sha256": "8fbf1109eca2600890c296a97a151958a5bd437ba4923369ed3d72d2cb4aad48",
+      "bytes": 14657
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/budget.json",
+      "sha256": "fca9c801f98dd594ef99b725ef99fe5b92b3ae5bc3015e271cccc67a009c5f6f",
+      "bytes": 168230
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/cases.executed.jsonl",
+      "sha256": "38efefef17d07ba94db25c32186ca238b7521e35d34b3562cf51163ec7b3c075",
+      "bytes": 8431
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/completed-cases.jsonl",
+      "sha256": "08120b2b747d81fd30118967fc9e21e3fb3449f9024a8c793d16eb7b8e037e9f",
+      "bytes": 518273
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/human-review.pending.json",
+      "sha256": "23f645bb2f663b1b56f43b1364b8fddb6f3ffed7551df6c2b582899d5475c3b9",
+      "bytes": 42506
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/manifest.json",
+      "sha256": "2d72fe3c86c7505c95569853c0beb1919c42a6166df40f24cef812cc35e49537",
+      "bytes": 17947
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/plan.json",
+      "sha256": "e5b08a59133c17f7d946adbe96cd1827abc5215905c11e55d64fb891751f6543",
+      "bytes": 13067
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/report.md",
+      "sha256": "12590aa003fc57109fe421d559611840edbe94b5cde6a2c39cdefff8fe5c28a3",
+      "bytes": 1525
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/results.jsonl",
+      "sha256": "08120b2b747d81fd30118967fc9e21e3fb3449f9024a8c793d16eb7b8e037e9f",
+      "bytes": 518273
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+      "bytes": 3565
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/summary.csv",
+      "sha256": "54505cfb7fb0e13ffccf390775177a3d6ef1e45a751d5c81c3fe105395aec29f",
+      "bytes": 5232
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/human-offline-final/summary.json",
+      "sha256": "94011996e87a4cd92c7186739d82a064e072d65003373b4442884dd3d35bf821",
+      "bytes": 14939
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/preflight.json",
+      "sha256": "f80ada7e47e734013f16843300176a9912c28608f822ab7e20c415737afbe2cb",
+      "bytes": 2440
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/README.md",
+      "sha256": "1004915ee141d67de3159c52943a99638bcdc7be1352bbf1bc22396517882be6",
+      "bytes": 4463
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/budget.json",
+      "sha256": "49dcfd97fad356f3fb79ea08d1c4505173f67e0abf5ddbf99ba4d1f1d57f15b0",
+      "bytes": 50200
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/cases.executed.jsonl",
+      "sha256": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+      "bytes": 2771
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/completed-cases.jsonl",
+      "sha256": "771afa03a87bfc23108c761800f7daf06c9a315998c029b54e2c6c7566510831",
+      "bytes": 154002
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/human-review.pending.json",
+      "sha256": "afee840f6c4505a661612e46dfa45a3305147a517abbc206c566097ecd2f82ce",
+      "bytes": 13933
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/manifest.json",
+      "sha256": "018d73cb52f8c1fd10488d531bac6e43d5c626f53a09e53edf4d545caa44fdc7",
+      "bytes": 10714
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/plan.json",
+      "sha256": "797d4dcb7419ba5b83642c129771f98bd7f6b25301d8e06dc2ad59d4114e9be2",
+      "bytes": 9255
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/report.md",
+      "sha256": "3370c2c88a979237648df8dc28a43b8740f21df2abe84a9f11c6788398bf6351",
+      "bytes": 1272
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/results.jsonl",
+      "sha256": "771afa03a87bfc23108c761800f7daf06c9a315998c029b54e2c6c7566510831",
+      "bytes": 154002
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+      "bytes": 3565
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/summary.csv",
+      "sha256": "ca7e3cbac823b50cfd27d5787c13ac590d6da918db5b2ce09c1cc7a362fe1a51",
+      "bytes": 3522
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline/summary.json",
+      "sha256": "8a75fac8ae60dae7ec3ca1b65117c19d2ccd19517c448c70149834c07ba7350a",
+      "bytes": 9651
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/budget.json",
+      "sha256": "4fdd4818874f2afd60d88c3c50dc0dc8d720aa92723498ac44f330835c9df1a9",
+      "bytes": 50200
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/cases.executed.jsonl",
+      "sha256": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+      "bytes": 2771
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/completed-cases.jsonl",
+      "sha256": "1a3e07a6f66e3aac43101407f540421b967421695a5f6ff1c712effaee3e2645",
+      "bytes": 154008
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/human-review.pending.json",
+      "sha256": "51630a93a78f31cd09a699835bdce2ca1660fc97c2a0405ecc8e8379cefa1c83",
+      "bytes": 13933
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/manifest.json",
+      "sha256": "76a17f34974c5167b894af52560d038e56ede7996d5299ee54d3a83fbcc0bc3f",
+      "bytes": 10714
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/plan.json",
+      "sha256": "b2d1218eb90f61e2a2fb2b9568f3c7a2d2942b449fd1cac5a1183092df750fb5",
+      "bytes": 9255
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/report.md",
+      "sha256": "826ccc002bbc945e2cf4f3a48328c0d851c4040eafdef82333ad6c756b488fbc",
+      "bytes": 1272
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/results.jsonl",
+      "sha256": "1a3e07a6f66e3aac43101407f540421b967421695a5f6ff1c712effaee3e2645",
+      "bytes": 154008
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+      "bytes": 3565
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/summary.csv",
+      "sha256": "7f597d0186c5d5cfa86fcc12eddf9abe8b77e2686669f576e0e7d5c717de7fd3",
+      "bytes": 3559
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/smoke-offline-final/summary.json",
+      "sha256": "38293db2718b479fee174793973db9fe35a9737bc589ecb398a13e0a66998caf",
+      "bytes": 9837
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/test-final-output-tail.log",
+      "sha256": "9599824f6f65f2367a2833d72fbbb2ee25c05dc17e81e0b0ce30aea726d94ac3",
+      "bytes": 313
+    },
+    {
+      "path": "evals/reports/pilot-evaluation-20261003-01/test-output-tail.log",
+      "sha256": "ce1c682ad43ac80a99f3fbfa1d807d11fabbbfda2d3e8de0a6de78f25468dc6d",
+      "bytes": 10922
+    },
+    {
+      "path": "regulai/front/evaluation.py",
+      "sha256": "8eb5861f070d0add776076aaed566ae9fb503cdf7399c34031812f872d8513a0",
+      "bytes": 34183
+    },
+    {
+      "path": "regulai/front/evaluation_budget.py",
+      "sha256": "eef799fc923ba67e9c88dfccc2c21669a666cff6a13a3f85ea18a5c8b00718e0",
+      "bytes": 7599
+    },
+    {
+      "path": "regulai/front/management/commands/evaluate_ai.py",
+      "sha256": "6a0b0f1b35487556ff99654478a0d89001e0bca4f8d50d4a5db9ccff5e046db8",
+      "bytes": 31320
+    },
+    {
+      "path": "regulai/front/management/commands/run_demo.py",
+      "sha256": "f96e8be02f54083d5036f132462e0fd385f08116da12efd68fde14fc64e0d924",
+      "bytes": 10569
+    },
+    {
+      "path": "regulai/front/management/commands/smoke_ai.py",
+      "sha256": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7",
+      "bytes": 1018
+    },
+    {
+      "path": "regulai/front/test_evaluation_budget.py",
+      "sha256": "da17cc42d43ccb42166344ddf7f9fc17e333179e2667376eb25541443daf1b43",
+      "bytes": 4581
+    },
+    {
+      "path": "regulai/front/test_evaluation_pilot.py",
+      "sha256": "2987d7e4f4e99291b1768cf3da7c6c83fcadf5a4bb9d9eb65a779fb2f377ed01",
+      "bytes": 8570
+    },
+    {
+      "path": "regulai/front/test_smoke.py",
+      "sha256": "cbd08485949a5dd82c0c6dcc2f323ff96f4dff2440822b67f1889c05c0544931",
+      "bytes": 12196
+    },
+    {
+      "path": "scripts/pilot_human_report.py",
+      "sha256": "0ba9144189c21580624ed00da573be0ccbd7bc858edbb59a45c65dc25a0a6093",
+      "bytes": 1214
+    },
+    {
+      "path": "scripts/prepare_pilot_manifest.py",
+      "sha256": "ef6112a3db761878b1471817212bdc5753d2a28b8c5dfe58b45f71453fe1f0c1",
+      "bytes": 1466
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "status": "pending",
+  "authorization_id": "pilot-community-new-approval-required-v1",
+  "approved_by": null,
+  "approval_reference": null,
+  "manifest_sha256s": [
+    "70086f93362e76e2110b8c67db2f703d6d53b43c53b7cb23c91da8963bcd0200",
+    "4879ab40d339ccd3905d306ce93cb4b8ac635e95274eddcba6751b834538ef7c"
+  ],
+  "valid_from": null,
+  "valid_until": null,
+  "maximum_usd": "1.00",
+  "data_scope": "versioned_synthetic_cases_only",
+  "destinations": {
+    "generation": "https://api.deepseek.com",
+    "judge": "https://api.typesafe.ai/v1/systemone",
+    "mask": "https://mask.service.invalid"
+  },
+  "pricing_reviewed_on": null,
+  "mask_contract_reviewed": false,
+  "mutable_alias_acknowledged": false,
+  "reserved_evaluation": false,
+  "notes": "NOT AUTHORIZED. Historical approval of 2026-10-02 is not reused. Complete only after an explicit human approval of the reviewed manifest and destinations.",
+  "actions": [
+    "create_disposable_synthetic_tenants",
+    "send_original_only_to_approved_mask",
+    "classify_masked_content",
+    "generate_masked_content",
+    "verify_masked_answer",
+    "confirm_declared_synthetic_consent",
+    "at_most_one_second_generation",
+    "persist_all_attempts_and_costs"
+  ]
+}

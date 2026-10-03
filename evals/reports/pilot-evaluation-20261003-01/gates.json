@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-03",
+  "product_network_calls": 0,
+  "human_reviews_completed": 0,
+  "gates": [
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py test front.test_smoke front.test_evaluation_pilot front.test_evaluation_budget front.test_evaluation front.test_demo --settings=regulai.test_settings --noinput",
+      "exit_code": 0,
+      "tests": 29,
+      "seconds": 44.192,
+      "scope": "Expanded suite before final nonstarted-call metric correction"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py test front.test_smoke front.test_evaluation_pilot front.test_evaluation_budget --settings=regulai.test_settings --noinput",
+      "exit_code": 0,
+      "tests": 20,
+      "seconds": 12.811,
+      "scope": "After final code change; regression excludes not_started reservations from provider calls"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py smoke_ai --settings=regulai.test_settings --output evals/reports/pilot-evaluation-20261003-01/smoke-offline-final",
+      "exit_code": 0,
+      "runs": 24,
+      "control_failures": 0,
+      "real_calls": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py evaluate_ai --settings=regulai.test_settings --manifest evals/pilot-human/manifest.json --output evals/reports/pilot-evaluation-20261003-01/human-offline-final",
+      "exit_code": 0,
+      "runs": 72,
+      "control_failures": 0,
+      "real_calls": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py check --settings=regulai.test_settings",
+      "exit_code": 0,
+      "issues": 0
+    },
+    {"command": "rtk git diff --check", "exit_code": 0},
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py smoke_ai --settings=regulai.test_settings --preflight --authorization evals/pilot-real/authorization.pending.json --output evals/reports/pilot-evaluation-20261003-01/not-created",
+      "exit_code": 0,
+      "ready_for_real": false,
+      "network_calls": 0,
+      "note": "Read-only; preflight.json refreshed against final frozen sources through the same function"
+    }
+  ]
+}

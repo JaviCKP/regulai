@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "bank_kind": "pilot",
+  "mode": "offline_default",
+  "policy_version": "pilot-policy-v1",
+  "dataset": "cases.jsonl",
+  "dataset_sha256": "63e1754f6f6c3fdedc859a16f428ff7e6a21737c1091c1e7553ecf1daa1015f1",
+  "human_rubric": "rubric.md",
+  "human_rubric_sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+  "seed": 20261003,
+  "configurations": [
+    "economy",
+    "strong",
+    "router"
+  ],
+  "model_versions": {
+    "economy": "deepseek-flash",
+    "strong": "deepseek-v4-pro",
+    "judge": "jev-1.13.0"
+  },
+  "published_versions": {
+    "economy": "DeepSeek-V4.1-Flash",
+    "strong": "DeepSeek-V4-Pro-0813",
+    "judge": "jev-1.13.0"
+  },
+  "mutable_model_aliases": [
+    "deepseek-flash",
+    "deepseek-v4-pro"
+  ],
+  "allowed_effective_models": {
+    "deepseek-flash": [
+      "deepseek-flash"
+    ],
+    "deepseek-v4-pro": [
+      "deepseek-v4-pro"
+    ],
+    "jev-1.13.0": [
+      "jev-1.13.0"
+    ]
+  },
+  "prices_per_million": {
+    "economy": {
+      "input": ".30",
+      "output": "1.20"
+    },
+    "strong": {
+      "input": "1.32",
+      "output": "3.96"
+    },
+    "judge": {
+      "input": ".042",
+      "output": "0"
+    }
+  },
+  "price_date": "2026-10-03",
+  "currency": "USD",
+  "pricing_sources": [
+    "https://api-docs.deepseek.com/quick_start/pricing/",
+    "https://docs.typesafe.ai/models"
+  ],
+  "destinations": {
+    "generation": "https://api.deepseek.com",
+    "judge": "https://api.typesafe.ai/v1/systemone",
+    "mask": "https://mask.service.invalid"
+  },
+  "judge_transport": "typesafe",
+  "mask_contract_review": null,
+  "generation_options": {
+    "thinking": {
+      "type": "disabled"
+    },
+    "temperature": 0.6
+  },
+  "thresholds": {
+    "classification": 0.8,
+    "verification": 0.8
+  },
+  "jev_max_call_cost": ".003",
+  "call_caps_usd": {
+    "generation": ".05",
+    "classification": ".003",
+    "verification": ".003",
+    "obfuscation": ".01"
+  },
+  "maximum_usd": "1.00",
+  "authorization_id": "pilot-community-new-approval-required-v1",
+  "context_window": 1000000,
+  "max_generation_attempts": {
+    "economy": 1,
+    "strong": 1,
+    "router": 2
+  },
+  "verification_mode": "enforce",
+  "classification_mode": "required",
+  "quality_by_task": {
+    "economy": 0.6,
+    "strong": 0.95
+  },
+  "quality_status": "uncalibrated_fixture_values_not_evidence",
+  "minimum_quality": {
+    "economy": 0.5,
+    "balanced": 0.6,
+    "strong": 0.9
+  },
+  "rubrics": {
+    "classification": "sensitivity-v2",
+    "task": "task-v2",
+    "verification": "verification-v1",
+    "human": "pilot-human-v1"
+  },
+  "limits": {
+    "budget": ".15",
+    "deadline_seconds": 90,
+    "max_output_tokens": 512
+  },
+  "input_limit_bytes": 16000,
+  "synthetic_usage": {
+    "generation_input_tokens": 100,
+    "generation_output_tokens": 20,
+    "judge_input_tokens": 50,
+    "judge_output_tokens": 10
+  },
+  "source_sha256": {
+    "regulai/front/chat_service.py": "c2707b07eaa7d4a8aeeba68a515351d0007f5c7436f4e5f5736841953bc8bc30",
+    "regulai/front/policy.py": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
+    "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1",
+    "regulai/front/verification.py": "0342cd9c8825930ee9365386bad0479156b10fce4476c5648835587c08ecacc1",
+    "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
+    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
+    "regulai/front/masking.py": "2508742be605a0c6f74d5c4a5a4fca7860667b9bbdc139ca3b16bb502835f697",
+    "regulai/front/classification.py": "6167b9de82e97394b9e83095bce7fd4c5b7adb8b9028d38523ce6f6a051ea8fb",
+    "regulai/front/sources.py": "207892d7b8249a94334acd52d62d8e950995998c6f94cdfe6e744f0a57883e8b",
+    "regulai/front/connectors.py": "51ddd25977f81d2a81169aa3c797fd2a39f0d1034de9fc83ffb631b83ceb9eac",
+    "regulai/front/views.py": "363ead5a0c4168d78693a57892b408a1cd270a8c5d0cdf27f468268e80ed33b6",
+    "regulai/front/models.py": "23e858865a586bd5de515e6068a6019f8b7f50f7ed5a4f427e9d0554fc817261",
+    "regulai/front/evaluation.py": "8eb5861f070d0add776076aaed566ae9fb503cdf7399c34031812f872d8513a0",
+    "regulai/front/evaluation_budget.py": "eef799fc923ba67e9c88dfccc2c21669a666cff6a13a3f85ea18a5c8b00718e0",
+    "regulai/front/management/commands/evaluate_ai.py": "6a0b0f1b35487556ff99654478a0d89001e0bca4f8d50d4a5db9ccff5e046db8",
+    "regulai/front/management/commands/smoke_ai.py": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7",
+    "requirements.txt": "8383e6d8894b0b2d0907e95f680971353aea6721206702e212b5d9fe4e9964c8"
+  },
+  "scope": "Synthetic control rehearsal. No human reviews completed; no real quality or savings claim.",
+  "bank_purpose": "eight_case_rehearsal",
+  "actions": [
+    "create_disposable_synthetic_tenants",
+    "send_original_only_to_approved_mask",
+    "classify_masked_content",
+    "generate_masked_content",
+    "verify_masked_answer",
+    "confirm_declared_synthetic_consent",
+    "at_most_one_second_generation",
+    "persist_all_attempts_and_costs"
+  ],
+  "runtime_versions": {
+    "python": "3.12.11",
+    "Django": "5.2.17",
+    "djangorestframework": "3.18.1",
+    "openai": "1.102.0",
+    "pydantic": "2.11.7",
+    "requests": "2.33.0",
+    "pypdf": "6.19.0",
+    "python-docx": "1.2.0"
+  }
+}

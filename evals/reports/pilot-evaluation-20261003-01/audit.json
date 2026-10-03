@@ -1,0 +1,24 @@
+{
+  "smoke": {
+    "runs": 24,
+    "control_failures": 0,
+    "human_reviews": 0,
+    "modes": [
+      "simulated"
+    ],
+    "source_hashes_match": true
+  },
+  "human": {
+    "runs": 72,
+    "control_failures": 0,
+    "human_reviews": 0,
+    "modes": [
+      "simulated"
+    ],
+    "source_hashes_match": true
+  },
+  "manifest_sha256": {
+    "evals\\pilot-real\\manifest.json": "70086f93362e76e2110b8c67db2f703d6d53b43c53b7cb23c91da8963bcd0200",
+    "evals\\pilot-human\\manifest.json": "4879ab40d339ccd3905d306ce93cb4b8ac635e95274eddcba6751b834538ef7c"
+  }
+}
