@@ -327,10 +327,17 @@ def run_case(case, configuration, manifest, root, engine, models, run_id):
         passed = passed and len(providers.events) == case['expected_external_calls']
     if 'expected_generation_calls' in case:
         passed = passed and generation_calls == case['expected_generation_calls']
+    notices = data.get('receipt', {}).get('notices', [])
+    sensitivity = data.get('decision', {}).get('sensitivity')
+    if 'expected_notices' in case:
+        passed = passed and set(case['expected_notices']).issubset(notices)
+    if 'expected_sensitivity' in case:
+        passed = passed and sensitivity == case['expected_sensitivity']
     known = sum((Decimal(call['cost']) for call in calls if call.get('cost') is not None), Decimal(0))
     row = {'case_id': case['id'], 'configuration': configuration, 'group': case['group'], 'split': case['split'],
            'mode': 'simulated', 'execution_state': data['status'], 'error_type': data.get('error_type'),
            'observed_outcome': state, 'expected_outcome': expected, 'control_pass': bool(passed),
+           'notices': notices, 'sensitivity': sensitivity,
            'delivered': delivered, 'exact_answer': delivered and content == case.get('expected'),
            'correct_abstention': not delivered and passed, 'forbidden_egress': forbidden,
            'invalid_displayed_citations': invalid_citations, 'generation_calls': generation_calls,
