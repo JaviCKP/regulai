@@ -1,17 +1,151 @@
 """Backend security behavior at HTTP, command and persistent-state interfaces."""
 from unittest.mock import patch
 import io
+import ast
+import subprocess
+import os
+import shutil
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
+from django.core.checks import run_checks, Tags
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, Client, override_settings
+from django.core.management import call_command, CommandError
+from django.db import connection
+from django.test import TestCase, SimpleTestCase, Client, override_settings
 from django.urls import reverse
 
 from front.models import Alert, Company, CompanyEngine, Engine, EngineModel, Profile, Rule, RulesGroup
 from PIL import Image
+from cryptography.fernet import Fernet
+from front.encryption import encrypt_value, decrypt_value, EncryptionError
+
+
+class PublicTemplateKeyTests(TestCase):
+    def test_known_public_keys_are_rejected_without_disclosing_values(self):
+        root = Path(__file__).resolve().parents[2]
+        source = subprocess.check_output(['git', 'show',
+            '6a0f667:regulai/regulai/local_settings_template.py'], cwd=root, text=True)
+        tree = ast.parse(source)
+        keys = {node.targets[0].id: ast.literal_eval(node.value) for node in tree.body
+            if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
+            and node.targets[0].id in ('SECRET_KEY', 'ENCRYPTION_KEY')}
+        for name, key in keys.items():
+            for option in (name, name + '_FALLBACKS'):
+                with self.subTest(setting=option), override_settings(**{option: [key] if option.endswith('_FALLBACKS') else key}):
+                    errors = [item for item in run_checks(tags=[Tags.security]) if item.id == 'front.E001']
+                    self.assertEqual(len(errors), 1)
+                    self.assertTrue(all(key not in str(item) for item in errors))
+                    if option == 'ENCRYPTION_KEY':
+                        with self.assertRaises(CommandError) as failure:
+                            call_command('reencrypt_secrets', stdout=io.StringIO())
+                        self.assertIn('rotation target must not be a public template key', str(failure.exception))
+
+
+class SecretRotationTests(TestCase):
+    def test_fallback_decrypts_old_values_and_new_writes_use_primary(self):
+        old, new = Fernet.generate_key(), Fernet.generate_key()
+        with override_settings(ENCRYPTION_KEY=old, ENCRYPTION_KEY_FALLBACKS=[]):
+            previous = encrypt_value('synthetic credential')
+        with override_settings(ENCRYPTION_KEY=new, ENCRYPTION_KEY_FALLBACKS=[old]):
+            self.assertEqual(decrypt_value(previous), 'synthetic credential')
+            current = encrypt_value('synthetic fresh credential')
+        with override_settings(ENCRYPTION_KEY=new, ENCRYPTION_KEY_FALLBACKS=[]):
+            self.assertEqual(decrypt_value(current), 'synthetic fresh credential')
+            with self.assertRaises(EncryptionError):
+                decrypt_value(previous)
+
+    def test_command_rotates_all_encrypted_fields_with_dry_run_and_small_batches(self):
+        old, new = Fernet.generate_key(), Fernet.generate_key()
+        with override_settings(ENCRYPTION_KEY=old, ENCRYPTION_KEY_FALLBACKS=[]):
+            company = Company.objects.create(name='Rotation company', jev_api_key='synthetic jev')
+            engine = Engine.objects.create(name='Rotation engine')
+            credential = CompanyEngine.objects.create(company=company, engine=engine, api_key='synthetic provider')
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT jev_api_key FROM front_company WHERE id=%s', [company.pk])
+            original = cursor.fetchone()[0]
+        with override_settings(ENCRYPTION_KEY=new, ENCRYPTION_KEY_FALLBACKS=[old]):
+            output = io.StringIO()
+            call_command('reencrypt_secrets', dry_run=True, batch_size=1, stdout=output)
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT jev_api_key FROM front_company WHERE id=%s', [company.pk])
+                self.assertEqual(cursor.fetchone()[0], original)
+            call_command('reencrypt_secrets', batch_size=1, stdout=output)
+            self.assertNotIn('synthetic jev', output.getvalue())
+            self.assertNotIn('synthetic provider', output.getvalue())
+        with override_settings(ENCRYPTION_KEY=new, ENCRYPTION_KEY_FALLBACKS=[]):
+            company.refresh_from_db()
+            credential.refresh_from_db()
+            self.assertEqual(company.jev_api_key, 'synthetic jev')
+            self.assertEqual(credential.api_key, 'synthetic provider')
+
+    def test_invalid_ciphertext_rolls_back_every_changed_row(self):
+        old, new = Fernet.generate_key(), Fernet.generate_key()
+        with override_settings(ENCRYPTION_KEY=old, ENCRYPTION_KEY_FALLBACKS=[]):
+            company = Company.objects.create(name='Invalid rotation company', jev_api_key='synthetic jev')
+            engine = Engine.objects.create(name='Invalid rotation engine')
+            credential = CompanyEngine.objects.create(company=company, engine=engine, api_key='synthetic provider')
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT jev_api_key FROM front_company WHERE id=%s', [company.pk])
+            original = cursor.fetchone()[0]
+            cursor.execute('UPDATE front_companyengine SET api_key=%s WHERE id=%s', ['invalid synthetic ciphertext', credential.pk])
+        with override_settings(ENCRYPTION_KEY=new, ENCRYPTION_KEY_FALLBACKS=[old]):
+            with self.assertRaises(CommandError) as failure:
+                call_command('reencrypt_secrets', batch_size=1, stdout=io.StringIO())
+            self.assertIn('no changes were saved', str(failure.exception))
+            self.assertNotIn('invalid synthetic ciphertext', str(failure.exception))
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT jev_api_key FROM front_company WHERE id=%s', [company.pk])
+            self.assertEqual(cursor.fetchone()[0], original)
+
+    def test_skipped_compare_and_swap_update_aborts_and_rolls_back(self):
+        if connection.vendor != 'sqlite':
+            self.skipTest('SQLite trigger supplies deterministic concurrent-update boundary.')
+        old, new = Fernet.generate_key(), Fernet.generate_key()
+        with override_settings(ENCRYPTION_KEY=old, ENCRYPTION_KEY_FALLBACKS=[]):
+            company = Company.objects.create(name='Concurrent rotation company', jev_api_key='synthetic jev')
+            engine = Engine.objects.create(name='Concurrent rotation engine')
+            CompanyEngine.objects.create(company=company, engine=engine, api_key='synthetic provider')
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT jev_api_key FROM front_company WHERE id=%s', [company.pk])
+            original = cursor.fetchone()[0]
+            cursor.execute('CREATE TRIGGER refuse_rotation BEFORE UPDATE OF api_key ON front_companyengine '
+                'BEGIN SELECT RAISE(IGNORE); END;')
+        try:
+            with override_settings(ENCRYPTION_KEY=new, ENCRYPTION_KEY_FALLBACKS=[old]):
+                with self.assertRaises(CommandError) as failure:
+                    call_command('reencrypt_secrets', batch_size=1, stdout=io.StringIO())
+                self.assertIn('Credentials changed concurrently', str(failure.exception))
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT jev_api_key FROM front_company WHERE id=%s', [company.pk])
+                self.assertEqual(cursor.fetchone()[0], original)
+        finally:
+            with connection.cursor() as cursor:
+                cursor.execute('DROP TRIGGER refuse_rotation')
+
+
+class LocalBootstrapTests(SimpleTestCase):
+    def test_settings_creation_is_restricted_and_existing_file_is_preserved(self):
+        source = Path(__file__).resolve().parents[2] / 'scripts/bootstrap_local.py'
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'scripts').mkdir()
+            (root / 'regulai/regulai').mkdir(parents=True)
+            script = root / 'scripts/bootstrap_local.py'
+            shutil.copyfile(source, script)
+            subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
+            created = root / 'regulai/regulai/local_settings.py'
+            original = created.read_bytes()
+            if os.name == 'nt':
+                acl = subprocess.check_output(['icacls', str(created)], text=True)
+                self.assertNotIn('(I)', acl)
+            else:
+                self.assertEqual(created.stat().st_mode & 0o777, 0o600)
+            subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
+            self.assertTrue(created.read_bytes() == original)
 
 
 class BackendHardeningTests(TestCase):
