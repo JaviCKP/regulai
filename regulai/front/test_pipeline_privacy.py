@@ -4,13 +4,16 @@ import uuid
 from datetime import timedelta
 from unittest.mock import patch
 from types import SimpleNamespace
+import re
+from decimal import Decimal
 
 from django.utils import timezone
+from django.urls import reverse
 
-from front.models import Conversation, Message, ObfuscationConfig, Prompt
+from front.models import AuditLog, Conversation, Message, ObfuscationConfig, Prompt
 from front.test_chat_flow import ChatFixture
 from front import test_pipeline
-from front.connectors import ChatResponse
+from front.connectors import ChatResponse, DOCUMENT_RESPONSE_SCHEMA
 from front.models import CompanyEngine, Engine, EngineModel
 
 
@@ -148,3 +151,118 @@ class PipelinePrivacyTests(ChatFixture):
         self.assertEqual(result['status'], 'completed', result)
         self.assertEqual([m.role for m in self.provider.call_args.args[0]], ['user'])
         self.assertEqual(self.provider.call_args.args[0][0].content, 'Hola')
+
+    def test_semantic_simulator_masks_sample_and_audits_each_intention_before_network(self):
+        self.user.is_superuser = True
+        self.user.save()
+        self.configure()
+        self.mask()
+        evaluator = test_pipeline.jev_http()
+        def post(url, **kwargs):
+            audit = json.loads(AuditLog.objects.latest('pk').details)
+            self.assertEqual(audit['call']['status'], 'started')
+            if url.endswith('/api/mask'):
+                return SimpleNamespace(raise_for_status=lambda: None,
+                    json=lambda: {'masked': kwargs['json']['text'].replace('12345678Z', '<DNI_1>')})
+            self.assertNotIn('12345678Z', kwargs['data'].decode())
+            return evaluator(url, **kwargs)
+        self.http.side_effect = post
+        result = self.client.post(reverse('front:policy_simulator'), {'mode': 'semantic',
+            'sample': 'My id is 12345678Z', 'proposed_config': json.dumps(self.company.ai_config)})
+        comparison = result.context['comparison']
+        self.assertEqual(comparison['semantic']['status'], 'completed', comparison)
+        self.assertEqual([item['purpose'] for item in comparison['calls']], ['simulation_obfuscation', 'simulation_classification'])
+        self.assertEqual(comparison['calls'][0]['cost'], '0')
+        self.assertEqual(AuditLog.objects.filter(action='policy_simulate').count(), 2)
+        self.assertNotIn('12345678Z', str(list(AuditLog.objects.values_list('details', flat=True))))
+        self.provider.assert_not_called()
+
+    def test_masking_cannot_launder_an_invented_document_quote(self):
+        self.configure(limits={'budget': None})
+        self.mask()
+        evaluator = test_pipeline.jev_http(choices={'task': 'document_question'})
+        def post(url, **kwargs):
+            if url.endswith('/api/mask'):
+                return SimpleNamespace(raise_for_status=lambda: None,
+                    json=lambda: {'masked': re.sub(r'Code: \d+', 'Code: <NUM_1>', kwargs['json']['text'])})
+            return evaluator(url, **kwargs)
+        self.http.side_effect = post
+        self.provider.return_value = ChatResponse(json.dumps({'claims': [{'text': 'The code is valid.',
+            'citations': [{'id': 'S1', 'quote': 'Code: 99'}]}]}), 30, 'synthetic-v1', 'stop', 20, 10)
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        result = self.send('/api/chat/send/', 'What is the code?', file=SimpleUploadedFile('code.txt', b'Code: 42')).json()
+        self.assertEqual(result['status'], 'failed', result)
+        self.assertEqual(result['receipt']['verification']['local_status'], 'failed')
+        self.assertEqual([c['purpose'] for c in result['receipt']['calls']], ['obfuscation', 'classification', 'generation', 'obfuscation'])
+        self.assertNotIn('assistant_message', result)
+
+    def test_judge_capacity_accepts_exact_limit_and_rejects_one_more_byte_before_network(self):
+        self.configure()
+        self.model.context_window = 1_000_000
+        self.model.save()
+        base = self.send('/api/chat/send/', 'x').json()['receipt']['limits']['judge_input_bytes_bound']
+        amount = 1 + 98304 - base
+        self.http.reset_mock()
+        self.provider.reset_mock()
+        result = self.send('/api/chat/send/', 'x' * amount).json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertEqual(result['receipt']['limits']['judge_input_bytes_bound'], 98304)
+        self.http.reset_mock()
+        self.provider.reset_mock()
+        result = self.send('/api/chat/send/', 'x' * (amount + 1)).json()
+        self.assertEqual(result['error_type'], 'evaluation_input_too_large', result)
+        self.http.assert_not_called()
+        self.provider.assert_not_called()
+
+    def test_generated_output_limit_is_explicit_and_accepts_boundary_with_utf8(self):
+        self.configure(classification='local', verification={'mode': 'local'}, routing={'max_output_tokens': 2})
+        self.provider.return_value = ChatResponse('é' * 8, 30, 'synthetic-v1', 'stop', 20, 10)
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertEqual(result['receipt']['limits']['response_bytes'], 16)
+        self.provider.return_value = ChatResponse('é' * 8 + 'x', 30, 'synthetic-v1', 'stop', 20, 10)
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['error_type'], 'evaluation_input_too_large', result)
+        self.assertNotIn('assistant_message', result)
+
+    def test_internal_failure_after_completed_generation_keeps_ledger_and_safe_logs(self):
+        self.provider.return_value = ChatResponse(None, 10, 'synthetic-v1', 'stop')
+        with self.assertLogs('front.chat_service', level='ERROR') as captured:
+            result = self.send('/api/chat/send/', 'PRIVATE_PROMPT_FOR_LOG_TEST').json()
+        self.assertEqual(result['error_type'], 'internal_error', result)
+        self.assertEqual(result['receipt']['calls'][0]['status'], 'completed')
+        self.assertNotIn('PRIVATE_PROMPT_FOR_LOG_TEST', str(captured.output))
+        self.assertEqual(captured.records[0].code, 'internal_error')
+        self.assertEqual(captured.records[0].request_id, result['request_id'])
+
+    def test_anthropic_document_schema_counts_before_paid_boundaries(self):
+        self.configure(classification='local')
+        self.engine.connector_type = 'anthropic'
+        self.engine.save()
+        answer = ChatResponse(json.dumps({'claims': [{'text': 'The approved period is seventeen days.',
+            'citations': [{'id': 'S1', 'quote': 'The approved period is seventeen days.'}]}]}),
+            30, 'synthetic-v1', 'stop', 20, 10)
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        with patch('front.connectors.AnthropicConnector.chat', return_value=answer) as provider:
+            result = self.send('/api/chat/send/', 'What is the period?',
+                file=SimpleUploadedFile('period.txt', b'The approved period is seventeen days.')).json()
+            self.assertEqual(result['status'], 'completed', result)
+            messages = provider.call_args.args[0]
+            input_bound = result['receipt']['route']['input_tokens_bound']
+            self.assertEqual(input_bound, sum(len(m.content.encode()) + len(m.role.encode()) + 256 for m in messages)
+                + len(json.dumps({'output_config': {'format': {'type': 'json_schema', 'schema': DOCUMENT_RESPONSE_SCHEMA}}}).encode()))
+            self.assertTrue(provider.call_args.kwargs['supports_json'])
+            self.assertFalse(provider.call_args.kwargs['reasoning'])
+            self.assertEqual(provider.call_args.kwargs['temperature'], .1)
+            # Input includes a known 496-byte envelope. A budget one micro-dollar
+            # below that complete generation/checking bound must make zero calls.
+            self.company.ai_config['limits']['budget'] = str(Decimal(input_bound + 2000) / Decimal(1_000_000)
+                + Decimal('.01') - Decimal('.000001'))
+            self.company.save()
+            self.http.reset_mock()
+            provider.reset_mock()
+            result = self.send('/api/chat/send/', 'What is the period?',
+                file=SimpleUploadedFile('period.txt', b'The approved period is seventeen days.')).json()
+            self.assertEqual(result['error_type'], 'budget_exhausted', result)
+            self.http.assert_not_called()
+            provider.assert_not_called()
