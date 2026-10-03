@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 
-from front.models import Alert, Company, Engine, EngineModel, Profile, Rule, RulesGroup
+from front.models import Alert, Company, CompanyEngine, Engine, EngineModel, Profile, Rule, RulesGroup
 from PIL import Image
 
 
@@ -118,3 +118,41 @@ class BackendHardeningTests(TestCase):
                 content_type='image/png')}, format='multipart')
             self.assertEqual(accepted.status_code, 200)
             self.assertTrue(accepted.data['avatar'])
+
+    def test_rule_mutations_require_post_and_do_not_modify_on_get(self):
+        global_group = RulesGroup.objects.create(name='Global security rules')
+        global_rule = Rule.objects.create(name='Global synthetic rule', rules_group=global_group,
+            yara_rule='rule Global { condition: true }')
+        actions = [('rule_toggle', self.rule.pk), ('rule_community_activate', self.rule.pk),
+            ('rule_community_configure', global_rule.pk)]
+        secure = Client(enforce_csrf_checks=True)
+        secure.force_login(self.staff)
+        self.rule.active = False
+        self.rule.save()
+        for action, pk in actions:
+            with self.subTest(action=action):
+                url = reverse('front:' + action, args=[pk])
+                self.assertEqual(self.client.get(url).status_code, 405)
+                self.rule.refresh_from_db()
+                self.assertFalse(self.rule.active)
+                self.assertFalse(Rule.objects.filter(rules_group=self.group, name=global_rule.name).exists())
+                self.assertEqual(secure.post(url).status_code, 403)
+
+    def test_engine_toggle_and_alert_resolve_require_post(self):
+        engine = Engine.objects.create(name='Security company engine')
+        credential = CompanyEngine.objects.create(company=self.company, engine=engine, api_key='synthetic')
+        self.client.force_login(self.admin)
+        alert = Alert.objects.get(company=self.company)
+        secure = Client(enforce_csrf_checks=True)
+        secure.force_login(self.admin)
+        for action, pk in [('engine_toggle', credential.pk), ('alert_resolve', alert.pk)]:
+            with self.subTest(action=action):
+                url = reverse('front:' + action, args=[pk])
+                self.assertEqual(self.client.get(url).status_code, 405)
+                self.assertEqual(secure.post(url).status_code, 403)
+        credential.refresh_from_db()
+        alert.refresh_from_db()
+        self.assertTrue(credential.active)
+        self.assertFalse(alert.resolved)
+        self.assertEqual(self.client.post(reverse('front:engine_toggle', args=[credential.pk])).status_code, 302)
+        self.assertEqual(self.client.post(reverse('front:alert_resolve', args=[alert.pk])).status_code, 302)

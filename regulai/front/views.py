@@ -1004,6 +1004,7 @@ def engine_delete(request, pk):
 
 
 @admin_required
+@require_POST
 def engine_toggle(request, pk):
     """Toggle engine active status."""
     company = request.user.profile.company
@@ -2003,6 +2004,7 @@ def rule_delete(request, pk):
 
 
 @security_required
+@require_POST
 def rule_toggle(request, pk):
     """Activates/deactivates a YARA rule."""
     # Get user's company
@@ -2104,6 +2106,7 @@ def rules_community_list(request):
 
 
 @security_required
+@require_POST
 def rule_community_configure(request, pk):
     """Configures (duplicates) a community rule for the user's company."""
     user_company = get_user_company(request.user)
@@ -2167,6 +2170,7 @@ def rule_community_configure(request, pk):
 
 
 @security_required
+@require_POST
 def rule_community_activate(request, pk):
     """Activates a recently configured community rule."""
     user_company = get_user_company(request.user)
@@ -2452,6 +2456,7 @@ def alert_detail(request, pk):
 
 
 @security_required
+@require_POST
 def alert_resolve(request, pk):
     """Marks an alert as resolved."""
     # Get user's company
