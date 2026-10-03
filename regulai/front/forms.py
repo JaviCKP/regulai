@@ -20,4 +20,3 @@ class ObfuscationConfigForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if not self.instance.pk:
             self.initial['backend'] = 'local'
-
