@@ -431,3 +431,5 @@ class Command(BaseCommand):
         (output / 'report.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
         failures = sum(not row['control_pass'] for row in rows)
         self.stdout.write(f'{len(rows)} simulated runs; {failures} failed controls; real calls 0. Reports: {output}')
+        if failures:
+            raise CommandError(f'{failures} failed controls. Reports: {output}')

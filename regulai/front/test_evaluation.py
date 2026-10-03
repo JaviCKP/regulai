@@ -1,5 +1,8 @@
+import csv
 import json
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -13,6 +16,46 @@ from front.management.commands.evaluate_ai import summarize
 
 
 class EvaluationTests(TestCase):
+    def test_cli_failed_controls_exit_nonzero_after_writing_all_reports(self):
+        root = Path(__file__).resolve().parents[2]
+        source = root / 'evals'
+        with TemporaryDirectory() as directory:
+            destination = Path(directory)
+            manifest = json.loads((source / 'manifest.json').read_text(encoding='utf-8'))
+            manifest['minimum_quality'] = {task: 1.0 for task in manifest['minimum_quality']}
+            (destination / 'manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
+            shutil.copyfile(source / manifest['dataset'], destination / manifest['dataset'])
+            shutil.copytree(source / 'documents', destination / 'documents')
+            output = destination / 'run'
+            result = subprocess.run(
+                [sys.executable, str(root / 'regulai' / 'manage.py'), 'evaluate_ai',
+                 '--settings=regulai.test_settings', '--manifest', str(destination / 'manifest.json'),
+                 '--split', 'development', '--output', str(output)],
+                cwd=root, capture_output=True, text=True, timeout=120,
+            )
+            self.assertEqual({path.name for path in output.iterdir()},
+                             {'manifest.json', 'results.jsonl', 'summary.json', 'summary.csv', 'report.md'})
+            rows = [json.loads(line) for line in (output / 'results.jsonl').read_text(encoding='utf-8').splitlines()]
+            self.assertEqual(len(rows), 90)
+            self.assertEqual({row['split'] for row in rows}, {'development'})
+            failures = [row for row in rows if not row['control_pass']]
+            self.assertEqual(len(failures), 52)
+            summaries = json.loads((output / 'summary.json').read_text(encoding='utf-8'))
+            self.assertEqual(sum(row['cases'] - row['control_passes'] for row in summaries
+                                 if row['split'] == 'all'), 52)
+            with (output / 'summary.csv').open(encoding='utf-8', newline='') as handle:
+                csv_summaries = list(csv.DictReader(handle))
+            self.assertEqual(sum(int(row['cases']) - int(row['control_passes']) for row in csv_summaries
+                                 if row['split'] == 'all'), 52)
+            report = (output / 'report.md').read_text(encoding='utf-8')
+            for row in failures:
+                self.assertIn(f"- {row['case_id']} / {row['configuration']} /", report)
+            frozen = json.loads((output / 'manifest.json').read_text(encoding='utf-8'))
+            self.assertEqual(frozen['selected_split'], 'development')
+            self.assertIn('90 simulated runs; 52 failed controls; real calls 0.', result.stdout)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('CommandError: 52 failed controls.', result.stderr)
+
     def test_development_controls_detect_missing_notices_and_wrong_sensitivity(self):
         source = Path(__file__).resolve().parents[2] / 'evals'
         with TemporaryDirectory() as directory:
@@ -31,8 +74,9 @@ class EvaluationTests(TestCase):
                     line = json.dumps(case, ensure_ascii=False)
                 lines.append(line)
             (destination / 'cases.jsonl').write_text('\n'.join(lines) + '\n', encoding='utf-8')
-            call_command('evaluate_ai', manifest=str(destination / 'manifest.json'),
-                         split='development', output=str(destination / 'run'), verbosity=0)
+            with self.assertRaisesMessage(CommandError, '6 failed controls.'):
+                call_command('evaluate_ai', manifest=str(destination / 'manifest.json'),
+                             split='development', output=str(destination / 'run'), verbosity=0)
             rows = [json.loads(line) for line in (destination / 'run' / 'results.jsonl').read_text(encoding='utf-8').splitlines()]
             failures = [row for row in rows if not row['control_pass']]
             self.assertEqual(len(failures), 6)
