@@ -3,13 +3,15 @@ import json
 import logging
 import io
 import uuid
+import runpy
+from pathlib import Path
 from unittest.mock import patch
 from contextlib import contextmanager
 
 from django.contrib.auth.models import User
 from django.db import DatabaseError
 from django.conf import settings
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase, SimpleTestCase, override_settings
 from django.urls import include, path
 
 from front.models import Company, Profile
@@ -116,3 +118,32 @@ class SafeLoggingTests(TestCase):
         self.assertEqual(event['code'], 'unclassified_event')
         self.assertIsNone(event['request_id'])
         self.assertNotIn(SENTINEL, stream.getvalue())
+
+
+class RuntimeConfigTests(SimpleTestCase):
+    def test_gunicorn_allows_the_maximum_pipeline_deadline_with_threads(self):
+        config_path = Path(__file__).resolve().parents[2] / 'gunicorn.conf.py'
+        self.assertTrue(config_path.is_file(), 'A deployable Gunicorn config is required')
+        config = runpy.run_path(str(config_path))
+        self.assertEqual(config['worker_class'], 'gthread')
+        self.assertGreaterEqual(config['threads'], 2)
+        self.assertGreater(config['timeout'], 180)
+        self.assertGreaterEqual(config['graceful_timeout'], config['timeout'])
+        self.assertIsNone(config['accesslog'])
+
+    def test_ci_declares_the_five_local_gates_and_complete_git_history(self):
+        workflow_path = Path(__file__).resolve().parents[2] / '.github/workflows/ci.yml'
+        self.assertTrue(workflow_path.is_file(), 'An executable CI workflow is required')
+        # JSON is a YAML subset; the stdlib validates syntax without a parser dependency.
+        workflow = json.loads(workflow_path.read_text(encoding='utf-8'))
+        self.assertEqual(workflow['permissions'], {'contents': 'read'})
+        steps = workflow['jobs']['quality']['steps']
+        checkout = next(step for step in steps if step.get('uses', '').startswith('actions/checkout@'))
+        self.assertEqual(checkout['with']['fetch-depth'], 0)
+        self.assertTrue(any(step.get('uses', '').startswith('actions/setup-node@') for step in steps))
+        commands = '\n'.join(step.get('run', '') for step in steps)
+        for gate in ('check --settings=regulai.test_settings', 'test front api --settings=regulai.test_settings',
+                     'makemigrations --check --dry-run --settings=regulai.test_settings',
+                     'evaluate_ai --settings=regulai.test_settings', 'pip-audit==2.10.1'):
+            self.assertIn(gate, commands)
+        self.assertIn('mktemp -d', commands)

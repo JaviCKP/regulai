@@ -1,0 +1,22 @@
+{
+  "name": "Quality gates",
+  "on": {"push": {}, "pull_request": {}},
+  "permissions": {"contents": "read"},
+  "jobs": {
+    "quality": {
+      "runs-on": "ubuntu-latest",
+      "timeout-minutes": 20,
+      "steps": [
+        {"uses": "actions/checkout@v4", "with": {"fetch-depth": 0}},
+        {"uses": "actions/setup-python@v5", "with": {"python-version": "3.12", "cache": "pip"}},
+        {"uses": "actions/setup-node@v4", "with": {"node-version": "22"}},
+        {"name": "Install pinned dependencies", "run": "python -m pip install -r requirements.txt uv==0.12.3"},
+        {"name": "Django checks", "run": "python regulai/manage.py check --settings=regulai.test_settings"},
+        {"name": "HTTP and invariant tests", "run": "python regulai/manage.py test front api --settings=regulai.test_settings"},
+        {"name": "Migration drift", "run": "python regulai/manage.py makemigrations --check --dry-run --settings=regulai.test_settings"},
+        {"name": "Offline evaluation", "run": "evaluation_dir=$(mktemp -d)\ntrap 'rm -rf -- \"$evaluation_dir\"' EXIT\npython regulai/manage.py evaluate_ai --settings=regulai.test_settings --output \"$evaluation_dir/run\""},
+        {"name": "Dependency audit", "run": "uv tool run --from pip-audit==2.10.1 pip-audit -r requirements.txt"}
+      ]
+    }
+  }
+}
