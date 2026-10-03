@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import Q
 from functools import wraps
 
 from .models import Conversation, Profile, Prompt
@@ -51,6 +52,10 @@ def company_policy_required(view):
             raise PermissionDenied('Company administrator permission is required.')
         return view(request, *args, **kwargs)
     return wrapped
+
+
+def company_audit_scope(company):
+    return Q(company=company) | Q(company__isnull=True, user__profile__company=company)
 
 
 def authorized_conversations(actor):

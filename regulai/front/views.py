@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from front.models import *
-from front.access import actor_company, authorized_conversations, platform_required, protect_operator
+from front.access import actor_company, authorized_conversations, company_audit_scope, platform_required, protect_operator
 from front.policy import validate_yara
 from front.connectors import get_connector, ChatMessage, ChatResponse
 from front.rate_limit import (
@@ -2545,7 +2545,7 @@ def auditlogs_list(request):
     user_company = get_user_company(request.user)
 
     # Filter logs by company (through user's profile) or system logs (user=None)
-    company_or_system = Q(company=user_company)
+    company_or_system = company_audit_scope(user_company)
     logs = AuditLog.objects.filter(
         company_or_system
     ).select_related('user').order_by('-timestamp')
@@ -2618,7 +2618,7 @@ def auditlog_detail(request, pk):
     user_company = get_user_company(request.user)
 
     # Only allow access to logs from user's company or system logs
-    company_or_system = Q(company=user_company)
+    company_or_system = company_audit_scope(user_company)
     log = get_object_or_404(
         AuditLog.objects.filter(company_or_system).select_related('user'),
         pk=pk,
@@ -2639,7 +2639,7 @@ def auditlogs_clear(request):
 
         cutoff_date = timezone.now() - timezone.timedelta(days=30)
         # Delete logs from user's company or system logs
-        company_or_system = Q(company=user_company)
+        company_or_system = company_audit_scope(user_company)
         count = AuditLog.objects.filter(
             company_or_system,
             timestamp__lt=cutoff_date
@@ -2656,7 +2656,7 @@ def auditlog_delete(request, pk):
     user_company = get_user_company(request.user)
 
     # Only allow access to logs from user's company or system logs
-    company_or_system = Q(company=user_company)
+    company_or_system = company_audit_scope(user_company)
     log = get_object_or_404(AuditLog.objects.filter(company_or_system), pk=pk)
 
     if request.method == 'POST':

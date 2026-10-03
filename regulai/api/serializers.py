@@ -265,12 +265,13 @@ class ConversationListSerializer(serializers.ModelSerializer):
 class PromptSerializer(serializers.ModelSerializer):
     """Serializer for Prompt model."""
     user_username = serializers.CharField(source='user.username', read_only=True)
+    historical = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Prompt
         fields = [
             'id', 'user', 'user_username', 'conversation',
-            'content', 'created_at', 'model_used', 'filtered'
+            'content', 'created_at', 'model_used', 'filtered', 'historical'
         ]
         read_only_fields = fields
 
@@ -307,12 +308,13 @@ class AlertSerializer(serializers.ModelSerializer):
 class AuditLogSerializer(serializers.ModelSerializer):
     """Serializer for AuditLog model."""
     user_username = serializers.CharField(source='user.username', read_only=True)
+    historical = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = AuditLog
         fields = [
             'id', 'user', 'user_username', 'action',
-            'details', 'timestamp'
+            'details', 'timestamp', 'historical'
         ]
         read_only_fields = ['id', 'timestamp']
 

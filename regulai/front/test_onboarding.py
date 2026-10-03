@@ -8,7 +8,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .models import AuditLog, Company, CompanyEngine, Engine, EngineModel, Profile, Role
+from .models import AuditLog, Company, CompanyEngine, Conversation, Engine, EngineModel, Message, Profile, Prompt, Role
 
 
 class RegistrationTests(TestCase):
@@ -172,3 +172,56 @@ class BootstrapPolicyTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['comparison']['proposed']['route']['reason_codes'], ['unknown_price'])
         network.assert_not_called()
+
+
+class HistoricalVisibilityTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.first = Company.objects.create(name='History A')
+        self.second = Company.objects.create(name='History B')
+        self.user = User.objects.create_user('historical-owner', is_staff=True, is_superuser=True)
+        self.profile = Profile.objects.create(user=self.user, company=self.first)
+        other = User.objects.create_user('historical-other', is_staff=True, is_superuser=True)
+        Profile.objects.create(user=other, company=self.second)
+        self.legacy = AuditLog.objects.create(user=self.user, action='old', details='Historical A details')
+        self.foreign = AuditLog.objects.create(user=other, action='old', details='Historical B details')
+        self.captured = AuditLog.objects.create(user=self.user, company=self.first,
+            action='new', details='Captured tenant A')
+        self.system = AuditLog.objects.create(action='old', details='Historical global system')
+        self.client.force_login(self.user)
+
+    def test_web_and_api_show_labeled_legacy_audits_only_for_current_company(self):
+        response = self.client.get(reverse('front:auditlogs_list'))
+        self.assertEqual({item.pk for item in response.context['logs']}, {self.legacy.pk, self.captured.pk})
+        self.assertEqual(response.context['total_logs'], 2)
+        self.assertEqual(self.client.get(reverse('front:auditlog_detail', args=[self.legacy.pk])).status_code, 200)
+        for item in (self.foreign, self.system):
+            self.assertEqual(self.client.get(reverse('front:auditlog_detail', args=[item.pk])).status_code, 404)
+        api = self.client.get('/api/audit-logs/')
+        self.assertEqual(api.status_code, 200)
+        rows = {item['id']: item for item in api.json()['results']}
+        self.assertTrue({self.legacy.pk, self.captured.pk}.issubset(rows))
+        self.assertFalse({self.foreign.pk, self.system.pk} & rows.keys())
+        self.assertTrue(rows[self.legacy.pk]['historical'])
+        self.assertFalse(rows[self.captured.pk]['historical'])
+        self.legacy.refresh_from_db()
+        self.assertEqual(self.legacy.details, 'Historical A details')
+        self.assertIsNone(self.legacy.company_id)
+
+    def test_transferred_user_cannot_read_inferred_prompt_conversation_or_file_web_and_api(self):
+        conversation = Conversation.objects.create(user=self.user)
+        prompt = Prompt.objects.create(user=self.user, company=self.first, historical_company_id=self.first.pk,
+            conversation=conversation, content='Inferred historical A prompt', file_name='original.txt')
+        message = Message.objects.create(conversation=conversation, role='assistant', content='Old file')
+        self.assertEqual(self.client.get(f'/prompts/{prompt.pk}/').status_code, 200)
+        self.profile.company = self.second
+        self.profile.save(update_fields=['company'])
+        for path in (f'/prompts/{prompt.pk}/', f'/chat/{conversation.pk}/', f'/chat/download/{message.pk}/',
+                f'/api/conversations/{conversation.pk}/', f'/api/messages/{message.pk}/'):
+            self.assertEqual(self.client.get(path).status_code, 404, path)
+        self.assertEqual(self.client.get('/api/dashboard/stats/').json()['total_prompts'], 0)
+        self.assertNotContains(self.client.get('/prompts/'), 'Inferred historical A prompt')
+        self.assertEqual(self.client.get(reverse('front:auditlog_detail', args=[self.captured.pk])).status_code, 404)
+        # D5 deliberately infers null audits from the current profile without rewriting them.
+        self.assertEqual(self.client.get(reverse('front:auditlog_detail', args=[self.legacy.pk])).status_code, 200)
+
