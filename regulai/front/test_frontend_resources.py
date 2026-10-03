@@ -7,6 +7,8 @@ import shutil
 import subprocess
 
 from django.test import SimpleTestCase
+from django.template.loader import render_to_string
+from django.urls import reverse
 from front.test_chat_flow import ChatFixture
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -64,6 +66,27 @@ assert.ok(collections.find(c => c.prefix === 'simple-icons').icons.openai);
 
 
 class BrowserPolicyTests(ChatFixture):
+    def test_company_admin_keeps_engine_controls_without_operator_model_controls(self):
+        self.user.is_superuser = True
+        self.user.is_staff = True
+        html = render_to_string('engines/list.html', {'user': self.user,
+            'company_engines': [self.credential], 'is_platform_operator': False})
+        self.assertIn(reverse('front:engine_toggle', args=[self.credential.pk]), html)
+        self.assertNotIn('Add Model', html)
+        self.assertNotIn(reverse('front:model_toggle', args=[self.model.pk]), html)
+        self.assertNotIn('Admin Panel', html)
+
+    def test_operator_model_actions_are_post_forms_with_csrf(self):
+        html = render_to_string('engines/list.html', {'user': self.user,
+            'company_engines': [self.credential], 'is_platform_operator': True,
+            'csrf_token': 'synthetic-csrf'})
+        for action in ('engine_toggle', 'model_toggle', 'model_delete'):
+            pk = self.credential.pk if action == 'engine_toggle' else self.model.pk
+            url = reverse('front:' + action, args=[pk])
+            self.assertIn('method="post" action="' + url + '"', html)
+            self.assertNotIn('href="' + url + '"', html)
+        self.assertIn('name="csrfmiddlewaretoken" value="synthetic-csrf"', html)
+
     def test_csp_declares_only_self_and_existing_inline_ui(self):
         response = self.client.get('/chat/')
         self.assertEqual(response.status_code, 200)

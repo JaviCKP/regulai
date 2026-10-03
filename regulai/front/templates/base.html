@@ -172,12 +172,12 @@
                 <span class="hide-menu">Audit Log</span>
               </a>
             </li>
-            <li class="sidebar-item">
+{% if is_platform_operator %}            <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'admin:index' %}" aria-expanded="false">
                 <iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
                 <span class="hide-menu">Admin Panel</span>
               </a>
-            </li>
+            </li>{% endif %}
             {% endif %}
           </ul>
         </nav>
@@ -277,7 +277,7 @@
                     <i class="ti ti-user fs-6 me-2"></i>
                     My Profile
                   </a>
-                  {% if user.is_superuser %}
+                  {% if is_platform_operator %}
                   <a href="{% url 'admin:index' %}" class="dropdown-item py-2">
                     <i class="ti ti-settings fs-6 me-2"></i>
                     Admin Panel

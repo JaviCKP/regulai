@@ -442,11 +442,15 @@
                   </div>
                   <div class="message-content">{{ msg.content }}</div>
                   {% if msg.response_record %}
+                  {% if msg.response_record.prompt.decision.verification.status != 'passed' %}
+                  <p role="status" class="badge bg-warning text-dark">No verificado</p>
+                  {% else %}
                   <details class="request-evidence mt-2" data-evidence-url="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">
                     <summary>Document evidence</summary>
                     <div class="evidence-content">Open to load retained evidence. Reattach the original to check it again.</div>
                     <a href="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">Evidence JSON</a>
                   </details>
+                  {% endif %}
                   {% else %}
                   <p class="small">Excluded from future context: this legacy response has no validated request record.</p>
                   {% endif %}
@@ -725,6 +729,21 @@
     parent.appendChild(line);
   }
 
+  function renderDisclosures(parent, coverage) {
+    const disclosures = Array.isArray(coverage?.disclosures) ? coverage.disclosures : [];
+    disclosures.forEach(item => {
+      if (!item || typeof item.code !== 'string') return;
+      const locators = Array.isArray(item.locators) ? item.locators.join(', ') : '';
+      receiptLine(parent, 'Content not analyzed or sent', item.code + ' (' + (item.count ?? 'unknown') + ')' + (locators ? ': ' + locators : ''));
+    });
+  }
+
+  function consentReason(reason) {
+    return ({consent_expired: 'Confirmation expired. Review and confirm again.',
+      consent_context_changed: 'Policy or context changed. Review and confirm again.',
+      coverage_incomplete: 'Some document content was not analyzed and will not be sent.'})[reason] || reason;
+  }
+
   function renderReceipt(parent, receipt, status) {
     parent.replaceChildren();
     receiptLine(parent, 'Request', status);
@@ -736,10 +755,23 @@
       receiptLine(parent, 'Document coverage', coverage.status);
       receiptLine(parent, 'Units read / total', String(coverage.units_read ?? 'unknown') + ' / ' + String(coverage.units_total ?? 'unknown'));
       if (coverage.warnings?.length) receiptLine(parent, 'Coverage warnings', coverage.warnings.join(', '));
+      renderDisclosures(parent, coverage);
     }
+    if (Array.isArray(receipt.notices)) receipt.notices.forEach(notice => receiptLine(parent, 'Notice', notice));
+    if (receipt.consent_reason) receiptLine(parent, 'Confirmation', consentReason(receipt.consent_reason));
+    if (receipt.history) {
+      receiptLine(parent, 'History turns sent / omitted', `${receipt.history.sent_turns ?? 'unknown'} / ${receipt.history.omitted_turns ?? 'unknown'}`);
+      receiptLine(parent, 'History bytes sent / omitted', `${receipt.history.sent_bytes ?? 'unknown'} / ${receipt.history.omitted_bytes ?? 'unknown'}`);
+    }
+    const limitLabels = {jev_state_bytes: 'Evaluator input limit (bytes)', max_output_tokens: 'Output limit (tokens)',
+      call_timeout_seconds: 'Call timeout (seconds)', deadline_seconds: 'Request deadline (seconds)',
+      judge_input_bytes_bound: 'Maximum judge input (bytes)'};
+    Object.entries(limitLabels).forEach(([key, label]) => {
+      if (receipt.limits?.[key] != null) receiptLine(parent, label, receipt.limits[key]);
+    });
     if (receipt.route) {
       receiptLine(parent, 'Route', receipt.route.mode);
-      receiptLine(parent, 'Model', receipt.route.model || receipt.route.model_requested || receipt.route.model_id);
+      receiptLine(parent, 'Model', receipt.route.model_effective || receipt.route.model || receipt.route.model_requested || receipt.route.model_id);
       if (receipt.route.task) receiptLine(parent, 'Task', receipt.route.task);
       if (receipt.route.level || receipt.route.tier) receiptLine(parent, 'Route tier', receipt.route.level || receipt.route.tier);
       if (receipt.route.reason_codes?.length) receiptLine(parent, 'Route reasons', receipt.route.reason_codes.join(', '));
@@ -753,6 +785,8 @@
       receiptLine(parent, 'Call cost', call.cost == null ? 'unknown' : String(call.cost) + ' ' + (call.currency || ''));
       if (call.duration_ms != null) receiptLine(parent, 'Duration (ms)', call.duration_ms);
     });
+    const generation = calls.filter(call => call.purpose === 'generation').slice(-1)[0];
+    if (generation) receiptLine(parent, 'Effective route', generation.model_effective || generation.model);
     const total = receipt.total;
     receiptLine(parent, 'Total cost', total?.cost ?? (calls.length ? 'unknown' : '0 (no calls)'));
     if (total?.cost == null && total?.known_cost != null) receiptLine(parent, 'Known subtotal (incomplete)', total.known_cost);
@@ -774,7 +808,7 @@
     valid.forEach(item => {
       const details = document.createElement('details');
       const summary = document.createElement('summary');
-      summary.textContent = item.locator;
+      summary.textContent = (item.claim_index != null ? '[' + item.claim_index + '] ' : '') + item.locator;
       details.appendChild(summary);
       const excerpt = document.createElement('p');
       excerpt.className = 'message-content';
@@ -830,6 +864,9 @@
     command.userBubble.appendChild(command.controls);
     if (command.status === 'pending_consent') {
       receiptLine(command.controls, 'Confirmation', 'Review the decision before authorizing this same content and file.');
+      const reason = data.consent_reason || data.receipt?.consent_reason;
+      if (reason) receiptLine(command.controls, 'Confirmation', consentReason(reason));
+      renderDisclosures(command.controls, data.receipt?.coverage);
       commandButton(command.controls, 'Confirm sending', () => submitCommand(command));
       commandButton(command.controls, 'Cancel request', () => submitCommand(command, 'cancel'));
     } else if (['processing', 'received'].includes(command.status)) {
@@ -839,7 +876,15 @@
       command.assistantBubble?.remove();
       const message = data.assistant_message;
       command.assistantBubble = createAssistantBubble(message.content, message.file_name, message.file_size, message.file_url);
-      if (data.evidence) {
+      const verified = data.receipt?.verification?.status === 'passed';
+      if (!verified) {
+        const label = document.createElement('p');
+        label.className = 'badge bg-warning text-dark';
+        label.textContent = 'No verificado';
+        label.setAttribute?.('role', 'status');
+        command.assistantBubble.appendChild(label);
+      }
+      if (verified && data.evidence) {
         const evidence = document.createElement('details');
         const heading = document.createElement('summary');
         heading.textContent = 'Document evidence';
