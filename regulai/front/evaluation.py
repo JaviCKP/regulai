@@ -263,7 +263,7 @@ class LedgerObserver:
             self.stop_reason = 'failed_or_uncertain_provider_call'
         self.ledger.complete(token, cost=call.get('cost'),
             cost_kind=call.get('cost_kind', 'unknown'), status=call['status'],
-            metadata={key: call[key] for key in ('model_effective', 'input_tokens', 'output_tokens', 'provider_request_id') if key in call})
+            metadata={key: call[key] for key in ('model_effective', 'input_tokens', 'output_tokens', 'provider_request_id', 'provider_error_code') if key in call})
         if self.stop_reason and call['status'] == 'completed':
             raise BudgetExceeded(self.stop_reason)
 
