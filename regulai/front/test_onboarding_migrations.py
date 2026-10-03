@@ -70,3 +70,52 @@ class ReasoningMigrationTests(TransactionTestCase):
             self.assertEqual(old.get_model('front', 'EngineModel').objects.get(pk=model.pk).input_price, Decimal('1'))
         finally:
             MigrationExecutor(connection).migrate(latest)
+
+
+class HistoricalCompanyMigrationTests(TransactionTestCase):
+    def test_inference_preserves_decisions_relations_and_reverse_respects_later_changes(self):
+        executor = MigrationExecutor(connection)
+        latest = executor.loader.graph.leaf_nodes()
+        old_target = [('front', '0030_enginemodel_reasoning')]
+        target = [('front', '0031_infer_historical_prompt_company')]
+        try:
+            executor.migrate(old_target)
+            old = executor.loader.project_state(old_target).apps
+            Company = old.get_model('front', 'Company')
+            User = old.get_model('auth', 'User')
+            Prompt = old.get_model('front', 'Prompt')
+            a, b = Company.objects.create(name='Historical A'), Company.objects.create(name='Historical B')
+            user = User.objects.create(username='historical-profile')
+            orphan = User.objects.create(username='historical-no-profile')
+            old.get_model('front', 'Profile').objects.create(user_id=user.pk, company_id=a.pk)
+            conversation = old.get_model('front', 'Conversation').objects.create(user_id=user.pk)
+            inferred = Prompt.objects.create(user_id=user.pk, conversation_id=conversation.pk,
+                content='Retained', decision={'existing': 'preserved'}, file_name='retained.txt')
+            changed = Prompt.objects.create(user_id=user.pk, content='Reassigned later')
+            explicit = Prompt.objects.create(user_id=user.pk, company_id=b.pk, content='Explicit')
+            missing = Prompt.objects.create(user_id=orphan.pk, content='No profile')
+            response = old.get_model('front', 'Response').objects.create(prompt_id=inferred.pk, content='Answer retained')
+            audit = old.get_model('front', 'AuditLog').objects.create(user_id=user.pk,
+                action='historical', details='Unchanged original audit')
+            executor = MigrationExecutor(connection)
+            executor.migrate(target)
+            migrated = executor.loader.project_state(target).apps.get_model('front', 'Prompt')
+            row = migrated.objects.get(pk=inferred.pk)
+            self.assertEqual((row.company_id, row.historical_company_id), (a.pk, a.pk))
+            self.assertEqual(row.decision, {'existing': 'preserved'})
+            self.assertEqual((row.conversation_id, row.file_name), (conversation.pk, 'retained.txt'))
+            self.assertEqual(old.get_model('front', 'Response').objects.get(pk=response.pk).content, 'Answer retained')
+            self.assertIsNone(migrated.objects.get(pk=explicit.pk).historical_company_id)
+            self.assertIsNone(migrated.objects.get(pk=missing.pk).company_id)
+            self.assertIsNone(old.get_model('front', 'AuditLog').objects.get(pk=audit.pk).company_id)
+            migrated.objects.filter(pk=inferred.pk).update(decision={'later': 'preserved'})
+            migrated.objects.filter(pk=changed.pk).update(company_id=b.pk)
+            new = migrated.objects.create(user_id=user.pk, company_id=a.pk, content='New explicit')
+            MigrationExecutor(connection).migrate(old_target)
+            self.assertIsNone(Prompt.objects.get(pk=inferred.pk).company_id)
+            self.assertEqual(Prompt.objects.get(pk=inferred.pk).decision, {'later': 'preserved'})
+            self.assertEqual(Prompt.objects.get(pk=changed.pk).company_id, b.pk)
+            self.assertEqual(Prompt.objects.get(pk=explicit.pk).company_id, b.pk)
+            self.assertEqual(Prompt.objects.get(pk=new.pk).company_id, a.pk)
+        finally:
+            MigrationExecutor(connection).migrate(latest)
