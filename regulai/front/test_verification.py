@@ -120,7 +120,7 @@ class VerificationTests(SimpleTestCase):
         for limit in (0, True, "12"):
             result = verify_response(self.document(), "stop", fragments=self.fragments,
                                      min_quote_chars=limit)
-        self.assertEqual(result["checks"][-2]["reason"], "invalid_quote_limits")
+            self.assertEqual(result["checks"][-2]["reason"], "invalid_quote_limits")
 
     def test_source_aliases_hide_stable_ids_and_resolve_server_evidence(self):
         from .sources import build_sources

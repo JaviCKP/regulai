@@ -45,8 +45,10 @@ class VerificationFlowTests(ChatFixture):
                 with self.subTest(path=path, transform=transform):
                     self.http.reset_mock()
                     self.answer(transform)
-                    result = self.send(path, 'What is the approved period?',
-                        file=SimpleUploadedFile('period.txt', b'The approved period is seventeen days.')).json()
+                    response = self.send(path, 'What is the approved period?',
+                        file=SimpleUploadedFile('period.txt', b'The approved period is seventeen days.'))
+                    self.assertEqual(response.status_code, 502)
+                    result = response.json()
                     self.assertEqual((result['status'], result['error_type']), ('failed', 'verification_failed'))
                     self.assertEqual(self.http.call_count, 1)
                     self.assertNotIn('assistant_message', result)
