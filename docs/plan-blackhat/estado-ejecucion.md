@@ -22,6 +22,8 @@ Operación integrada en `2ffb355`: check sin incidencias; 252 tests OK en 35.773
 
 Pipeline integrado en `eb8fde7`: **275 tests OK en 43.918 s, sin expected failures**, check sin incidencias, migraciones sin cambios, 150 controles offline correctos y cero llamadas reales, pip-audit sin vulnerabilidades conocidas. Las doce regresiones finales fallan por AssertionError en `4400f0b` y pasan aquí. Solo tres expectativas development cambiaron por D3, con justificación previa por caso. Revisión adversarial y documentación final aún pendientes. [Pipeline](tareas/18-pipeline-privacidad.md).
 
+Revisión adversarial en curso con SOL nuevos por carril. Las correcciones de autorización P (`95dfb77`) pasan las cinco puertas: **279 tests OK en 46.899 s**, check sin incidencias, migraciones sin cambios, 150 controles offline correctos/cero llamadas reales y pip-audit sin vulnerabilidades conocidas. Los hallazgos D/C se han reproducido y están en corrección. [Tarea19](tareas/19-revision-final.md). Se ha comprobado la [interfaz offline y las citas con teclado](../../evals/reports/ui-community-fixes-20261003/README.md); siguen pendientes documentos guardados con aplicaciones Office reales y ensayos humanos.
+
 El registro histórico que sigue corresponde a la implementación anterior; no acredita cambios de esta rama.
 
 2 de octubre de 2026. Rama local `codex/community-blackhat`, base `6a0f667`. Sin push, despliegue ni publicación. Los planes conservan la especificación original y anotan su implementación. [Arranque y guion](arranque-y-demo.md); [tracker local](tareas/00-base.md).
