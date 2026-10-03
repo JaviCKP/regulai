@@ -731,11 +731,24 @@
   }
 
   function renderDisclosures(parent, coverage) {
+    const messages = {
+      images_unread: 'Imágenes no analizadas ni enviadas', images_omitted: 'Imágenes no analizadas ni enviadas',
+      attachments_unread: 'Adjuntos no analizados ni enviados', charts_unread: 'Gráficos no analizados ni enviados',
+      comments_unread: 'Comentarios no analizados ni enviados', equations_unread: 'Ecuaciones no analizadas ni enviadas',
+      symbols_unread: 'Símbolos no analizados ni enviados', form_fields_unread: 'Campos de formulario no analizados ni enviados',
+      annotations_unread: 'Anotaciones no analizadas ni enviadas', external_content_unread: 'Contenido externo no analizado ni enviado',
+      page_without_text: 'Página sin texto extraíble; su contenido visual no se ha analizado ni enviado',
+      tracked_changes_present: 'Se ha usado la vista con los cambios aceptados',
+      encoding_assumed: 'Se ha interpretado la codificación como Windows-1252', blank_page: 'Página en blanco',
+      formula_expression_security_only: 'La fórmula se comprueba para seguridad; se envía su valor en caché',
+      formula_coverage_unknown: 'El valor actual de la fórmula no se ha podido comprobar',
+      numbering_unsupported: 'No se ha podido representar esta numeración'
+    };
     const disclosures = Array.isArray(coverage?.disclosures) ? coverage.disclosures : [];
     disclosures.forEach(item => {
       if (!item || typeof item.code !== 'string') return;
       const locators = Array.isArray(item.locators) ? item.locators.join(', ') : '';
-      receiptLine(parent, 'Content not analyzed or sent', item.code + ' (' + (item.count ?? 'unknown') + ')' + (locators ? ': ' + locators : ''));
+      receiptLine(parent, 'Document notice', (messages[item.code] || item.code) + ' (' + (item.count ?? 'unknown') + ')' + (locators ? ': ' + locators : ''));
     });
   }
 
@@ -764,7 +777,7 @@
       receiptLine(parent, 'History turns sent / omitted', `${receipt.history.sent_turns ?? 'unknown'} / ${receipt.history.omitted_turns ?? 'unknown'}`);
       receiptLine(parent, 'History bytes sent / omitted', `${receipt.history.sent_bytes ?? 'unknown'} / ${receipt.history.omitted_bytes ?? 'unknown'}`);
     }
-    const limitLabels = {jev_state_bytes: 'Evaluator input limit (bytes)', max_output_tokens: 'Output limit (tokens)',
+    const limitLabels = {jev_state_bytes: 'Evaluator input limit (bytes)', response_bytes: 'Response limit (bytes)', max_output_tokens: 'Output limit (tokens)',
       call_timeout_seconds: 'Call timeout (seconds)', deadline_seconds: 'Request deadline (seconds)',
       judge_input_bytes_bound: 'Maximum judge input (bytes)'};
     Object.entries(limitLabels).forEach(([key, label]) => {
