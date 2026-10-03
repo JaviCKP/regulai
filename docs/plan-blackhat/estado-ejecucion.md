@@ -18,6 +18,8 @@ Frontend integrado tras reproducir y revertir un fallo de bytes CRLF en vendor. 
 
 Onboarding integrado en `2cea782`: 246 tests OK en 35.521 s (siete expected failures de P), check sin incidencias, migraciones sin cambios, 150 controles offline correctos y cero llamadas reales, pip-audit sin vulnerabilidades conocidas. Administrador por empresa, borrador conservador sin activación automática y auditoría histórica visible de solo lectura. P y Q siguen en implementación; aún falta la revisión adversarial final.
 
+Operación integrada en `2ffb355`: check sin incidencias; 252 tests OK en 35.773 s (siete expected failures de P); migraciones sin cambios; 150 controles offline correctos y cero llamadas reales; pip-audit sin vulnerabilidades conocidas. Los logs y la auditoría de excepciones omiten contenido. Gunicorn y CI tienen configuración validada localmente; no se ejecutaron Actions ni PostgreSQL. [Operación](tareas/17-operacion-ci.md).
+
 El registro histórico que sigue corresponde a la implementación anterior; no acredita cambios de esta rama.
 
 2 de octubre de 2026. Rama local `codex/community-blackhat`, base `6a0f667`. Sin push, despliegue ni publicación. Los planes conservan la especificación original y anotan su implementación. [Arranque y guion](arranque-y-demo.md); [tracker local](tareas/00-base.md).
