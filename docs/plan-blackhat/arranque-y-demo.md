@@ -1,6 +1,6 @@
 # Arranque local, configuración y demo de cinco minutos
 
-Desde `C:\Users\javi\Documents\Codex\regulai-platform`. Python probado: 3.12.11. Conservar entornos, bases y configuración existentes. [Resultados observados](estado-ejecucion.md), [guion técnico de demo](../../evals/DEMO.md) y [evaluación offline](../../evals/README.md).
+Desde la raíz de tu checkout. Python probado: 3.12.11. Conservar entornos, bases y configuración existentes. [Resultados observados](estado-ejecucion.md), [guion técnico de demo](../../evals/DEMO.md) y [evaluación offline](../../evals/README.md).
 
 ## Instalación y comprobación
 
@@ -25,7 +25,7 @@ rtk proxy .venv/Scripts/python.exe regulai/manage.py run_demo --settings=regulai
 
 Abrir `http://127.0.0.1:8001/login/`, usuario **`community-demo`**, contraseña pública sintética **`community-demo-only`**. Si ese puerto está ocupado, añadir `--port 8002`. Para preparar sin servidor, añadir `--seed-only`.
 
-Usa exclusivamente `regulai/community-demo.sqlite3` y `regulai/community-demo-media`, con cookies propias. Migra y siembra una vez. Reiniciar conserva conversaciones y contraseña. Si alguien cambia el fixture de configuración, perfiles, credenciales, catálogo o reglas, falla sin sobrescribirlo: revisar la diferencia, no borrar la base para esconderla. Durante este comando están simuladas generación y HTTP de Jev; el proceso servidor bloquea las demás conexiones HTTP y socket. El navegador aún puede pedir glifos a Iconify: este bloqueo no convierte la presentación en un entorno completamente sin red. El banner **DEMO OFFLINE — fallo simulado** distingue esos resultados de una llamada real. El arranque normal no instala estos parches.
+Usa exclusivamente `regulai/community-demo.sqlite3` y `regulai/community-demo-media`, con cookies propias. Migra y siembra una vez. Reiniciar conserva conversaciones y contraseña. Si alguien cambia el fixture de configuración, perfiles, credenciales, catálogo o reglas, falla sin sobrescribirlo: revisar la diferencia, no borrar la base para esconderla. Durante este comando están simuladas generación y HTTP de Jev; el proceso servidor bloquea las demás conexiones HTTP y socket. Los recursos vendor y los iconos usados son locales, con hashes comprobados; Iconify no hace fetch externo y las fuentes son del sistema. CSP solo Report-Only. El bloqueo de run_demo se aplica al servidor. El banner **DEMO OFFLINE — fallo simulado** distingue esos resultados de una llamada real. El arranque normal no instala estos parches.
 
 ### Guion de cinco minutos
 
@@ -36,7 +36,7 @@ Usa exclusivamente `regulai/community-demo.sqlite3` y `regulai/community-demo-me
 | 2:00–4:00 | Conversación nueva, **Synthetic economy**, adjuntar `evals/documents/demo-contract.txt`; preguntar `¿Cuál es el precio del contrato?` | El primer fixture responde 900 euros y el juez prefijado lo rechaza; segundo intento fuerte devuelve 10 euros. Abrir los intentos y la evidencia del contrato. No presentar al juez prefijado como prueba de exactitud real. |
 | 4:00–5:00 | Abrir la ficha/evidencia y explicar cobertura, llamadas y coste desconocido; si queda tiempo, **Policy simulator**, comparar localmente un borrador | Una regla que encuentra `public` puede bloquear el informe público sintético. Probar una corrección que encuentre `synthetic secret`, sin activarla durante la presentación. |
 
-Otros documentos piden aclaración en esta demo; otros mensajes generales usan el saludo sintético. Se comprobaron las tres escenas en navegador: saludo `Hola` con ruta automática y tres llamadas simuladas; secreto bloqueado con cero llamadas; contrato de 10 euros con cita en línea 2, dos generaciones/cinco llamadas simuladas y persistencia tras recargar. Cancelar una advertencia termina en `cancelled` sin respuesta; confirmar con el archivo original mantiene una sola burbuja de usuario y devuelve `10 euros [1]`. El simulador comparó y activó una política local en otra empresa sin credenciales ni destinos, con cero llamadas reales. Se probó Enter para enviar y abrir la ficha y Espacio para alternar la ruta automática. La apertura de citas con teclado sigue sin comprobar: la herramienta rechazó reabrir la URL local. Capturas en [estado observado](estado-ejecucion.md). Los dos ensayos humanos completos permanecen pendientes hasta realizarse y registrarse.
+Otros documentos piden aclaración en esta demo; otros mensajes generales usan el saludo sintético. Se comprobaron las tres escenas en navegador: saludo `Hola` con ruta automática y tres llamadas simuladas; secreto bloqueado con cero llamadas; contrato de 10 euros con cita en línea 2, dos generaciones/cinco llamadas simuladas y persistencia tras recargar. Cancelar una advertencia termina en `cancelled` sin respuesta; confirmar con el archivo original mantiene una sola burbuja de usuario y devuelve `10 euros [1]`. El simulador comparó y activó una política local en otra empresa sin credenciales ni destinos, con cero llamadas reales. Se probó Enter para enviar y abrir la ficha y Espacio para alternar la ruta automática. La apertura de citas y evidencia con Enter quedó comprobada el 3 de octubre en un navegador real contra Django offline; [siete capturas y límites](../../evals/reports/ui-community-fixes-20261003/README.md). El DOCX se generó con Python, no con Word/LibreOffice. Capturas en [estado observado](estado-ejecucion.md). Los dos ensayos humanos completos permanecen pendientes hasta realizarse y registrarse.
 
 ## Servidor de desarrollo normal
 
@@ -58,7 +58,7 @@ Un administrador de empresa trabaja sobre su empresa. El catálogo global y Djan
 
 [ai-config-example.json](ai-config-example.json) valida con `AIConfig` y **mantiene cerrada la salida**: sin destinos, sin candidatos, presupuesto cero. Es una base segura para editar en el simulador, no una política que produzca respuestas.
 
-Para una política autorizada, configurar destinos por sensibilidad (`engine:<CompanyEngine.id>`, `jev` y, si procede, `obfuscation:<id>`). La credencial de Jev va en el campo cifrado `Company.jev_api_key`; las de generación en `CompanyEngine.api_key`. Ninguna pertenece al JSON. Los modelos necesitan contexto, salida máxima, capacidades, moneda, fecha y tarifas vigentes. Un presupuesto acotado rechaza precios desconocidos.
+Para una política autorizada, configurar destinos por sensibilidad (`engine:<CompanyEngine.id>`, `jev` y, si procede, `obfuscation:<id>`). La credencial de Jev va en el campo cifrado `Company.jev_api_key`; las de generación en `CompanyEngine.api_key`. Ninguna pertenece al JSON. Los modelos activos necesitan contexto, salida máxima, supports_json/reasoning, moneda USD, fecha y tarifas vigentes **por millón de tokens**, calidad por tarea sustentada en evidencia y reglas YARA válidas. Un presupuesto acotado rechaza precios desconocidos.
 
 Ejemplo de **un candidato**, con IDs de muestra que deben sustituirse por filas activas de la propia empresa:
 
@@ -66,7 +66,19 @@ Ejemplo de **un candidato**, con IDs de muestra que deben sustituirse por filas 
 {"company_engine_id": 101, "model_id": 201, "level": "economy", "quality": {"general": 0.5}}
 ```
 
-El ID 101 sería de `CompanyEngine`; 201 sería de `EngineModel` del mismo motor. El simulador revalida pertenencia y actividad. El valor de calidad anterior es ilustrativo, no calibrado. Para semántica requerida, también hacen falta permiso real hacia Jev, acceso de cuenta, tarifas y límite contractual por llamada. El acceso Gateway se comprobó tras la nueva autorización del usuario: tres llamadas Jev correctas. El flujo documental se detuvo por clasificación ambigua; la calibración y la comprobación completa en vivo siguen pendientes. No comprar créditos automáticamente ni confundir esta comprobación con la demo offline.
+El ID 101 sería de `CompanyEngine`; 201 sería de `EngineModel` del mismo motor. El simulador revalida pertenencia y actividad. El valor de calidad anterior es ilustrativo, no calibrado. Para semántica requerida, también hacen falta permiso real hacia Jev, acceso de cuenta, tarifas y límite contractual por llamada. El acceso Gateway se comprobó el 2 de octubre bajo otra autorización del usuario: tres llamadas Jev correctas. El flujo documental se detuvo por clasificación ambigua; la calibración y la comprobación completa en vivo siguen pendientes. No comprar créditos automáticamente ni confundir esta comprobación con la demo offline.
+
+### Política inicial y cambio incompatible
+
+`ai_config={}` devuelve HTTP 503 y cero llamadas. Multiempresa sigue disponible; `ALLOW_REGISTRATION=False` desactiva registro público. El administrador de cada empresa puede comparar y activar su política sin staff/superuser globales. El botón de borrador y este comando generan propuesta y avisos:
+
+```powershell
+python regulai/manage.py bootstrap_ai_policy --company ID --dry-run
+```
+
+Sustituir ID por la empresa autorizada. **El comando siempre deja la política activa intacta, también sin --dry-run.** Su suelo local es internal; solo propone destinos public/internal de motores y máscaras activos, no confidential/restricted/unknown ni Jev. No inventa calidad: completar las carencias señaladas, precios USD/millón y cota explícita de máscara (incluso cero de servicio propio). Unknown se trata como confidential por defecto; restricted permanece bloqueado incluso hacia motores privados.
+
+Comparar primero en modo local, sin salida a proveedores. Revisar destinos por sensibilidad, catálogo, reglas, capacidad, calidad y costes antes de activar. El modo semántico requiere autorización vigente, cota contractual, consentimiento y presupuesto; tener una clave Jev no concede permiso implícito. Mantener secretos en campos cifrados/configuración restringida, nunca en JSON o comandos del historial.
 
 La activación del simulador es un POST separado tras revisar la comparación. Revalida el borrador y comprueba versión/digests de política y reglas. Una edición concurrente o prueba expirada exige repetir la comparación.
 
@@ -78,13 +90,15 @@ Elegir un directorio **nuevo** para conservar informes anteriores:
 rtk proxy .venv/Scripts/python.exe regulai/manage.py evaluate_ai --settings=regulai.test_settings --output evals/reports/offline-repeticion-local
 ```
 
-El comando acepta SQLite en memoria, ejecuta 50 casos en tres configuraciones y bloquea red externa. Rechaza una salida ya existente. Informe final: [offline-2026-10-02-04](../../evals/reports/offline-2026-10-02-04/report.md), con hashes SHA-256 de los bytes exactos de los archivos ejecutados, comprobados de nuevo contra los archivos actuales. `--real` está desactivado en este banco; las pruebas reales acotadas fueron otro comando con registro persistente y no deben repetirse como parte del arranque.
+El comando acepta SQLite en memoria, ejecuta 50 casos en tres configuraciones y bloquea red externa. Rechaza una salida ya existente. Informe histórico del 2 de octubre: [offline-2026-10-02-04](../../evals/reports/offline-2026-10-02-04/report.md), con hashes SHA-256 de los bytes exactos de su revisión; no describe el código actual. La ejecución actual se enlaza desde [estado observado](estado-ejecucion.md). Si cualquier control falla el CLI guarda los cinco informes y termina con código distinto de cero. `--real` está desactivado en este banco; las pruebas reales acotadas fueron otro comando con registro persistente y no deben repetirse como parte del arranque.
 
 ## Recuperación
+
+Para SECRET_KEY/FALLBACKS y ENCRYPTION_KEY/FALLBACKS, seguir el [procedimiento de rotación offline](rotacion-claves.md). No perder las claves que descifran datos y backups anteriores. La operación descrita no se ejecutó sobre ninguna base del usuario.
 
 1. Demo offline: terminar con Ctrl+C. Sus parches desaparecen con el proceso; iniciar el servidor normal con sus settings habituales conserva sus datos. No borrar la base normal ni sustituir claves para retirar la demo.
 2. Cambio de política: copiar `previous_config` del AuditLog `policy_activate` correspondiente, compararlo como nuevo borrador y activarlo con una revisión nueva. Si las reglas cambiaron, reconstruir el borrador con `rule_before.yara_rule` y sus campos anteriores; `rule_after` registra la versión nueva. La auditoría está limitada a la empresa y no incluye la muestra ni credenciales. Si era una regla nueva y `rule_before` es nulo, desactivarla como cambio explícito revisado.
 3. Error de proveedor o validación: mantener el estado explícito y la salida cerrada; usar la demo offline rotulada. No saltarse comprobaciones ni repetir automáticamente un resultado incierto.
 4. Cambio de código/esquema: conservar una copia consistente de SQLite y settings antes de migrar. Volver a una revisión solo con su esquema y copia compatibles; no ejecutar una migración destructiva sobre la única base. Las claves de cifrado deben conservarse para leer credenciales existentes.
 
-No hay despliegue autorizado. El presupuesto real conjunto de pruebas es 1 USD. Tras la repetición autorizada, el [registro actualizado](../../evals/reports/real-budget-2026-10-02-02.json) suma 0,000086946 USD conocidos (incluye la estimación DeepSeek de 0,00000870 USD) y mantiene reservas inciertas de 0,03 USD. No confundir esas reservas con cobro confirmado o con llamadas gratuitas. [Alcance y pendientes](estado-ejecucion.md).
+No hay despliegue autorizado. El presupuesto real conjunto histórico, autorizado el 2 de octubre, fue 1 USD; esta guía no autoriza nuevas llamadas. Tras la repetición autorizada, el [registro actualizado](../../evals/reports/real-budget-2026-10-02-02.json) suma 0,000086946 USD conocidos (incluye la estimación DeepSeek de 0,00000870 USD) y mantiene reservas inciertas de 0,03 USD. No confundir esas reservas con cobro confirmado o con llamadas gratuitas. [Alcance y pendientes](estado-ejecucion.md).

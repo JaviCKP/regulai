@@ -1,12 +1,24 @@
 # regulAI Community: plan de implementación para Black Hat
 
-**Estado: implementación local y controles automatizados disponibles; calibración real de Jev, apertura de citas con teclado y ensayos humanos pendientes.** Revisión: 2 de octubre de 2026. Base original: [Regulai/platform, commit 6a0f667](https://github.com/Regulai/platform/tree/6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda). Las especificaciones originales se conservan; cada plan distingue la implementación de sus límites reales.
+**Estado: correcciones técnicas integradas y revisadas; documentación final en revisión.** Revisión: 3 de octubre de 2026. Base original: [Regulai/platform, commit 6a0f667](https://github.com/Regulai/platform/tree/6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda); inicio de correcciones `4400f0b`; código técnico recibido `51f4ee5`. Las especificaciones originales se conservan; cada plan distingue implementación y límites reales.
+
+## Resumen ejecutivo
+
+1. Las tres entradas HTTP comparten controles de empresa, política, consentimiento y registro previo de cada salida.
+2. Historial, documentos, contexto y respuesta se enmascaran; citas y omisiones se resuelven sobre lo realmente enviado.
+3. Documentos tienen cuatro estados de cobertura y límites efectivos; la ficha conserva destino real, costes y verificación.
+4. Arranque exige una política revisada: configuración vacía devuelve 503; borrador, simulación y activación son pasos distintos.
+5. Las pruebas locales y el navegador offline están registrados; calibración humana, Office real y proveedores vivos siguen pendientes.
 
 **Empieza aquí:** [arranque, configuración y demo actuales](arranque-y-demo.md). Consulta el [estado observado](estado-ejecucion.md) y las [tareas locales](tareas/00-base.md). La [guía original](00-guia-paso-a-paso.md) conserva el método y la secuencia de implementación.
 
-Para explicar la entrega a un equipo de ingeniería: [informe técnico del antes, los cambios, las decisiones y los pendientes](C:/Users/javi/Documents/Codex/regulai-platform/docs/plan-blackhat/informe-tecnico-cambios.md), comparando `6a0f667` con `4b10778`.
+Para explicar la entrega a un equipo de ingeniería: [informe técnico](informe-tecnico-cambios.md), [tabla de correcciones y límites actuales](informe-correcciones-community.md) y [rotación de claves](rotacion-claves.md).
 
-El flujo compartido, historial autorizado, extracción acotada, Jev, router, verificación, ficha, citas y simulador tienen pruebas locales: 129 correctas en el entorno existente y en uno nuevo con 45 dependencias fijadas. Las tres escenas, consentimiento y simulador se comprobaron en navegador. El banco offline ejecutó 50 casos en tres configuraciones, con 150 controles correctos y cero salidas prohibidas. Sus respuestas y juicios son prefijados: **no mide calidad semántica ni ahorro real**. Una llamada DeepSeek sintética respondió `4` a `2 + 2`. Tras tres 403 históricos, la repetición autorizada confirmó acceso real a Jev: una clasificación válida pero ambigua detuvo la generación, y el juez distinguió dos afirmaciones sintéticas correcta/incorrecta. El flujo documental completo y la calibración siguen pendientes. No se compraron créditos automáticamente. Véanse [resultados y pendientes](estado-ejecucion.md).
+La [verificación final](../../evals/reports/community-fixes-verification-20261003/README.md) sobre `12ca58d` (mismo comportamiento que `51f4ee5`) pasó cinco puertas: 302 tests OK en 66,767 s, check sin incidencias, migraciones sin cambios, 150 ejecuciones offline sin controles fallidos ni llamadas reales y auditoría sin vulnerabilidades conocidas. [Banco final](../../evals/reports/offline-community-fixes-final-20261003/report.md). Las 129 pruebas y llamadas reales acotadas del 2 de octubre son evidencia histórica bajo otra autorización, no la suite actual ni llamadas de esta tarea. El banco utiliza respuestas y juicios prefijados: **no mide calidad semántica ni ahorro real**. El [navegador offline](../../evals/reports/ui-community-fixes-20261003/README.md) confirmó citas con teclado, consentimiento y ficha persistida. Véanse [resultados, histórico y pendientes](estado-ejecucion.md).
+
+## Problemas conocidos y corregidos
+
+B1–B10/C1–C2 y los hallazgos posteriores de revisión tienen comportamiento, pruebas y commits en el [informe de correcciones](informe-correcciones-community.md). Los [informes Standards y Spec](revisiones-correcciones/README.md) permanecen íntegros sobre su checkout original. D1–D7 están aprobadas. La [tarea 19](tareas/19-revision-final.md) continúa in-review hasta la revisión documental y los gates finales de ASTRA.
 
 ## Qué queremos enseñar
 

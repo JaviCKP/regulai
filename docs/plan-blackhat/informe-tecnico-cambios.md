@@ -4,9 +4,21 @@
 
 **Código original comparado:** `6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda`.
 
-**Código y evidencias revisados:** `4b10778`, rama local `codex/community-blackhat`.
+**Código técnico recibido:** `51f4ee5`, rama local `codex/community-fixes`. Inicio de correcciones `4400f0b`, con el mismo código que `4b10778`. Las evidencias del 2 de octubre siguen identificadas como históricas.
 
 **Ámbito:** implementación local de los planes Black Hat 01–12. No se ha hecho push, publicación ni despliegue.
+
+## Resumen ejecutivo
+
+1. El servicio compartido aplica política, aislamiento y consentimiento a las tres entradas HTTP.
+2. Las correcciones cierran las doce regresiones B/C y los hallazgos técnicos posteriores de revisores independientes.
+3. Cobertura, fuentes enmascaradas, límites efectivos y costes desconocidos se declaran sin recortes silenciosos.
+4. Arranque exige política explícita; borrador y activación se separan, y las claves tienen recuperación offline documentada.
+5. La evidencia local es sintética; calibración humana, Office real y E2E con proveedores vivos siguen pendientes.
+
+## Problemas conocidos y corregidos
+
+La [tabla de correcciones Community](informe-correcciones-community.md) registra B1–B10/C1–C2, mejoras de diseño, hallazgos adversariales, pruebas y commits integrados. Los [ejes Standards y Spec](revisiones-correcciones/README.md) conservan sus informes originales. Las decisiones D1–D7 están aprobadas. Consulta [arranque](arranque-y-demo.md), [rotación de claves](rotacion-claves.md) y [estado observado](estado-ejecucion.md) para operación y gates; la documentación final sigue en revisión.
 
 Este documento explica cambios existentes en el repositorio. Distingue la lectura del código original, la implementación actual y las comprobaciones conservadas. No presenta como terminado todo el plan: faltan calibración, evaluación comparativa real y parte de la validación final.
 
@@ -62,19 +74,19 @@ El trabajo quedó dividido en commits. La tabla refleja la secuencia real; los a
 
 **Antes.** La raíz y la subcarpeta Django tenían listas de paquetes diferentes. Además de distintas versiones, la lista interior incluía `docx` junto a `python-docx`. Django estaba en 4.2.28 y DRF en 3.15.2.
 
-**Cambio.** La [lista raíz](C:/Users/javi/Documents/Codex/regulai-platform/requirements.txt) queda como fuente única, con 45 paquetes fijados. La [lista interior](C:/Users/javi/Documents/Codex/regulai-platform/regulai/requirements.txt) contiene `-r ../requirements.txt`. Django pasa a 5.2.17 LTS y DRF a 3.18.1. Se actualizaron también dependencias necesarias, incluidos componentes criptográficos, HTTP, XML, imágenes y JWT. `PyPDF2` se sustituyó por `pypdf 6.19.0`.
+**Cambio.** La [lista raíz](../../requirements.txt) queda como fuente única, con 45 paquetes fijados. La [lista interior](../../regulai/requirements.txt) contiene `-r ../requirements.txt`. Django pasa a 5.2.17 LTS y DRF a 3.18.1. Se actualizaron también dependencias necesarias, incluidos componentes criptográficos, HTTP, XML, imágenes y JWT. `PyPDF2` se sustituyó por `pypdf 6.19.0`.
 
 **Decisión y motivo.** Se mantuvo el stack Python/Django y se realizó la actualización en entregas separadas para distinguir problemas de dependencias de cambios funcionales. Las herramientas auxiliares se usaron de forma local o mediante la caché aislada de uv.
 
-**Qué hay ahora.** Una instalación reproducida con Python 3.12.11 en dos entornos. El [bootstrap](C:/Users/javi/Documents/Codex/regulai-platform/scripts/bootstrap_local.py) crea la configuración local solo si no existe; no reemplaza claves existentes. La base de desarrollo se separa de la de demo. Se incorporaron copias fijadas de las bibliotecas de navegador utilizadas, con un manifiesto de hashes.
+**Qué hay ahora.** Una instalación reproducida con Python 3.12.11 en dos entornos. El [bootstrap](../../scripts/bootstrap_local.py) crea la configuración local solo si no existe; no reemplaza claves existentes. La base de desarrollo se separa de la de demo. Se incorporaron copias fijadas de las bibliotecas de navegador utilizadas, con un manifiesto de hashes.
 
-**Problema resuelto y evidencia.** Se elimina la ambigüedad de instalación. La auditoría registrada el 2 de octubre encontró inicialmente 96 avisos en 12 paquetes; tras actualizar, informó cero vulnerabilidades conocidas. Es una observación fechada, no una garantía permanente. Las 129 pruebas pasaron también en el entorno creado desde cero. [Registro de dependencias](C:/Users/javi/Documents/Codex/regulai-platform/docs/plan-blackhat/dependencias-verificadas.md).
+**Problema resuelto y evidencia.** Se elimina la ambigüedad de instalación. La auditoría registrada el 2 de octubre encontró inicialmente 96 avisos en 12 paquetes; tras actualizar, informó cero vulnerabilidades conocidas. Es una observación fechada, no una garantía permanente. Las 129 pruebas de la revisión histórica del 2 de octubre pasaron también en el entorno creado desde cero; no es el tamaño de la suite actual. [Registro de dependencias](dependencias-verificadas.md).
 
 ## 4. Paso 2: unificar el envío y cerrar los fallos de seguridad
 
 **Antes.** Las tres entradas ejecutaban variantes de la lógica de validación, historial y envío. En la base, los bloques de excepción de la web asíncrona y REST podían continuar después de fallar la comprobación de seguridad.
 
-**Cambio.** Se añadió [chat_service.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/chat_service.py). Las entradas web, API y POST antiguo se redujeron a adaptar la petición y llamar a `send_chat_message(actor, command)`. La respuesta común, `ChatResult`, incluye datos y estado HTTP. La política se concentra en [policy.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/policy.py).
+**Cambio.** Se añadió [chat_service.py](../../regulai/front/chat_service.py). Las entradas web, API y POST antiguo se redujeron a adaptar la petición y llamar a `send_chat_message(actor, command)`. La respuesta común, `ChatResult`, incluye datos y estado HTTP. La política se concentra en [policy.py](../../regulai/front/policy.py).
 
 La configuración de IA se valida con Pydantic. `evaluate_policy` devuelve una decisión explícita: permitir, bloquear, exigir consentimiento o declarar que la comprobación no está disponible. YARA inválida, configuración ausente o reglas vacías no autorizadas impiden continuar. Las reglas de bloqueo conservan prioridad incluso si falla otra parte de la configuración.
 
@@ -88,7 +100,7 @@ La configuración de IA se valida con Pydantic. `evaluate_policy` devuelve una d
 
 **Antes.** `Prompt`, `Response` y `Message` existían, pero no tenían los enlaces y estados necesarios para representar de forma inequívoca una ejecución autorizada y sus repeticiones.
 
-**Cambio.** Se ampliaron las entidades existentes en [models.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/models.py):
+**Cambio.** Se ampliaron las entidades existentes en [models.py](../../regulai/front/models.py):
 
 | Entidad | Campos o restricciones añadidos | Función |
 | --- | --- | --- |
@@ -99,7 +111,7 @@ La configuración de IA se valida con Pydantic. `evaluate_policy` devuelve una d
 | `EngineModel` | `context_window`, `supports_json`, tarifas de entrada/salida, moneda y fecha | Comprobar capacidad y calcular costes con una tarifa identificable. |
 | `AuditLog` | `company` | Conservar la empresa de origen del evento, aunque posteriormente cambie el perfil del usuario. |
 
-Se añadieron las migraciones 0026, 0027 y 0028. La 0026 crea primero el UUID como nullable, asigna uno diferente a cada petición antigua y después aplica la obligatoriedad y la restricción única. Los registros anteriores quedan `legacy`, conservados y sin inventar relaciones o autorizaciones históricas.
+Se añadieron las migraciones 0026, 0027 y 0028; las correcciones posteriores añaden 0029 precios por millón, 0030 reasoning y 0031 procedencia histórica reversible. La 0026 crea primero el UUID como nullable, asigna uno diferente a cada petición antigua y después aplica la obligatoriedad y la restricción única. Los registros anteriores quedan `legacy`, conservados sin autorización nueva de contexto. La 0031 infiere empresa de Prompt desde el perfil con marca reversible; AuditLog histórico se muestra con etiqueta histórico sin modificar el contenido auditado.
 
 **Decisión y motivo.** Se reutilizaron los modelos existentes y un JSON versionado para las decisiones. La base de datos impone la unicidad; una operación condicional reclama la transición a `processing`. Las llamadas de red se realizan fuera de transacciones largas. No se depende de un bloqueo de fila que SQLite no proporciona mediante `select_for_update()`.
 
@@ -113,7 +125,9 @@ Se añadieron las migraciones 0026, 0027 y 0028. La 0026 crea primero el UUID co
 
 **Cambio.** `authorized_history` exige peticiones completadas de la empresa y usuario actuales, mensajes enlazados con los roles correctos, marca de elegibilidad y un digest que coincida con su contenido. Los mensajes antiguos se pueden conservar para consulta del propietario, pero no pasan a contexto por el mero hecho de existir.
 
-El consentimiento utiliza una prueba firmada y con caducidad, ligada al usuario, empresa, conversación, entrada, archivo, historial, política, reglas y destinos. Confirmar vuelve a validar esas condiciones. Cancelar termina la petición pendiente sin generar una respuesta.
+El historial elegido usa pares elegibles completos, los más recientes dentro de 20 turnos y 32.768 bytes por defecto, configurables. Turnos/bytes omitidos se declaran; tampoco salen al enmascarador.
+
+El consentimiento utiliza una prueba firmada y con caducidad, ligada al usuario, empresa, conversación, entrada, archivo, historial, política, reglas y destinos. Confirmar vuelve a validar esas condiciones. Cancelar termina la petición pendiente sin generar una respuesta. Una prueba caducada válida devuelve 409 con prueba nueva y razón, conservando identidad; una firma falsa no renueva. Una cancelación nueva no crea conversación ni mensaje.
 
 **Decisión y motivo.** La confirmación autoriza una acción concreta. No concede un permiso general ni levanta un bloqueo obligatorio. Se reutiliza la firma de Django y el estado persistente de la petición.
 
@@ -125,7 +139,7 @@ El consentimiento utiliza una prueba firmada y con caducidad, ligada al usuario,
 
 **Antes.** Existían filtros por empresa y propietario, pero no estaban aplicados uniformemente a todas las relaciones modificables, vistas administrativas y registros históricos. En desarrollo, la configuración general publicaba `MEDIA_ROOT` mediante la ruta de medios de Django.
 
-**Cambio.** Se añadió [access.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/access.py) y se ajustaron vistas, querysets y serializers de la API. Las relaciones de departamento, motor, modelo y grupo se resuelven dentro del ámbito autorizado. Se restringen los campos escribibles de los serializers de mensajes, prompts y respuestas; los mensajes ya tenían un endpoint de solo lectura. Las alertas pasan a lectura con una acción específica de resolución, y el propietario de una conversación queda controlado por el servidor.
+**Cambio.** Se añadió [access.py](../../regulai/front/access.py) y se ajustaron vistas, querysets y serializers de la API. Las relaciones de departamento, motor, modelo y grupo se resuelven dentro del ámbito autorizado. Se restringen los campos escribibles de los serializers de mensajes, prompts y respuestas; los mensajes ya tenían un endpoint de solo lectura. Las alertas pasan a lectura con una acción específica de resolución, y el propietario de una conversación queda controlado por el servidor.
 
 La administración global exige un operador activo con las marcas correspondientes y su ID explícito en `PLATFORM_ADMIN_USER_IDS`. Un administrador de empresa no puede restablecer la contraseña ni borrar el perfil de ese operador. La auditoría utiliza la empresa capturada en el evento.
 
@@ -141,40 +155,29 @@ Se retiró el alias general de medios. Las descargas comprueban el acceso a la c
 
 **Antes.** Había extracción de archivos integrada en las vistas y tratamiento distinto entre entradas. Ya se leían tablas DOCX y hojas de cálculo; también se intentaba OCR sobre imágenes y se permitía una ruta de visión. El texto tenía respaldo Latin-1 cuando no se decodificaba como UTF-8. El envío web recortaba el texto utilizado por el modelo, sin un contrato común de cobertura ni referencias persistentes por fragmento. Algunos errores de extracción se convertían en cadenas de texto que podían continuar dentro de la petición.
 
-**Cambio.** [documents.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/documents.py) devuelve un `Document` con texto, formato, digest, estado, unidades leídas/totales, advertencias y fragmentos. Cada fragmento tiene ID estable, localización y texto. Su identificador depende de la versión del extractor, del documento y de su localización.
+**Cambio.** [documents.py](../../regulai/front/documents.py) devuelve un `Document` con texto, formato, digest, estado, unidades leídas/totales, advertencias y fragmentos. Cada fragmento tiene ID estable, localización y texto. Su identificador depende de la versión del extractor, del documento y de su localización.
 
 Hay lectores para PDF textual, DOCX, XLSX, CSV y texto UTF-8 admitido. Se controla también contenido como tablas de DOCX y hojas ocultas de XLSX. El procesamiento costoso se ejecuta en un subproceso con tiempo máximo. Existen límites de caracteres, páginas, celdas, elementos XML, contenido descomprimido y relación de compresión.
 
-| Límite actual | Valor |
-| --- | --- |
-| Entrada de texto/CSV | 1 MiB |
-| Entrada PDF/DOCX/XLSX | 10 MiB |
-| Texto extraído / fragmentos | 200.000 caracteres / 10.000 unidades |
-| PDF | 100 páginas |
-| Descompresión PDF Flate | 32 MiB acumulados; filtro LZW no admitido |
-| Contenido ZIP expandido / entradas | 32 MiB / 2.000 entradas |
-| Relación de compresión | 100 como máximo |
-| XLSX | 100 hojas, 256 columnas y 100.000 celdas/cadenas |
-| XML | 100.000 elementos y profundidad 128 |
-| Subproceso CSV/PDF/Office | Timeout de 5 segundos por defecto |
+Los límites efectivos de upload, extracción, Jev, juez, respuesta, historial y plazos están en la [tabla actual contrastada con código](informe-correcciones-community.md#cobertura-y-límites-efectivos). Entrada texto/CSV 1 MiB; PDF/DOCX/XLSX 10 MiB; Jev estado 98.304 bytes y envoltura 196.608 bytes. La cota local de respuesta min(128000, max_output_tokens×8) no es una conversión formal token-byte. El peor estado del juez se calcula antes de generar, incluido escape JSON 6×, preguntas y localizadores. Un archivo menor que el upload limit puede rechazarse antes de red.
 
 **Decisión y motivo.** Se priorizó la extracción textual con cobertura explícita y límites sobre los formatos existentes. La decisión de seguridad y la respuesta no deben asumir que una lectura parcial representa todo el archivo.
 
-**Qué hay ahora.** Si el documento no queda con estado `complete`, el flujo devuelve `input_unreadable` antes de enviarlo al modelo. Cuando la extracción es completa, se envían todos los fragmentos; si el contexto íntegro no cabe, se rechaza la petición sin recortarlo. Las citas posteriores utilizan los fragmentos del servidor.
+**Qué hay ahora.** Cuatro estados: `complete`, `complete_text_only`, `partial` y `unreadable`. El segundo declara omisiones visuales/adjuntos y exige consentimiento; los dos últimos detienen el envío. Se envían los fragmentos textuales completos; si no caben en contexto o juez, se rechaza sin recortar. Los disclosures llevan código, cantidad y localizadores. SHA estables quedan en servidor, el proveedor recibe alias S1…Sn.
 
 **Problema resuelto y límite.** Se evita presentar el recorte silencioso como lectura completa y se acota el procesamiento de entradas problemáticas. «Completo» describe la extracción admitida, no una reproducción fiel de toda la presentación visual. `front.test_documents` cubre documentos sintéticos, corrupción, cifrado, límites y cobertura.
 
-**Cambio de compatibilidad que debe comunicarse.** El nuevo flujo no ofrece el OCR ni el envío de imágenes al generador que se intentaban en la base. Rechaza imágenes, XLS antiguo y texto no UTF-8. En PDF, una página sin texto, objetos gráficos o anotaciones detectadas producen cobertura parcial y detienen el envío. Las fórmulas XLSX no se ejecutan: se extrae su expresión y su detección marca cobertura parcial, impidiendo el envío. Es una restricción funcional deliberada para el alcance textual controlado; no debe anunciarse como equivalencia completa con todas las rutas anteriores. Recuperar OCR/visión requeriría una entrega específica con cobertura, permisos y límites verificables.
+**Cambio de compatibilidad que debe comunicarse.** No hay OCR ni envío visual, imágenes sueltas o XLS antiguo. Se admite UTF-16 con BOM y Windows-1252 declarado tras fallar UTF-8. Hipervínculos no reducen cobertura; página PDF en blanco avisa, escaneada sin texto es partial. Imágenes/adjuntos detectados dan complete_text_only con consentimiento y no salen a proveedores. Fórmulas XLSX no se ejecutan: expresión completa para YARA, valor de caché para el modelo; falta de caché/recálculo pendiente impide completitud. Word toma cambios aceptados, numeración decimal y reinicios; declara lo no soportado. Fixtures programáticos cubiertos, documentos guardados desde Office/LibreOffice reales pendientes.
 
 ## 9. Paso 7: incorporar Jev y elegir modelos con restricciones explícitas
 
 **Antes.** Los conectores ya podían llamar a distintos modelos. La elección se apoyaba en la selección manual, la sesión o los valores predeterminados. No existían los nuevos módulos de evaluación Jev y decisión de ruta.
 
-**Cambio en Jev.** [jev.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/jev.py) implementa un contrato HTTP concreto, con límites de tamaño, timeout, validación estricta de respuestas y sin redirecciones ni reintentos ocultos. Admite el transporte directo y el de Vercel Gateway con las credenciales correspondientes. La ruta Gateway utiliza `typesafe-ai/jev` y restringe el proveedor a `typesafe-ai`.
+**Cambio en Jev.** [jev.py](../../regulai/front/jev.py) implementa un contrato HTTP concreto, con límites de tamaño, timeout, validación estricta de respuestas y sin redirecciones ni reintentos ocultos. Admite el transporte directo y el de Vercel Gateway con las credenciales correspondientes. La ruta Gateway utiliza `typesafe-ai/jev` y restringe el proveedor a `typesafe-ai`.
 
-La evaluación separa sensibilidad, presencia de datos sensibles o intentos de manipulación, tipo de tarea, dificultad, ambigüedad e insuficiencia de evidencia. Esas señales pasan por código que aplica el umbral y la política local. Jev no puede añadir destinos ni revocar un bloqueo YARA.
+La evaluación separa sensibilidad, presencia de datos sensibles o intentos de manipulación, tipo de tarea, dificultad, ambigüedad e insuficiencia de evidencia. Esas señales pasan por clasificación ordinal conservadora: unknown cuenta como confidential por defecto, señales desde 0,2, probabilidades incoherentes fallan cerradas y manipulación tiene código propio. Ambigüedad avisa y pide al generador aclarar si hace falta; dificultad dudosa usa strong y tarea dudosa general, reteniendo calidad mínima entre tareas plausibles. Jev no puede añadir destinos ni revocar un bloqueo YARA.
 
-**Cambio en la ruta.** [routing.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/routing.py) es una función de decisión sobre candidatos ya autorizados por empresa. Filtra por capacidad, contexto, salida máxima, JSON cuando se requiere, calidad mínima configurada y presupuesto. Entre los candidatos elegibles elige el de menor coste estimado, con desempate estable. Se conserva la selección manual sometida a las mismas restricciones aplicables.
+**Cambio en la ruta.** [routing.py](../../regulai/front/routing.py) es una función de decisión sobre candidatos ya autorizados por empresa. Filtra por capacidad, contexto, salida máxima, JSON cuando se requiere, calidad mínima configurada y presupuesto. Entre los candidatos elegibles elige el de menor coste estimado, con desempate estable. Se conserva la selección manual sometida a las mismas restricciones aplicables.
 
 **Decisión y motivo.** Se separó «qué se puede enviar» de «qué capacidad necesita la tarea» y de «qué alternativa cuesta menos». El router no es otro agente que decida libremente: recibe un catálogo y aplica condiciones comprobables.
 
@@ -184,13 +187,13 @@ La evaluación separa sensibilidad, presencia de datos sensibles o intentos de m
 
 **Antes.** Los conectores devolvían contenido y `finish_reason`, pero no existía la nueva secuencia integrada de comprobación local, juez semántico y segundo intento con evidencia documental estructurada.
 
-**Cambio.** [verification.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/verification.py) distingue contenido vacío, respuesta incompleta o rechazada y finalización reconocida. Para documentos exige JSON con afirmaciones y citas. Cada cita debe apuntar a un ID del documento y contener un extracto existente. El servidor resuelve la localización y la evidencia; el modelo no puede inventar una ruta de archivo o una URL para convertirla en fuente autorizada.
+**Cambio.** [verification.py](../../regulai/front/verification.py) distingue contenido vacío, respuesta incompleta o rechazada y finalización reconocida. Para documentos exige JSON con afirmaciones y citas. Cada cita debe apuntar al alias de una fuente enviada y contener un extracto literal de al menos 12 caracteres sin espacios o tres palabras (configurable). Máximo 30 afirmaciones; admite un único fence JSON envolvente. El juez recibe pares resueltos numerados desde 1, contexto y fuentes completos. El servidor resuelve la localización y la evidencia; el modelo no puede inventar una ruta de archivo o una URL para convertirla en fuente autorizada.
 
 Cuando el modo o el documento exige evaluación semántica, tras las comprobaciones locales el juez evalúa omisiones, contradicciones y respaldo de las afirmaciones. El servicio puede reservar una alternativa con mayor calidad configurada y realizar una segunda generación; no hay un bucle indefinido. Un resultado externo incierto no se reenvía automáticamente.
 
 **Decisión y motivo.** Separar comprobaciones deterministas de juicio semántico: que un extracto exista no demuestra que respalde la afirmación. Tampoco se utiliza una autonota del generador como prueba de corrección.
 
-**Qué hay ahora.** Modos `local`, `advisory` y `enforce`, con alcance registrado. En documentos se exige la comprobación semántica del flujo; en modo `advisory` puede entregarse contenido con controles locales correctos aunque la semántica no esté aprobada, dejando el estado indicado. No se etiqueta como verificado ni se incorpora como historial elegible. La evidencia de la respuesta se conserva como aprobada cuando la verificación pasa.
+**Qué hay ahora.** Modos `local`, `advisory` y `enforce`, con alcance registrado. En documentos se exige la comprobación semántica del flujo; en modo `advisory` puede entregarse contenido con controles locales correctos aunque la semántica no esté aprobada, dejando el estado indicado. No se etiqueta como verificado ni se incorpora como historial elegible. La evidencia de la respuesta se conserva como aprobada cuando la verificación pasa. Las citas se validan antes del enmascarado de respuesta para impedir que un placeholder blanquee una cita inventada, y se comprueban de nuevo después.
 
 **Problema resuelto y evidencia.** Se detectan los fallos cubiertos por `front.test_verification` y `front.test_pipeline`: truncamiento, citas inexistentes, formatos inválidos y reacción ante rechazo del juez. Las dos generaciones y su coste se registran. La corrección factual universal y la mejora real de la alternativa fuerte siguen sin demostrarse.
 
@@ -198,11 +201,11 @@ Cuando el modo o el documento exige evaluación semántica, tras las comprobacio
 
 **Antes.** Los conectores tenían un contador de tokens y el motivo de finalización, pero no el contrato ampliado de uso ni una ficha común con el detalle de cada evaluación y generación. Los SDK mantenían sus comportamientos predeterminados de reintento.
 
-**Cambio.** Se amplió [connectors.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/connectors.py) con tokens de entrada/salida, uso comunicado e identificador de respuesta. Se fijaron timeouts, `max_retries=0` y redirecciones desactivadas. En Anthropic se conservan conjuntamente los mensajes de sistema de empresa y departamento, en vez de reemplazar uno con el siguiente.
+**Cambio.** Se amplió [connectors.py](../../regulai/front/connectors.py) con tokens de entrada/salida, uso comunicado e identificador de respuesta. Se fijaron timeouts, `max_retries=0` y redirecciones desactivadas. En Anthropic se conservan conjuntamente los mensajes de sistema de empresa y departamento, en vez de reemplazar uno con el siguiente.
 
 El flujo registra la intención de llamada antes del efecto externo y después anota estado, duración, modelo, uso y coste. Los importes usan `Decimal`. Se diferencia entre estimación por tarifa, coste comunicado y coste desconocido; la ausencia de datos no se convierte en cero. Se reserva presupuesto para las comprobaciones necesarias y, cuando cabe, para la segunda generación.
 
-La [interfaz del chat](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/templates/chat/chat.html) incorpora ficha y evidencia desplegables, selección automática y manejo de errores HTTP. Conserva archivo, selección e identificador al confirmar o reintentar. Los textos dinámicos se insertan como texto y los endpoints de ficha/evidencia comprueban propietario y empresa.
+La [interfaz del chat](../../regulai/front/templates/chat/chat.html) incorpora ficha y evidencia desplegables, selección automática y manejo de errores HTTP. Conserva archivo, selección e identificador al confirmar o reintentar. Los textos dinámicos se insertan como texto y los endpoints de ficha/evidencia comprueban propietario y empresa.
 
 **Decisión y motivo.** Se reutilizan los registros de petición y respuesta para auditar, sin otra plataforma de trazas. El recibo público filtra los campos internos y no expone credenciales o tokens de confirmación.
 
@@ -212,7 +215,7 @@ La [interfaz del chat](C:/Users/javi/Documents/Codex/regulai-platform/regulai/fr
 
 **Antes.** Existía administración de reglas. No había el nuevo recorrido de comparación de una política propuesta frente a la vigente con una prueba de activación ligada a esa comparación.
 
-**Cambio.** [policy_simulator.py](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/policy_simulator.py) compara borradores de configuración y YARA con una muestra. El modo local utiliza señales sintéticas explícitas y no llama al generador. Conserva el mínimo local de sensibilidad y reserva en la decisión de ruta los costes obligatorios de Jev. El modo semántico opcional requiere autorización vigente y registra su llamada antes de enviarla.
+**Cambio.** [policy_simulator.py](../../regulai/front/policy_simulator.py) compara borradores de configuración y YARA con una muestra. El modo local utiliza señales sintéticas explícitas y no llama al generador. Conserva el mínimo local de sensibilidad y reserva en la decisión de ruta los costes obligatorios de Jev. El modo semántico opcional requiere autorización vigente y registra su llamada antes de enviarla.
 
 La activación es un POST distinto. Comprueba la firma de la comparación, su caducidad y la versión y contenido actuales de reglas y política. Una modificación concurrente obliga a repetir la comparación. Se audita la configuración y la regla anteriores y nuevas.
 
@@ -226,15 +229,17 @@ La activación es un POST distinto. Comprueba la firma de la comparación, su ca
 
 **Cambio.** Se añadieron pruebas de comportamiento en Django y un banco sintético con 50 casos: tareas, documentos, sensibilidad, instrucciones adversariales y estados/fallos. Se dividió en 30 casos de desarrollo y 20 reservados. Cada caso se ejecuta como `economy`, `strong` y `router`, con orden reproducible y manifiesto de configuración, fuentes y hashes.
 
-El comando [evaluate_ai](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/management/commands/evaluate_ai.py) usa el servicio real con proveedores prefijados, SQLite aislado en memoria y red bloqueada. Conserva resultados JSONL y resúmenes CSV/JSON/Markdown. Rechaza sobrescribir una ejecución anterior.
+El comando [evaluate_ai](../../regulai/front/management/commands/evaluate_ai.py) usa el servicio real con proveedores prefijados, SQLite aislado en memoria y red bloqueada. Conserva resultados JSONL y resúmenes CSV/JSON/Markdown. Rechaza sobrescribir una ejecución anterior.
 
-El comando [run_demo](C:/Users/javi/Documents/Codex/regulai-platform/regulai/front/management/commands/run_demo.py) utiliza base, medios y cookies separados y simula proveedores únicamente en ese proceso. Se comprobaron escenas de saludo, bloqueo, contrato con segundo intento, consentimiento y simulador. El servidor bloquea conexiones externas en ese modo; el navegador puede solicitar glifos a Iconify, por lo que no se afirma aislamiento total de red.
+El comando [run_demo](../../regulai/front/management/commands/run_demo.py) utiliza base, medios y cookies separados y simula proveedores únicamente en ese proceso. Se comprobaron escenas de saludo, bloqueo, contrato con segundo intento, consentimiento y simulador. El servidor bloquea conexiones externas en ese modo. Los siete recursos vendor tienen hashes locales verificados, Chart.js 4.5.1, Iconify con fetch deshabilitado y catálogo local, fuentes del sistema. Las copias anteriores eran parciales; la prueba actual cubre los siete assets. La prueba Git clona un fixture de assets bajo autocrlf, no el repositorio completo. CSP es solo Report-Only.
 
 **Decisión y motivo.** Probar los controles de forma determinista, repetible y sin coste. Reutilizar Django y Python estándar para el banco, sin añadir una plataforma de evaluación. Se instalaron en el proyecto las seis skills prioritarias de Matt Pocock, con versión de origen fijada, tareas locales y RTK conservado; son herramientas de trabajo, no dependencias del producto en ejecución.
 
 **Problema resuelto y límite.** Hay pruebas y una demo que se pueden repetir sin depender de disponibilidad externa. Los proveedores prefijados prueban controles, no precisión de los modelos. La partición reservada del banco sintético no equivale a un conjunto independiente revisado por personas. `evaluate_ai --real` continúa desactivado: el ledger existe para `smoke_ai`, pero no está conectado al banco comparativo completo.
 
 ## 14. Qué se ha comprobado realmente
+
+Verificación final de correcciones: 302 tests en 66,767 s y cinco gates exit0 sobre `12ca58d`; [registro y límites](informe-correcciones-community.md#verificación-final-conservada). Lo siguiente conserva el histórico original.
 
 Los resultados siguientes son evidencias conservadas del 2 de octubre de 2026. Para elaborar este informe se revisaron código, diffs e informes; no se ejecutaron nuevas llamadas pagadas ni se atribuye una nueva ejecución a las pruebas históricas.
 
@@ -244,28 +249,28 @@ Los resultados siguientes son evidencias conservadas del 2 de octubre de 2026. P
 | Misma suite en entorno recién creado | 129 correctas, en 39,764 s. | Se reprodujo la instalación y la suite en otro entorno local. |
 | Migraciones y consistencia | `migrate --check` correcto; `makemigrations --check --dry-run` sin cambios; `pip check` compatible. | Esquema local y dependencias coherentes con la revisión comprobada. |
 | Evaluación offline final | 50 casos × 3 configuraciones; 150 controles correctos; cero llamadas reales. | Los resultados programados recorren correctamente los controles esperados, incluidas abstenciones y errores. No son 150 respuestas reales correctas. |
-| Navegador | Escenas de demo, confirmación/cancelación, persistencia de ficha y evidencia, simulador. | Esos recorridos se utilizaron visualmente. Quedan pruebas de teclado y ensayos humanos. |
+| Navegador | Escenas de demo, confirmación/cancelación, persistencia de ficha y evidencia, simulador. | Esos recorridos se utilizaron visualmente. En esa revisión quedaban pruebas de teclado; las citas con Enter se comprobaron el 3 de octubre. Siguen pendientes ensayos humanos. |
 | DeepSeek real | `2 + 2` devolvió `4`; 25 tokens de entrada y uno de salida. | Integración y contabilidad de una petición sintética sencilla. |
 | Clasificación Jev real | Petición válida; confianza de categoría 0,49 frente al umbral 0,8. | El acceso funciona y el código detuvo la generación con `classification_ambiguous`. El recorrido documental no entregó respuesta. |
-| Juez Jev real, prueba de componente | Aceptó «17 días» y rechazó «30 días» frente a la misma fuente de 17 días. | Discriminó ese par de respuestas redactadas previamente, con las preguntas y el umbral actuales. No acredita el recorrido completo ni calibración general. |
+| Juez Jev real, prueba de componente con script no versionado | Aceptó «17 días» y rechazó «30 días» frente a la misma fuente de 17 días. | Discriminó ese par de respuestas redactadas previamente, con las preguntas y el umbral actuales. No acredita el recorrido completo ni calibración general; el script que produce jev_verification_component no está versionado y el ensayo no es reproducible E2E desde el repositorio. |
 
 Los tres 403 de Jev anteriores al acceso correcto permanecen en el historial. Las tres llamadas Jev exitosas nuevas sumaron **0,000078246 USD** comunicados por Gateway. El registro conjunto conserva **0,000086946 USD** conocidos, incluida la estimación DeepSeek de **0,00000870 USD**, más **0,03 USD de reservas inciertas** por los intentos anteriores. Estas reservas no se presentan como cobro confirmado ni como cero. El límite autorizado fue 1 USD.
 
 Evidencias consultables:
 
-- [Estado de ejecución y comandos](C:/Users/javi/Documents/Codex/regulai-platform/docs/plan-blackhat/estado-ejecucion.md).
-- [Registro de las comprobaciones de entrega](C:/Users/javi/Documents/Codex/regulai-platform/evals/reports/release-verification-2026-10-02.json). Sus referencias al 403 describen la situación previa al nuevo acceso; los informes siguientes son posteriores.
-- [Evaluación offline final](C:/Users/javi/Documents/Codex/regulai-platform/evals/reports/offline-2026-10-02-04/report.md).
-- [Recorrido visual y capturas](C:/Users/javi/Documents/Codex/regulai-platform/evals/reports/ui-2026-10-02/README.md).
-- [Clasificación real del contrato](C:/Users/javi/Documents/Codex/regulai-platform/evals/reports/real-smoke-2026-10-02-03/report.json).
-- [Dos casos reales del juez](C:/Users/javi/Documents/Codex/regulai-platform/evals/reports/real-jev-verification-2026-10-02-01/report.json).
-- [Presupuesto actualizado tras la repetición](C:/Users/javi/Documents/Codex/regulai-platform/evals/reports/real-budget-2026-10-02-02.json).
+- [Estado de ejecución y comandos](estado-ejecucion.md).
+- [Registro de las comprobaciones de entrega](../../evals/reports/release-verification-2026-10-02.json). Sus referencias al 403 describen la situación previa al nuevo acceso; los informes siguientes son posteriores.
+- [Evaluación offline final](../../evals/reports/offline-2026-10-02-04/report.md).
+- [Recorrido visual y capturas](../../evals/reports/ui-2026-10-02/README.md).
+- [Clasificación real del contrato](../../evals/reports/real-smoke-2026-10-02-03/report.json).
+- [Dos casos reales del juez](../../evals/reports/real-jev-verification-2026-10-02-01/report.json).
+- [Presupuesto actualizado tras la repetición](../../evals/reports/real-budget-2026-10-02-02.json).
 
 El informe offline final identifica `023c7ef` como HEAD en el momento de ejecución sobre cambios de trabajo; los archivos probados se incorporaron posteriormente a `cfa29fa`. Sus hashes de contenido se conservaron para identificar lo ejecutado. No debe interpretarse ese HEAD anterior como la única fuente de la ejecución.
 
 ## 15. Cosas pendientes y orden de trabajo
 
-**El plan Black Hat no está completado.** Hay módulos implementados y pruebas locales extensas, pero faltan entregables de código y criterios de aceptación. No todo lo pendiente se reduce a «hacer más pruebas».
+**Los criterios externos del plan Black Hat siguen abiertos.** Las correcciones técnicas están integradas; falta calibración, evidencia de aplicaciones Office reales, ensayos humanos y validación con proveedores vivos. La tarea 19 conserva in-review hasta revisión documental y gates finales.
 
 | Orden | Pendiente | Trabajo concreto | Criterio para cerrarlo |
 | --- | --- | --- | --- |
@@ -274,10 +279,10 @@ El informe offline final identifica `023c7ef` como HEAD en el momento de ejecuci
 | 3 | Recorrido documental real — planes 07–09 | Ejecutar clasificación, selección, generación, juez, citas y ficha en conjunto. Incluir rechazo, confirmación, respuesta incompleta y segundo intento cuando corresponda. | Una respuesta permitida llega con evidencia resoluble; casos denegados se detienen; se registran todas las llamadas. |
 | 4 | Banco comparativo real — plan 11 | Implementar la conexión de `evaluate_ai --real` con proveedores, el ledger compartido, aislamiento y manifiesto real. Después comparar economy/strong/router con las mismas restricciones y datos. | Ejecución reproducible, costes incluidos también para fallos y descartes, etiquetas independientes y cobertura reportada. |
 | 5 | Medición de calidad, latencia y ahorro — planes 06 y 11 | Analizar el banco real sin seleccionar solo casos favorables. Distinguir costes comunicados, estimaciones y partidas desconocidas. | Informe que permita sostener o descartar la hipótesis de ahorro con calidad y cobertura comparables. Actualmente no hay una cifra de ahorro válida. |
-| 6 | Citas por teclado y ensayos — planes 09 y 12 | Completar la apertura de evidencia con teclado y dos ensayos cronometrados con otra persona. | Resultados y dificultades registrados. La comprobación de teclado quedó pendiente por rechazo de URL de la herramienta, no por un defecto demostrado del producto. |
+| 6 | Ensayos — plan 12 | Dos ensayos cronometrados con otra persona. | Resultados y dificultades registrados. Citas/evidencia con Enter ya comprobadas en navegador Django offline el 3 de octubre. |
 | 7 | Preparación de un piloto o despliegue | Elegir usuarios y políticas, revisar la configuración del entorno de destino y preparar copia y recuperación de datos y claves. | Aprobación del entorno y de la operación. No se ha autorizado ni realizado despliegue. |
 
-El acceso a Jev **ya no es el impedimento actual**. El resultado de baja confianza es un dato que investigar y calibrar, no una justificación para saltarse el control.
+El acceso a Jev **ya no es el impedimento actual**. El resultado histórico de baja confianza es un dato de calibración; D3 ahora interpreta la distribución conservadoramente y declara avisos. No demuestra calidad general.
 
 La cuenta normal de desarrollo quedó con `ai_config={}` tras las pruebas: no está activada para uso real continuo y devuelve un error de configuración sin llamadas. La demo separada sí tiene su política sintética. Tener credenciales guardadas no configura automáticamente un piloto.
 
@@ -291,9 +296,9 @@ El comando de smoke real está limitado expresamente al 2 de octubre de 2026 y a
 - No hay garantía universal de veracidad. El sistema registra qué comprobaciones se realizaron y cómo terminaron.
 - Los cambios permanecen en commits locales; los archivos preexistentes ajenos al encargo se conservaron.
 
-Para arrancar el entorno o preparar la presentación, consultar la [guía comprobada de arranque y demo](C:/Users/javi/Documents/Codex/regulai-platform/docs/plan-blackhat/arranque-y-demo.md). Para reproducir la comparación de código utilizada en este informe, desde la raíz del repositorio:
+Para arrancar el entorno o preparar la presentación, consultar la [guía comprobada de arranque y demo](arranque-y-demo.md). Para reproducir la comparación de código utilizada en este informe, desde la raíz del repositorio:
 
 ```powershell
-rtk git log --oneline 6a0f667..4b10778
-rtk git diff 6a0f667...4b10778 -- regulai requirements.txt scripts
+git log --oneline 6a0f667..51f4ee5
+git diff 6a0f667...51f4ee5 -- regulai requirements.txt scripts
 ```
