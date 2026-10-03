@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.urls import reverse
+from django.core.exceptions import ValidationError as DjangoValidationError
+from front.file_security import validate_avatar_upload
 from front.models import (
     Company, Role, Department, Profile, RulesGroup, Rule,
     Conversation, Message, Prompt, Response, AuditLog, Alert,
@@ -124,6 +126,15 @@ class ProfileSerializer(CompanyScopedSerializer):
 
     def get_avatar_url(self, obj):
         return obj.get_avatar_url()
+
+    def validate_avatar(self, value):
+        if value is not None:
+            try:
+                validate_avatar_upload(value)
+            except DjangoValidationError as error:
+                raise serializers.ValidationError(error.messages) from None
+            value.seek(0)
+        return value
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

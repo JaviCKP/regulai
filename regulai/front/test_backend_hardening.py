@@ -1,11 +1,17 @@
 """Backend security behavior at HTTP, command and persistent-state interfaces."""
 from unittest.mock import patch
+import io
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 
 from front.models import Alert, Company, Engine, EngineModel, Profile, Rule, RulesGroup
+from PIL import Image
 
 
 class BackendHardeningTests(TestCase):
@@ -76,3 +82,39 @@ class BackendHardeningTests(TestCase):
                 network.assert_not_called()
                 self.assertEqual(self.client.post(url).status_code, 200)
         self.assertEqual(network.call_count, 1)
+
+    def test_yara_includes_are_disabled_for_creation_and_editing(self):
+        with TemporaryDirectory() as directory:
+            include = Path(directory) / 'synthetic.yar'
+            include.write_text('rule Included { condition: true }', encoding='utf-8')
+            source = f'include "{include.as_posix()}"\nrule Submitted {{ condition: true }}'
+            data = {'name': 'Submitted', 'yara_rule': source, 'rules_group': self.group.pk}
+            for url in (reverse('front:rule_create'), reverse('front:rule_edit', args=[self.rule.pk])):
+                with self.subTest(url=url):
+                    result = self.client.post(url, data)
+                    self.assertEqual(result.status_code, 200)
+                    self.assertEqual([str(message) for message in get_messages(result.wsgi_request)],
+                        ['Invalid YARA rule; compilation failed.'])
+            self.rule.refresh_from_db()
+            self.assertNotIn('include', self.rule.yara_rule)
+            self.assertFalse(Rule.objects.filter(name='Submitted').exists())
+
+    def test_api_avatar_rejects_large_valid_images_and_accepts_small_ones(self):
+        self.client.force_login(self.admin)
+        profile = self.admin.profile
+        image = io.BytesIO()
+        Image.new('RGB', (1, 1)).save(image, format='PNG')
+        with TemporaryDirectory() as directory, override_settings(MEDIA_ROOT=directory):
+            url = reverse('api:profile-detail', args=[profile.pk])
+            from rest_framework.test import APIClient
+            client = APIClient()
+            client.force_login(self.admin)
+            rejected = client.patch(url, {'avatar': SimpleUploadedFile('large.png',
+                image.getvalue() + b'\0' * (5 * 1024 * 1024), content_type='image/png')}, format='multipart')
+            self.assertEqual(rejected.status_code, 400)
+            profile.refresh_from_db()
+            self.assertFalse(profile.avatar)
+            accepted = client.patch(url, {'avatar': SimpleUploadedFile('small.png', image.getvalue(),
+                content_type='image/png')}, format='multipart')
+            self.assertEqual(accepted.status_code, 200)
+            self.assertTrue(accepted.data['avatar'])

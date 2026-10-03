@@ -5,13 +5,14 @@ from django.db.models.functions import TruncDate
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from functools import wraps
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from front.models import *
 from front.access import actor_company, authorized_conversations, platform_required, protect_operator
+from front.policy import validate_yara
 from front.connectors import get_connector, ChatMessage, ChatResponse
 from front.rate_limit import (
     login_rate_limit, chat_rate_limit, signup_rate_limit,
@@ -1861,15 +1862,9 @@ def rule_create(request):
 
         # Validate YARA rule
         try:
-            yara.compile(source=yara_rule)
-        except yara.SyntaxError as e:
-            messages.error(request, f'YARA syntax error: {e}')
-            return render(request, 'rules/form.html', {
-                'rules_groups': rules_groups,
-                'form_data': request.POST,
-            })
-        except Exception as e:
-            messages.error(request, f'YARA validation error: {e}')
+            validate_yara(yara_rule)
+        except ValidationError:
+            messages.error(request, 'Invalid YARA rule; compilation failed.')
             return render(request, 'rules/form.html', {
                 'rules_groups': rules_groups,
                 'form_data': request.POST,
@@ -1951,15 +1946,9 @@ def rule_edit(request, pk):
 
         # Validate YARA rule
         try:
-            yara.compile(source=rule.yara_rule)
-        except yara.SyntaxError as e:
-            messages.error(request, f'YARA syntax error: {e}')
-            return render(request, 'rules/form.html', {
-                'rule': rule,
-                'rules_groups': rules_groups,
-            })
-        except Exception as e:
-            messages.error(request, f'YARA validation error: {e}')
+            validate_yara(rule.yara_rule)
+        except ValidationError:
+            messages.error(request, 'Invalid YARA rule; compilation failed.')
             return render(request, 'rules/form.html', {
                 'rule': rule,
                 'rules_groups': rules_groups,
