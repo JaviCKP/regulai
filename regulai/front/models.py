@@ -3,7 +3,14 @@ from django.contrib.auth.models import User
 from .encrypted_fields import EncryptedCharField
 from .policy import validate_ai_config, validate_yara
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
+from decimal import Decimal
 import uuid
+
+
+def validate_price_per_million(value):
+    if 0 < value < Decimal('0.0001'):
+        raise ValidationError('Configure USD prices per million tokens, not per token.')
 
 
 class Company(models.Model):
@@ -203,6 +210,7 @@ class Prompt(models.Model):
     filtered = models.BooleanField(default=False)
     request_id = models.UUIDField(default=uuid.uuid4, editable=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    historical_company_id = models.PositiveBigIntegerField(null=True, blank=True, editable=False)
     user_message = models.OneToOneField(Message, on_delete=models.SET_NULL, null=True, blank=True, related_name='request_record')
     status = models.CharField(max_length=24, default='legacy')
     decision = models.JSONField(default=dict, blank=True)
@@ -220,6 +228,10 @@ class Prompt(models.Model):
 
     def __str__(self):
         return f"Prompt by {self.user.username} at {self.created_at}"
+
+    @property
+    def historical(self):
+        return self.status == 'legacy' or self.historical_company_id is not None
 
 
 class Response(models.Model):
@@ -245,6 +257,10 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"[{self.timestamp}] {self.user} - {self.action}"
+
+    @property
+    def historical(self):
+        return self.company_id is None and self.user_id is not None
 
 
 class Alert(models.Model):
@@ -312,8 +328,9 @@ class EngineModel(models.Model):
     max_tokens = models.IntegerField(default=4096)
     context_window = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     supports_json = models.BooleanField(default=False)
-    input_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0)])
-    output_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0)])
+    reasoning = models.BooleanField(default=False)
+    input_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0), validate_price_per_million], help_text='USD per million input tokens; 0 means free, blank means unknown.')
+    output_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0), validate_price_per_million], help_text='USD per million output tokens; 0 means free, blank means unknown.')
     currency = models.CharField(max_length=3, default='USD')
     price_date = models.DateField(null=True, blank=True)
     order = models.IntegerField(default=0)  # For ordering in UI

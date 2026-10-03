@@ -8,6 +8,7 @@ Copy this file to your local environment and customize as needed.
 """
 
 import os
+import json
 
 # ==============================================================================
 # ENCRYPTION KEY (CRITICAL - REQUIRED)
@@ -26,6 +27,8 @@ import os
 
 #CHANGE:
 ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY']
+# Temporary rotation keys; remove after reencrypt_secrets succeeds and backups are migrated.
+ENCRYPTION_KEY_FALLBACKS = json.loads(os.environ.get('ENCRYPTION_KEY_FALLBACKS', '[]'))
 
 # ==============================================================================
 # DJANGO SECRET KEY
@@ -34,6 +37,8 @@ ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY']
 # Uncomment to override the default (recommended for production)
 #CHANGE:
 SECRET_KEY = os.environ['SECRET_KEY']
+# Temporary signing keys; remove after outstanding sessions/tokens have expired.
+SECRET_KEY_FALLBACKS = json.loads(os.environ.get('SECRET_KEY_FALLBACKS', '[]'))
 CORS_ALLOW_CREDENTIALS = False
 # ==============================================================================
 # DEBUG MODE

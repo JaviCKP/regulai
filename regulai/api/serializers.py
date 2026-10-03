@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.urls import reverse
+from django.core.exceptions import ValidationError as DjangoValidationError
+from front.file_security import validate_avatar_upload
 from front.models import (
     Company, Role, Department, Profile, RulesGroup, Rule,
     Conversation, Message, Prompt, Response, AuditLog, Alert,
@@ -124,6 +126,15 @@ class ProfileSerializer(CompanyScopedSerializer):
 
     def get_avatar_url(self, obj):
         return obj.get_avatar_url()
+
+    def validate_avatar(self, value):
+        if value is not None:
+            try:
+                validate_avatar_upload(value)
+            except DjangoValidationError as error:
+                raise serializers.ValidationError(error.messages) from None
+            value.seek(0)
+        return value
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -254,12 +265,13 @@ class ConversationListSerializer(serializers.ModelSerializer):
 class PromptSerializer(serializers.ModelSerializer):
     """Serializer for Prompt model."""
     user_username = serializers.CharField(source='user.username', read_only=True)
+    historical = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Prompt
         fields = [
             'id', 'user', 'user_username', 'conversation',
-            'content', 'created_at', 'model_used', 'filtered'
+            'content', 'created_at', 'model_used', 'filtered', 'historical'
         ]
         read_only_fields = fields
 
@@ -296,12 +308,13 @@ class AlertSerializer(serializers.ModelSerializer):
 class AuditLogSerializer(serializers.ModelSerializer):
     """Serializer for AuditLog model."""
     user_username = serializers.CharField(source='user.username', read_only=True)
+    historical = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = AuditLog
         fields = [
             'id', 'user', 'user_username', 'action',
-            'details', 'timestamp'
+            'details', 'timestamp', 'historical'
         ]
         read_only_fields = ['id', 'timestamp']
 

@@ -8,6 +8,12 @@ Primera integración de regresiones: ASTRA reprodujo B1–B10/C1–C2 sin decora
 
 Clasificación y documentos integrados: política ordinal conservadora, avisos de ambigüedad, formatos comunes y cobertura declarada. B3 y B7 ya no tienen expectedFailure. La última puerta integrada (`9f58dbf`) pasó check, 180 tests en 29.446 s (10 expected failures pendientes), migraciones sin cambios, 150 controles offline y pip-audit sin vulnerabilidades conocidas. [Clasificación](tareas/12-clasificacion-conservadora.md), [documentos](tareas/11-cobertura-documental.md).
 
+Verificación integrada (`e042461`): 199 tests OK (9 expected failures) en 31.721 s y las cinco puertas correctas. B8 retirado; ocho reproducciones independientes en rojo, cero errores de preparación. No se han modificado etiquetas del banco offline. [Citas y conectores](tareas/13-citas-estructuradas.md).
+
+Seguridad integrada (`48fdba9`): 214 tests OK (8 expected failures) en 32.148 s; check, migraciones, evaluación offline150 y pip-audit correctos. B2 retirado y once regresiones adicionales reproducidas con AssertionError en la base. Rotación probada solo en bases aisladas; ningún secreto existente modificado. [Seguridad backend](tareas/14-seguridad-backend.md).
+
+Migraciones 0029–0031 integradas y probadas una por una, incluida reversión. Última puerta (`f677d54`): 218 tests OK (8 expected failures) en 32.687 s y check/migraciones/offline150/pip-audit correctos. Ninguna base de datos del usuario se modificó. [Histórico y política inicial](tareas/15-onboarding-historico.md).
+
 El registro histórico que sigue corresponde a la implementación anterior; no acredita cambios de esta rama.
 
 2 de octubre de 2026. Rama local `codex/community-blackhat`, base `6a0f667`. Sin push, despliegue ni publicación. Los planes conservan la especificación original y anotan su implementación. [Arranque y guion](arranque-y-demo.md); [tracker local](tareas/00-base.md).

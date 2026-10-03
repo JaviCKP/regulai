@@ -41,6 +41,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'front.middleware.ExceptionAuditMiddleware',
+    'front.middleware.ContentSecurityPolicyMiddleware',
 ]
 
 ROOT_URLCONF = 'regulai.urls'
@@ -156,7 +157,7 @@ LOGIN_REDIRECT_URL = 'front:dashboard'
 LOGOUT_REDIRECT_URL = 'front:login'
 
 # Registration
-ALLOW_REGISTRATION = True  # Set to False to disable public registration
+ALLOW_REGISTRATION = False  # Enable explicitly to allow public registration.
 
 # Django REST Framework Configuration
 REST_FRAMEWORK = {
@@ -194,7 +195,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Registration
-ALLOW_REGISTRATION = True  # Set to False to disable public registration
+ALLOW_REGISTRATION = False  # Enable explicitly to allow public registration.
 
 # SECURITY FLAGS
 #SECURE_SSL_REDIRECT = True

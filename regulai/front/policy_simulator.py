@@ -13,14 +13,14 @@ from django.db import OperationalError, transaction
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods, require_POST
 
-from .access import actor_company
+from .access import actor_company, can_manage_company_policy, company_policy_required
 from .chat_service import PipelineStop, candidates_for
 from .classification import decide
 from . import jev
 from .models import AuditLog, Company, CompanyEngine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
+from .management.commands.bootstrap_ai_policy import initial_policy
 from .policy import AIConfig, active_rules, digest, evaluate_policy, validate_yara
 from .routing import RoutingError, actual_cost, route
-from .views import admin_required
 
 logger = logging.getLogger(__name__)
 
@@ -345,7 +345,7 @@ def _semantic(actor, company, sample, rules):
     return semantic, calls + [call], signals
 
 
-@admin_required
+@company_policy_required
 @require_http_methods(['GET', 'POST'])
 def policy_simulator(request):
     company = actor_company(request.user)
@@ -358,6 +358,10 @@ def policy_simulator(request):
         'rule_active': request.POST.get('rule_active', 'on' if request.method == 'GET' else ''),
         'mode': request.POST.get('mode', 'local'), 'signals': _signals({})}
     status = 200
+    if request.method == 'POST' and request.POST.get('action') == 'bootstrap':
+        proposed, warnings = initial_policy(company)
+        context.update(proposed_config=json.dumps(proposed, indent=2), bootstrap_warnings=warnings, mode='local')
+        return render(request, 'policy_simulator.html', context)
     if request.method == 'POST':
         try:
             proposed = _config(context['proposed_config'], company)
@@ -400,14 +404,14 @@ def policy_simulator(request):
     return render(request, 'policy_simulator.html', context, status=status)
 
 
-@admin_required
+@company_policy_required
 @require_POST
 def policy_simulator_activate(request):
     company = actor_company(request.user)
     try:
         with transaction.atomic():
             fresh = Profile.objects.select_for_update().select_related('company', 'user').get(user=request.user)
-            if not fresh.user.is_active or not fresh.user.is_superuser:
+            if not can_manage_company_policy(fresh.user):
                 raise PermissionDenied('Administrator permission is required.')
             if fresh.company_id != company.pk:
                 raise signing.BadSignature('Company changed')

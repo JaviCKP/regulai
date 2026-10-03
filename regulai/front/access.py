@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import Q
 from functools import wraps
 
 from .models import Conversation, Profile, Prompt
@@ -33,6 +34,28 @@ def actor_company(actor):
         return Profile.objects.select_related('company').get(user=actor).company
     except Profile.DoesNotExist:
         raise PermissionDenied('Se necesita un perfil de empresa asignado.')
+
+
+def can_manage_company_policy(user):
+    if not user.is_authenticated or not user.is_active:
+        return False
+    profiles = Profile.objects.filter(user=user)
+    return profiles.exists() and (user.is_superuser or is_platform_operator(user)
+        or profiles.filter(role__name__iexact='Admin').exists())
+
+
+def company_policy_required(view):
+    @login_required
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if not can_manage_company_policy(request.user):
+            raise PermissionDenied('Company administrator permission is required.')
+        return view(request, *args, **kwargs)
+    return wrapped
+
+
+def company_audit_scope(company):
+    return Q(company=company) | Q(company__isnull=True, user__profile__company=company)
 
 
 def authorized_conversations(actor):

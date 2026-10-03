@@ -5,12 +5,14 @@ from django.db.models.functions import TruncDate
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from functools import wraps
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from front.models import *
-from front.access import actor_company, authorized_conversations, platform_required, protect_operator
+from front.access import actor_company, authorized_conversations, company_audit_scope, platform_required, protect_operator
+from front.policy import validate_yara
 from front.connectors import get_connector, ChatMessage, ChatResponse
 from front.rate_limit import (
     login_rate_limit, chat_rate_limit, signup_rate_limit,
@@ -193,7 +195,7 @@ def login_view(request):
 
     return render(request, 'auth/login.html', {
         'next': request.GET.get('next', ''),
-        'allow_registration': getattr(settings, 'ALLOW_REGISTRATION', True)
+        'allow_registration': getattr(settings, 'ALLOW_REGISTRATION', False)
     })
 
 
@@ -215,11 +217,10 @@ def signup_view(request):
     Public signup view for creating new companies and admin users.
     Rate limited to 3 registrations per hour per IP.
 
-    SECURITY: Only the first user becomes a superuser (platform owner).
-    Subsequent users are company admins with staff privileges but NOT superusers.
+    Registration creates a company administrator without platform privileges.
     """
     # Check if registration is allowed
-    if not getattr(settings, 'ALLOW_REGISTRATION', True):
+    if not getattr(settings, 'ALLOW_REGISTRATION', False):
         messages.error(request, 'Registration is currently disabled.')
         return redirect('front:login')
 
@@ -278,10 +279,6 @@ def signup_view(request):
                 domain=company_domain if company_domain else None
             )
 
-            # SECURITY: Only the first user (platform owner) gets superuser privileges
-            # Subsequent users are company admins with staff access but NOT superusers
-            is_first_user = User.objects.count() == 0
-
             # Create user with appropriate privileges
             user = User.objects.create_user(
                 username=username,
@@ -290,7 +287,7 @@ def signup_view(request):
                 first_name=first_name,
                 last_name=last_name,
                 is_staff=True,  # Allow access to security features
-                is_superuser=is_first_user  # Only first user is platform superuser
+                is_superuser=False
             )
 
             # Get or create admin role
@@ -317,24 +314,16 @@ def signup_view(request):
             log_action(user, 'user_registered', {
                 'username': username,
                 'company': company_name,
-                'is_first_user': is_first_user,
-                'is_superuser': is_first_user
+                'is_superuser': False
             }, request)
 
             # Auto-login the user
             login(request, user)
 
-            # Show appropriate message
-            if is_first_user:
-                messages.success(request,
-                    f'Welcome to regulAI! You are the platform owner. '
-                    f'Your company "{company_name}" has been created with full system access.'
-                )
-            else:
-                messages.success(request,
-                    f'Welcome to regulAI! Your company "{company_name}" has been created. '
-                    f'You have administrator access for your company.'
-                )
+            messages.success(request,
+                f'Welcome to regulAI! Your company "{company_name}" has been created. '
+                f'You have administrator access for your company.'
+            )
 
             return redirect('front:dashboard')
 
@@ -1002,6 +991,7 @@ def engine_delete(request, pk):
 
 
 @admin_required
+@require_POST
 def engine_toggle(request, pk):
     """Toggle engine active status."""
     company = request.user.profile.company
@@ -1114,6 +1104,7 @@ def model_edit(request, pk):
 
 @admin_required
 @platform_required
+@require_POST
 def model_toggle(request, pk):
     """Toggle model active status."""
     model = get_object_or_404(EngineModel, pk=pk)
@@ -1134,6 +1125,7 @@ def model_toggle(request, pk):
 
 @admin_required
 @platform_required
+@require_POST
 def model_delete(request, pk):
     """Delete a model."""
     model = get_object_or_404(EngineModel, pk=pk)
@@ -1858,15 +1850,9 @@ def rule_create(request):
 
         # Validate YARA rule
         try:
-            yara.compile(source=yara_rule)
-        except yara.SyntaxError as e:
-            messages.error(request, f'YARA syntax error: {e}')
-            return render(request, 'rules/form.html', {
-                'rules_groups': rules_groups,
-                'form_data': request.POST,
-            })
-        except Exception as e:
-            messages.error(request, f'YARA validation error: {e}')
+            validate_yara(yara_rule)
+        except ValidationError:
+            messages.error(request, 'Invalid YARA rule; compilation failed.')
             return render(request, 'rules/form.html', {
                 'rules_groups': rules_groups,
                 'form_data': request.POST,
@@ -1948,15 +1934,9 @@ def rule_edit(request, pk):
 
         # Validate YARA rule
         try:
-            yara.compile(source=rule.yara_rule)
-        except yara.SyntaxError as e:
-            messages.error(request, f'YARA syntax error: {e}')
-            return render(request, 'rules/form.html', {
-                'rule': rule,
-                'rules_groups': rules_groups,
-            })
-        except Exception as e:
-            messages.error(request, f'YARA validation error: {e}')
+            validate_yara(rule.yara_rule)
+        except ValidationError:
+            messages.error(request, 'Invalid YARA rule; compilation failed.')
             return render(request, 'rules/form.html', {
                 'rule': rule,
                 'rules_groups': rules_groups,
@@ -2011,6 +1991,7 @@ def rule_delete(request, pk):
 
 
 @security_required
+@require_POST
 def rule_toggle(request, pk):
     """Activates/deactivates a YARA rule."""
     # Get user's company
@@ -2112,6 +2093,7 @@ def rules_community_list(request):
 
 
 @security_required
+@require_POST
 def rule_community_configure(request, pk):
     """Configures (duplicates) a community rule for the user's company."""
     user_company = get_user_company(request.user)
@@ -2175,6 +2157,7 @@ def rule_community_configure(request, pk):
 
 
 @security_required
+@require_POST
 def rule_community_activate(request, pk):
     """Activates a recently configured community rule."""
     user_company = get_user_company(request.user)
@@ -2196,6 +2179,8 @@ def rule_community_activate(request, pk):
 
 
 @admin_required
+@platform_required
+@require_POST
 def rules_community_sync(request):
     """
     Syncs community rules from the GitHub repository.
@@ -2458,6 +2443,7 @@ def alert_detail(request, pk):
 
 
 @security_required
+@require_POST
 def alert_resolve(request, pk):
     """Marks an alert as resolved."""
     # Get user's company
@@ -2483,6 +2469,7 @@ def alert_resolve(request, pk):
 
 
 @security_required
+@require_POST
 def alert_unresolve(request, pk):
     """Marks an alert as unresolved."""
     # Get user's company
@@ -2558,7 +2545,7 @@ def auditlogs_list(request):
     user_company = get_user_company(request.user)
 
     # Filter logs by company (through user's profile) or system logs (user=None)
-    company_or_system = Q(company=user_company)
+    company_or_system = company_audit_scope(user_company)
     logs = AuditLog.objects.filter(
         company_or_system
     ).select_related('user').order_by('-timestamp')
@@ -2631,7 +2618,7 @@ def auditlog_detail(request, pk):
     user_company = get_user_company(request.user)
 
     # Only allow access to logs from user's company or system logs
-    company_or_system = Q(company=user_company)
+    company_or_system = company_audit_scope(user_company)
     log = get_object_or_404(
         AuditLog.objects.filter(company_or_system).select_related('user'),
         pk=pk,

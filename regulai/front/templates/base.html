@@ -142,12 +142,7 @@
                 <span class="hide-menu">Company</span>
               </a>
             </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link {% if 'policy_simulator' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'front:policy_simulator' %}" aria-expanded="false">
-                <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
-                <span class="hide-menu">Policy simulator</span>
-              </a>
-            </li>
+
             <li class="sidebar-item">
               <a class="sidebar-link {% if request.resolver_match.url_name == 'users_list' or request.resolver_match.url_name == 'user_create' or request.resolver_match.url_name == 'user_edit' or request.resolver_match.url_name == 'user_delete' %}active{% endif %}" href="{% url 'front:users_list' %}" aria-expanded="false">
                 <iconify-icon icon="solar:users-group-rounded-line-duotone"></iconify-icon>
@@ -172,13 +167,19 @@
                 <span class="hide-menu">Audit Log</span>
               </a>
             </li>
-            <li class="sidebar-item">
+{% if is_platform_operator %}            <li class="sidebar-item">
               <a class="sidebar-link" href="{% url 'admin:index' %}" aria-expanded="false">
                 <iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
                 <span class="hide-menu">Admin Panel</span>
               </a>
-            </li>
+            </li>{% endif %}
             {% endif %}
+{% if can_manage_company_policy %}            <li class="sidebar-item">
+              <a class="sidebar-link {% if 'policy_simulator' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'front:policy_simulator' %}" aria-expanded="false">
+                <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+                <span class="hide-menu">Policy simulator</span>
+              </a>
+            </li>{% endif %}
           </ul>
         </nav>
         <!-- End Sidebar navigation -->
@@ -277,7 +278,7 @@
                     <i class="ti ti-user fs-6 me-2"></i>
                     My Profile
                   </a>
-                  {% if user.is_superuser %}
+                  {% if is_platform_operator %}
                   <a href="{% url 'admin:index' %}" class="dropdown-item py-2">
                     <i class="ti ti-settings fs-6 me-2"></i>
                     Admin Panel
@@ -320,6 +321,8 @@
   <script src="{% static 'js/app.min.js' %}"></script>
   <!-- Iconify icons -->
   <script src="{% static 'vendor/iconify-icon.min.js' %}"></script>
+  <script src="{% static 'vendor/solar-icons.js' %}"></script>
+  <script src="{% static 'vendor/brand-icons.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 

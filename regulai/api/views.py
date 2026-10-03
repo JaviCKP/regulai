@@ -14,7 +14,7 @@ from front.models import (
     Engine, EngineModel, CompanyEngine
 )
 from front.views import log_action
-from front.access import actor_company, authorized_conversations
+from front.access import actor_company, authorized_conversations, company_audit_scope
 from front.rate_limit import login_rate_limit, chat_rate_limit
 from rest_framework.permissions import SAFE_METHODS
 from .permissions import IsCompanyAdmin, IsSecurityStaff
@@ -332,7 +332,7 @@ class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         """Filter audit logs by user's company."""
         user_company = actor_company(self.request.user)
-        return AuditLog.objects.filter(company=user_company).select_related('user')
+        return AuditLog.objects.filter(company_audit_scope(user_company)).select_related('user').order_by('-timestamp', '-pk')
 
 
 # ==================== CHAT API ====================
