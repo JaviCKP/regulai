@@ -93,6 +93,24 @@ class PipelinePrivacyTests(ChatFixture):
         self.assertEqual(Message.objects.count(), 0)
         self.provider.assert_not_called()
 
+    def test_mask_expansion_cannot_exceed_effective_history_byte_limit(self):
+        self.configure(history={'max_turns': 1, 'max_bytes': 25})
+        first = self.send('/api/chat/send/', 'RECENT_TURN').json()
+        self.mask()
+        original_transport = self.http.side_effect
+        def expanded(url, **kwargs):
+            if url.endswith('/api/mask'):
+                return SimpleNamespace(raise_for_status=lambda: None,
+                    json=lambda: {'masked': kwargs['json']['text'].replace('Correct answer', 'X' * 50)})
+            return original_transport(url, **kwargs)
+        self.http.side_effect = expanded
+        self.http.reset_mock()
+        self.provider.reset_mock()
+        result = self.send('/api/chat/send/', 'NEXT_TURN', conversation_id=first['conversation_id']).json()
+        self.assertEqual(result.get('error_type'), 'context_overflow', result)
+        self.assertEqual(self.http.call_count, 1)
+        self.provider.assert_not_called()
+
     def test_processing_is_not_marked_uncertain_while_max_deadline_can_still_run(self):
         result = self.send('/api/chat/send/').json()
         pending = Prompt.objects.get(request_id=result['request_id'])

@@ -305,6 +305,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
     """One bounded execution; closures share the immutable authorization and ledger."""
     cfg = AIConfig.model_validate(profile.company.ai_config)
     prompt.decision['limits'] = {'jev_state_bytes': jev.MAX_STATE_BYTES, 'max_output_tokens': cfg.routing.max_output_tokens,
+        'history_max_bytes': cfg.history.max_bytes, 'history_max_turns': cfg.history.max_turns,
         'call_timeout_seconds': cfg.limits.call_timeout_seconds, 'deadline_seconds': cfg.limits.deadline_seconds,
         'jev_call_timeout_seconds': min(120, cfg.limits.call_timeout_seconds)}
     deadline = prompt._started + cfg.limits.deadline_seconds
@@ -557,6 +558,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             system = [ChatMessage(m.role, next(masked)) for m in system]
             history = [ChatMessage(m.role, next(masked)) for m in history]
             prompt.decision['history']['sent_bytes'] = sum(len(m.content.encode('utf-8')) for m in history)
+            if prompt.decision['history']['sent_bytes'] > cfg.history.max_bytes:
+                raise PipelineStop('context_overflow')
             if document:
                 document.fragments = [{**fragment, 'text': next(masked), 'locator': next(masked)} for fragment in document.fragments]
         task, difficulty = 'document_question' if document else 'general', 'economy'
