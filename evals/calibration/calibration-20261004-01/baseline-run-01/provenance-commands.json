@@ -1,0 +1,55 @@
+[
+  {
+    "argv": [
+      "rtk",
+      "proxy",
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout": "9d7f9424a70143614c9d673e64ebed9723ff3439\n",
+    "stderr": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\n"
+  },
+  {
+    "argv": [
+      "rtk",
+      "proxy",
+      "git",
+      "log",
+      "-1",
+      "--format=%H",
+      "--",
+      "regulai"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\n"
+  },
+  {
+    "argv": [
+      "rtk",
+      "proxy",
+      "git",
+      "ls-files",
+      "regulai"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\n"
+  },
+  {
+    "argv": [
+      "rtk",
+      "proxy",
+      "git",
+      "diff",
+      "--binary",
+      "HEAD",
+      "--"
+    ],
+    "exit_code": 0,
+    "stdout": "diff --git a/regulai/front/evaluation_budget.py b/regulai/front/evaluation_budget.py\nindex 5c65631..31614ff 100644\n--- a/regulai/front/evaluation_budget.py\n+++ b/regulai/front/evaluation_budget.py\n@@ -5,6 +5,7 @@ from decimal import Decimal\n import json\n from pathlib import Path\n import sqlite3\n+from urllib.parse import urlsplit\n import uuid\n \n \n@@ -25,14 +26,17 @@ class EvaluationBudget:\n         self.path, self.cap = str(path), money(cap)\n         self.authorization = (authorization_id, authorization_digest) if authorization_id is not None else None\n         self.run_id = None\n-        if not 0 < self.cap <= 1:\n-            raise ValueError('The pilot is capped at 1 USD in total.')\n+        if self.cap <= 0:\n+            raise ValueError('A positive total ceiling is required.')\n         with self.transaction() as db:\n             db.execute('CREATE TABLE IF NOT EXISTS authorization (cap TEXT NOT NULL)')\n-            previous = db.execute('SELECT cap FROM authorization').fetchone()\n-            if previous and money(previous[0]) != self.cap:\n-                raise ValueError('Existing authorization limit cannot be changed.')\n+            caps = db.execute('SELECT cap FROM authorization').fetchall()\n+            if len(caps) > 1:\n+                raise ValueError('The ledger has an ambiguous budget anchor.')\n+            previous = caps[0] if caps else None\n             if not previous:\n+                if self.cap > 1:\n+                    raise ValueError('A new pilot is capped at 1 USD; extend its authorization explicitly.')\n                 db.execute('INSERT INTO authorization VALUES (?)', (str(self.cap),))\n             db.execute('CREATE TABLE IF NOT EXISTS calls (id TEXT PRIMARY KEY, at TEXT, purpose TEXT, '\n                        'reserved TEXT, status TEXT, cost TEXT, metadata TEXT)')\n@@ -49,6 +53,92 @@ class EvaluationBudget:\n                     db.execute('INSERT INTO approval VALUES (?,?)', (authorization_id, authorization_digest))\n             elif approval:\n                 raise ValueError('This ledger requires its explicit authorization.')\n+            terms = self.campaign_terms(db, approval)\n+            effective_cap = money(terms['approved_ceiling_usd']) if terms else money(previous[0]) if previous else self.cap\n+            if self.cap != effective_cap:\n+                raise ValueError('Existing authorization limit cannot be changed implicitly.')\n+\n+    @staticmethod\n+    def campaign_terms(db, authorization):\n+        if authorization and db.execute(\"SELECT 1 FROM sqlite_master WHERE type='table' AND name='campaign_terms'\").fetchone():\n+            row = db.execute('SELECT terms FROM campaign_terms WHERE authorization_id=? AND authorization_digest=?',\n+                             authorization).fetchone()\n+            if row:\n+                return json.loads(row[0])\n+        return None\n+\n+    @staticmethod\n+    def utc_time(value):\n+        parsed = datetime.fromisoformat(value) if isinstance(value, str) else value\n+        if not isinstance(parsed, datetime) or parsed.tzinfo is None:\n+            raise ValueError('Authorization times must include a timezone.')\n+        return parsed.astimezone(timezone.utc)\n+\n+    @staticmethod\n+    def validate_provenance(value):\n+        if not isinstance(value, dict):\n+            raise ValueError('Dated source provenance is required.')\n+        url = urlsplit(value.get('source_url', ''))\n+        digest = value.get('sha256', '')\n+        if (url.scheme != 'https' or not url.hostname or url.username or url.password or url.query or url.fragment\n+                or len(digest) != 64 or any(char not in '0123456789abcdef' for char in digest)):\n+            raise ValueError('Provenance requires an HTTPS source and SHA-256 digest.')\n+        from datetime import date\n+        date.fromisoformat(value.get('date', ''))\n+\n+    @classmethod\n+    def extend_campaign_authorization(cls, path, *, previous_id, previous_digest, authorization_id,\n+            authorization_digest, manifest_sha256, approval_reference, max_external_calls,\n+            approved_ceiling_usd, approved_ceiling_eur, starts_at, expires_at, fx_provenance,\n+            price_provenance, margin):\n+        \"\"\"Append approved campaign terms without rewriting a historical balance.\n+\n+        The caller verifies the human approval and official sources. This method\n+        records that evidence and enforces its conservative conversion atomically.\n+        Merely constructing a ledger can never enlarge its ceiling or window.\n+        \"\"\"\n+        cap, euros, margin = money(approved_ceiling_usd), money(approved_ceiling_eur), money(margin)\n+        cls.validate_provenance(fx_provenance)\n+        rate = money(fx_provenance.get('rate_usd_per_eur'))\n+        if not isinstance(price_provenance, list) or not price_provenance:\n+            raise ValueError('Official price provenance is required.')\n+        for source in price_provenance:\n+            cls.validate_provenance(source)\n+        start, end = cls.utc_time(starts_at), cls.utc_time(expires_at)\n+        if (not 0 < euros <= 2 or cap <= 0 or rate <= 0 or cap > euros * rate / (1 + margin)\n+                or not 0 < (end - start).total_seconds() <= 86400):\n+            raise ValueError('The approved aggregate ceiling, conversion or 24-hour window is invalid.')\n+        terms = {'approved_ceiling_usd': str(cap), 'approved_ceiling_eur': str(euros),\n+            'starts_at': start.isoformat(), 'expires_at': end.isoformat(), 'margin': str(margin),\n+            'fx_provenance': fx_provenance, 'price_provenance': price_provenance}\n+        ledger = cls.__new__(cls)\n+        ledger.path = str(path)\n+        with ledger.transaction(existing_only=True) as db:\n+            caps = db.execute('SELECT cap FROM authorization').fetchall()\n+            if len(caps) != 1:\n+                raise ValueError('An immutable existing budget anchor is required.')\n+            head = cls.head(db)\n+            existing = cls.campaign_terms(db, (authorization_id, authorization_digest))\n+            if existing is not None and existing != terms:\n+                raise ValueError('Approved campaign terms cannot be replaced.')\n+            previous_terms = cls.campaign_terms(db, head)\n+            old_cap = money(previous_terms['approved_ceiling_usd']) if previous_terms else money(caps[0][0])\n+            if cap < old_cap:\n+                raise ValueError('A ceiling extension cannot reduce the existing approved ceiling.')\n+            used = sum((cls.exposure(bound, cost, json.loads(meta)) for bound, cost, meta\n+                        in db.execute('SELECT reserved,cost,metadata FROM calls')), Decimal(0))\n+            if used > cap:\n+                raise BudgetExceeded('Historical exposure exceeds the proposed aggregate ceiling.')\n+            added = cls.append_extension(db, previous_id=previous_id, previous_digest=previous_digest,\n+                authorization_id=authorization_id, authorization_digest=authorization_digest,\n+                manifest_sha256=manifest_sha256, approval_reference=approval_reference,\n+                max_external_calls=max_external_calls)\n+            db.execute('CREATE TABLE IF NOT EXISTS campaign_terms (authorization_id TEXT PRIMARY KEY, '\n+                       'authorization_digest TEXT NOT NULL UNIQUE, terms TEXT NOT NULL)')\n+            if existing is None:\n+                db.execute('INSERT INTO campaign_terms VALUES (?,?,?)',\n+                    (authorization_id, authorization_digest, json.dumps(terms, sort_keys=True)))\n+        return added\n \n     @staticmethod\n     def head(db):\n",
+    "stderr": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nwarning: in the working copy of 'regulai/front/evaluation_budget.py', LF will be replaced by CRLF the next time Git touches it\n"
+  }
+]
