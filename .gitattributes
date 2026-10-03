@@ -19,6 +19,7 @@ evals/pilot-real/*.json -text -whitespace
 evals/pilot-human/*.json -text -whitespace
 evals/privacy/local-mask-v1/cases.json -text -whitespace
 evals/documents/pilot-20261003/** -text
+evals/documents/pilot-20261003/files/manifest.json -text -whitespace
 evals/documents/pilot-20261003/files/*.pdf binary
 evals/documents/pilot-20261003/files/*.docx binary
 evals/documents/pilot-20261003/files/*.xlsx binary
