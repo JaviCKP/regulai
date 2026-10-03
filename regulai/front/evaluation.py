@@ -171,7 +171,8 @@ def preflight(manifest_path, authorization_path=None, *, now=None, check_credent
     if (manifest['destinations']['judge'] != 'https://api.typesafe.ai/v1/systemone'
             or manifest['judge_transport'] != 'typesafe' or manifest['model_versions']['judge'] != 'jev-1.13.0'):
         blockers.append('pinned_judge_destination_required')
-    if manifest.get('generation_options') != {'thinking': {'type': 'disabled'}, 'temperature': 0.6}:
+    if manifest.get('generation_options') != {'thinking': {'type': 'disabled'},
+            'temperature': 0.6, 'document_temperature': 0.1}:
         blockers.append('unsupported_generation_options')
     if check_credentials and (not os.environ.get('REGULAI_EVAL_GENERATOR_KEY') or not os.environ.get('REGULAI_EVAL_JEV_KEY')):
         blockers.append('isolated_credentials_required')

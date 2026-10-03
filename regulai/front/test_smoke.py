@@ -53,6 +53,7 @@ class SmokeIsolationTests(TestCase):
         self.approval['actions'] = self.manifest['actions']
         self.save_approval()
         self.events = []
+        self.generation_payloads = []
         self.fault = None
         self.after_transport = None
         self.http = self.enterContext(patch('requests.sessions.Session.request', side_effect=self.requests_transport))
@@ -104,6 +105,7 @@ class SmokeIsolationTests(TestCase):
         self.assertEqual(str(request.url), 'https://api.deepseek.com/chat/completions')
         self.assert_reserved('generation')
         body = json.loads(request.content)
+        self.generation_payloads.append(body)
         self.assertEqual(body['thinking'], {'type': 'disabled'})
         self.assertEqual(body['max_tokens'], 512)
         if self.fault == 'generation-timeout':
@@ -135,6 +137,23 @@ class SmokeIsolationTests(TestCase):
         row = json.loads((self.root / 'run' / 'results.jsonl').read_text(encoding='utf-8').splitlines()[0])
         self.assertIsNone(row['human_review'])
         self.assertEqual(row['generation_responses'][0]['content'], '4')
+        self.assertTrue(self.generation_payloads)
+        self.assertEqual({body['temperature'] for body in self.generation_payloads},
+                         {self.manifest['generation_options']['temperature']})
+
+    def test_document_temperature_matches_the_frozen_manifest_at_sdk_transport(self):
+        source = evaluation.PILOT_MANIFEST.parent
+        self.case = next(json.loads(line) for line in (source / 'cases.jsonl').read_text(encoding='utf-8').splitlines()
+                         if line.strip() and json.loads(line)['id'] == 'document-success')
+        (self.root / 'cases.jsonl').write_text(json.dumps(self.case) + '\n', encoding='utf-8')
+        self.manifest['dataset_sha256'] = evaluation.digest((self.root / 'cases.jsonl').read_bytes())
+        self.save_approval()
+        self.run_smoke()
+        self.assertTrue(self.generation_payloads)
+        options = self.manifest['generation_options']
+        self.assertEqual({body['temperature'] for body in self.generation_payloads},
+                         {options.get('document_temperature', options['temperature'])})
+        self.socket.assert_not_called()
 
     def test_pending_or_expired_permission_has_no_database_or_network_effect(self):
         before = Company.objects.count()
