@@ -50,7 +50,7 @@ class ReviewRegressionTests(ChatFixture):
         def answer(messages, **kwargs):
             sources = json.loads(messages[-1].content.split('Sources:\n', 1)[1])
             content = json.dumps({'claims': [{'text': claim_text,
-                'citations': [{'id': sources[0]['id'], 'quote': sources[0]['text']}]}]})
+                'citations': [{'id': sources[0]['id'], 'quote': sources[0]['text'].splitlines()[0]}]}]})
             if fenced:
                 content = '```json\n' + content + '\n```'
             return ChatResponse(content, 30, 'synthetic-v1', 'stop', 20, 10)
@@ -142,16 +142,17 @@ class ReviewRegressionTests(ChatFixture):
         self.model.context_window = 1_000_000
         self.model.save()
         self.document_answer()
-        text = ''.join(f'Evidence row {number:06d}: seventeen days.'.ljust(49) + '\n'
-                       for number in range(1500)).encode()
-        self.assertEqual(len(text), 75_000)
-        result = self.send('/api/chat/send/', 'What is the approved period?',
-                           file=SimpleUploadedFile('large.txt', text)).json()
-        self.assertTrue(result['status'] == 'completed' or (
-            result.get('error_type') == 'evaluation_input_too_large' and self.provider.call_count == 0),
-            f"status={result['status']} code={result.get('error_type')} generations={self.provider.call_count}")
+        for line_count in (1500, 2600):
+            self.provider.reset_mock()
+            text = ''.join(f'Evidence row {number:06d}: seventeen days.'.ljust(49) + '\n'
+                           for number in range(line_count)).encode()
+            self.assertEqual(len(text), line_count * 50)
+            result = self.send('/api/chat/send/', 'What is the approved period?',
+                               file=SimpleUploadedFile('large.txt', text)).json()
+            self.assertTrue(result['status'] == 'completed' or (
+                result.get('error_type') == 'evaluation_input_too_large' and self.provider.call_count == 0),
+                f"bytes={len(text)} status={result['status']} code={result.get('error_type')} generations={self.provider.call_count}")
 
-    @unittest.expectedFailure
     def test_b07_word_tracked_changes_use_the_accepted_text(self):
         document = WordDocument()
         document.add_paragraph('CHANGE_PLACEHOLDER')
