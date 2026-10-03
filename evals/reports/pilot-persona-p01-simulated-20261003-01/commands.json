@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "source": "Resumen fiel de los comandos y códigos devueltos por las herramientas del agente; no log crudo de una sesión humana.",
+  "human_times_recorded": false,
+  "commands": [
+    {
+      "command": "rtk proxy where.exe npx",
+      "exit_code": 0,
+      "result": "npx y npx.cmd en C:/Program Files/nodejs; prerrequisito comprobado."
+    },
+    {
+      "command": "rtk git rev-parse HEAD",
+      "exit_code": 0,
+      "result": "535eb9d8421006ea8476ea511427a7dcda9cee3b al iniciar revisión; 972edb88c82a5220a43ffcc89316a9f9033e82f7 antes del nuevo navegador.",
+      "note": "Dos lecturas separadas; no se afirma que sean el mismo runtime que la evidencia histórica."
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe -B -X utf8 .claude/pilot-personas/p01/start_isolated_browser.py",
+      "exit_code": 1,
+      "result": "Servidor creado, usado y terminado mediante Ctrl+C voluntario. El exit 1 es la terminación, no un error de arranque.",
+      "tool_session_id": 40370
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc open http://127.0.0.1:8781/login/",
+      "exit_code": 0,
+      "result": "Navegador nuevo p01doc; PID comunicado 40068.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc fill e18 community-demo",
+      "exit_code": 0,
+      "result": "Cuenta pública sintética.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc fill e26 community-demo-only",
+      "exit_code": 0,
+      "result": "Contraseña pública sintética; no credencial del usuario.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc click e31",
+      "exit_code": 0,
+      "result": "Login completado, Home.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc click f1e20",
+      "exit_code": 0,
+      "result": "Chat nuevo sin conversaciones.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc fill f2e121 \"Cual es el precio del contrato?\"",
+      "exit_code": 0,
+      "result": "Entrada del guion H1.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc click f2e117",
+      "exit_code": 0,
+      "result": "Selector de archivo abierto.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc upload C:/Users/javi/Documents/Codex/regulai-platform/evals/documents/pilot-20261003/files/text-and-image.docx",
+      "exit_code": 0,
+      "result": "Adjunto sintético.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc click f2e122",
+      "exit_code": 0,
+      "result": "pending_consent; imagen omitida del párrafo 3 visible; foco en Confirm sending.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc screenshot",
+      "exit_code": 0,
+      "result": "Captura pending .playwright-cli/page-2026-10-03T15-55-51-013Z.png.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc press Tab",
+      "exit_code": 0,
+      "result": "Navegación de teclado desde Confirm sending.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc eval \"document.activeElement.textContent\"",
+      "exit_code": 0,
+      "result": "Resultado literal: \"Cancel request\". Lectura DOM, no mutación.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc press Enter",
+      "exit_code": 0,
+      "result": "Petición pasó a cancelled.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc snapshot",
+      "exit_code": 0,
+      "result": "Estado cancelled observado; no respuesta.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc click f2e168",
+      "exit_code": 0,
+      "result": "Ficha cancelada abierta.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc screenshot",
+      "exit_code": 0,
+      "result": "Captura .playwright-cli/page-2026-10-03T15-56-17-768Z.png.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc press Tab",
+      "exit_code": 0,
+      "result": "Foco al enlace de exportación.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc eval \"document.activeElement.textContent\"",
+      "exit_code": 0,
+      "result": "Resultado literal: \"Export receipt JSON\".",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc screenshot",
+      "exit_code": 0,
+      "result": "Captura .playwright-cli/page-2026-10-03T15-56-39-270Z.png; Calls: 0 y Verification: not performed.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc click f2e192",
+      "exit_code": 0,
+      "result": "Descarga real .playwright-cli/receipt-0d786fda-cbda-4397-af8c-e54ade766b7c.json.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc eval \"JSON.stringify({userAgent:navigator.userAgent,width:innerWidth,height:innerHeight})\"",
+      "exit_code": 0,
+      "result": "HeadlessChrome/154.0.0.0; 1280×720.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc console",
+      "exit_code": 0,
+      "result": "Total messages: 0 (Errors: 0, Warnings: 0).",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc close",
+      "exit_code": 0,
+      "result": "Browser p01doc closed.",
+      "working_directory": ".claude/pilot-personas/p01"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe -B -X utf8 evals/reports/pilot-documents-20261003-01/capture_isolated_state.py --workspace .claude/pilot-personas/p01/browser01 --output .claude/pilot-personas/p01/state-document-pending.json",
+      "exit_code": 0,
+      "result": "Lectura solo lectura de DB sintética propia; pending; mismo request_id/SHA; cero llamadas."
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe -B -X utf8 evals/reports/pilot-documents-20261003-01/capture_isolated_state.py --workspace .claude/pilot-personas/p01/browser01 --output .claude/pilot-personas/p01/state-document-cancelled.json",
+      "exit_code": 0,
+      "result": "Lectura solo lectura de DB sintética propia; cancelled; mismo request_id/SHA; cero llamadas."
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe -B -X utf8 .claude/pilot-personas/p01/verify_p01.py --output-dir .claude/pilot-personas/p01/verification01",
+      "exit_code": 0,
+      "result": "96/96 comprobaciones de integridad/coherencia; incluye hashes de 73 archivos de informes previos; corpus 12/12 en extracción nueva.",
+      "not_a_product_test_suite": true
+    },
+    {
+      "command": "rtk proxy powershell -NoProfile -Command '$p01Listeners = @(Get-NetTCPConnection -LocalPort 8781 -State Listen -ErrorAction SilentlyContinue); [pscustomobject]@{port=8781; listener_count=$p01Listeners.Count; checked_at_utc=[DateTime]::UtcNow.ToString(\"o\")} | ConvertTo-Json'",
+      "exit_code": 0,
+      "result": "listener_count=0 a las 2026-10-03T16:01:08.6359828Z."
+    }
+  ],
+  "exploratory_nonchecks": [
+    {
+      "exit_code": 1,
+      "description": "rg --files -g AGENTS.md docs evals: sin archivos coincidentes; ninguna instrucción local adicional hallada."
+    },
+    {
+      "exit_code": 1,
+      "description": "Búsqueda inicial mencionó regulai/front/demo.py, ruta inexistente. Se corrigió leyendo front/management/commands/run_demo.py; no es un fallo de producto."
+    },
+    {
+      "exit_code": 1,
+      "description": "rtk read con opción -l no soportada por este RTK; lectura repetida con rtk proxy powershell Get-Content."
+    },
+    {
+      "exit_code": 1,
+      "description": "Búsqueda de líneas HTTP en logs-https no devolvió coincidencias; no se convirtió en prueba de acceso."
+    },
+    {
+      "exit_code": 1,
+      "description": "Primer sondeo Get-NetTCPConnection sin listener en 8781 terminó 1 por ausencia de resultado; sondeo final explícito cuenta 0 con exit 0."
+    }
+  ]
+}
+

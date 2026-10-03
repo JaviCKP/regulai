@@ -1,0 +1,128 @@
+Found 23 test(s).
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: admin, auth, authtoken, contenttypes, front, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
+  Applying authtoken.0003_tokenproxy... OK
+  Applying authtoken.0004_alter_tokenproxy_options... OK
+  Applying front.0001_initial... OK
+  Applying front.0002_engine_companyengine... OK
+  Applying front.0003_add_severity_to_rule... OK
+  Applying front.0004_add_conversation_and_message... OK
+  Applying front.0005_add_applies_to_rule... OK
+  Applying front.0006_add_file_to_message... OK
+  Applying front.0007_add_department_model... OK
+  Applying front.0008_add_avatar_to_profile... OK
+  Applying front.0009_add_default_engine_to_profile... OK
+  Applying front.0010_add_engine_models... OK
+  Applying front.0011_add_connector_type_to_engine... OK
+  Applying front.0012_seed_default_engines... OK
+  Applying front.0013_add_name_to_companyengine... OK
+  Applying front.0015_add_file_hashes_to_prompt... OK
+  Applying front.0016_encrypt_api_keys... OK
+  Applying front.0017_alter_companyengine_api_key... OK
+  Applying front.0018_remove_companyengine_unique_together... OK
+  Applying front.0019_add_rule_action_field... OK
+  Applying front.0020_seed_default_rules_groups... OK
+  Applying front.0021_obfuscationconfig... OK
+  Applying front.0022_alert_source... OK
+  Applying front.0023_company_department_system_prompt... OK
+  Applying front.0024_seed_mistral_engine... OK
+  Applying front.0025_message_response_file... OK
+  Applying front.0026_authorized_chat_state... OK
+  Applying front.0027_enginemodel_context_window_enginemodel_currency_and_more... OK
+  Applying front.0028_auditlog_company... OK
+  Applying front.0029_model_price_units... OK
+  Applying front.0030_enginemodel_reasoning... OK
+  Applying front.0031_infer_historical_prompt_company... OK
+  Applying front.0032_obfuscationconfig_backend... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_company_administrator_has_no_owner_or_platform_override (p02_checks.BetaAdministratorIsolationTests.test_company_administrator_has_no_owner_or_platform_override) ... ok
+test_attached_visual_document_cancels_without_any_provider_on_three_entries (p02_checks.BetaDocumentCancellationTests.test_attached_visual_document_cancels_without_any_provider_on_three_entries) ... 
+  test_attached_visual_document_cancels_without_any_provider_on_three_entries (p02_checks.BetaDocumentCancellationTests.test_attached_visual_document_cancels_without_any_provider_on_three_entries) (entry='/chat/') ... FAIL
+  test_attached_visual_document_cancels_without_any_provider_on_three_entries (p02_checks.BetaDocumentCancellationTests.test_attached_visual_document_cancels_without_any_provider_on_three_entries) (entry='/chat/send/') ... FAIL
+  test_attached_visual_document_cancels_without_any_provider_on_three_entries (p02_checks.BetaDocumentCancellationTests.test_attached_visual_document_cancels_without_any_provider_on_three_entries) (entry='/api/chat/send/') ... FAIL
+test_chat_renders_escaped_messages_receipt_evidence_and_download_links (front.test_chat_ui.ChatUITests.test_chat_renders_escaped_messages_receipt_evidence_and_download_links) ... ok
+test_evidence_is_only_accessible_to_request_owner (front.test_chat_ui.ChatUITests.test_evidence_is_only_accessible_to_request_owner) ... ok
+test_generated_code_download_stays_owner_scoped (front.test_chat_ui.ChatUITests.test_generated_code_download_stays_owner_scoped) ... ok
+test_receipt_export_filters_private_fields_and_requires_owner_company (front.test_chat_ui.ChatUITests.test_receipt_export_filters_private_fields_and_requires_owner_company) ... ok
+test_authorized_request_is_sent_once_and_duplicate_replays (front.test_chat_flow.ChatFlowTests.test_authorized_request_is_sent_once_and_duplicate_replays) ... ok
+test_blocked_and_unlinked_messages_never_enter_history (front.test_chat_flow.ChatFlowTests.test_blocked_and_unlinked_messages_never_enter_history) ... ok
+test_changed_policy_invalidates_consent (front.test_chat_flow.ChatFlowTests.test_changed_policy_invalidates_consent) ... ok
+test_consent_requires_signed_proof_and_keeps_same_message (front.test_chat_flow.ChatFlowTests.test_consent_requires_signed_proof_and_keeps_same_message) ... ok
+test_invalid_rule_fails_closed_on_all_three_entries (front.test_chat_flow.ChatFlowTests.test_invalid_rule_fails_closed_on_all_three_entries) ... ok
+test_timeout_is_not_automatically_retried (front.test_chat_flow.ChatFlowTests.test_timeout_is_not_automatically_retried) ... ok
+test_unconfigured_policy_and_mask_destination_fail_closed (front.test_chat_flow.ChatFlowTests.test_unconfigured_policy_and_mask_destination_fail_closed) ... ok
+test_b09_expired_consent_issues_a_fresh_usable_token (front.test_review_regressions.ReviewRegressionTests.test_b09_expired_consent_issues_a_fresh_usable_token) ... ok
+test_frozen_unreadable_and_partial_documents_block_all_send_entries (front.test_document_fidelity.DocumentHTTPTests.test_frozen_unreadable_and_partial_documents_block_all_send_entries) ... ok
+test_frozen_final_page_clause_survives_all_send_entries_with_exact_citation (front.test_document_fidelity.DocumentHTTPTests.test_frozen_final_page_clause_survives_all_send_entries_with_exact_citation) ... ok
+test_inline_pdf_requires_coverage_consent_before_all_three_send_entries (front.test_document_fidelity.DocumentHTTPTests.test_inline_pdf_requires_coverage_consent_before_all_three_send_entries) ... ok
+test_finished_receipt_does_not_request_confirmation_for_historical_reason (front.test_frontend_chat.ChatUiTests.test_finished_receipt_does_not_request_confirmation_for_historical_reason) ... ok
+test_unknown_outcome_without_total_never_renders_zero_cost_or_success (front.test_frontend_chat.ChatUiTests.test_unknown_outcome_without_total_never_renders_zero_cost_or_success) ... ok
+test_confirmation_binds_actor_company_content_policy_and_endpoint (front.test_state.RequestStateTests.test_confirmation_binds_actor_company_content_policy_and_endpoint) ... ok
+test_foreign_conversation_and_credential_never_fall_back_to_own_destination (front.test_state.RequestStateTests.test_foreign_conversation_and_credential_never_fall_back_to_own_destination) ... ok
+test_cancelled_request_and_stale_processing_never_regenerate (front.test_state.RequestStateTests.test_cancelled_request_and_stale_processing_never_regenerate) ... ok
+test_overlapping_confirmation_posts_generate_once_without_open_transaction (front.test_state.RequestStateTests.test_overlapping_confirmation_posts_generate_once_without_open_transaction) ... ok
+
+======================================================================
+FAIL: test_attached_visual_document_cancels_without_any_provider_on_three_entries (p02_checks.BetaDocumentCancellationTests.test_attached_visual_document_cancels_without_any_provider_on_three_entries) (entry='/chat/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\pilot-personas\p02\p02_checks.py", line 29, in test_attached_visual_document_cancels_without_any_provider_on_three_entries
+    self.assertEqual(initial['status'], 'pending_consent')
+AssertionError: 'blocked' != 'pending_consent'
+- blocked
++ pending_consent
+
+
+======================================================================
+FAIL: test_attached_visual_document_cancels_without_any_provider_on_three_entries (p02_checks.BetaDocumentCancellationTests.test_attached_visual_document_cancels_without_any_provider_on_three_entries) (entry='/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\pilot-personas\p02\p02_checks.py", line 29, in test_attached_visual_document_cancels_without_any_provider_on_three_entries
+    self.assertEqual(initial['status'], 'pending_consent')
+AssertionError: 'blocked' != 'pending_consent'
+- blocked
++ pending_consent
+
+
+======================================================================
+FAIL: test_attached_visual_document_cancels_without_any_provider_on_three_entries (p02_checks.BetaDocumentCancellationTests.test_attached_visual_document_cancels_without_any_provider_on_three_entries) (entry='/api/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\pilot-personas\p02\p02_checks.py", line 29, in test_attached_visual_document_cancels_without_any_provider_on_three_entries
+    self.assertEqual(initial['status'], 'pending_consent')
+AssertionError: 'blocked' != 'pending_consent'
+- blocked
++ pending_consent
+
+
+----------------------------------------------------------------------
+Ran 23 tests in 8.296s
+
+FAILED (failures=3)
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

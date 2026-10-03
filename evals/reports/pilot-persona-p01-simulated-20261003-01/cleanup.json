@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "browser": {
+    "session": "p01doc",
+    "close_command": "rtk proxy npx.cmd --yes --package @playwright/cli@0.1.22 playwright-cli -s=p01doc close",
+    "exit_code": 0,
+    "result": "closed"
+  },
+  "server": {
+    "tool_session_id": 40370,
+    "shutdown_action": "Ctrl+C enviado únicamente al proceso creado por este agente",
+    "exit_code": 1,
+    "reason": "interrupción voluntaria tras completar el caso"
+  },
+  "port": {
+    "host": "127.0.0.1",
+    "port": 8781,
+    "listener_count": 0,
+    "checked_at_utc": "2026-10-03T16:01:08.6359828Z",
+    "check_exit_code": 0
+  },
+  "retained_private": [
+    "browser01/pilot.sqlite3",
+    "browser01/media"
+  ],
+  "removed_resources": [],
+  "notes": [
+    "Base y medios sintéticos propios conservados localmente, excluidos de la lista de copia pública.",
+    "No se borraron recursos ajenos ni se tocaron bases del usuario.",
+    "No quedan servidores propios activos; se conservan capturas, snapshots y JSON sin cookies."
+  ]
+}
+

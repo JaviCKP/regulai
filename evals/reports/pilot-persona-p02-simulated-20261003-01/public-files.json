@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "copy_only_these_relative_files": [
+    "README.md",
+    "commands.json",
+    "english-contract.txt",
+    "english-expectations.json",
+    "final-verification.json",
+    "finalize.py",
+    "p02-simulated-form.json",
+    "p02-simulated-walkthrough.md",
+    "p02_checks.py",
+    "run-01/checks.json",
+    "run-01/english-extraction.json",
+    "run-01/extraction-results.json",
+    "run-01/input-provenance.json",
+    "run-01/p02_checks.executed.py",
+    "run-01/run_checks.executed.py",
+    "run-01/tests.log",
+    "run-02/checks.json",
+    "run-02/english-extraction.json",
+    "run-02/extraction-results.json",
+    "run-02/input-provenance.json",
+    "run-02/p02_checks.executed.py",
+    "run-02/run_checks.executed.py",
+    "run-02/tests.log",
+    "run_checks.py",
+    "public-files.json",
+    "evidence-sha256.json"
+  ],
+  "excluded": [
+    "snapshot/",
+    "snapshot.zip",
+    "run-01/media/",
+    "run-02/media/",
+    "run-01/temporary/",
+    "run-02/temporary/"
+  ],
+  "contains_no_database_or_keys_or_cookies": true,
+  "note": "Keep relative subdirectories. Do not copy the whole P02 directory. Git snapshot bytes are identified by revision and SHA but not included in the public list."
+}

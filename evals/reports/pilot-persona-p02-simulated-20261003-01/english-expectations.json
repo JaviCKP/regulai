@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "kind": "agent_authored_synthetic_expectation_before_extraction",
+  "human_validation": false,
+  "approved_live_corpus": false,
+  "file": "english-contract.txt",
+  "question_es": "¿Cuál es el precio y el preaviso según este documento en inglés? Cita el texto original sin convertirlo en asesoramiento sobre un contrato real.",
+  "status": "complete",
+  "units_total": 6,
+  "warnings": [],
+  "evidence_locator": "lines:1-6",
+  "contains": [
+    "The contract price is 10 euros per month.",
+    "The required termination notice is 17 days."
+  ],
+  "expected_reading_es": "El texto dice 10 euros al mes y 17 días de preaviso.",
+  "limit": "Extraction and exact quotations only. No model answer, translation quality, native Office, browser session, or human comprehension is measured. This supplemental text is not added to the frozen twelve-file or paid-provider corpus."
+}

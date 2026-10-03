@@ -1,0 +1,93 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - link "regulAI regulAI" [ref=f1e6] [cursor=pointer]:
+          - /url: /
+          - img "regulAI" [ref=f1e7]
+          - generic [ref=f1e8]: regulAI
+        - text: 
+      - navigation [ref=f1e9]:
+        - list [ref=f1e10]:
+          - listitem [ref=f1e11]: Home
+          - listitem [ref=f1e12]:
+            - link "Home" [ref=f1e13] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f1e19]:
+            - link "Chat" [ref=f1e20] [cursor=pointer]:
+              - /url: /chat/
+  - generic [ref=f1e26]:
+    - banner [ref=f1e27]:
+      - navigation [ref=f1e28]:
+        - list [ref=f1e29]:
+          - text: 
+          - listitem [ref=f1e30]:
+            - link "" [ref=f1e31] [cursor=pointer]:
+              - /url: /alerts/
+        - list [ref=f1e34]:
+          - listitem [ref=f1e35]:
+            - generic [ref=f1e36]:
+              - generic [ref=f1e37]: community-demo
+              - generic [ref=f1e38]: Community offline demo
+          - listitem [ref=f1e39]:
+            - link [ref=f1e40] [cursor=pointer]:
+              - /url: /profile/
+            - text:  
+          - listitem [ref=f1e41]:
+            - link "" [ref=f1e42] [cursor=pointer]:
+              - /url: /logout/
+    - generic [ref=f1e44]:
+      - status [ref=f1e45]:
+        - strong [ref=f1e46]: DEMO OFFLINE — fallo simulado.
+        - text: Datos, modelos y jueces sintéticos; sin llamadas a proveedores reales ni métricas de calidad real.
+      - generic [ref=f1e47]:
+        - generic [ref=f1e52]:
+          - img "regulAI" [ref=f1e54]
+          - generic [ref=f1e55]:
+            - heading "Welcome to regulAI, community-demo" [level=2] [ref=f1e56]
+            - paragraph [ref=f1e57]: AI Chat Assistant - Secure conversations with AI, protected by enterprise security
+        - generic [ref=f1e58]:
+          - generic [ref=f1e60]:
+            - heading "AI Chat" [level=5] [ref=f1e62]:
+              - generic [ref=f1e63]: 
+              - text: AI Chat
+            - generic [ref=f1e64]:
+              - paragraph [ref=f1e65]: Start secure conversations with AI assistants. Your prompts are protected by enterprise security rules that detect and block sensitive information before it leaves your organization.
+              - generic [ref=f1e66]:
+                - generic [ref=f1e68]:
+                  - generic [ref=f1e69]: 
+                  - heading "Secure by Design" [level=6] [ref=f1e70]
+                  - text: All your conversations are validated against security policies before being sent to the AI. Sensitive data like passwords, API keys, or confidential information is automatically detected and blocked.
+                - generic [ref=f1e72]:
+                  - generic [ref=f1e73]: 
+                  - heading "File Analysis" [level=6] [ref=f1e74]
+                  - text: Analyze text, PDF, DOCX, CSV and XLSX files. Extraction coverage is checked before sending; images and unsupported content require a readable document.
+                - generic [ref=f1e76]:
+                  - generic [ref=f1e77]: 
+                  - heading "Conversation History" [level=6] [ref=f1e78]
+                  - text: Your conversations are saved and organized for easy reference. Continue previous chats or start new ones at any time.
+                - generic [ref=f1e80]:
+                  - generic [ref=f1e81]: 
+                  - heading "Multiple AI Models" [level=6] [ref=f1e82]
+                  - text: "Choose from different AI engines configured by your organization: OpenAI GPT-4, Anthropic Claude, DeepSeek, and more. Each with different capabilities and strengths."
+              - link "Start Chatting" [ref=f1e84] [cursor=pointer]:
+                - /url: /chat/
+                - generic [ref=f1e85]: 
+                - text: Start Chatting
+          - generic [ref=f1e87]:
+            - heading "Quick Actions" [level=5] [ref=f1e89]:
+              - generic [ref=f1e90]: 
+              - text: Quick Actions
+            - generic [ref=f1e92]:
+              - link " New Conversation Start a new chat with AI" [ref=f1e93] [cursor=pointer]:
+                - /url: /chat/
+                - generic [ref=f1e94]: 
+                - generic [ref=f1e95]:
+                  - strong [ref=f1e96]: New Conversation
+                  - generic [ref=f1e97]: Start a new chat with AI
+              - link " My Profile Update your settings and preferences" [ref=f1e98] [cursor=pointer]:
+                - /url: /profile/
+                - generic [ref=f1e99]: 
+                - generic [ref=f1e100]:
+                  - strong [ref=f1e101]: My Profile
+                  - generic [ref=f1e102]: Update your settings and preferences

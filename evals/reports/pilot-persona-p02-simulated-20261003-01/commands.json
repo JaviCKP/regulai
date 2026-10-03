@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "kind": "observed_tool_commands_not_human_timings",
+  "source_revision": "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+  "commands": [
+    {
+      "command": "rtk git rev-parse HEAD",
+      "exit_code": 0,
+      "result": "535eb9d8421006ea8476ea511427a7dcda9cee3b at inspection; subsequent checkout changes are excluded from the fixed snapshot"
+    },
+    {
+      "command": "rtk proxy git archive 535eb9d8421006ea8476ea511427a7dcda9cee3b --format=zip --output=.claude/pilot-personas/p02/snapshot.zip regulai evals/documents/pilot-20261003",
+      "exit_code": 0,
+      "result": "New immutable-source archive written under P02 ownership"
+    },
+    {
+      "command": "rtk proxy powershell -NoProfile -Command \"Expand-Archive -LiteralPath '.claude\\pilot-personas\\p02\\snapshot.zip' -DestinationPath '.claude\\pilot-personas\\p02\\snapshot'\"",
+      "exit_code": 1,
+      "result": "Microsoft.PowerShell.Archive module could not be loaded; this failed command is not counted as a successful extraction"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe -B -m zipfile -e .claude/pilot-personas/p02/snapshot.zip .claude/pilot-personas/p02/snapshot",
+      "exit_code": 0,
+      "result": "Snapshot extracted locally with the Python standard library"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe -B .claude/pilot-personas/p02/run_checks.py",
+      "exit_code": 0,
+      "result": "run-01: 15/15 checks, 12/12 frozen extraction cases, English extraction passed, 22 Django tests OK in 8.460 seconds, no skips; no browser or real-provider actions",
+      "evidence": [
+        "run-01/checks.json",
+        "run-01/tests.log",
+        "run-01/run_checks.executed.py",
+        "run-01/p02_checks.executed.py"
+      ]
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe -B .claude/pilot-personas/p02/run_checks.py --output-name run-02",
+      "exit_code": 1,
+      "result": "run-02: 14/15 checks. 23 Django tests in 8.296 seconds with three failed subtests of the additional document-cancellation test: blocked before the expected pending_consent. The text fixture did not authorize/configure documentary Jev; this cause is inferred from fixed-source order and was not re-run. Corpus 12/12, English extraction passed, no browser or real-provider actions. Failed run preserved; no product change.",
+      "evidence": [
+        "run-02/checks.json",
+        "run-02/tests.log",
+        "run-02/run_checks.executed.py",
+        "run-02/p02_checks.executed.py"
+      ]
+    },
+    {
+      "command": "rtk git diff --check -- .claude/pilot-personas/p02",
+      "exit_code": 0,
+      "result": "Non-authoritative for these untracked/ignored files: no product gate is claimed from this command"
+    }
+  ],
+  "exploratory_failures": [
+    "An initial rg invocation named test_receipts.py, test_chat_service.py and test_citations.py, which do not exist; exit 1. Discovery then used rg --files and the actual test modules.",
+    "An initial rg inventory included the not-yet-created .claude/pilot-personas directory; exit 1. No missing artifact was counted as a check.",
+    "An overly broad initial .claude file listing was truncated. The review then used the specified report directories."
+  ],
+  "visual_inspection_tool": {
+    "tool": "view_image",
+    "new_browser_actions": 0,
+    "files_read": [
+      "evals/reports/pilot-ui-followup-20261003-01/browser-completed-mobile-light.png",
+      "evals/reports/pilot-ui-followup-20261003-01/browser-pending-mobile-light.png",
+      "evals/reports/pilot-documents-20261003-01/09-outcome-unknown-synthetic-reconstruction.png",
+      "evals/reports/pilot-documents-20261003-01/07-keyboard-citation.png",
+      "evals/reports/pilot-documents-20261003-01/pdf-contact-sheet.png"
+    ]
+  },
+  "finalization": {
+    "command": "rtk proxy .venv/Scripts/python.exe -B .claude/pilot-personas/p02/finalize.py",
+    "exit_code": 0,
+    "result": "19 complete simulated step records; human fields empty; failed supplemental run preserved; Python AST and JSON valid; fixed sources and original human form unchanged"
+  }
+}

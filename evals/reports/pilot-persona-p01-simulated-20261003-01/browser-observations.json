@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "new actual automated browser check, not a human rehearsal",
+  "date": "2026-10-03",
+  "reference_head": "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+  "source_manifest": "browser01/run.json",
+  "identity": {
+    "technical_user": "community-demo",
+    "technical_company": "Community offline demo",
+    "persona_id": "P01",
+    "persona_company_fictional": "Alpha",
+    "not_an_alpha_login": true
+  },
+  "browser": {
+    "engine": "Chromium headless",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "driver": "@playwright/cli 0.1.22",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "physical_mobile": false
+  },
+  "preconditions": {
+    "workspace_new": true,
+    "local_settings_module_stubbed": true,
+    "server_listen": "127.0.0.1:8781",
+    "offline_provider_fixture": true,
+    "configured_mask_backend": "local",
+    "mask_invoked": false
+  },
+  "request": {
+    "request_id": "0d786fda-cbda-4397-af8c-e54ade766b7c",
+    "input": "Cual es el precio del contrato?",
+    "file_name": "text-and-image.docx",
+    "file_sha256": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+    "status_before": "pending_consent",
+    "status_after": "cancelled",
+    "coverage": "complete_text_only",
+    "omitted_locator": "word/document.xml/paragraph:3",
+    "calls_before": 0,
+    "calls_after": 0,
+    "generation_attempts": 0,
+    "user_messages": 1,
+    "assistant_messages": 0
+  },
+  "actions": {
+    "cancel": "Tab desde Confirm sending; lectura de foco = Cancel request; Enter",
+    "export": "Tab desde ficha; lectura de foco = Export receipt JSON; clic en enlace y descarga real",
+    "reload": false,
+    "new_confirmation": false,
+    "new_expiry_wait": false
+  },
+  "screenshots_visually_inspected": [
+    ".playwright-cli/page-2026-10-03T15-55-51-013Z.png",
+    ".playwright-cli/page-2026-10-03T15-56-17-768Z.png",
+    ".playwright-cli/page-2026-10-03T15-56-39-270Z.png"
+  ],
+  "console_summary": {
+    "messages": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "human_participants": 0,
+  "human_duration_seconds": null,
+  "real_provider_calls": 0,
+  "real_api_spend_usd": "0",
+  "limits": [
+    "Solo se ejecutó el caso documental de cancelación y descarga; no es una repetición de H1/H2 completos.",
+    "Configuración local de máscara comprobada solo por lectura agregada de la DB sintética; el caso se cancela antes de invocarla.",
+    "Los 219 ms de la ficha son medida de la petición técnica; no duración de un usuario o sesión humana."
+  ]
+}
+

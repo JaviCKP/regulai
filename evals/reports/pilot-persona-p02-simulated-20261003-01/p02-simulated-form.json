@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "agent_authored_persona_simulation_separate_from_human_rehearsal",
+  "persona_id": "P02",
+  "fictitious_company": "Beta",
+  "fictitious_role": "Company administrator, not platform operator",
+  "working_language": "es",
+  "supplemental_document_language": "en",
+  "source_revision": "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+  "human_trial": false,
+  "human_validation": false,
+  "human_participant_alias": null,
+  "human_observer": null,
+  "human_session_date": null,
+  "human_start_time": null,
+  "human_finish_time": null,
+  "human_duration_seconds": null,
+  "human_clock_wait_seconds": null,
+  "human_literal_comments": [],
+  "human_help_required": null,
+  "human_comprehension_score": null,
+  "new_browser_session": false,
+  "new_browser_actions": 0,
+  "new_real_provider_calls": 0,
+  "simulated_walkthrough": "p02-simulated-walkthrough.md",
+  "new_checks": "run-01/checks.json",
+  "incomplete_supplemental_checks": "run-02/checks.json",
+  "human_original_form_modified": false,
+  "H1": {
+    "human_status": "not_performed",
+    "simulation_status": "all_seven_steps_reviewed",
+    "steps": ["H1-01", "H1-02", "H1-03", "H1-04", "H1-05", "H1-06", "H1-07"],
+    "human_result": null,
+    "human_step_times": [null, null, null, null, null, null, null],
+    "simulated_response_information": "Hypothesis authored by agent: only admitted text and permitted context should leave; the image at paragraph 3 is omitted, even when textual units read are 3/3.",
+    "simulated_response_verification": "Hypothesis authored by agent: passed checks cover their specified scope and synthetic judge; they do not guarantee general truth.",
+    "simulated_response_cost": "Hypothesis authored by agent: the historical 0.00102000 USD is a fixture estimate; a real unknown charge is not zero.",
+    "simulated_response_expiry": "Hypothesis authored by agent: review the same request and consciously confirm the new token; mandatory blocks remain blocks."
+  },
+  "H2": {
+    "human_status": "not_performed",
+    "simulation_status": "all_six_steps_reviewed",
+    "steps": ["H2-01", "H2-02", "H2-03", "H2-04", "H2-05", "H2-06"],
+    "human_result": null,
+    "human_step_times": [null, null, null, null, null, null],
+    "simulated_response_renewal": "Hypothesis authored by agent: prior consent expired; renewal is not proof that a provider call took place.",
+    "simulated_response_citation": "Hypothesis authored by agent: an exact quoted fragment supports that fragment, not unread images or a legal conclusion.",
+    "simulated_response_uncertainty": "Hypothesis authored by agent: outcome_unknown and null cost require preserving request_id and checking state; no resend to obtain a favorable outcome.",
+    "simulated_response_failure": "Hypothesis authored by agent: stop the failed case and return to the allowed offline scenario; do not weaken policy or change keys."
+  },
+  "additional_steps": ["P02-PREP", "P02-PRIV", "P02-UNCERT", "P02-DUP", "P02-OPS", "P02-EN"],
+  "findings": [
+    {
+      "id": "P02-I04",
+      "severity": "P1",
+      "kind": "supplemental_test_setup_incomplete_not_confirmed_product_defect",
+      "observation": "Three run-02 subtests expected document pending_consent but received blocked before cancellation. The text fixture lacks the documentary Jev destination and credential checked before coverage consent in fixed source.",
+      "handling": "Preserve failed run; no follow-up execution performed. Do not claim newly verified cancellation of the exact DOCX through all three entries.",
+      "runtime_defect_claimed": false
+    },
+    {
+      "id": "P02-I01",
+      "severity": "P2",
+      "kind": "hypothetical_comprehension_risk_supported_by_prior_visual_artifact",
+      "observation": "Historical UI mixes English labels and Spanish notices.",
+      "hypothesis": "A Spanish-speaking persona may misread receipt, passed, or coverage as invoice, guarantee, or full visual reading.",
+      "human_confusion_observed": false
+    },
+    {
+      "id": "P02-I02",
+      "severity": "P2",
+      "kind": "hypothetical_discovery_risk_supported_by_prior_visual_artifact",
+      "observation": "The completed mobile receipt has its own long vertical scroll region.",
+      "hypothesis": "The persona may need to discover inner scrolling before finding cost and destination.",
+      "human_difficulty_observed": false
+    },
+    {
+      "id": "P02-I03",
+      "severity": "P2",
+      "kind": "document_version_mismatch_at_initial_read_not_ui_finding",
+      "observation": "The pilot draft initially cited d63731a while the coordinator supplied later revisions.",
+      "handling": "Reported to coordinator; P02 records fixed tested revision and historical artifact provenance separately.",
+      "runtime_defect_claimed": false
+    }
+  ],
+  "global_human_result": null,
+  "simulation_result": "Complete documentary persona walkthrough with new scoped offline checks; no human rehearsal or calibration is closed.",
+  "remaining_unmeasured": [
+    "Human discovery without help and literal feedback",
+    "Human duration and response time",
+    "English comprehension and translation quality",
+    "Physical mobile and assistive technology accessibility",
+    "Current-candidate browser behavior after parallel changes",
+    "Real provider quality, real bills and savings",
+    "General masking accuracy and native Office/OCR behavior"
+  ]
+}

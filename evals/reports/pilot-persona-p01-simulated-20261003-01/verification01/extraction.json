@@ -1,0 +1,548 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-03T15:58:45.937576+00:00",
+  "python": "3.12.11",
+  "packages": {
+    "Django": "5.2.17",
+    "pypdf": "6.19.0",
+    "python-docx": "1.2.0",
+    "openpyxl": "3.1.5"
+  },
+  "source_sha256": {
+    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
+    "regulai/front/file_security.py": "bdb10c07bf1444572eeedeb7a64318a98bd1a5fc1b7bb0e1af3a808c503fa660"
+  },
+  "expectations_sha256": "f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c",
+  "real_provider_calls": 0,
+  "native_application_validation": false,
+  "human_validation": false,
+  "cases": 12,
+  "passed": 12,
+  "results": [
+    {
+      "id": "pdf-text",
+      "file": "textual.pdf",
+      "sha256": "1ec3db23c6fab0e63f565f054173b7a78b41610d03e68a38b3995e7bbb411753",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "1ec3db23c6fab0e63f565f054173b7a78b41610d03e68a38b3995e7bbb411753",
+        "format": "pdf",
+        "status": "complete",
+        "units_read": 2,
+        "units_total": 2,
+        "warnings": [],
+        "disclosures": [],
+        "file_name": "textual.pdf",
+        "file_size": 1904,
+        "fragment_hashes": [
+          "73bbfe9c8ade294f5170229720ea7cacefd61275b299f0a59096cf83b33d1193",
+          "6b1520b434ff7811e2f824223cc5d2d7945cf998aac5b9d8ec71bcbf965da1c8"
+        ],
+        "text": "Contrato sintetico\nContenido de prueba sin datos personales.\n\nEl preaviso final es de 17 dias.\n",
+        "fragments": [
+          {
+            "id": "73bbfe9c8ade294f5170229720ea7cacefd61275b299f0a59096cf83b33d1193",
+            "locator": "page:1",
+            "text": "Contrato sintetico\nContenido de prueba sin datos personales.\n"
+          },
+          {
+            "id": "6b1520b434ff7811e2f824223cc5d2d7945cf998aac5b9d8ec71bcbf965da1c8",
+            "locator": "page:2",
+            "text": "El preaviso final es de 17 dias.\n"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pdf-table",
+      "file": "table.pdf",
+      "sha256": "7063a03d9592ae9a08501279cdcc58db8e02b2ff45e0206d5fea29af9c781c53",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "7063a03d9592ae9a08501279cdcc58db8e02b2ff45e0206d5fea29af9c781c53",
+        "format": "pdf",
+        "status": "complete",
+        "units_read": 1,
+        "units_total": 1,
+        "warnings": [],
+        "disclosures": [],
+        "file_name": "table.pdf",
+        "file_size": 1467,
+        "fragment_hashes": [
+          "93d2f4dc954f5d504575b385da78f2e390590e51ef05095032cd6c0bb82bdfae"
+        ],
+        "text": "Tabla sintetica de precios\nPlan             Precio EUR\nBasico           10\nAvanzado         25\n",
+        "fragments": [
+          {
+            "id": "93d2f4dc954f5d504575b385da78f2e390590e51ef05095032cd6c0bb82bdfae",
+            "locator": "page:1",
+            "text": "Tabla sintetica de precios\nPlan             Precio EUR\nBasico           10\nAvanzado         25\n"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pdf-visual",
+      "file": "text-and-image.pdf",
+      "sha256": "1378588570d6a15a9678309349c06059e5712a382d07d27feec1dee0aaf82d52",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "1378588570d6a15a9678309349c06059e5712a382d07d27feec1dee0aaf82d52",
+        "format": "pdf",
+        "status": "complete_text_only",
+        "units_read": 1,
+        "units_total": 1,
+        "warnings": [
+          "images_unread"
+        ],
+        "disclosures": [
+          {
+            "code": "images_unread",
+            "count": 1,
+            "locators": [
+              "page:1"
+            ]
+          }
+        ],
+        "file_name": "text-and-image.pdf",
+        "file_size": 13639,
+        "fragment_hashes": [
+          "1a099e44f93b305fa130ed015bf4882a1facb97c9c21ca00fc85bf81c63bfd63"
+        ],
+        "text": "El contrato cuesta 10 euros.\n",
+        "fragments": [
+          {
+            "id": "1a099e44f93b305fa130ed015bf4882a1facb97c9c21ca00fc85bf81c63bfd63",
+            "locator": "page:1",
+            "text": "El contrato cuesta 10 euros.\n"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pdf-scan",
+      "file": "simulated-scan.pdf",
+      "sha256": "7170f6ae58b93ddffb2c5e0688886d8e377537bac563ada5ff9242ebfe8ff9d2",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "7170f6ae58b93ddffb2c5e0688886d8e377537bac563ada5ff9242ebfe8ff9d2",
+        "format": "pdf",
+        "status": "partial",
+        "units_read": 0,
+        "units_total": 1,
+        "warnings": [
+          "images_unread",
+          "page_without_text"
+        ],
+        "disclosures": [
+          {
+            "code": "images_unread",
+            "count": 1,
+            "locators": [
+              "page:1"
+            ]
+          },
+          {
+            "code": "page_without_text",
+            "count": 1,
+            "locators": [
+              "page:1"
+            ]
+          }
+        ],
+        "file_name": "simulated-scan.pdf",
+        "file_size": 13583,
+        "fragment_hashes": [],
+        "text": "",
+        "fragments": []
+      }
+    },
+    {
+      "id": "pdf-blank",
+      "file": "blank.pdf",
+      "sha256": "b3e44df802e407df3d586bb3d4b3a7db17bc868565f04a061077f7d8de3e44bd",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "b3e44df802e407df3d586bb3d4b3a7db17bc868565f04a061077f7d8de3e44bd",
+        "format": "pdf",
+        "status": "unreadable",
+        "units_read": 1,
+        "units_total": 1,
+        "warnings": [
+          "blank_page",
+          "empty_document"
+        ],
+        "disclosures": [
+          {
+            "code": "blank_page",
+            "count": 1,
+            "locators": [
+              "page:1"
+            ]
+          }
+        ],
+        "file_name": "blank.pdf",
+        "file_size": 431,
+        "fragment_hashes": [],
+        "text": "",
+        "fragments": []
+      }
+    },
+    {
+      "id": "pdf-final",
+      "file": "blank-and-final-clause.pdf",
+      "sha256": "ca384838c0eebe690b332c75ebcf1851d1b55c224d520a19bc73f243787d29bd",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "ca384838c0eebe690b332c75ebcf1851d1b55c224d520a19bc73f243787d29bd",
+        "format": "pdf",
+        "status": "complete",
+        "units_read": 3,
+        "units_total": 3,
+        "warnings": [
+          "blank_page"
+        ],
+        "disclosures": [
+          {
+            "code": "blank_page",
+            "count": 1,
+            "locators": [
+              "page:2"
+            ]
+          }
+        ],
+        "file_name": "blank-and-final-clause.pdf",
+        "file_size": 1519,
+        "fragment_hashes": [
+          "03f093800d2e53009ee531070dc36d4e245fe860623121d6b14ba6ddb0001f9d",
+          "69717c9227623b74c78e71c9aff66d85de80497c8fcbcb259d631d191b77bd4d"
+        ],
+        "text": "Inicio del contrato\n\nClausula final: el preaviso es de 17 dias.\n",
+        "fragments": [
+          {
+            "id": "03f093800d2e53009ee531070dc36d4e245fe860623121d6b14ba6ddb0001f9d",
+            "locator": "page:1",
+            "text": "Inicio del contrato\n"
+          },
+          {
+            "id": "69717c9227623b74c78e71c9aff66d85de80497c8fcbcb259d631d191b77bd4d",
+            "locator": "page:3",
+            "text": "Clausula final: el preaviso es de 17 dias.\n"
+          }
+        ]
+      }
+    },
+    {
+      "id": "word-revisions",
+      "file": "tracked-changes.docx",
+      "sha256": "9d70611e1c85e7a10ab6cbd5bcd773b07ecc4e41c7528ebe25fdd80686163cb4",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "9d70611e1c85e7a10ab6cbd5bcd773b07ecc4e41c7528ebe25fdd80686163cb4",
+        "format": "docx",
+        "status": "complete",
+        "units_read": 2,
+        "units_total": 2,
+        "warnings": [
+          "tracked_changes_present"
+        ],
+        "disclosures": [
+          {
+            "code": "tracked_changes_present",
+            "count": 2,
+            "locators": [
+              "word/document.xml/paragraph:2"
+            ]
+          }
+        ],
+        "file_name": "tracked-changes.docx",
+        "file_size": 36789,
+        "fragment_hashes": [
+          "1e0befe368a3fdb8719bf5b9e1176338fd5ade23086406cb01240672cd0caa06",
+          "f84a2ea196c17e189f063e74d29ffc2bb52e3c434d38cfd1deb919a396c35bf4"
+        ],
+        "text": "Contrato con cambios pendientes\nEl preaviso es de 17 dias.",
+        "fragments": [
+          {
+            "id": "1e0befe368a3fdb8719bf5b9e1176338fd5ade23086406cb01240672cd0caa06",
+            "locator": "word/document.xml/paragraph:1",
+            "text": "Contrato con cambios pendientes"
+          },
+          {
+            "id": "f84a2ea196c17e189f063e74d29ffc2bb52e3c434d38cfd1deb919a396c35bf4",
+            "locator": "word/document.xml/paragraph:2",
+            "text": "El preaviso es de 17 dias."
+          }
+        ]
+      }
+    },
+    {
+      "id": "word-numbering",
+      "file": "multilevel-numbering.docx",
+      "sha256": "1f52b6eb10a7a69cf559ea03ce644326e35b408feb297bb23b8693f357849967",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "1f52b6eb10a7a69cf559ea03ce644326e35b408feb297bb23b8693f357849967",
+        "format": "docx",
+        "status": "complete",
+        "units_read": 6,
+        "units_total": 6,
+        "warnings": [],
+        "disclosures": [],
+        "file_name": "multilevel-numbering.docx",
+        "file_size": 36782,
+        "fragment_hashes": [
+          "9e43a94bb7f336d71fb2734622225e8468a65c35a1f7fb3571c9a14f556eaf94",
+          "c1a4c9df7f99e70bbfe4b948788e00970cbbb6976e7b1db1642795c6c8fa9f84",
+          "6157604b9f970e1589170a3ebb5a3c061ced9a62c23e34c3a8596429f9564701",
+          "572a60a338e292abe078c407f2d44af4ed599c6641592b7a19389925642d2e25",
+          "0db07379ee0499d96179b01dc5e2119dbfc03b3cb6acf9760e1c0942fd097944",
+          "a98bed91420169780d6e3a3784ee7737c548645225643898c49b2cb98811500a"
+        ],
+        "text": "Contrato con numeracion decimal\n1. Servicio\n1.1. Precio de 10 euros\n1.2. Revision anual\n2. Terminacion\n2.1. Preaviso de 17 dias",
+        "fragments": [
+          {
+            "id": "9e43a94bb7f336d71fb2734622225e8468a65c35a1f7fb3571c9a14f556eaf94",
+            "locator": "word/document.xml/paragraph:1",
+            "text": "Contrato con numeracion decimal"
+          },
+          {
+            "id": "c1a4c9df7f99e70bbfe4b948788e00970cbbb6976e7b1db1642795c6c8fa9f84",
+            "locator": "word/document.xml/paragraph:2",
+            "text": "1. Servicio"
+          },
+          {
+            "id": "6157604b9f970e1589170a3ebb5a3c061ced9a62c23e34c3a8596429f9564701",
+            "locator": "word/document.xml/paragraph:3",
+            "text": "1.1. Precio de 10 euros"
+          },
+          {
+            "id": "572a60a338e292abe078c407f2d44af4ed599c6641592b7a19389925642d2e25",
+            "locator": "word/document.xml/paragraph:4",
+            "text": "1.2. Revision anual"
+          },
+          {
+            "id": "0db07379ee0499d96179b01dc5e2119dbfc03b3cb6acf9760e1c0942fd097944",
+            "locator": "word/document.xml/paragraph:5",
+            "text": "2. Terminacion"
+          },
+          {
+            "id": "a98bed91420169780d6e3a3784ee7737c548645225643898c49b2cb98811500a",
+            "locator": "word/document.xml/paragraph:6",
+            "text": "2.1. Preaviso de 17 dias"
+          }
+        ]
+      }
+    },
+    {
+      "id": "word-visual",
+      "file": "text-and-image.docx",
+      "sha256": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+        "format": "docx",
+        "status": "complete_text_only",
+        "units_read": 3,
+        "units_total": 3,
+        "warnings": [
+          "images_unread"
+        ],
+        "disclosures": [
+          {
+            "code": "images_unread",
+            "count": 1,
+            "locators": [
+              "word/document.xml/paragraph:3"
+            ]
+          }
+        ],
+        "file_name": "text-and-image.docx",
+        "file_size": 46712,
+        "fragment_hashes": [
+          "86c8aa1405a171be21638340b504d6349eb4d63627138ce3c5a19c6585b7761c",
+          "a1f33a160aca5b3cc660e5c5eae1e3ff84230a426589b7264d227e5e77e09dfa",
+          "fa2ce3e0e0a00129ffbe577bf4a0729764c393839ebcd1a169d351a7ce1b79c6"
+        ],
+        "text": "Contrato con imagen sintetica\nEl contrato cuesta 10 euros.\n",
+        "fragments": [
+          {
+            "id": "86c8aa1405a171be21638340b504d6349eb4d63627138ce3c5a19c6585b7761c",
+            "locator": "word/document.xml/paragraph:1",
+            "text": "Contrato con imagen sintetica"
+          },
+          {
+            "id": "a1f33a160aca5b3cc660e5c5eae1e3ff84230a426589b7264d227e5e77e09dfa",
+            "locator": "word/document.xml/paragraph:2",
+            "text": "El contrato cuesta 10 euros."
+          },
+          {
+            "id": "fa2ce3e0e0a00129ffbe577bf4a0729764c393839ebcd1a169d351a7ce1b79c6",
+            "locator": "word/document.xml/paragraph:3",
+            "text": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "csv-quoted",
+      "file": "quoted.csv",
+      "sha256": "0812cab7ad62db52992ca98e68fd576d51525769b255bd7cd3ad61e7ed624640",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "0812cab7ad62db52992ca98e68fd576d51525769b255bd7cd3ad61e7ed624640",
+        "format": "csv",
+        "status": "complete",
+        "units_read": 3,
+        "units_total": 3,
+        "warnings": [],
+        "disclosures": [],
+        "file_name": "quoted.csv",
+        "file_size": 77,
+        "fragment_hashes": [
+          "f0c3af628e042d15411277cbd32a595c0722e1a055606ef1c50345a0aaa6b2ec",
+          "dcbfac5404f86209e5f518d509ae5b857efac434ff23e95d13e874fdc63fea4f",
+          "dea026a421345ec8a30f2d6665cf785862a0e2f4c776e675294c933252992a40"
+        ],
+        "text": "A1: Plan\tB1: Precio EUR\tC1: Nota\nA2: Basico\tB2: 10\tC2: Primera linea\nSegunda linea\nA3: Avanzado\tB3: 25\tC3: Fin",
+        "fragments": [
+          {
+            "id": "f0c3af628e042d15411277cbd32a595c0722e1a055606ef1c50345a0aaa6b2ec",
+            "locator": "row:1/cells:A1-C1",
+            "text": "A1: Plan\tB1: Precio EUR\tC1: Nota"
+          },
+          {
+            "id": "dcbfac5404f86209e5f518d509ae5b857efac434ff23e95d13e874fdc63fea4f",
+            "locator": "row:2/cells:A2-C2",
+            "text": "A2: Basico\tB2: 10\tC2: Primera linea\nSegunda linea"
+          },
+          {
+            "id": "dea026a421345ec8a30f2d6665cf785862a0e2f4c776e675294c933252992a40",
+            "locator": "row:3/cells:A3-C3",
+            "text": "A3: Avanzado\tB3: 25\tC3: Fin"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlsx-cached",
+      "file": "formula-cached.xlsx",
+      "sha256": "8a1dd698840f993b83f733934ec5c15e621637559cf5640c908348a59a83918d",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "8a1dd698840f993b83f733934ec5c15e621637559cf5640c908348a59a83918d",
+        "format": "xlsx",
+        "status": "complete",
+        "units_read": 2,
+        "units_total": 2,
+        "warnings": [
+          "formula_expression_security_only"
+        ],
+        "disclosures": [
+          {
+            "code": "formula_expression_security_only",
+            "count": 1,
+            "locators": [
+              "sheet:Costes/cell:C2"
+            ]
+          }
+        ],
+        "file_name": "formula-cached.xlsx",
+        "file_size": 4992,
+        "fragment_hashes": [
+          "80dc17bfcbc5c5c759303d8a5006fbb54a2160b976cbfc707aaa7c367bd5ebbd",
+          "ec2e77b422e99d1629fc794c3252fb22e80642154506781adbb64c5705c6ae3a"
+        ],
+        "text": "A1: Unidades\tB1: Precio EUR\tC1: Total EUR\nA2: 2\tB2: 5\tC2: 10\n=A2*B2",
+        "fragments": [
+          {
+            "id": "80dc17bfcbc5c5c759303d8a5006fbb54a2160b976cbfc707aaa7c367bd5ebbd",
+            "locator": "sheet:Costes/row:1/cells:A1-C1",
+            "text": "A1: Unidades\tB1: Precio EUR\tC1: Total EUR"
+          },
+          {
+            "id": "ec2e77b422e99d1629fc794c3252fb22e80642154506781adbb64c5705c6ae3a",
+            "locator": "sheet:Costes/row:2/cells:A2-C2",
+            "text": "A2: 2\tB2: 5\tC2: 10"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlsx-uncached",
+      "file": "formula-uncached.xlsx",
+      "sha256": "df35bcfc0dc0e40ee9943fd699a5a2f7b03d9e04e9ea25f6213b3a787d033cfa",
+      "passed": true,
+      "failures": [],
+      "observed": {
+        "extractor_version": "2",
+        "digest": "df35bcfc0dc0e40ee9943fd699a5a2f7b03d9e04e9ea25f6213b3a787d033cfa",
+        "format": "xlsx",
+        "status": "partial",
+        "units_read": 2,
+        "units_total": 2,
+        "warnings": [
+          "formula_expression_security_only",
+          "formula_coverage_unknown"
+        ],
+        "disclosures": [
+          {
+            "code": "formula_expression_security_only",
+            "count": 1,
+            "locators": [
+              "sheet:Costes/cell:C2"
+            ]
+          },
+          {
+            "code": "formula_coverage_unknown",
+            "count": 1,
+            "locators": [
+              "sheet:Costes/cell:C2"
+            ]
+          }
+        ],
+        "file_name": "formula-uncached.xlsx",
+        "file_size": 4991,
+        "fragment_hashes": [
+          "2bb803f6e9997d25c2c2f9baf024c663735511736ad79731774ef0fae51029bf",
+          "7b0446fd91a78f9d3028d50d76b32443590ed5007fbb9f40a85bb9a3098ba66f"
+        ],
+        "text": "A1: Unidades\tB1: Precio EUR\tC1: Total EUR\nA2: 2\tB2: 5\n=A2*B2",
+        "fragments": [
+          {
+            "id": "2bb803f6e9997d25c2c2f9baf024c663735511736ad79731774ef0fae51029bf",
+            "locator": "sheet:Costes/row:1/cells:A1-C1",
+            "text": "A1: Unidades\tB1: Precio EUR\tC1: Total EUR"
+          },
+          {
+            "id": "7b0446fd91a78f9d3028d50d76b32443590ed5007fbb9f40a85bb9a3098ba66f",
+            "locator": "sheet:Costes/row:2/cells:A2-B2",
+            "text": "A2: 2\tB2: 5"
+          }
+        ]
+      }
+    }
+  ]
+}

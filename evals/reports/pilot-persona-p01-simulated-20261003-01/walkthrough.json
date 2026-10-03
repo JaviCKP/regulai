@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "kind": "simulated_persona_review_with_one_new_automated_browser_check",
+  "persona": {
+    "id": "P01",
+    "company_fictional": "Alpha",
+    "role_fictional": "empleado poco técnico",
+    "language": "español",
+    "is_real_person": false
+  },
+  "human_participants": 0,
+  "human_validation": false,
+  "human_started_at": null,
+  "human_finished_at": null,
+  "human_duration_seconds": null,
+  "human_quotes": [],
+  "initial_reference_head": "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+  "new_browser_reference_head": "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+  "historical_live_runtime": "698e8f0 (contexto comunicado por root, no ejecutado aquí)",
+  "expected_glossary": "docs/plan-blackhat/README.md#vocabulario-que-utilizaremos",
+  "scope_limit": "Las acciones atribuibles a P01 son hipótesis; las acciones técnicas nuevas son del agente y se identifican. No convierte H1/H2 humanos en realizados.",
+  "steps": [
+    {
+      "id": "P01-00",
+      "protocol_steps": [
+        "H1.preparación",
+        "H2.preparación"
+      ],
+      "task_input": "Revisar la simulación, corpus, revisión y significado inicial de cobertura/comprobación.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#dos-recorridos-humanos-completos-preparados",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/browser-postfix-environment.json",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-completed-snapshot.yml",
+        "evals/documents/pilot-20261003/files/manifest.json"
+      ],
+      "new_action": "Leí las fuentes, inspeccioné siete capturas previas y abrí una base/sesión nuevas exclusivamente para cancelar un DOCX. El banner offline apareció en el DOM real. No empecé un cronómetro humano.",
+      "observable_result": "Manifiestos y expectativas sintéticos explícitos; el nuevo navegador usó community-demo, no una cuenta Alpha. Base nueva dentro de p01/browser01; local_settings del usuario sustituido por módulo vacío.",
+      "simulated_persona_inference": "SIMULACIÓN: P01 preferiría una explicación breve en castellano; podría asociar «comprobaciones superadas» con una garantía si no lee el banner.",
+      "doubt_incident": "No se midió comprensión inicial ni autonomía.",
+      "severity": "P2",
+      "severity_justification": "Riesgo de comprensión del perfil, sin salida prohibida ni fallo observado de control.",
+      "issue_ids": [
+        "P01-P2-01"
+      ],
+      "result_scope": "Preparación técnica realizada; preparación humana no realizada."
+    },
+    {
+      "id": "P01-01",
+      "protocol_steps": [
+        "H1.1",
+        "H2.1"
+      ],
+      "task_input": "Iniciar sesión, nueva conversación y Devuelve el saludo Hola.; abrir ficha e identificar destino y coste sintético.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#ensayo-h1-con-acompañamiento",
+      "existing_evidence": [
+        "regulai/front/test_demo.py",
+        "evals/reports/pilot-documents-20261003-01/README.md",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-completed-snapshot.yml"
+      ],
+      "new_action": "Inicié sesión y abrí Chat en el navegador nuevo. Leí la prueba automatizada que espera Hola y rechazo del marcador secreto; no envié el saludo ni ejecuté esa prueba en esta revisión.",
+      "observable_result": "Login y Chat funcionaron en Chromium nuevo, con banner offline. El comportamiento del saludo tiene una expectativa ejecutable en el test, pero no un nuevo resultado de envío P01.",
+      "simulated_persona_inference": "SIMULACIÓN: distinguiría la palabra demo de una llamada real con ayuda; engine:1 no le explica por sí solo quién recibiría sus datos.",
+      "doubt_incident": "Saludo y descubrimiento autónomo de la ficha pendientes de nueva observación humana; no se transfiere la evidencia documental a ese envío.",
+      "severity": "P2",
+      "severity_justification": "Falta evidencia de comprensión y de este envío nuevo; no es un fallo técnico demostrado.",
+      "issue_ids": [
+        "P01-P2-01",
+        "P01-P2-03"
+      ],
+      "result_scope": "Login nuevo comprobado; saludo solo revisado documentalmente."
+    },
+    {
+      "id": "P01-02",
+      "protocol_steps": [
+        "H1.2",
+        "H2.6"
+      ],
+      "task_input": "Enviar SYNTHETIC_SECRET_DEMO y explicar por qué confirmar no debe levantar el bloqueo.",
+      "expected_reference": "docs/plan-blackhat/README.md#vocabulario-que-utilizaremos",
+      "existing_evidence": [
+        "regulai/front/test_demo.py",
+        "evals/reports/pilot-operations-20261003-08/result.json"
+      ],
+      "new_action": "Leí la expectativa del test exacto y el resultado histórico de bloqueo del laboratorio con otro marcador; no envié ninguno.",
+      "observable_result": "El test exacto exige blocked y ninguna llamada adicional. El laboratorio histórico conserva su control local true, con marcador distinto SYNTHETIC_BLOCK. No hay recibo nuevo de bloqueo P01.",
+      "simulated_persona_inference": "SIMULACIÓN: al encontrar un bloqueo, P01 debería detenerse y pedir una alternativa permitida; confirmar una advertencia documental no concede permiso para enviar secretos.",
+      "doubt_incident": "No se acredita que una persona encuentre o explique el motivo por sí sola.",
+      "severity": "P2",
+      "severity_justification": "Límite de comprensión/observación, sin P0 de salida observada.",
+      "issue_ids": [
+        "P01-P2-01"
+      ],
+      "result_scope": "Control revisado mediante fuentes; no nuevo bloqueo ejecutado."
+    },
+    {
+      "id": "P01-03",
+      "protocol_steps": [
+        "H1.3"
+      ],
+      "task_input": "Adjuntar text-and-image.docx; Cual es el precio del contrato?; localizar la omisión y cancelar con teclado.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#ensayo-h1-con-acompañamiento",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/receipt-before-consent.json",
+        "evals/reports/pilot-documents-20261003-01/receipt-cancelled.json"
+      ],
+      "new_action": "NUEVO: envié el DOCX desde la UI, leí pending_consent, capturé estado/captura; pulsé Tab desde Confirm sending, comprobé document.activeElement.textContent = Cancel request, pulsé Enter y abrí la ficha.",
+      "observable_result": "Petición 0d786fda-cbda-4397-af8c-e54ade766b7c: pending_consent → cancelled; mismo archivo/SHA y mensaje; calls=0 antes y después; solo un mensaje user y ningún assistant. Aviso: una imagen no analizada ni enviada, párrafo 3. Cero intentos de generación.",
+      "new_evidence": [
+        "state-document-pending.json",
+        "state-document-cancelled.json",
+        ".playwright-cli/page-2026-10-03T15-55-51-013Z.png",
+        ".playwright-cli/page-2026-10-03T15-56-16-172Z.yml",
+        ".playwright-cli/page-2026-10-03T15-56-39-270Z.png"
+      ],
+      "simulated_persona_inference": "SIMULACIÓN: puede asociar cancelar con no enviar; necesitaría traducir pending_consent y el localizador para reconocer qué imagen quedó fuera.",
+      "doubt_incident": "La acción fue del agente. No mide tiempo, ayuda, reacción ni destreza de P01. La máscara está configurada local, pero no se invoca al cancelar antes de llamadas.",
+      "severity": "P2",
+      "severity_justification": "Mecanismo comprobado correcto; quedan dudas de interpretación de etiquetas.",
+      "issue_ids": [
+        "P01-P2-01",
+        "P01-P2-02"
+      ],
+      "result_scope": "Prueba nueva de navegador automatizado, sin participación humana."
+    },
+    {
+      "id": "P01-04",
+      "protocol_steps": [
+        "H1.4"
+      ],
+      "task_input": "Repetir el Word en conversación nueva, confirmar y distinguir primer intento rechazado, segundo aceptado y fuente de 10 euros.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#ensayo-h1-con-acompañamiento",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/receipt-postfix-completed.json",
+        "evals/reports/pilot-documents-20261003-01/17-citation-after-renewal.png",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-completed-snapshot.yml"
+      ],
+      "new_action": "Inspeccioné la captura y comparé el JSON conservado. El verificador cuenta generaciones y sus resultados; no confirmé una nueva petición.",
+      "observable_result": "Evidencia histórica: 10 euros [1], párrafo 2, cita «cuesta 10 euros.»; ocho operaciones sintéticas, dos generaciones, verificación failed en intento 1 y passed en intento 2. El snapshot muestra ambas llamadas como completed y solo passed global.",
+      "simulated_persona_inference": "SIMULACIÓN: P01 puede interpretar que hubo ocho respuestas o que ambas generaciones eran correctas. La diferencia entre llamada completada y respuesta aceptada requiere explicación o exportar JSON.",
+      "doubt_incident": "Rechazo del primer intento poco visible en el snapshot; no implica publicación de respuesta rechazada ni calidad semántica medida.",
+      "severity": "P2",
+      "severity_justification": "El dato correcto existe en el recibo; riesgo de comprensión, sin P1 funcional demostrado.",
+      "issue_ids": [
+        "P01-P2-03"
+      ],
+      "result_scope": "Resultado histórico sintético comprobado por lectura; nueva confirmación no ejecutada."
+    },
+    {
+      "id": "P01-05",
+      "protocol_steps": [
+        "H1.5",
+        "H2.4"
+      ],
+      "task_input": "Abrir cita con Tab/Enter, guardar ficha JSON, recargar y reencontrar evidencia.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#ensayo-h2-sin-instrucciones-durante-los-pasos",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/browser-observations.json",
+        "evals/reports/pilot-documents-20261003-01/08-mobile-reloaded-receipt.png",
+        "evals/reports/pilot-documents-20261003-01/10-mobile-citation.png",
+        "evals/reports/pilot-documents-20261003-01/receipt-completed.json"
+      ],
+      "new_action": "Inspeccioné la evidencia histórica de teclado/recarga. NUEVO en el caso cancelado: Tab llevó a Export receipt JSON y el enlace descargó el recibo original.",
+      "observable_result": "Históricamente recarga conservó respuesta, ficha y cita; descarga real registrada. La nueva descarga contiene cancelled, mismo request_id, calls=[] y aviso de omisión; no tiene respuesta ni cita que abrir.",
+      "new_evidence": [
+        ".playwright-cli/receipt-0d786fda-cbda-4397-af8c-e54ade766b7c.json"
+      ],
+      "simulated_persona_inference": "SIMULACIÓN: P01 puede guardar el archivo JSON sin saber interpretarlo; reencontrar una cita conservada no implica que el original se reenvíe en una pregunta posterior.",
+      "doubt_incident": "No hubo recarga ni cita nueva. No se midió que P01 encontrara esas acciones sin ayuda.",
+      "severity": "P2",
+      "severity_justification": "Localización/comprensión del artefacto; persistencia histórica conservada sin nueva medición humana.",
+      "issue_ids": [
+        "P01-P2-04"
+      ],
+      "result_scope": "Exportación cancelada nueva; teclado de cita y recarga históricos."
+    },
+    {
+      "id": "P01-06",
+      "protocol_steps": [
+        "H1.6"
+      ],
+      "task_input": "formula-uncached.xlsx: pedir total; recuperarse con formula-cached.xlsx.",
+      "expected_reference": "evals/documents/pilot-20261003/expectations.json",
+      "expectation_case_ids": ["xlsx-uncached", "xlsx-cached"],
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/extraction-results-final.json",
+        "evals/reports/pilot-documents-20261003-01/test-run-final.json",
+        "regulai/front/test_document_fidelity.py"
+      ],
+      "new_action": "Reejecuté las 12 expectativas congeladas con el extractor público y configuración mínima sin DB; no envié XLSX desde una entrada HTTP nueva.",
+      "observable_result": "Sin caché: partial, formula_coverage_unknown; fórmula solo para seguridad, sin C2:10 como fuente. Con caché: complete, fuente C2:10. El test histórico cubre el bloqueo sin caché en las tres entradas HTTP.",
+      "simulated_persona_inference": "SIMULACIÓN: P01 puede esperar que la app calcule Excel. Debe entender que el 10 procede de una caché sintética inyectada, no de recálculo ni respuesta semántica nueva de la demo.",
+      "doubt_incident": "Recuperación UI y comprensión del cambio de archivo no medidas; no se usó Excel/LibreOffice.",
+      "severity": "P2",
+      "severity_justification": "Riesgo de interpretar caché como cálculo; no fallo de extracción observado.",
+      "issue_ids": [
+        "P01-P2-02"
+      ],
+      "result_scope": "Extracción nueva; bloqueo HTTP histórico; recuperación humana pendiente."
+    },
+    {
+      "id": "P01-07",
+      "protocol_steps": [
+        "H1.7",
+        "H2.6"
+      ],
+      "task_input": "Inspeccionar ficha y acciones a 375 px sin desplazamiento horizontal.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#ensayo-h1-con-acompañamiento",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/14-mobile-consent-controls-fixed.png",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-pending-mobile-light.png",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-completed-mobile-light.png",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-observations.json"
+      ],
+      "new_action": "Inspeccioné visualmente tres capturas móviles existentes. El nuevo caso de cancelación se ejecutó a 1280×720, no a 375 px.",
+      "observable_result": "Controles y texto caben en capturas de 375×812; el registro anterior midió ancho de cuerpo/documento=375. La ficha larga tiene scroll vertical interno y abundantes límites técnicos.",
+      "simulated_persona_inference": "SIMULACIÓN: P01 puede necesitar desplazarse mucho para localizar coste, destino o exportación; sin desbordamiento horizontal no equivale a encontrar las acciones fácilmente.",
+      "doubt_incident": "No teléfono físico, medición de accesibilidad ni recorrido móvil nuevo.",
+      "severity": "P2",
+      "severity_justification": "Posible dificultad de localización, sin bloqueo práctico medido.",
+      "issue_ids": [
+        "P01-P2-04"
+      ],
+      "result_scope": "Revisión de capturas históricas, sin atribuir interacción móvil nueva."
+    },
+    {
+      "id": "P01-08",
+      "protocol_steps": [
+        "H2.2"
+      ],
+      "task_input": "Dejar pendiente el Word >300 s; en otra pestaña enviar SYNTHETIC_CONSENT_CANCEL y cancelar.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#ensayo-h2-sin-instrucciones-durante-los-pasos",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/browser-observations.json",
+        "evals/reports/pilot-documents-20261003-01/state-postfix-pending.json",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-state-pending.json",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-state-after-cancel.json"
+      ],
+      "new_action": "Contrasté los registros históricos separados. No repetí espera, abrí segunda pestaña ni ejecuté el marcador nuevo.",
+      "observable_result": "Hay una caducidad real histórica de 316,599294 s y un control de cancelación de marcador con cero llamadas; son sesiones/instantes distintos, no evidencia de la secuencia completa multitarea H2.",
+      "simulated_persona_inference": "SIMULACIÓN: P01 puede confundir qué petición está autorizando al cambiar de pestaña; debería comprobar pregunta, archivo y estado en la ficha antes de confirmar.",
+      "doubt_incident": "H2 exacto, con dos pestañas y sin ayuda, no se ha ejecutado ni medido.",
+      "severity": "P2",
+      "severity_justification": "Hueco de recorrido humano, no error de concurrencia probado.",
+      "issue_ids": [
+        "P01-P2-01"
+      ],
+      "result_scope": "Composición analítica de evidencia separada, explícitamente no una sesión H2."
+    },
+    {
+      "id": "P01-09",
+      "protocol_steps": [
+        "H2.3"
+      ],
+      "task_input": "Confirmar la petición caducada, revisar renovación sin llamadas y reconfirmar conscientemente.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#ensayo-h2-sin-instrucciones-durante-los-pasos",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/state-postfix-pending.json",
+        "evals/reports/pilot-documents-20261003-01/state-postfix-expired.json",
+        "evals/reports/pilot-documents-20261003-01/state-postfix-completed.json",
+        "evals/reports/pilot-ui-followup-20261003-01/browser-completed-snapshot.yml"
+      ],
+      "new_action": "Verifiqué automáticamente el mismo request_id, SHA, nombre y user_message_id en las tres capturas de estado; leí el texto corregido del recibo final.",
+      "observable_result": "Históricamente renovó pending_consent/consent_expired con cero llamadas; segunda confirmación llegó a completed y una respuesta. El recibo posterior conserva el motivo en pasado y no ofrece botones de confirmación/cancelación.",
+      "simulated_persona_inference": "SIMULACIÓN: la nueva confirmación renueva permiso para el mismo contenido; no significa doble envío. El aviso histórico en pasado ayuda a no repetir la operación.",
+      "doubt_incident": "La comprensión y consentimiento consciente de una persona no pueden inferirse de esos estados. El viejo proceso que acabó failed sigue preservado.",
+      "severity": "P2",
+      "severity_justification": "Límite de comprensión; texto antiguo imperativo ya corregido, no incidencia actual reabierta.",
+      "issue_ids": [],
+      "result_scope": "Caducidad y finalización históricos; ningún cronómetro ni reconfirmación nuevos."
+    },
+    {
+      "id": "P01-10",
+      "protocol_steps": [
+        "H2.5"
+      ],
+      "task_input": "simulated-scan.pdf: explicar el bloqueo; buscar 17 días en página 3 de blank-and-final-clause.pdf.",
+      "expected_reference": "evals/documents/pilot-20261003/expectations.json",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/pdf-contact-sheet.png",
+        "evals/reports/pilot-documents-20261003-01/test-run-final.json",
+        "regulai/front/test_document_fidelity.py"
+      ],
+      "new_action": "Inspeccioné el mosaico PDF existente y reextraje los archivos. No subí PDFs al navegador nuevo.",
+      "observable_result": "El escaneo sintético contiene visualmente 73 pero su extracción sigue partial/page_without_text; no fuente textual de 73. El otro PDF tiene página 2 blanca y conserva 17 días con locator page:3; complete con blank_page. Tests históricos cubren tres entradas.",
+      "simulated_persona_inference": "SIMULACIÓN: P01 debería buscar un documento con texto; no hay OCR demostrado. Una página blanca intermedia no elimina la cláusula final.",
+      "doubt_incident": "Localización manual por P01 y explicación sin ayuda pendientes; la inspección visual fue del agente sobre render previo.",
+      "severity": "P2",
+      "severity_justification": "Riesgo de expectativas OCR; extracción concreta pasó y bloqueo histórico está identificado.",
+      "issue_ids": [
+        "P01-P2-02"
+      ],
+      "result_scope": "Extracción nueva y lectura visual de render histórico; no respuesta semántica nueva."
+    },
+    {
+      "id": "P01-11",
+      "protocol_steps": [
+        "Piloto.aislamiento"
+      ],
+      "task_input": "Como empleado Alpha, comprobar que no aparecen ni se abren datos/recibos privados de Beta.",
+      "expected_reference": "docs/plan-blackhat/piloto-controlado.md#recorrido-y-recogida-de-resultados",
+      "existing_evidence": [
+        "evals/reports/pilot-operations-20261003-08/result.json",
+        "evals/reports/pilot-operations-20261003-08/source-manifest.json",
+        "evals/reports/pilot-operations-20261003-summary-final/README.md"
+      ],
+      "new_action": "Leí el resultado histórico del laboratorio de dos empresas y su procedencia. No creé cuentas Alpha/Beta ni consulté bases del usuario.",
+      "observable_result": "La puerta histórica de aislamiento figura true. El navegador documental nuevo solo tiene la identidad Community offline demo; no prueba aislamiento Alpha/Beta. El guion técnico inspeccionado cubre rechazo de Beta al archivo/recibo de Alpha.",
+      "simulated_persona_inference": "SIMULACIÓN: que no vea conversaciones de Beta en el listado no demuestra por sí solo permisos; ante un dato ajeno debe detenerse y avisar.",
+      "doubt_incident": "No hay una nueva sesión Alpha→Beta ni prueba humana de descubrimiento. No se concluye aislamiento universal.",
+      "severity": "no_finding",
+      "severity_justification": "Ningún cruce observado; falta de nueva observación no se convierte en P0 ni en pase nuevo.",
+      "issue_ids": [],
+      "result_scope": "Revisión histórica de control, no ejecución nueva de aislamiento."
+    },
+    {
+      "id": "P01-12",
+      "protocol_steps": [
+        "Piloto.estado_coste_incierto"
+      ],
+      "task_input": "Interpretar una desconexión/resultado incierto; conservar request_id y evitar reenvío ciego.",
+      "expected_reference": "docs/plan-blackhat/piloto-controlado.md#límites-soporte-y-parada",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/09-outcome-unknown-synthetic-reconstruction.png",
+        "evals/reports/pilot-documents-20261003-01/receipt-outcome-unknown-reconstruction.json",
+        "evals/reports/pilot-operations-20261003-08/restart-result.json"
+      ],
+      "new_action": "Inspeccioné la captura de reconstrucción y verifiqué por separado el resultado histórico de interrupción real del laboratorio; no interrumpí una generación nueva.",
+      "observable_result": "Reconstrucción UI: outcome_unknown, coste de llamada y total unknown, sin asistente. Interrupción histórica lab08: success=false, generation started, cost=null y total ausente. No son el caso vivo detenido tras clasificación incierta.",
+      "simulated_persona_inference": "SIMULACIÓN: no saber el resultado no significa gratis ni completado. P01 debería conservar el identificador y pedir comprobación de estado, sin repetir para obtener una respuesta favorable.",
+      "doubt_incident": "Sin nueva desconexión ni evaluación humana. No se han reconciliado costes vivos ni se modifica el ledger.",
+      "severity": "P2",
+      "severity_justification": "Hipótesis de comprensión/recuperación; los estados examinados no presentan incertidumbre como éxito, por tanto no P1 demostrado.",
+      "issue_ids": [
+        "P01-P2-01"
+      ],
+      "result_scope": "Representación y evidencia histórica diferenciadas; sin llamada o fallo vivo nuevo."
+    },
+    {
+      "id": "P01-13",
+      "protocol_steps": [
+        "H1.cierre",
+        "H2.cierre"
+      ],
+      "task_input": "Explicar qué salió, qué se omitió, qué acredita la cita y qué haría ante caducidad/error.",
+      "expected_reference": "docs/plan-blackhat/documentos-y-ensayos-piloto.md#criterios-y-registro",
+      "existing_evidence": [
+        "evals/reports/pilot-documents-20261003-01/human-rehearsal-form.md"
+      ],
+      "new_action": "Redacté respuestas simuladas en un formulario aparte y comprobé el hash del formulario humano original sin modificarlo.",
+      "observable_result": "Formulario simulado separado; participantes humanos=0; alias P01 ficticio; inicio/fin/duración y citas literales humanas=null. Los criterios de participación y comprensión humanas siguen pendientes.",
+      "simulated_persona_inference": "SIMULACIÓN: con acompañamiento en castellano puede elaborar una explicación correcta a partir de la evidencia; sin ayuda no hay base para asegurar que encontrará o entenderá todas las acciones.",
+      "doubt_incident": "No se calculan tasas de éxito, satisfacción, ahorro, SUS ni tiempos humanos. El modelo no sustituye la calibración humana del banco.",
+      "severity": "no_finding",
+      "severity_justification": "Límite del método declarado; la simulación completa no cambia el estado humano del piloto.",
+      "issue_ids": [],
+      "result_scope": "Revisión simulada completa; validación humana no realizada."
+    }
+  ]
+}

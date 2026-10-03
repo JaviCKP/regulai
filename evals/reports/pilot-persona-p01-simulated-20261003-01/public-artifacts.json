@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "purpose": "Explicit safe whitelist for root's local report integration; not external publication",
+  "recommended_local_report_directory": "evals/reports/pilot-persona-p01-simulated-20261003-01",
+  "files_relative_to_p01": [
+    "informe.md",
+    "formulario-simulado.md",
+    "walkthrough.json",
+    "commands.json",
+    "browser-observations.json",
+    "cleanup.json",
+    "state-document-pending.json",
+    "state-document-cancelled.json",
+    "verification01/extraction.json",
+    "verification01/verification.json",
+    "verification01/source-manifest.json",
+    "start_isolated_browser.py",
+    "verify_p01.py",
+    "package_p01.py",
+    "public-artifacts.json",
+    "evidence/document-pending.png",
+    "evidence/document-cancelled-top.png",
+    "evidence/document-cancelled-calls.png",
+    "evidence/document-pending-snapshot.yml",
+    "evidence/document-cancelled-snapshot.yml",
+    "evidence/offline-banner-snapshot.yml",
+    "evidence/receipt-document-cancelled.json",
+    "evidence/browser-source-manifest.json",
+    "artifact-sha256.json"
+  ],
+  "copy_provenance": {
+    ".playwright-cli/page-2026-10-03T15-55-51-013Z.png": "evidence/document-pending.png",
+    ".playwright-cli/page-2026-10-03T15-56-17-768Z.png": "evidence/document-cancelled-top.png",
+    ".playwright-cli/page-2026-10-03T15-56-39-270Z.png": "evidence/document-cancelled-calls.png",
+    ".playwright-cli/page-2026-10-03T15-55-38-057Z.yml": "evidence/document-pending-snapshot.yml",
+    ".playwright-cli/page-2026-10-03T15-56-16-172Z.yml": "evidence/document-cancelled-snapshot.yml",
+    ".playwright-cli/page-2026-10-03T15-55-07-550Z.yml": "evidence/offline-banner-snapshot.yml",
+    ".playwright-cli/receipt-0d786fda-cbda-4397-af8c-e54ade766b7c.json": "evidence/receipt-document-cancelled.json",
+    "browser01/run.json": "evidence/browser-source-manifest.json"
+  },
+  "excluded": [
+    "browser01/pilot.sqlite3",
+    "browser01/media",
+    "browser01 except copied run.json",
+    ".playwright-cli except the explicitly copied image/snapshot/download files",
+    "cookies",
+    "browser sessions",
+    "credentials",
+    "keys",
+    "ZIP archives"
+  ],
+  "external_publication_authorized": false,
+  "notes": [
+    "Do not recursively copy p01 or browser01.",
+    "Scripts are execution provenance; rerunning verify_p01.py requires the retained private synthetic DB.",
+    "The recommended destination has the same depth as the source, preserving ../../../ documentation links.",
+    "Paths inside source manifests refer to original observed locations and must not be rewritten as if recaptured."
+  ]
+}
