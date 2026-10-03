@@ -1,0 +1,19 @@
+Found 1 test(s).
+System check identified no issues (0 silenced).
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+F
+======================================================================
+FAIL: test_json_structure_numbers_aliases_and_duplicate_keys_are_preserved (front.test_local_masking.LocalMaskingTests.test_json_structure_numbers_aliases_and_duplicate_keys_are_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_local_masking.py", line 34, in test_json_structure_numbers_aliases_and_duplicate_keys_are_preserved
+    self.assertEqual(payload['claims'][0]['citations'][0]['source_id'], 'F1')
+AssertionError: '[[REGULAI_ORGANIZATION]]' != 'F1'
+- [[REGULAI_ORGANIZATION]]
++ F1
+
+
+----------------------------------------------------------------------
+Ran 1 test in 1.681s
+
+FAILED (failures=1)

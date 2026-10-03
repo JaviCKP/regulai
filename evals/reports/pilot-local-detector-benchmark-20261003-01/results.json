@@ -1,0 +1,276 @@
+{
+  "cases": 18,
+  "expectations_met": 15,
+  "cases_with_remaining_sensitive_values": [
+    "unlabelled-secret-challenge",
+    "split-email-challenge"
+  ],
+  "cases_with_lost_required_content": [
+    "card"
+  ],
+  "network_attempts": 0,
+  "dns_attempts": 0,
+  "api_cost_usd": "0",
+  "human_review": "pending",
+  "observations": [
+    {
+      "id": "email",
+      "text": "Correo: ana.perez@example.test",
+      "redact": [
+        "ana.perez@example.test"
+      ],
+      "preserve": [
+        "Correo:"
+      ],
+      "masked": "Correo: [[REGULAI_EMAIL]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 2328.0
+    },
+    {
+      "id": "dni",
+      "text": "DNI: 12345678Z",
+      "redact": [
+        "12345678Z"
+      ],
+      "preserve": [
+        "DNI:"
+      ],
+      "masked": "DNI: [[REGULAI_ID]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 94.0
+    },
+    {
+      "id": "nie",
+      "text": "NIE: X1234567L",
+      "redact": [
+        "X1234567L"
+      ],
+      "preserve": [
+        "NIE:"
+      ],
+      "masked": "NIE: [[REGULAI_ID]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 63.0
+    },
+    {
+      "id": "iban",
+      "text": "IBAN: ES91 2100 0418 4502 0005 1332",
+      "redact": [
+        "ES91 2100 0418 4502 0005 1332"
+      ],
+      "preserve": [],
+      "masked": "[[REGULAI_ORGANIZATION]]: [[REGULAI_ACCOUNT]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 46.0
+    },
+    {
+      "id": "phone",
+      "text": "Teléfono: +34 612 345 678",
+      "redact": [
+        "+34 612 345 678"
+      ],
+      "preserve": [],
+      "masked": "[[REGULAI_PERSON]]: [[REGULAI_PHONE]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 63.0
+    },
+    {
+      "id": "card",
+      "text": "Tarjeta: 4111 1111 1111 1111",
+      "redact": [
+        "4111 1111 1111 1111"
+      ],
+      "preserve": [
+        "Tarjeta:"
+      ],
+      "masked": "[[REGULAI_LOCATION]]: [[REGULAI_CARD]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [
+        "Tarjeta:"
+      ],
+      "milliseconds": 47.0
+    },
+    {
+      "id": "named-secret",
+      "text": "api_key=unprefixed_synthetic_value_ABC123",
+      "redact": [
+        "unprefixed_synthetic_value_ABC123"
+      ],
+      "preserve": [
+        "api_key="
+      ],
+      "masked": "api_key=[[REGULAI_SECRET]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 62.0
+    },
+    {
+      "id": "provider-key",
+      "text": "Usar sk-proj-SYNTHETIC0123456789abcdef",
+      "redact": [
+        "sk-proj-SYNTHETIC0123456789abcdef"
+      ],
+      "preserve": [
+        "Usar"
+      ],
+      "masked": "Usar [[REGULAI_SECRET]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 63.0
+    },
+    {
+      "id": "pem",
+      "text": "-----BEGIN PRIVATE KEY-----\nSYNTHETIC-KEY-NOT-VALID\n-----END PRIVATE KEY-----",
+      "redact": [
+        "SYNTHETIC-KEY-NOT-VALID"
+      ],
+      "preserve": [],
+      "masked": "[[REGULAI_SECRET]]",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 62.0
+    },
+    {
+      "id": "spanish-name",
+      "text": "Mi nombre es María García y vivo en Madrid.",
+      "redact": [
+        "María García",
+        "Madrid"
+      ],
+      "preserve": [
+        "Mi nombre es"
+      ],
+      "masked": "Mi nombre es [[REGULAI_PERSON]] y vivo en [[REGULAI_LOCATION]].",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 78.0
+    },
+    {
+      "id": "english-name",
+      "text": "John Smith lives in London.",
+      "redact": [
+        "John Smith",
+        "London"
+      ],
+      "preserve": [
+        "lives in"
+      ],
+      "masked": "[[REGULAI_PERSON]] lives in [[REGULAI_LOCATION]].",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 63.0
+    },
+    {
+      "id": "labelled-lowercase",
+      "text": "Nombre: ana pérez. Pago: 10 euros.",
+      "redact": [
+        "ana pérez"
+      ],
+      "preserve": [
+        "10 euros"
+      ],
+      "masked": "Nombre: [[REGULAI_PERSON]]. Pago: 10 euros.",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 62.0
+    },
+    {
+      "id": "plain-lowercase-challenge",
+      "text": "ana pérez confirmó el pago de 10 euros.",
+      "redact": [
+        "ana pérez"
+      ],
+      "preserve": [
+        "10 euros"
+      ],
+      "challenge": true,
+      "masked": "[[REGULAI_PERSON]] confirmó el pago de 10 euros.",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 94.0
+    },
+    {
+      "id": "unlabelled-secret-challenge",
+      "text": "Usa jD73mL29pQr42Zt81 como valor temporal.",
+      "redact": [
+        "jD73mL29pQr42Zt81"
+      ],
+      "preserve": [
+        "valor temporal"
+      ],
+      "challenge": true,
+      "masked": "[[REGULAI_LOCATION]] jD73mL29pQr42Zt81 como valor temporal.",
+      "retained_sensitive_values": [
+        "jD73mL29pQr42Zt81"
+      ],
+      "lost_required_content": [],
+      "milliseconds": 63.0
+    },
+    {
+      "id": "split-email-challenge",
+      "text": "Contacto: ana [arroba] ejemplo [punto] com",
+      "redact": [
+        "ana [arroba] ejemplo [punto] com"
+      ],
+      "preserve": [],
+      "challenge": true,
+      "masked": "Contacto: ana [arroba] ejemplo [punto] com",
+      "retained_sensitive_values": [
+        "ana [arroba] ejemplo [punto] com"
+      ],
+      "lost_required_content": [],
+      "milliseconds": 78.0
+    },
+    {
+      "id": "contract-numbers",
+      "text": "El precio es 10 euros y el plazo es 17 días. Cláusula 3.",
+      "redact": [],
+      "preserve": [
+        "10 euros",
+        "17 días",
+        "Cláusula 3."
+      ],
+      "masked": "El precio es 10 euros y el plazo es 17 días. Cláusula 3.",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 62.0
+    },
+    {
+      "id": "json-citation",
+      "text": "{\"claims\":[{\"text\":\"Contacto ana@example.test\",\"citations\":[{\"source_id\":\"F1\",\"quote\":\"Contacto ana@example.test\"}]}]}",
+      "redact": [
+        "ana@example.test"
+      ],
+      "preserve": [
+        "\"source_id\":\"F1\"",
+        "\"claims\"",
+        "\"citations\"",
+        "\"quote\""
+      ],
+      "masked": "{\"claims\":[{\"text\":\"Contacto [[REGULAI_EMAIL]]\",\"citations\":[{\"source_id\":\"F1\",\"quote\":\"Contacto [[REGULAI_EMAIL]]\"}]}]}",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 78.0
+    },
+    {
+      "id": "json-credential",
+      "text": "{\"password\":123456,\"amount\":17.005,\"done\":true}",
+      "redact": [
+        "123456"
+      ],
+      "preserve": [
+        "17.005",
+        "true"
+      ],
+      "masked": "{\"password\":\"[[REGULAI_SECRET]]\",\"amount\":17.005,\"done\":true}",
+      "retained_sensitive_values": [],
+      "lost_required_content": [],
+      "milliseconds": 79.0
+    }
+  ]
+}
