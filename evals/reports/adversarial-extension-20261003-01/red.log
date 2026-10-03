@@ -1,0 +1,172 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default'...
+{"timestamp": "2026-10-03T16:50:12.563853+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+EEEEEEEEEEE
+======================================================================
+ERROR: test_pending_scope_and_dry_run_do_not_mutate_ledger (front.test_evaluation_authorization_extension.ApprovalExtensionCommandTests.test_pending_scope_and_dry_run_do_not_mutate_ledger)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.venv\Lib\site-packages\django\core\management\__init__.py", line 110, in call_command
+    app_name = get_commands()[command_name]
+               ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+KeyError: 'extend_pilot_authorization'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 136, in test_pending_scope_and_dry_run_do_not_mutate_ledger
+    self.extension_command()
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 130, in extension_command
+    return call_command('extend_pilot_authorization', manifest=str(self.manifest_path),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.venv\Lib\site-packages\django\core\management\__init__.py", line 112, in call_command
+    raise CommandError("Unknown command: %r" % command_name)
+django.core.management.base.CommandError: Unknown command: 'extend_pilot_authorization'
+
+======================================================================
+ERROR: test_registered_scope_can_run_once_but_cannot_replay_from_another_output (front.test_evaluation_authorization_extension.ApprovalExtensionCommandTests.test_registered_scope_can_run_once_but_cannot_replay_from_another_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.venv\Lib\site-packages\django\core\management\__init__.py", line 110, in call_command
+    app_name = get_commands()[command_name]
+               ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+KeyError: 'extend_pilot_authorization'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 152, in test_registered_scope_can_run_once_but_cannot_replay_from_another_output
+    self.extension_command(apply=True)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 130, in extension_command
+    return call_command('extend_pilot_authorization', manifest=str(self.manifest_path),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.venv\Lib\site-packages\django\core\management\__init__.py", line 112, in call_command
+    raise CommandError("Unknown command: %r" % command_name)
+django.core.management.base.CommandError: Unknown command: 'extend_pilot_authorization'
+
+======================================================================
+ERROR: test_bad_parent_and_implicit_replacement_never_change_history (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_bad_parent_and_implicit_replacement_never_change_history) (overrides={'previous_id': 'other'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 58, in test_bad_parent_and_implicit_replacement_never_change_history
+    self.extend(**overrides)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_bad_parent_and_implicit_replacement_never_change_history (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_bad_parent_and_implicit_replacement_never_change_history) (overrides={'previous_digest': 'file-bytes-instead-of-canonical'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 58, in test_bad_parent_and_implicit_replacement_never_change_history
+    self.extend(**overrides)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_bad_parent_and_implicit_replacement_never_change_history (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_bad_parent_and_implicit_replacement_never_change_history) (overrides={'authorization_id': 'old'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 58, in test_bad_parent_and_implicit_replacement_never_change_history
+    self.extend(**overrides)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_bad_parent_and_implicit_replacement_never_change_history (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_bad_parent_and_implicit_replacement_never_change_history) (overrides={'authorization_digest': 'old-digest'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 58, in test_bad_parent_and_implicit_replacement_never_change_history
+    self.extend(**overrides)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_explicit_extension_preserves_calls_cap_and_unknown_expense (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_explicit_extension_preserves_calls_cap_and_unknown_expense)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 43, in test_explicit_extension_preserves_calls_cap_and_unknown_expense
+    self.assertTrue(self.extend())
+                    ^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_extension_cannot_create_a_missing_ledger_or_attach_anonymous_history (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_extension_cannot_create_a_missing_ledger_or_attach_anonymous_history)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 67, in test_extension_cannot_create_a_missing_ledger_or_attach_anonymous_history
+    self.extend()
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_old_handle_cannot_reserve_after_extension_but_can_settle_inflight_call (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_old_handle_cannot_reserve_after_extension_but_can_settle_inflight_call)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 77, in test_old_handle_cannot_reserve_after_extension_but_can_settle_inflight_call
+    self.extend()
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_run_is_consumed_once_and_scope_metadata_cannot_be_forged (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_run_is_consumed_once_and_scope_metadata_cannot_be_forged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 86, in test_run_is_consumed_once_and_scope_metadata_cannot_be_forged
+    self.extend(max_external_calls=1)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+======================================================================
+ERROR: test_two_concurrent_extensions_cannot_fork_the_same_approval (front.test_evaluation_authorization_extension.ApprovalExtensionBudgetTests.test_two_concurrent_extensions_cannot_fork_the_same_approval)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 114, in test_two_concurrent_extensions_cannot_fork_the_same_approval
+    self.assertEqual(sorted(executor.map(attempt, range(2))), [False, True])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\concurrent\futures\_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\concurrent\futures\_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 110, in attempt
+    return self.extend(authorization_id=f'new-{index}', authorization_digest=f'digest-{index}')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_evaluation_authorization_extension.py", line 36, in extend
+    return EvaluationBudget.extend_authorization(self.path, '1', **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'EvaluationBudget' has no attribute 'extend_authorization'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.171s
+
+FAILED (errors=11)
+Destroying test database for alias 'default'...
+Found 8 test(s).
+System check identified no issues (0 silenced).
+

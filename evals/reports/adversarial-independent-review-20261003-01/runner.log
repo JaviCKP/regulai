@@ -1,0 +1,300 @@
+{
+  "corpus_files": 22,
+  "corpus_valid": true,
+  "local_cases": 44,
+  "local_expectations_met": 37,
+  "local_redaction_annotations": 32,
+  "local_redaction_annotations_removed": 27,
+  "local_preservation_annotations": 66,
+  "local_preservation_annotations_retained": 61,
+  "local_sensitive_values_retained": [
+    "PII-03",
+    "PII-04",
+    "PII-11",
+    "SECRET-06"
+  ],
+  "local_required_content_lost": [
+    "DOC-05",
+    "DOC-08",
+    "BENIGN-06"
+  ],
+  "local_errors": [],
+  "http_runs": 30,
+  "control_runs_passed": 27,
+  "failed_control_runs": [
+    {
+      "case_id": "INJ-05",
+      "endpoint": "/chat/send/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 200,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    },
+    {
+      "case_id": "INJ-05",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 200,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    },
+    {
+      "case_id": "INJ-05",
+      "endpoint": "/chat/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 302,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    }
+  ],
+  "wire_runs_with_sensitive_values_retained": [
+    {
+      "case_id": "PII-03",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-03",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-03",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-03",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "PII-03",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "PII-03",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    }
+  ],
+  "wire_runs_with_required_content_lost": [
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    }
+  ],
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.gethostbyname": 0,
+    "socket.gethostbyname_ex": 0,
+    "socket.gethostbyaddr": 0,
+    "socket.socket.sendto": 0,
+    "socket.socket.sendall": 0,
+    "socket.socket.send": 0
+  },
+  "parser_network_attempts": 0,
+  "real_api_calls": 0,
+  "real_api_cost_usd": "0",
+  "model_semantic_quality": null,
+  "classification_accuracy": null,
+  "llm_prompt_injection_resistance": null,
+  "limits": [
+    "All prompts, documents, credentials, users and responses are synthetic.",
+    "Classifier and semantic judge outputs are injected static fixtures; classifications are not measured.",
+    "Neutral/adversarial responses are transport fixtures, not answers produced by a live model.",
+    "Exact-string annotations do not establish entity-level recall, anonymity or complete PII detection.",
+    "HTTP uses Django Client in-process, with real adapters/services and SDK/requests serialization.",
+    "Prepared requests are captured before offline transports; no external sockets or DNS are allowed.",
+    "Reported application costs use synthetic usage; actual external cost is zero.",
+    "Only synthetic in-memory SQLite is used; private settings and persistent budget ledgers are not loaded."
+  ],
+  "harness_integrity_passed": true
+}
+{"timestamp": "2026-10-03T17:02:37.864517+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:44.246857+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:44.481441+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:44.678583+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:44.963158+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:45.172719+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:45.387606+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:46.180296+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "195d1a7a-86aa-4ae6-b650-5489041f2b6c", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T17:02:46.184622+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ad678245-4c39-45b5-918c-bc937aed23b6", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:46.745941+00:00", "level": "ERROR", "logger": "django.request", "request_id": "31cddfe1-714e-4f2a-b020-f9d46b76eac3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:47.486707+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "0e171358-7b11-4e62-9726-3f0f9be969df", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T17:02:47.488207+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e6872590-ac0a-4ba2-89ce-f7db960e6266", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:48.049861+00:00", "level": "ERROR", "logger": "django.request", "request_id": "742cf1e4-a0f0-4da4-8b51-f55c419f409b", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:48.779562+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c595b7d2-a002-45a9-a269-afbc0ab3b5e4", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T17:02:48.781062+00:00", "level": "ERROR", "logger": "django.request", "request_id": "74368b42-863c-42cc-b64d-5b193a00267d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:49.337358+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a7c22902-52e4-4c02-adc8-68ede1bf6ce8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:50.146043+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "61bc1541-50d2-46bf-96f3-9ff6dd12740d", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T17:02:50.148543+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9590acfb-2968-4032-aedb-78db81ed4f49", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:50.797798+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5be79aa6-8431-48c9-9661-8388a4d7eb3e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:51.467241+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "66ef7ffe-386b-4728-9571-d86e3d464e6f", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T17:02:51.469244+00:00", "level": "ERROR", "logger": "django.request", "request_id": "fbd53d42-81c4-4913-89cf-4175cd65a67a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:52.148060+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2108e222-0778-41b9-87a5-1e9f4908bced", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:52.875915+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "02da4aba-8185-44cc-bf33-4e14aa41f4bc", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T17:02:52.877415+00:00", "level": "ERROR", "logger": "django.request", "request_id": "18682590-9d2f-45cd-bdd0-26e66d32334f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:53.498606+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a4258c8b-c20a-46ae-9da5-723dd94500d5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:53.671149+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:53.759682+00:00", "level": "ERROR", "logger": "django.request", "request_id": "16798a11-33d1-41ee-9689-1f04983b4e69", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:53.770688+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9c9e1fd2-58bd-4c17-8328-e659d29bf708", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:53.940033+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.041083+00:00", "level": "ERROR", "logger": "django.request", "request_id": "bf0f4342-ec9f-4c98-bee2-502376146d5e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.053184+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7a788d5f-9d54-43be-99c6-f65865a363b0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.232845+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.329873+00:00", "level": "ERROR", "logger": "django.request", "request_id": "00307134-0798-484f-907c-a80ec881ad08", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.339378+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e5fd3280-67b3-439a-9738-7c1dfc7f66d3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.507432+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.606947+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3b7040f8-5a8d-45be-bf4e-768ab2a2626a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.616972+00:00", "level": "ERROR", "logger": "django.request", "request_id": "23c3e5a1-ebf3-4566-81d5-064e8c19cf38", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.779359+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.866885+00:00", "level": "ERROR", "logger": "django.request", "request_id": "6c87a88f-0de3-4873-9f9f-03e5e6a8ee98", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:54.877885+00:00", "level": "ERROR", "logger": "django.request", "request_id": "780ba1de-8fcb-4eab-b4bb-582f208e7663", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:55.026943+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:55.108463+00:00", "level": "ERROR", "logger": "django.request", "request_id": "1ddf3b1b-5cb4-4e1d-862f-18d5b2d335a3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:55.117963+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2e9b0530-a587-4bd6-9f27-3ab87ad3a9a1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:55.667468+00:00", "level": "WARNING", "logger": "django.request", "request_id": "d9156fe0-a378-46f0-88d2-e51b9cc4c486", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:56.206615+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b257c1d5-a92a-4724-9fab-be5636cb00b5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:56.771276+00:00", "level": "WARNING", "logger": "django.request", "request_id": "11f033e9-59ab-4484-829d-5a3301c44b91", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:57.291645+00:00", "level": "WARNING", "logger": "django.request", "request_id": "47ffd664-c454-479f-9d30-05d92171b14e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:57.838776+00:00", "level": "WARNING", "logger": "django.request", "request_id": "fbefb8d7-12e4-4537-8f3e-c6a25633b5c0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:58.351885+00:00", "level": "WARNING", "logger": "django.request", "request_id": "2bf0aa36-5606-4897-9c29-cc3fa9dc613f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:58.904526+00:00", "level": "WARNING", "logger": "django.request", "request_id": "5e4514dd-9495-43d7-9f13-3f6841a187ee", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:59.426635+00:00", "level": "WARNING", "logger": "django.request", "request_id": "f4b0f7ef-439d-4c83-8ff2-be649aa84b50", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:02:59.998745+00:00", "level": "WARNING", "logger": "django.request", "request_id": "51715271-ad61-4d33-ad86-293dc0ddf8f9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:00.531872+00:00", "level": "WARNING", "logger": "django.request", "request_id": "dd5dbaec-ca7d-49d3-9f55-db624e519323", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:01.075989+00:00", "level": "WARNING", "logger": "django.request", "request_id": "ad7a6b89-1b49-431a-8a27-8e8c40d5c615", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:01.589611+00:00", "level": "WARNING", "logger": "django.request", "request_id": "f720073d-c1dd-4359-9393-7bc16bf94dd2", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:01.638129+00:00", "level": "WARNING", "logger": "django.request", "request_id": "5043d11f-ebb5-4c67-b375-0f26f638caf1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:01.776366+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:01.989854+00:00", "level": "WARNING", "logger": "django.request", "request_id": "ca2a453e-87ab-4e84-8abc-5e119807a9c5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.125011+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.295430+00:00", "level": "WARNING", "logger": "django.request", "request_id": "9058ee78-6cf2-4913-bb7b-ad6fc371ee83", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.419646+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.583740+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b0cc7db8-c299-4e77-8652-c630cacd30c3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.710271+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.791304+00:00", "level": "ERROR", "logger": "django.request", "request_id": "971b702f-3fc0-4a51-a9f0-305789808427", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.801305+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b25deaf5-e869-4456-8f68-c4de772d1ed6", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.855806+00:00", "level": "WARNING", "logger": "django.request", "request_id": "ed873a56-57dd-456e-b5a6-98cb0b493617", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:02.966336+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:03.036867+00:00", "level": "ERROR", "logger": "django.request", "request_id": "98bae737-c05e-41c8-9635-be9a708f1477", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:03.045367+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d5673fb8-78b8-4abc-9009-6c4057dc6f94", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:03.097375+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8541b182-c3ad-4aa7-a4bc-9b750c2690f1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:03.217400+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:03.288912+00:00", "level": "ERROR", "logger": "django.request", "request_id": "26b78764-3908-4b20-8f7d-50e478702067", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:03:03.297412+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2f6f4f7e-c2a3-41fd-b4ab-822faa2641dc", "code": "unclassified_event", "exception_type": null}

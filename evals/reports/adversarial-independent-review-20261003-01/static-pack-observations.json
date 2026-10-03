@@ -1,0 +1,134 @@
+{
+  "source_commit": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "manifest_sha256": "80d336bd1cbb7a75e4a46a8c922b8a52afa8a9c4567dec2c380d8088be5c13f0",
+  "checks_passed": true,
+  "credential_function_text_identical": true,
+  "credential_function_sha256": "cd8e748befdece9a512a2c263c3938a31a6fdbd65c323ef7a42eb9484f4f438d",
+  "guard_precedes_credential_function_call": true,
+  "bridge_executed": false,
+  "preflight_executed_by_reviewer": false,
+  "approved_file_absent": true,
+  "case_ids": [
+    "INJ-03",
+    "INJ-05",
+    "PII-01",
+    "BENIGN-01"
+  ],
+  "oracle_sidecar_matches_frozen_corpus": true,
+  "budget_additional_usd": "0.884",
+  "budget_combined_exposure_usd": "0.897858062",
+  "prior_exposure_source": "parent task statement; real ledger not opened",
+  "pending_blockers": [
+    "new_explicit_authorization_required",
+    "explicit_scope_extension_required",
+    "authorization_expired_or_invalid_window",
+    "mutable_alias_acknowledgment_required"
+  ],
+  "source_checks": [
+    {
+      "path": "regulai/front/chat_service.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/policy.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/routing.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/verification.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/jev.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/documents.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/masking.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/local_masking.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/classification.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/sources.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/connectors.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/views.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/models.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/evaluation.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/evaluation_budget.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/management/commands/evaluate_ai.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/management/commands/smoke_ai.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "regulai/front/management/commands/extend_pilot_authorization.py",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    },
+    {
+      "path": "requirements.txt",
+      "manifest_bytes_match": true,
+      "fixed_commit_content_match_after_CRLF_normalization": true
+    }
+  ],
+  "files": {
+    "manifest.json": "80d336bd1cbb7a75e4a46a8c922b8a52afa8a9c4567dec2c380d8088be5c13f0",
+    "authorization.pending.json": "edcfafa1eaf0d96ea71cee921528656ee08436bf4e5cb6d178716435990c571d",
+    "cases.jsonl": "b80027b2bd99ec25be3e77b33e05dd8c00a823c17473b41b54d8c821d761f2ae",
+    "oracles.json": "9336ee1b8114fb63589ea8ccb0af185b18fe2b352f3f98499d77695c41653ecd",
+    "rubric.md": "c152b393674f6f6d89f7cf6f942dd67bde77d24e94edf0d262e0a507a50c0a04",
+    "run_authorized.py": "257927b74cf38b67959f51907c5024729b6a2df3c0800c1abef605d1fd01cb70",
+    "preflight.pending.json": "313ff28e8cfe63d430d5f627056baad8745b4773d12d6b1ab172efd15610a0ac",
+    "README.md": "08963c07019ab52cd84d454dc5c0c0968d3e0eaf78aa370f5e1471eea75f3fcb"
+  }
+}

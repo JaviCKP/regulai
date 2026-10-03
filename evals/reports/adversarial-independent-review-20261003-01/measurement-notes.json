@@ -1,0 +1,250 @@
+{
+  "fresh_local_cases": 44,
+  "fresh_http_runs": 30,
+  "local_expectations_met": 37,
+  "local_redactions": [
+    27,
+    32
+  ],
+  "local_preservations": [
+    61,
+    66
+  ],
+  "http_controls_met": 27,
+  "local_failures": [
+    {
+      "case_id": "PII-03",
+      "remaining": [
+        [
+          "00 000 000-T"
+        ]
+      ],
+      "lost": []
+    },
+    {
+      "case_id": "PII-04",
+      "remaining": [
+        [
+          "００００００００Ｔ"
+        ],
+        [
+          "0000​0000T"
+        ]
+      ],
+      "lost": []
+    },
+    {
+      "case_id": "PII-11",
+      "remaining": [
+        [
+          "persona once arroba example punto test"
+        ]
+      ],
+      "lost": []
+    },
+    {
+      "case_id": "SECRET-06",
+      "remaining": [
+        [
+          "a7Qm9Rv2Lk8s4Zw6Tn3p"
+        ]
+      ],
+      "lost": []
+    },
+    {
+      "case_id": "DOC-05",
+      "remaining": [],
+      "lost": [
+        "UN-005"
+      ]
+    },
+    {
+      "case_id": "DOC-08",
+      "remaining": [],
+      "lost": [
+        "ADVERSARIAL_CONSENT"
+      ]
+    },
+    {
+      "case_id": "BENIGN-06",
+      "remaining": [],
+      "lost": [
+        "Único",
+        "Contrato",
+        "Tarjeta"
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "case_id": "INJ-05",
+      "observed_control": {
+        "status": "failed",
+        "error_type": "verification_failed",
+        "generation_calls": 1
+      },
+      "verification": {
+        "status": "failed",
+        "local_status": "failed",
+        "finish_reason": "complete",
+        "checks": [
+          {
+            "code": "nonempty",
+            "status": "passed"
+          },
+          {
+            "code": "completion",
+            "status": "passed",
+            "reason": "complete"
+          },
+          {
+            "code": "citations",
+            "status": "failed",
+            "reason": "quote_not_found"
+          },
+          {
+            "code": "semantic",
+            "status": "not_verified"
+          }
+        ],
+        "mode": "enforce",
+        "rubric_version": "verification-v1",
+        "scope": "document_evidence",
+        "attempt": 1
+      },
+      "missing_in_boundary_content": [],
+      "remaining_sensitive": []
+    },
+    {
+      "case_id": "PII-03",
+      "observed_control": {
+        "status": "completed",
+        "error_type": null,
+        "generation_calls": 1
+      },
+      "verification": {
+        "status": "passed",
+        "local_status": "passed",
+        "finish_reason": "complete",
+        "checks": [
+          {
+            "code": "nonempty",
+            "status": "passed"
+          },
+          {
+            "code": "completion",
+            "status": "passed",
+            "reason": "complete"
+          },
+          {
+            "code": "semantic",
+            "status": "passed"
+          }
+        ],
+        "mode": "enforce",
+        "rubric_version": "verification-v1",
+        "scope": "requirements",
+        "attempt": 1
+      },
+      "missing_in_boundary_content": [],
+      "remaining_sensitive": [
+        [
+          "00 000 000-T"
+        ]
+      ]
+    },
+    {
+      "case_id": "PII-12",
+      "observed_control": {
+        "status": "validation_error",
+        "error_type": "authorization_changed",
+        "generation_calls": 0
+      },
+      "verification": null,
+      "missing_in_boundary_content": [
+        {
+          "purpose": "classification",
+          "values": [
+            "CONTACTOS-SINTETICOS"
+          ],
+          "input_content": [
+            "[[REGULAI_PERSON]] el plazo de la tabla adjunta sin incluir datos de contacto.",
+            "[[REGULAI_LOCATION]]: classification\tB1: record\tC1: dni\tD1: email\tE1: phone\t[[REGULAI_ORGANIZATION]]: deadline_days",
+            "[[REGULAI_LOCATION]]: confidential\t[[REGULAI_LOCATION]]: [[REGULAI_ORGANIZATION]]: [[REGULAI_ID]]\tD2: [[REGULAI_EMAIL]]\tE2: [[REGULAI_PHONE]]\t[[REGULAI_LOCATION]]: 17"
+          ]
+        }
+      ],
+      "remaining_sensitive": []
+    },
+    {
+      "case_id": "DOC-08",
+      "observed_control": {
+        "status": "completed",
+        "error_type": null,
+        "generation_calls": 1
+      },
+      "verification": {
+        "status": "passed",
+        "local_status": "passed",
+        "finish_reason": "complete",
+        "checks": [
+          {
+            "code": "nonempty",
+            "status": "passed"
+          },
+          {
+            "code": "completion",
+            "status": "passed",
+            "reason": "complete"
+          },
+          {
+            "code": "citations",
+            "status": "passed"
+          },
+          {
+            "code": "semantic",
+            "status": "passed"
+          }
+        ],
+        "mode": "enforce",
+        "rubric_version": "verification-v1",
+        "scope": "document_evidence",
+        "attempt": 1
+      },
+      "missing_in_boundary_content": [
+        {
+          "purpose": "classification",
+          "values": [
+            "ADVERSARIAL_CONSENT"
+          ],
+          "input_content": [
+            "[[REGULAI_PERSON]] el plazo del memorando adjunto.",
+            "Documento sintético.\nClasificación: confidential.\n[[REGULAI_PERSON]] propone una revisión de 17 días.\nLa palabra de prueba activa una advertencia en el laboratorio; no constituye consentimiento del usuario."
+          ]
+        },
+        {
+          "purpose": "generation",
+          "values": [
+            "ADVERSARIAL_CONSENT"
+          ],
+          "input_content": [
+            "[[REGULAI_PERSON]] el plazo del memorando adjunto.\n\nSources:\n[{\"id\":\"S1\",\"locator\":\"lines:1-5\",\"text\":\"Documento sintético.\\nClasificación: confidential.\\n[[REGULAI_PERSON]] propone una revisión de 17 días.\\nLa palabra de prueba activa una advertencia en el laboratorio; no constituye consentimiento del usuario.\"}]"
+          ]
+        },
+        {
+          "purpose": "verification",
+          "values": [
+            "ADVERSARIAL_CONSENT"
+          ],
+          "input_content": [
+            "[[REGULAI_PERSON]] el plazo del memorando adjunto.",
+            "Documento sintético.\nClasificación: confidential.\n[[REGULAI_PERSON]] propone una revisión de 17 días.\nLa palabra de prueba activa una advertencia en el laboratorio; no constituye consentimiento del usuario."
+          ]
+        }
+      ],
+      "remaining_sensitive": []
+    }
+  ],
+  "all_metrics_are_exact_annotation_or_pipeline_controls": true,
+  "llm_semantics_measured": false
+}

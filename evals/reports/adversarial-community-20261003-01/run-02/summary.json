@@ -1,0 +1,42 @@
+{
+  "local_cases": 5,
+  "local_expectations_met": 5,
+  "local_sensitive_values_retained": [],
+  "local_required_content_lost": [],
+  "local_errors": [],
+  "http_runs": 30,
+  "control_runs_passed": 30,
+  "failed_control_runs": [],
+  "wire_runs_with_sensitive_values_retained": [],
+  "wire_runs_with_required_content_lost": [],
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.gethostbyname": 0,
+    "socket.gethostbyname_ex": 0,
+    "socket.gethostbyaddr": 0,
+    "socket.socket.sendto": 0,
+    "socket.socket.sendall": 0,
+    "socket.socket.send": 0
+  },
+  "parser_network_attempts": 0,
+  "real_api_calls": 0,
+  "real_api_cost_usd": "0",
+  "model_semantic_quality": null,
+  "classification_accuracy": null,
+  "llm_prompt_injection_resistance": null,
+  "limits": [
+    "All prompts, documents, credentials, users and responses are synthetic.",
+    "Classifier and semantic judge outputs are injected static fixtures; classifications are not measured.",
+    "Neutral/adversarial responses are transport fixtures, not answers produced by a live model.",
+    "Exact-string annotations do not establish entity-level recall, anonymity or complete PII detection.",
+    "HTTP uses Django Client in-process, with real adapters/services and SDK/requests serialization.",
+    "Prepared requests are captured before offline transports; no external sockets or DNS are allowed.",
+    "Reported application costs use synthetic usage; actual external cost is zero.",
+    "Only synthetic in-memory SQLite is used; private settings and persistent budget ledgers are not loaded."
+  ],
+  "harness_integrity_passed": true,
+  "sources_unchanged_during_execution": true
+}

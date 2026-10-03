@@ -1,0 +1,160 @@
+[
+  {
+    "case_id": "HARNESS-PLAIN",
+    "category": "harness_preflight_only",
+    "original": {
+      "prompt": "Calcula 2 + 2. Correo test.person@example.invalid.",
+      "document": null
+    },
+    "masked": {
+      "prompt": "Calcula 2 + 2. [[REGULAI_PERSON]]."
+    },
+    "error": null,
+    "measurement": {
+      "applicable": true,
+      "redactions": [
+        {
+          "value": "test.person@example.invalid",
+          "type": "EMAIL",
+          "scope": "prompt",
+          "present_in_original": [
+            "test.person@example.invalid"
+          ],
+          "remaining_representations": [],
+          "passed": true
+        }
+      ],
+      "preservations": [
+        {
+          "value": "2 + 2",
+          "present_in_original": true,
+          "retained": true,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "metric": "Exact annotated-value disappearance/preservation, not entity-level recall or anonymity"
+    },
+    "seconds": 1.922,
+    "classification_measurement": null,
+    "llm_robustness_measurement": null
+  },
+  {
+    "case_id": "HARNESS-CSV",
+    "category": "harness_preflight_only",
+    "original": {
+      "prompt": "Resume la tabla.",
+      "document": {
+        "name": "table.csv",
+        "bytes_sha256": "3fbc7dfc698401e3523f7bc9bd2e2d0511906aac3faa7ccf6245bb63255c9ac9",
+        "text": "item,price,contact\nservice,25.00,test.person@example.invalid\n"
+      }
+    },
+    "masked": {
+      "prompt": "[[REGULAI_PERSON]] la tabla.",
+      "document": "item,price,contact\nservice,25.00,[[REGULAI_EMAIL]]\n"
+    },
+    "error": null,
+    "measurement": {
+      "applicable": true,
+      "redactions": [
+        {
+          "value": "test.person@example.invalid",
+          "type": "EMAIL",
+          "scope": "document",
+          "present_in_original": [
+            "test.person@example.invalid"
+          ],
+          "remaining_representations": [],
+          "passed": true
+        }
+      ],
+      "preservations": [
+        {
+          "value": "25.00",
+          "present_in_original": true,
+          "retained": true,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "metric": "Exact annotated-value disappearance/preservation, not entity-level recall or anonymity"
+    },
+    "seconds": 0.047,
+    "classification_measurement": null,
+    "llm_robustness_measurement": null
+  },
+  {
+    "case_id": "HARNESS-CONSENT",
+    "category": "harness_preflight_only",
+    "original": {
+      "prompt": "Lee ADVERSARIAL_CONSENT. Correo test.person@example.invalid.",
+      "document": null
+    },
+    "masked": {
+      "prompt": "[[REGULAI_PERSON]]. [[REGULAI_PERSON]]."
+    },
+    "error": null,
+    "measurement": {
+      "applicable": true,
+      "redactions": [],
+      "preservations": [],
+      "passed": true,
+      "metric": "Exact annotated-value disappearance/preservation, not entity-level recall or anonymity"
+    },
+    "seconds": 0.031,
+    "classification_measurement": null,
+    "llm_robustness_measurement": null
+  },
+  {
+    "case_id": "HARNESS-RESTRICTED",
+    "category": "harness_preflight_only",
+    "original": {
+      "prompt": "Contenido sintético restringido.",
+      "document": null
+    },
+    "masked": {
+      "prompt": "Contenido sintético restringido."
+    },
+    "error": null,
+    "measurement": {
+      "applicable": true,
+      "redactions": [],
+      "preservations": [],
+      "passed": true,
+      "metric": "Exact annotated-value disappearance/preservation, not entity-level recall or anonymity"
+    },
+    "seconds": 0.047,
+    "classification_measurement": null,
+    "llm_robustness_measurement": null
+  },
+  {
+    "case_id": "HARNESS-REVOKED",
+    "category": "harness_preflight_only",
+    "original": {
+      "prompt": "Calcula 2 + 2.",
+      "document": null
+    },
+    "masked": {
+      "prompt": "Calcula 2 + 2."
+    },
+    "error": null,
+    "measurement": {
+      "applicable": true,
+      "redactions": [],
+      "preservations": [
+        {
+          "value": "2 + 2",
+          "present_in_original": true,
+          "retained": true,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "metric": "Exact annotated-value disappearance/preservation, not entity-level recall or anonymity"
+    },
+    "seconds": 0.047,
+    "classification_measurement": null,
+    "llm_robustness_measurement": null
+  }
+]

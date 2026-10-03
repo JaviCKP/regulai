@@ -1,0 +1,307 @@
+{
+  "base": "21bdd9f444024e2da76c826c0d0432090e555010",
+  "reviewed": "df91ea1dacbe1662d392bfd91417d32a0e46abe6",
+  "followup": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "findings": [
+    {
+      "id": "SPEC-1",
+      "priority": "P2",
+      "status": "fixed_verified",
+      "file": "regulai/front/management/commands/extend_pilot_authorization.py",
+      "lines_original": [
+        25,
+        46
+      ],
+      "lines_fix": [
+        35,
+        38
+      ],
+      "summary": "CLI reported an obsolete approval digest when a valid approval changed during lock wait.",
+      "red_probe": "independent_cases.py",
+      "green_probe": "followup_cases.py"
+    }
+  ],
+  "open_spec_findings": 0,
+  "open_standards_findings": 0,
+  "tests": {
+    "original": {
+      "repository_tests": 12,
+      "own_probes": 3,
+      "passed": 14,
+      "failed": 1,
+      "exit_code": 1
+    },
+    "followup": {
+      "own_probes": 3,
+      "passed": 3,
+      "exit_code": 0
+    },
+    "detector": {
+      "cases": 44,
+      "expectations_met": 37,
+      "redactions": "27/32",
+      "preservations": "61/66"
+    },
+    "http": {
+      "runs": 30,
+      "cases": [
+        "PII-03",
+        "INJ-05",
+        "DOC-04",
+        "DOC-08",
+        "PII-12"
+      ],
+      "profiles": 2,
+      "endpoints": 3,
+      "controls_met": 27,
+      "integrity_exit_code": 0
+    }
+  },
+  "execution_records": [
+    {
+      "command": "rtk proxy .venv\\Scripts\\python.exe -B .claude\\adversarial-independent-review\\run.py extension",
+      "child_command": [
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\adversarial-independent-review\\driver.py",
+        "extension"
+      ],
+      "exit_code": 1,
+      "seconds": 15.406,
+      "source_commit": "df91ea1dacbe1662d392bfd91417d32a0e46abe6",
+      "log_sha256": "f26cde9b2b128e5fe30ccfd815d28ec8940b9ffcddfd4c3a250d0303676fa9e7",
+      "environment_constructed_without_reading_caller": true,
+      "private_settings_intercepted": true
+    },
+    {
+      "command": "rtk proxy .venv\\Scripts\\python.exe -B .claude\\adversarial-independent-review\\run.py extension-fixed",
+      "child_command": [
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\adversarial-independent-review\\driver.py",
+        "extension-fixed"
+      ],
+      "exit_code": 0,
+      "seconds": 4.094,
+      "source_commit": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+      "log_sha256": "e0af478608bc392f04f10a5218cb78d06bec069f3c711c4c3ef27bd213ec6a91",
+      "environment_constructed_without_reading_caller": true,
+      "private_settings_intercepted": true
+    },
+    {
+      "command": "rtk proxy .venv\\Scripts\\python.exe -B .claude\\adversarial-independent-review\\run.py runner",
+      "child_command": [
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\adversarial-independent-review\\driver.py",
+        "runner"
+      ],
+      "exit_code": 0,
+      "seconds": 26.89,
+      "source_commit": "df91ea1dacbe1662d392bfd91417d32a0e46abe6",
+      "log_sha256": "787f10a0aac37c5a30e322df69fca5172d021922fb79108cc241245dff7146a4",
+      "environment_constructed_without_reading_caller": true,
+      "private_settings_intercepted": true
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "diff",
+        "21bdd9f...df91ea1dacbe1662d392bfd91417d32a0e46abe6"
+      ],
+      "exit_code": 0,
+      "output": "reviewed.diff"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "diff",
+        "df91ea1dacbe1662d392bfd91417d32a0e46abe6",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2"
+      ],
+      "exit_code": 0,
+      "output": "followup.diff"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "log",
+        "--oneline",
+        "21bdd9f..128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2"
+      ],
+      "exit_code": 0,
+      "output": "commits.txt"
+    }
+  ],
+  "snapshot_archives": {
+    "source.zip": "02db89ba66e851cf3376eed6b0ffe3a06c355853c3715d4c107dfdf693fb7972",
+    "followup.zip": "6ee64349cc83d6811bdb264da1a02a90aa5fdf12cacff5a04b20d403c2feb342"
+  },
+  "proposal_manifest_sha256": "80d336bd1cbb7a75e4a46a8c922b8a52afa8a9c4567dec2c380d8088be5c13f0",
+  "static_pack_check_exit_code": 0,
+  "product_changes": [],
+  "index_changes": [],
+  "real_product_calls": 0,
+  "bridge_executed": false,
+  "real_ledger_opened": false,
+  "user_keys_or_database_read": false,
+  "private_settings": "empty module installed before Django; empty snapshot file; memory DB enforced",
+  "prior_review_evidence_modified": false,
+  "web_sources": [
+    "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html"
+  ],
+  "recommendation": "Present exact pending four-case proposal for new human approval; do not treat review as execution authorization.",
+  "limits": [
+    "No live model semantic quality or injection resistance measured.",
+    "Exact annotation disappearance is not anonymity or population recall.",
+    "Full 264-run implementer suite and 400-test gates are not claimed as reviewer executions.",
+    "Real ledger history/exposure was not read; arithmetic starts from parent-supplied exposure.",
+    "Bridge checked statically only; no credential or provider access test.",
+    "Historical uncertain call remains unattributed."
+  ],
+  "files": [
+    {
+      "path": "Spec-review.md",
+      "bytes": 2679,
+      "sha256": "92c0b4a121192538acf567664ef841f51ebe83daab5db1aa131c94a9054c153b"
+    },
+    {
+      "path": "Standards-review.md",
+      "bytes": 2413,
+      "sha256": "7cce3167ed6e89c812053f288797fba6ef0b187a164822c0a102de65027bd6ed"
+    },
+    {
+      "path": "driver.py",
+      "bytes": 2410,
+      "sha256": "4b1dfbd4368e299ab0a73acb3628aabb92de9f5314337c4e2913cbf789cbd460"
+    },
+    {
+      "path": "run.py",
+      "bytes": 1924,
+      "sha256": "b6228c831898810c66ae04709b31533c9f71a81bda8eca4ada6522054aa886ed"
+    },
+    {
+      "path": "read_lines.py",
+      "bytes": 321,
+      "sha256": "36b01fb93bdc8c49c2926c8412864996734f1669c2152aceb76d0880c4bb013c"
+    },
+    {
+      "path": "independent_cases.py",
+      "bytes": 5640,
+      "sha256": "cd0b71e7d1fca5ee0eec4810e035194a8745041aa4018172d9870d458fc7b88d"
+    },
+    {
+      "path": "followup_cases.py",
+      "bytes": 1508,
+      "sha256": "2c633ed5350c34bfb395f5941f8859e80a08bf7277966aa9394cf2a983190a44"
+    },
+    {
+      "path": "runner_probe.py",
+      "bytes": 3818,
+      "sha256": "3ae6262b03e9a304ab3fc49cd9ef114ad753fbd0ae8e3fcf794bff49a266ff82"
+    },
+    {
+      "path": "measurement_notes.py",
+      "bytes": 2394,
+      "sha256": "0522f2a26bbd253e7df001abbf3892a6ea51749b51ee40c76e1640dcbf2d8697"
+    },
+    {
+      "path": "static_pack_review.py",
+      "bytes": 7017,
+      "sha256": "77dcf65f7574aa2e0cfba608c5343b4481f377d741b507bd9f4a451e17aa0d01"
+    },
+    {
+      "path": "seal.py",
+      "bytes": 5231,
+      "sha256": "a4838f4a492e799d333ad691393d965b73186de97ba4d15518aef90d06469706"
+    },
+    {
+      "path": "extension.log",
+      "bytes": 8031,
+      "sha256": "f26cde9b2b128e5fe30ccfd815d28ec8940b9ffcddfd4c3a250d0303676fa9e7"
+    },
+    {
+      "path": "extension.json",
+      "bytes": 666,
+      "sha256": "050870d29ae83a3814546265cf2d99f80461820e87cec9eea3832c3774ea3dda"
+    },
+    {
+      "path": "independent-observations.json",
+      "bytes": 617,
+      "sha256": "727837cbe9d07d9bba2f3234ce9d65ce5c014b146a064b7d5d29a022db0ecdf7"
+    },
+    {
+      "path": "extension-fixed.log",
+      "bytes": 4426,
+      "sha256": "e0af478608bc392f04f10a5218cb78d06bec069f3c711c4c3ef27bd213ec6a91"
+    },
+    {
+      "path": "extension-fixed.json",
+      "bytes": 677,
+      "sha256": "316d9822165eecdcc85411db45ed6a46321747ed6928a3d931071aaf390ae80f"
+    },
+    {
+      "path": "followup-observations.json",
+      "bytes": 443,
+      "sha256": "15cc2af17d7799686681bf4672293f3c073489e655ee6a2b6f5c462cf7193862"
+    },
+    {
+      "path": "runner.log",
+      "bytes": 20231,
+      "sha256": "787f10a0aac37c5a30e322df69fca5172d021922fb79108cc241245dff7146a4"
+    },
+    {
+      "path": "runner.json",
+      "bytes": 659,
+      "sha256": "5b8d08e857c07412063dedea94408c9b50956100eee9d7db324e2c19aa888898"
+    },
+    {
+      "path": "runner-observations.json",
+      "bytes": 98600,
+      "sha256": "c5d713496ee72133795959fa9fac833c0f9a7dfd72b37d10d043dae28c4ba9f1"
+    },
+    {
+      "path": "local-measurements.json",
+      "bytes": 65265,
+      "sha256": "4b1902d596d58ccdf762d1bb65d451ecb789384a68c9e72523de11cbafb6fa56"
+    },
+    {
+      "path": "http-measurements.jsonl",
+      "bytes": 1019823,
+      "sha256": "a947198ef5bb90a15fa79defa1db12a23a6bd784183183b4cc3c013331be7b66"
+    },
+    {
+      "path": "measurement-notes.json",
+      "bytes": 6711,
+      "sha256": "d5cb2a95744bdf944e20390a3fee0962188e863c3e05c1401b5d638c751cce2f"
+    },
+    {
+      "path": "static-pack-observations.json",
+      "bytes": 4967,
+      "sha256": "6e01691d11dc599eea49a593febba7cb8272997bef664116fa2c22eea2b9a33d"
+    },
+    {
+      "path": "reviewed.diff",
+      "bytes": 177499,
+      "sha256": "05dcb44ef9112811fb1b47608ca31634a3d700f609cbcbac43ba21df6cdf8747"
+    },
+    {
+      "path": "followup.diff",
+      "bytes": 11763,
+      "sha256": "019a422bcc5a04b3c5c5e5aaedff0983c1ca9222972df1067c09ae90abcce06b"
+    },
+    {
+      "path": "commits.txt",
+      "bytes": 218,
+      "sha256": "3bdd385fba0937f0b5867e545f3b21be92ead248b368d73aae0671bc5f4a0bd8"
+    }
+  ]
+}
