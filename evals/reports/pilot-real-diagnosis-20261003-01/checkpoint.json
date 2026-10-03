@@ -1,0 +1,38 @@
+{
+  "status": "ready_for_root_commit",
+  "files": [
+    "regulai/front/chat_service.py",
+    "regulai/front/evaluation.py",
+    "regulai/front/test_diagnostics.py"
+  ],
+  "source_sha256": {
+    "regulai/front/chat_service.py": "6da23876d4e248ec4518b4e73c994960a628c9152cf19c3b1a78dfed2019264a",
+    "regulai/front/evaluation.py": "c25ea560544674ba9469fcb8fa95bdf7177bad143c1a406cdacb7fd72b847090",
+    "regulai/front/test_diagnostics.py": "9e738b40ac66af7ed20ee73b75f2170bc1ae92ffb903fdec28b63bc2fc1c6869"
+  },
+  "proposed_commit": "fix: preserve safe Jev failure diagnostics without changing budget state",
+  "focal": {
+    "exit_code": 0,
+    "n": 73,
+    "seconds": 33.582
+  },
+  "diff_check_exit": 0,
+  "evidence": [
+    "analyze.py",
+    "audit.json",
+    "audit-after-diagnostic-fix.json",
+    "red-green.json",
+    "focal-final.json",
+    "diagnosis.md"
+  ],
+  "scope": "Diagnostic metadata and truthful public message only; no semantic/policy/budget/route/retry changes.",
+  "new_product_calls": 0,
+  "new_actual_spend_usd": "0",
+  "original_evidence_unchanged": true,
+  "user_database_accessed": false,
+  "live_ledger_opened": false,
+  "blocked_attribution": "Original unknown call cannot be classified retrospectively from the preserved safe trace.",
+  "observed_masking_limit": "Common Spanish words Cual with accent, Cita and Contrato replaced in development case replay; no causal claim about Jev verdict.",
+  "no_git_index_changes": true,
+  "no_commits_by_c": true
+}

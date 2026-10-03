@@ -1,0 +1,64 @@
+{
+  "cause": "Review runner hashed its log while the text output handle remained open; buffered final lines were flushed only after calculating that field.",
+  "remediation": "Preserve all original files. Treat finalized file hashes and final seals as canonical. Do not use early log_sha256 fields as complete-file digests.",
+  "current_finalized_log_hashes": {
+    "baseline-matrix-isolated.log": {
+      "runner_preclose_sha256": "a5fe6c42df67ab29d38cb985835e3e0e28defb53ea4a873ce29b392649f7a815",
+      "finalized_sha256": "ece4129d6375444e7d607f0fdddaf948f0c50c300565f1040117565f0bf221ac",
+      "runner_hash_matches_final_file": false,
+      "reported_test_failures": 0,
+      "bytes": 11230
+    },
+    "baseline-matrix.log": {
+      "runner_preclose_sha256": "53acfb4c9fc6fd0176ad5edfcf76609ea3be7f6cef60f15404be572230b3a59c",
+      "finalized_sha256": "3e7fe18824bd8844d59a98a2d98446aa0b713fa03cf196a05a46f8279ba0ff00",
+      "runner_hash_matches_final_file": false,
+      "reported_test_failures": 3,
+      "bytes": 14282
+    },
+    "candidate-matrix-isolated.log": {
+      "runner_preclose_sha256": "3acb51210c04cf91d8b09feb3ec7eaa5c5af6d01b83c075fd85f335992089ec2",
+      "finalized_sha256": "f2cdabfcec50990a1469686cf45b10c1c65a6e86adfb172b8165a6efeb5b9709",
+      "runner_hash_matches_final_file": false,
+      "reported_test_failures": 0,
+      "bytes": 11230
+    },
+    "own-diagnostics-final.log": {
+      "runner_preclose_sha256": "01312c95aa235374a3564b55d16da5a5c433e9ba7d434be97e85680fa99c9923",
+      "finalized_sha256": "5d9f3b6aab47f9522df6f7e8ae88e9c8f78112848e9b0dd22ff5a664471ce5d4",
+      "runner_hash_matches_final_file": false,
+      "reported_test_failures": 0,
+      "bytes": 16989
+    },
+    "own-diagnostics.log": {
+      "runner_preclose_sha256": "867168bdbf2edb7fb07eea321a403ee5a90a3701fb46b4abd8f3fb2a47170342",
+      "finalized_sha256": "d78ede2fd777b95aba192022d14256f82d2b09c56abf96d50482d6220edfc986",
+      "runner_hash_matches_final_file": false,
+      "reported_test_failures": 3,
+      "bytes": 20042
+    },
+    "supplied-diagnostics.log": {
+      "runner_preclose_sha256": "59d5d6df4953f9ae10286ff4a62be0cda0285abfefb201805350d32eafec0a96",
+      "finalized_sha256": "5beca127d300122747eefd393c0e19d0c609b4ae3aee59c013b74c7df0695270",
+      "runner_hash_matches_final_file": false,
+      "reported_test_failures": 0,
+      "bytes": 11090
+    }
+  },
+  "vercel_report_hash_table_errata": {
+    "supplied-focal.log": {
+      "superseded_preclose_hash": "c4a3b560dac6b98cffec7dd48756058cff9a7de82b08616ca840991a89ebf9ac",
+      "final_file_hash_already_in_original_seal": "4c48046a056bf8ccdf5c996a75db0e600d474832bf107a8cbf6c5cfd834a90e9"
+    },
+    "own-gateway.log": {
+      "superseded_preclose_hash": "929c02b13985a3731c7ee2d5a5ed1bc76789641b20dd5ae2f4bed5eef14a0ddc",
+      "final_file_hash_already_in_original_seal": "aab805e0059479e54cdfb6849d0ab74fee7f5557e8d727b52a6c8e19a5eeb6c2"
+    },
+    "router-negative-verification-only.log": {
+      "superseded_preclose_hash": "5365455290d010dd5ab29a86c4c895b1e8a46b92ead031a8c3d05b3fcedf1416",
+      "final_file_hash_already_in_original_seal": "5c330ce04ded56a113c0fbf607ca5fbe2dfc1794fa2d6f57565dd4647531fcc3"
+    }
+  },
+  "prior_evidence_modified": false,
+  "test_results_changed": false
+}

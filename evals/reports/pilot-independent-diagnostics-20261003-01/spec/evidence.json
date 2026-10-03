@@ -1,0 +1,129 @@
+{
+  "axis": "Spec",
+  "fixed_commit": "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+  "baseline_commit": "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+  "findings": [],
+  "product_changes_by_reviewer": [],
+  "diff": {
+    "command": [
+      "rtk",
+      "proxy",
+      "git",
+      "diff",
+      "--no-ext-diff",
+      "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+      "972edb88c82a5220a43ffcc89316a9f9033e82f7"
+    ],
+    "exit_code": 0,
+    "sha256": "8446dce818d87ccf28d8c65d26fa084da3b9640622908db8a46234dc5f30cc1c"
+  },
+  "unchanged_controls_and_historical_evidence": {
+    "command": [
+      "rtk",
+      "proxy",
+      "git",
+      "diff",
+      "--exit-code",
+      "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+      "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+      "--",
+      "evals",
+      "docs",
+      "regulai/front/jev.py",
+      "regulai/front/evaluation_budget.py",
+      "regulai/front/policy.py",
+      "regulai/front/routing.py",
+      "regulai/front/classification.py",
+      "regulai/front/verification.py"
+    ],
+    "exit_code": 0
+  },
+  "fresh_runs": [
+    {
+      "snapshot": "base",
+      "commit": "535eb9d",
+      "command": [
+        "rtk",
+        "proxy",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-diagnostics-spec\\probe_driver.py",
+        "base"
+      ],
+      "cwd": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-diagnostics-spec\\base",
+      "exit_code": 0,
+      "duration_seconds": 5.937,
+      "archive_sha256": "792d66075168a9f9648a39c472f31f14cf5d65be3c5c013c17e688f7e2db6485",
+      "log_sha256": "3448caed23267327dd7d7cc756283ed81aa84c869abbf3712bccff5b639045bb"
+    },
+    {
+      "snapshot": "source",
+      "commit": "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+      "command": [
+        "rtk",
+        "proxy",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-diagnostics-spec\\probe_driver.py",
+        "source"
+      ],
+      "cwd": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-diagnostics-spec\\source",
+      "exit_code": 0,
+      "duration_seconds": 5.703,
+      "archive_sha256": "51aed781f8eff4f979acc4f206815976bc06ef4fcaec4c38f2654685f8037230",
+      "log_sha256": "458ae0dc4fd4c1af12fe869bbd0c474171bfc7fc2358f565c41e37717a8adec2"
+    }
+  ],
+  "behavior_comparison": {
+    "cases": 11,
+    "equal": true,
+    "excluded_receipt_keys": [
+      "duration_ms",
+      "provider_error_code"
+    ],
+    "public_error_text": "Expected intentional correction; reviewed statically, excluded from behavioral projection.",
+    "base_sha256": "780281cd5eb9e43e148b2f3332bc5debac3643bb46432a3a231e9acb1f848e9b",
+    "source_sha256": "780281cd5eb9e43e148b2f3332bc5debac3643bb46432a3a231e9acb1f848e9b"
+  },
+  "source_sha256": {
+    "base": {
+      "regulai/front/chat_service.py": "500690573cbcf99429ec1bb1b9da5e2780e6e3da11d116db04d518c1ed84845e",
+      "regulai/front/evaluation.py": "40b988612ffddb98d8fca36b7e870dcfbcb8facb895ea5e64f667add48ec8528",
+      "regulai/front/evaluation_budget.py": "30b044427715a3f3f948210ef9735d420d83fb55346ed8445a4864a664bec0ca",
+      "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
+      "regulai/front/policy.py": "7dcabc2534e987a0a52619ec9121084eded51f41332384ab78a41aa2277f5299",
+      "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1"
+    },
+    "source": {
+      "regulai/front/chat_service.py": "94dc4ce8dc9d90c40d46acc2247a884397042efbce815b28b5e532d3664a13fd",
+      "regulai/front/evaluation.py": "dc92ffc50b2cd84ba9cd3385f614fe5725081caa26bfa47b25546fbd887596ea",
+      "regulai/front/evaluation_budget.py": "30b044427715a3f3f948210ef9735d420d83fb55346ed8445a4864a664bec0ca",
+      "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
+      "regulai/front/policy.py": "7dcabc2534e987a0a52619ec9121084eded51f41332384ab78a41aa2277f5299",
+      "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1"
+    }
+  },
+  "limits": {
+    "bridge_executed": false,
+    "user_database_or_credentials_read": false,
+    "persistent_ledger_opened": false,
+    "ledger_observer": "in-memory mock only",
+    "real_product_calls": 0,
+    "api_spend_usd": "0",
+    "historical_failure_cause": "unknown, not inferred",
+    "historical_evidence_changed": false,
+    "tests_reported_by_other_agents_repeated": false
+  },
+  "evidence_sha256": {
+    "audit_evidence.py": "2054a2a8fd91e29f94b5e483ce1038c597c88f8ade7e37df8c8b3732dc1cb408",
+    "base-behavior.json": "780281cd5eb9e43e148b2f3332bc5debac3643bb46432a3a231e9acb1f848e9b",
+    "base.json": "0f3fa981868acb1a61a037e86099be45f735a51b317e719bfee7b6021c478616",
+    "base.log": "3448caed23267327dd7d7cc756283ed81aa84c869abbf3712bccff5b639045bb",
+    "probe_driver.py": "08df33ac9300ed2b957fef653aff5d81272ac0895d4ec8a630ccc6f8a8291f2a",
+    "reviewed.diff": "8446dce818d87ccf28d8c65d26fa084da3b9640622908db8a46234dc5f30cc1c",
+    "run.py": "019275dd31662a7d76b70dd8179e9d4cfe61ae9ca332b709615fe0c10232cbc2",
+    "source-behavior.json": "780281cd5eb9e43e148b2f3332bc5debac3643bb46432a3a231e9acb1f848e9b",
+    "source.json": "97db67521df0b4c3e277fd832cdb5f798e44b58d364ef9786c5d41bcc91ef4fd",
+    "source.log": "458ae0dc4fd4c1af12fe869bbd0c474171bfc7fc2358f565c41e37717a8adec2",
+    "Spec-review.md": "380960c34263d7ab647e3c8703dfc473e522a4796502feb1cf8f88d872620400",
+    "spec_probes.py": "12bdbcbbf46d9409122c97d0dce6c6624020bf90e8a01544cce32b77c936b05d"
+  }
+}

@@ -1,0 +1,107 @@
+Found 1 test(s).
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: admin, auth, authtoken, contenttypes, front, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
+  Applying authtoken.0003_tokenproxy... OK
+  Applying authtoken.0004_alter_tokenproxy_options... OK
+  Applying front.0001_initial... OK
+  Applying front.0002_engine_companyengine... OK
+  Applying front.0003_add_severity_to_rule... OK
+  Applying front.0004_add_conversation_and_message... OK
+  Applying front.0005_add_applies_to_rule... OK
+  Applying front.0006_add_file_to_message... OK
+  Applying front.0007_add_department_model... OK
+  Applying front.0008_add_avatar_to_profile... OK
+  Applying front.0009_add_default_engine_to_profile... OK
+  Applying front.0010_add_engine_models... OK
+  Applying front.0011_add_connector_type_to_engine... OK
+  Applying front.0012_seed_default_engines... OK
+  Applying front.0013_add_name_to_companyengine... OK
+  Applying front.0015_add_file_hashes_to_prompt... OK
+  Applying front.0016_encrypt_api_keys...{"timestamp": "2026-10-03T16:01:17.039488+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+ OK
+  Applying front.0017_alter_companyengine_api_key... OK
+  Applying front.0018_remove_companyengine_unique_together... OK
+  Applying front.0019_add_rule_action_field... OK
+  Applying front.0020_seed_default_rules_groups... OK
+  Applying front.0021_obfuscationconfig... OK
+  Applying front.0022_alert_source... OK
+  Applying front.0023_company_department_system_prompt... OK
+  Applying front.0024_seed_mistral_engine... OK
+  Applying front.0025_message_response_file... OK
+  Applying front.0026_authorized_chat_state... OK
+  Applying front.0027_enginemodel_context_window_enginemodel_currency_and_more... OK
+  Applying front.0028_auditlog_company... OK
+  Applying front.0029_model_price_units... OK
+  Applying front.0030_enginemodel_reasoning... OK
+  Applying front.0031_infer_historical_prompt_company... OK
+  Applying front.0032_obfuscationconfig_backend... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) ... {"timestamp": "2026-10-03T16:01:19.593472+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2433f83e-a38a-483e-96fa-f653c570114c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.597476+00:00", "level": "ERROR", "logger": "django.request", "request_id": "6ffb7426-b3de-46d1-95cd-ee5ac45d1ca5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.656987+00:00", "level": "ERROR", "logger": "django.request", "request_id": "aed39f05-12fd-4c0a-ad9a-9e4855692530", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.659985+00:00", "level": "ERROR", "logger": "django.request", "request_id": "bd42da39-8a03-4116-9715-6cea06a4461c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.722011+00:00", "level": "ERROR", "logger": "django.request", "request_id": "89f1340d-2fcb-4895-b75a-08d47c58ad73", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.726022+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2e41b4df-1767-4136-a82b-6727f22e1c5e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.793080+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8fa98ea2-9838-4e6a-b048-575ae926721d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.796083+00:00", "level": "ERROR", "logger": "django.request", "request_id": "df6abcf6-0a2f-46d5-bedd-1d79976afb94", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.862606+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5d371c88-5ee1-4168-9f6d-7f1243c3060f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.866613+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9a190815-c1a3-4804-b2b8-284f75be135a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.930650+00:00", "level": "ERROR", "logger": "django.request", "request_id": "12f81734-9ce2-4f94-8d71-ac5f6a3d43d0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.933650+00:00", "level": "ERROR", "logger": "django.request", "request_id": "19e44b91-0b8a-4692-a5df-d2754f58ea5e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:19.998682+00:00", "level": "ERROR", "logger": "django.request", "request_id": "50cd5db1-1705-47a6-83f7-48cef444840c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.001682+00:00", "level": "ERROR", "logger": "django.request", "request_id": "59173b04-a840-4404-966f-b0319376d640", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.068710+00:00", "level": "ERROR", "logger": "django.request", "request_id": "936557b5-014f-496f-8bf5-d813fbab3550", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.072210+00:00", "level": "ERROR", "logger": "django.request", "request_id": "25a8e702-1723-4fed-9ed2-96b6e4558cb9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.136742+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e6478181-f951-49ad-90b5-8885cdc0684f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.139741+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d7e42b0c-17f2-4981-8555-51321d2e08a9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.202777+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2b9dac5b-d1e2-445d-9169-090265e973bf", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.207274+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9f8da2b8-dcb4-4e70-a669-9d2b06746bb7", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.272790+00:00", "level": "ERROR", "logger": "django.request", "request_id": "1c58e899-927d-47fe-919d-4c0ab99b762a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.276290+00:00", "level": "ERROR", "logger": "django.request", "request_id": "4b829904-49b8-4ef0-b0fb-980249d95c75", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.339321+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8511827a-2c5c-49b1-95f7-8ed7c6e2ba8f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.342821+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ad3aa5a6-73b8-4997-81d9-c55ebbc4178a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.409354+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ecb74880-5e39-4671-ac2a-f33ed181ea14", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.412354+00:00", "level": "ERROR", "logger": "django.request", "request_id": "95fc53fa-f6af-4427-87f1-50881a1e71c0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.475879+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d4560145-18c4-464f-ab99-38a658761295", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.479378+00:00", "level": "ERROR", "logger": "django.request", "request_id": "89c01eff-6a12-4411-8daa-51314fcfd270", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.544403+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d849b76f-8beb-460b-bdab-5cb699dfd808", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.547418+00:00", "level": "ERROR", "logger": "django.request", "request_id": "4f85906a-e9b0-4acb-8e6b-a9cfa0f10fcd", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.613456+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2e3daf5b-0130-4802-8305-6e75b7db2c13", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.616463+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5fe039b7-b626-4c28-8c35-86bf24bab065", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.679461+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c25482a7-f4e7-4254-97df-72a0c0a50e78", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.682463+00:00", "level": "ERROR", "logger": "django.request", "request_id": "35ee824a-8923-40c0-ac5a-13541b601903", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.745993+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3e75ca91-e683-45a2-875f-c0f3bc006379", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:01:20.749004+00:00", "level": "ERROR", "logger": "django.request", "request_id": "717d132c-f161-4f2c-8efb-01806053f291", "code": "unclassified_event", "exception_type": null}
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.988s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

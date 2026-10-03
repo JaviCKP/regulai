@@ -1,0 +1,648 @@
+{
+  "basis_commit": "698e8f0bb11b6f5ef91e8ac27ef9404c8868f7cc",
+  "source_hashes_match": true,
+  "evidence_sha256": {
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\plan.json": "ee98fe9d3c2147ec0c9b22d4ff50348a571db6eafa4dc4bdf6947c2d9de9dc45",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\manifest.json": "b68505a9b7e331699acb4d77aceacb8555c45be1ec31727f8a464c51feb36833",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\results.jsonl": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\budget.json": "52c0f4d68c7de5c8150d78a826b4cf9507fbad5e31a7d1e2c4c9a8b7361a6c82",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\summary.json": "f422eaa9a15eb9955d55236b6b8137a8f2f5cddf52bcf76bc5a7ff8896df640e",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\completed-cases.jsonl": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\cases.executed.jsonl": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01\\human-review.pending.json": "ad8fabe4005ac3c5c51c2ec0a4c35949a2212cacaf2ee22896a8f9e8f660a6a6",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live-result.json": "694b8bc840e14c237e448562b9d06cd67e4228ca473da29e07ca2a531eba13b8",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live.stderr.log": "0e736b38774ec2f295ad56a599b6e4809458c6bc268a37f8f1c24571a87c445d",
+    "evals\\reports\\pilot-real-vercel-20261003-01\\live.stdout.log": "7f10b4e48838bb6e14123ebecb63c92a2a0e470c68546fb112f9ac4282d2776f"
+  },
+  "evidence_unchanged_after_replay": true,
+  "planned_combinations": 24,
+  "recorded_combinations": 8,
+  "unique_cases_started": 5,
+  "not_started_order": [
+    [
+      "consent-pending",
+      "strong"
+    ],
+    [
+      "verification-failed",
+      "router"
+    ],
+    [
+      "second-attempt",
+      "economy"
+    ],
+    [
+      "second-attempt",
+      "strong"
+    ],
+    [
+      "consent-pending",
+      "router"
+    ],
+    [
+      "consent-pending",
+      "economy"
+    ],
+    [
+      "evidence-absent",
+      "router"
+    ],
+    [
+      "blocked",
+      "economy"
+    ],
+    [
+      "evidence-absent",
+      "strong"
+    ],
+    [
+      "consent-accepted",
+      "economy"
+    ],
+    [
+      "evidence-absent",
+      "economy"
+    ],
+    [
+      "blocked",
+      "strong"
+    ],
+    [
+      "consent-accepted",
+      "strong"
+    ],
+    [
+      "second-attempt",
+      "router"
+    ],
+    [
+      "verification-failed",
+      "strong"
+    ],
+    [
+      "arithmetic",
+      "economy"
+    ]
+  ],
+  "observed_order": [
+    [
+      "consent-accepted",
+      "router"
+    ],
+    [
+      "verification-failed",
+      "economy"
+    ],
+    [
+      "arithmetic",
+      "router"
+    ],
+    [
+      "blocked",
+      "router"
+    ],
+    [
+      "arithmetic",
+      "strong"
+    ],
+    [
+      "document-success",
+      "router"
+    ],
+    [
+      "document-success",
+      "economy"
+    ],
+    [
+      "document-success",
+      "strong"
+    ]
+  ],
+  "stop_reason": "failed_or_uncertain_provider_call",
+  "accounting_entries": 29,
+  "external_calls": 17,
+  "local_transformations": 12,
+  "states": {
+    "blocked": 3,
+    "completed": 2,
+    "failed": 2,
+    "outcome_unknown": 1
+  },
+  "groups": [
+    {
+      "configuration": "economy",
+      "n": 2,
+      "delivered": 0,
+      "states": {
+        "blocked": 1,
+        "failed": 1
+      },
+      "external_calls": 4,
+      "calls_by_purpose": {
+        "classification": 2,
+        "generation": 1,
+        "verification": 1
+      },
+      "local_transformations": 3,
+      "generation_attempts": 1,
+      "second_attempt_cases": 0,
+      "reported_usd": "0.000096432",
+      "estimated_usd": "0.00010230",
+      "unknown_reservations_usd": "0",
+      "exposure_usd": "0.001112832",
+      "p50_ms": 2437.0,
+      "p95_ms": 3781.0
+    },
+    {
+      "configuration": "strong",
+      "n": 2,
+      "delivered": 1,
+      "states": {
+        "completed": 1,
+        "outcome_unknown": 1
+      },
+      "external_calls": 4,
+      "calls_by_purpose": {
+        "classification": 2,
+        "generation": 1,
+        "verification": 1
+      },
+      "local_transformations": 3,
+      "generation_attempts": 1,
+      "second_attempt_cases": 0,
+      "reported_usd": "0.000050106",
+      "estimated_usd": "0.00006336",
+      "unknown_reservations_usd": "0.003",
+      "exposure_usd": "0.006016146",
+      "p50_ms": 2562.5,
+      "p95_ms": 4109.0
+    },
+    {
+      "configuration": "router",
+      "n": 4,
+      "delivered": 1,
+      "states": {
+        "blocked": 2,
+        "completed": 1,
+        "failed": 1
+      },
+      "external_calls": 9,
+      "calls_by_purpose": {
+        "classification": 3,
+        "generation": 3,
+        "verification": 3
+      },
+      "local_transformations": 6,
+      "generation_attempts": 3,
+      "second_attempt_cases": 1,
+      "reported_usd": "0.000165984",
+      "estimated_usd": "0.00057930",
+      "unknown_reservations_usd": "0",
+      "exposure_usd": "0.006729084",
+      "p50_ms": 4008.0,
+      "p95_ms": 6828.0
+    }
+  ],
+  "budget_recomputed": {
+    "known_cost_usd": "0.001057482",
+    "provider_reported_usd": "0.000312522",
+    "tariff_estimated_usd": "0.00074496",
+    "uncertain_reservations_usd": "0.003",
+    "budget_exposure_usd": "0.013858062",
+    "remaining_usd": "0.986141938",
+    "estimated_generation_bounds_usd": "0.01054554",
+    "extra_exposure_over_estimates_usd": "0.00980058"
+  },
+  "local_replay": [
+    {
+      "case_id": "consent-accepted",
+      "configuration": "router",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": {
+        "sensitivity": "public",
+        "task": "general",
+        "difficulty": "strong",
+        "notices": [],
+        "stop_code": "classification_manipulation",
+        "stop_status": "blocked",
+        "plausible_tasks": [
+          "general"
+        ]
+      },
+      "manipulation_probability": 0.85,
+      "local_response_replays": [],
+      "semantic_replays": []
+    },
+    {
+      "case_id": "verification-failed",
+      "configuration": "economy",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": {
+        "sensitivity": "public",
+        "task": "general",
+        "difficulty": "strong",
+        "notices": [],
+        "stop_code": "classification_manipulation",
+        "stop_status": "blocked",
+        "plausible_tasks": [
+          "general"
+        ]
+      },
+      "manipulation_probability": 0.22,
+      "local_response_replays": [],
+      "semantic_replays": []
+    },
+    {
+      "case_id": "arithmetic",
+      "configuration": "router",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": {
+        "sensitivity": "internal",
+        "task": "general",
+        "difficulty": "economy",
+        "notices": [
+          "classification_ambiguous"
+        ],
+        "stop_code": null,
+        "stop_status": null,
+        "plausible_tasks": [
+          "general"
+        ]
+      },
+      "manipulation_probability": 0.17,
+      "local_response_replays": [
+        {
+          "model": "deepseek-flash",
+          "content_sha256": "2bf175f9655e7bb7357b9f0a7c6051465a5ae701104ffe741b98e852c0e4d460",
+          "mask_changed_content": false,
+          "local_status": "passed",
+          "checks": [
+            {
+              "code": "nonempty",
+              "status": "passed"
+            },
+            {
+              "code": "completion",
+              "status": "passed",
+              "reason": "complete"
+            },
+            {
+              "code": "semantic",
+              "status": "not_verified"
+            }
+          ],
+          "evidence": []
+        }
+      ],
+      "semantic_replays": [
+        {
+          "signals": {
+            "failure_contradiction": {
+              "noul": 0.06,
+              "type": "noul"
+            },
+            "failure_omission": {
+              "noul": 0.11,
+              "type": "noul"
+            }
+          },
+          "failed_signals": {},
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case_id": "blocked",
+      "configuration": "router",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": null,
+      "local_response_replays": [],
+      "semantic_replays": []
+    },
+    {
+      "case_id": "arithmetic",
+      "configuration": "strong",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": {
+        "sensitivity": "internal",
+        "task": "general",
+        "difficulty": "economy",
+        "notices": [
+          "classification_ambiguous"
+        ],
+        "stop_code": null,
+        "stop_status": null,
+        "plausible_tasks": [
+          "general"
+        ]
+      },
+      "manipulation_probability": 0.16,
+      "local_response_replays": [
+        {
+          "model": "deepseek-v4-pro",
+          "content_sha256": "2bf175f9655e7bb7357b9f0a7c6051465a5ae701104ffe741b98e852c0e4d460",
+          "mask_changed_content": false,
+          "local_status": "passed",
+          "checks": [
+            {
+              "code": "nonempty",
+              "status": "passed"
+            },
+            {
+              "code": "completion",
+              "status": "passed",
+              "reason": "complete"
+            },
+            {
+              "code": "semantic",
+              "status": "not_verified"
+            }
+          ],
+          "evidence": []
+        }
+      ],
+      "semantic_replays": [
+        {
+          "signals": {
+            "failure_contradiction": {
+              "noul": 0.05,
+              "type": "noul"
+            },
+            "failure_omission": {
+              "noul": 0.11,
+              "type": "noul"
+            }
+          },
+          "failed_signals": {},
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "case_id": "document-success",
+      "configuration": "router",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": {
+        "sensitivity": "confidential",
+        "task": "document_question",
+        "difficulty": "economy",
+        "notices": [
+          "classification_ambiguous",
+          "clarification_required",
+          "insufficient_evidence"
+        ],
+        "stop_code": null,
+        "stop_status": null,
+        "plausible_tasks": [
+          "document_question"
+        ]
+      },
+      "manipulation_probability": 0.15,
+      "local_response_replays": [
+        {
+          "model": "deepseek-flash",
+          "content_sha256": "62abd4bfed6d811355217fd2ef9d859a9c27c9cc047bac761ac4a8f7989357ac",
+          "mask_changed_content": false,
+          "local_status": "passed",
+          "checks": [
+            {
+              "code": "nonempty",
+              "status": "passed"
+            },
+            {
+              "code": "completion",
+              "status": "passed",
+              "reason": "complete"
+            },
+            {
+              "code": "citations",
+              "status": "passed"
+            },
+            {
+              "code": "semantic",
+              "status": "not_verified"
+            }
+          ],
+          "evidence": [
+            {
+              "claim_index": 1,
+              "alias": "S1",
+              "fragment_id": "d3f0708822f7d5210801f0419e9ca31a9b0dab3cd7d073d5bf6fc7f0af58a7ea",
+              "id": "d3f0708822f7d5210801f0419e9ca31a9b0dab3cd7d073d5bf6fc7f0af58a7ea",
+              "locator": "line:1",
+              "excerpt": "el plazo de entrega es de 17 días."
+            }
+          ]
+        },
+        {
+          "model": "deepseek-v4-pro",
+          "content_sha256": "62abd4bfed6d811355217fd2ef9d859a9c27c9cc047bac761ac4a8f7989357ac",
+          "mask_changed_content": false,
+          "local_status": "passed",
+          "checks": [
+            {
+              "code": "nonempty",
+              "status": "passed"
+            },
+            {
+              "code": "completion",
+              "status": "passed",
+              "reason": "complete"
+            },
+            {
+              "code": "citations",
+              "status": "passed"
+            },
+            {
+              "code": "semantic",
+              "status": "not_verified"
+            }
+          ],
+          "evidence": [
+            {
+              "claim_index": 1,
+              "alias": "S1",
+              "fragment_id": "d3f0708822f7d5210801f0419e9ca31a9b0dab3cd7d073d5bf6fc7f0af58a7ea",
+              "id": "d3f0708822f7d5210801f0419e9ca31a9b0dab3cd7d073d5bf6fc7f0af58a7ea",
+              "locator": "line:1",
+              "excerpt": "el plazo de entrega es de 17 días."
+            }
+          ]
+        }
+      ],
+      "reconstructed_masked_request": "¿[[REGULAI_LOCATION]] es el plazo de entrega? [[REGULAI_PERSON]] la evidencia.",
+      "reconstructed_masked_sources": [
+        {
+          "id": "S1",
+          "locator": "line:1",
+          "text": "[[REGULAI_PERSON]] sintético sin datos personales: el plazo de entrega es de 17 días."
+        }
+      ],
+      "semantic_replays": [
+        {
+          "signals": {
+            "claim_1": {
+              "noul": 0.04,
+              "type": "noul"
+            },
+            "failure_contradiction": {
+              "noul": 0.19,
+              "type": "noul"
+            },
+            "failure_omission": {
+              "noul": 0.34,
+              "type": "noul"
+            }
+          },
+          "failed_signals": {
+            "failure_omission": 0.34
+          },
+          "status": "failed"
+        },
+        {
+          "signals": {
+            "claim_1": {
+              "noul": 0.04,
+              "type": "noul"
+            },
+            "failure_contradiction": {
+              "noul": 0.18,
+              "type": "noul"
+            },
+            "failure_omission": {
+              "noul": 0.34,
+              "type": "noul"
+            }
+          },
+          "failed_signals": {
+            "failure_omission": 0.34
+          },
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "case_id": "document-success",
+      "configuration": "economy",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": {
+        "sensitivity": "confidential",
+        "task": "document_question",
+        "difficulty": "economy",
+        "notices": [
+          "classification_ambiguous",
+          "clarification_required",
+          "insufficient_evidence"
+        ],
+        "stop_code": null,
+        "stop_status": null,
+        "plausible_tasks": [
+          "document_question"
+        ]
+      },
+      "manipulation_probability": 0.15,
+      "local_response_replays": [
+        {
+          "model": "deepseek-flash",
+          "content_sha256": "62abd4bfed6d811355217fd2ef9d859a9c27c9cc047bac761ac4a8f7989357ac",
+          "mask_changed_content": false,
+          "local_status": "passed",
+          "checks": [
+            {
+              "code": "nonempty",
+              "status": "passed"
+            },
+            {
+              "code": "completion",
+              "status": "passed",
+              "reason": "complete"
+            },
+            {
+              "code": "citations",
+              "status": "passed"
+            },
+            {
+              "code": "semantic",
+              "status": "not_verified"
+            }
+          ],
+          "evidence": [
+            {
+              "claim_index": 1,
+              "alias": "S1",
+              "fragment_id": "d3f0708822f7d5210801f0419e9ca31a9b0dab3cd7d073d5bf6fc7f0af58a7ea",
+              "id": "d3f0708822f7d5210801f0419e9ca31a9b0dab3cd7d073d5bf6fc7f0af58a7ea",
+              "locator": "line:1",
+              "excerpt": "el plazo de entrega es de 17 días."
+            }
+          ]
+        }
+      ],
+      "reconstructed_masked_request": "¿[[REGULAI_LOCATION]] es el plazo de entrega? [[REGULAI_PERSON]] la evidencia.",
+      "reconstructed_masked_sources": [
+        {
+          "id": "S1",
+          "locator": "line:1",
+          "text": "[[REGULAI_PERSON]] sintético sin datos personales: el plazo de entrega es de 17 días."
+        }
+      ],
+      "semantic_replays": [
+        {
+          "signals": {
+            "claim_1": {
+              "noul": 0.05,
+              "type": "noul"
+            },
+            "failure_contradiction": {
+              "noul": 0.18,
+              "type": "noul"
+            },
+            "failure_omission": {
+              "noul": 0.32,
+              "type": "noul"
+            }
+          },
+          "failed_signals": {
+            "failure_omission": 0.32
+          },
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "case_id": "document-success",
+      "configuration": "strong",
+      "signal_threshold": 0.2,
+      "classification_confidence_threshold": 0.8,
+      "verification_failure_cutoff_binary_float": 0.19999999999999996,
+      "classification": null,
+      "local_response_replays": [],
+      "semantic_replays": []
+    }
+  ],
+  "human_reviewed_n": 0,
+  "new_product_calls": 0,
+  "new_actual_spend_usd": "0",
+  "limits": [
+    "No live ledger or user database opened.",
+    "Full failed provider body and error code were not retained.",
+    "Reconstructed masked state is a local replay, not a captured live outbound request.",
+    "control_pass means control invariants only in real mode; expected_status applies to offline mode only.",
+    "Known cost mixes reported and estimated amounts; it is not an invoice.",
+    "A halted partial sample is not a balanced comparison of configurations."
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "base_commit": "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+  "candidate_commit": "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+  "changed_files": [
+    "regulai/front/chat_service.py",
+    "regulai/front/evaluation.py",
+    "regulai/front/test_diagnostics.py"
+  ],
+  "classification_scenarios_compared": 18,
+  "state_cost_bound_transport_replay_differences": [],
+  "safe_diagnostics_added": {
+    "connect-timeout": "timeout",
+    "read-timeout": "timeout",
+    "http-403": "http_403",
+    "http-503": "http_503",
+    "http-599": "unknown_jev_error",
+    "malformed-json": "invalid_response"
+  },
+  "historical_evidence": {
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/plan.json": {
+      "recorded_sha256": "ee98fe9d3c2147ec0c9b22d4ff50348a571db6eafa4dc4bdf6947c2d9de9dc45",
+      "observed_sha256": "ee98fe9d3c2147ec0c9b22d4ff50348a571db6eafa4dc4bdf6947c2d9de9dc45",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/manifest.json": {
+      "recorded_sha256": "b68505a9b7e331699acb4d77aceacb8555c45be1ec31727f8a464c51feb36833",
+      "observed_sha256": "b68505a9b7e331699acb4d77aceacb8555c45be1ec31727f8a464c51feb36833",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/results.jsonl": {
+      "recorded_sha256": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+      "observed_sha256": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/budget.json": {
+      "recorded_sha256": "52c0f4d68c7de5c8150d78a826b4cf9507fbad5e31a7d1e2c4c9a8b7361a6c82",
+      "observed_sha256": "52c0f4d68c7de5c8150d78a826b4cf9507fbad5e31a7d1e2c4c9a8b7361a6c82",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/summary.json": {
+      "recorded_sha256": "f422eaa9a15eb9955d55236b6b8137a8f2f5cddf52bcf76bc5a7ff8896df640e",
+      "observed_sha256": "f422eaa9a15eb9955d55236b6b8137a8f2f5cddf52bcf76bc5a7ff8896df640e",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/completed-cases.jsonl": {
+      "recorded_sha256": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+      "observed_sha256": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/cases.executed.jsonl": {
+      "recorded_sha256": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+      "observed_sha256": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-run-01/human-review.pending.json": {
+      "recorded_sha256": "ad8fabe4005ac3c5c51c2ec0a4c35949a2212cacaf2ee22896a8f9e8f660a6a6",
+      "observed_sha256": "ad8fabe4005ac3c5c51c2ec0a4c35949a2212cacaf2ee22896a8f9e8f660a6a6",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live-result.json": {
+      "recorded_sha256": "694b8bc840e14c237e448562b9d06cd67e4228ca473da29e07ca2a531eba13b8",
+      "observed_sha256": "694b8bc840e14c237e448562b9d06cd67e4228ca473da29e07ca2a531eba13b8",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live.stderr.log": {
+      "recorded_sha256": "0e736b38774ec2f295ad56a599b6e4809458c6bc268a37f8f1c24571a87c445d",
+      "observed_sha256": "0e736b38774ec2f295ad56a599b6e4809458c6bc268a37f8f1c24571a87c445d",
+      "unchanged_between_fixed_commits": true
+    },
+    "evals/reports/pilot-real-vercel-20261003-01/live.stdout.log": {
+      "recorded_sha256": "7f10b4e48838bb6e14123ebecb63c92a2a0e470c68546fb112f9ac4282d2776f",
+      "observed_sha256": "7f10b4e48838bb6e14123ebecb63c92a2a0e470c68546fb112f9ac4282d2776f",
+      "unchanged_between_fixed_commits": true
+    }
+  },
+  "historical_evidence_unchanged": true,
+  "database_or_persistent_ledger_opened": false,
+  "contents_emitted": false
+}

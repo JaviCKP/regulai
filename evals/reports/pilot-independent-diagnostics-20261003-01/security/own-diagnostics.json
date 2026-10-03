@@ -1,0 +1,19 @@
+{
+  "commit": "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+  "labels": [
+    "review_cases.HttpDiagnosticsChecks",
+    "review_cases.LedgerDiagnosticsChecks"
+  ],
+  "failures": 3,
+  "elapsed_seconds": 13.578,
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.socket.sendto": 0
+  },
+  "database": "ephemeral synthetic SQLite",
+  "bridge_executed": false,
+  "log_sha256": "867168bdbf2edb7fb07eea321a403ee5a90a3701fb46b4abd8f3fb2a47170342"
+}

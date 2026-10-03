@@ -6,6 +6,7 @@ evals/reports/community-fixes-docs-verification-20261003/*.log -text -whitespace
 # Independent review manifests refer to the original report bytes.
 docs/plan-blackhat/revisiones-correcciones/spec-*.md -text
 docs/plan-blackhat/revisiones-correcciones/standards*.md -text
+docs/revisiones-piloto/*.md -text
 # Pilot manifests and reports hash exact captured/frozen bytes. Whitespace in
 # logs, serialized datasets and PDF xref tables is evidence, not source style.
 evals/reports/pilot-*/** -text -whitespace

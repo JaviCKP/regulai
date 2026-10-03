@@ -1,0 +1,1200 @@
+[
+  {
+    "case": "classification-401-/chat/send/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899"
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "failed",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "total": {
+        "known_cost": "0",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "classification-401-/api/chat/send/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899"
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "failed",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "total": {
+        "known_cost": "0",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "classification-401-/chat/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899"
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "failed",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "total": {
+        "known_cost": "0",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "classification-599-/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899"
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "outcome_unknown",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "total": {
+        "known_cost": "0",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "classification-599-/api/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899"
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "outcome_unknown",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "total": {
+        "known_cost": "0",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "classification-599-/chat/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899"
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "outcome_unknown",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "total": {
+        "known_cost": "0",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "replayed-record-without-diagnostic",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899"
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "outcome_unknown",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "total": {
+        "known_cost": "0",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "success",
+    "http_status": 200,
+    "status": "completed",
+    "error_type": null,
+    "requires_consent": false,
+    "has_assistant": true,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899",
+        "rubric_version": "sensitivity-v2",
+        "model": "typesafe-ai/jev"
+      },
+      "route": {
+        "mode": "manual",
+        "company_engine_id": 1,
+        "model": "synthetic-v1",
+        "task": "general",
+        "level": "economy",
+        "quality": 0.0,
+        "reason_codes": [
+          "quality_cost_route"
+        ],
+        "input_tokens_bound": 264
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "completed",
+          "cost": "0.0000042",
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "tariff_estimate",
+          "transport": "http",
+          "model_effective": "typesafe-ai/jev",
+          "input_tokens": 100,
+          "output_tokens": 20,
+          "provider_request_id": "synthetic",
+          "usage": {
+            "input_tokens": 100,
+            "output_tokens": 20
+          },
+          "signals": {
+            "category": {
+              "probabilities": {
+                "public": 0.0,
+                "internal": 1.0,
+                "confidential": 0.0,
+                "restricted": 0.0,
+                "unknown": 0.0
+              },
+              "confidence": 1.0,
+              "type": "choice",
+              "choice": "internal"
+            },
+            "credentials": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "personal_data": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "business_confidential": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "manipulation": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "task": {
+              "probabilities": {
+                "extraction": 0.0,
+                "summary": 0.0,
+                "document_question": 0.0,
+                "general": 1.0
+              },
+              "confidence": 1.0,
+              "type": "choice",
+              "choice": "general"
+            },
+            "difficulty": {
+              "probabilities": {
+                "economy": 1.0,
+                "balanced": 0.0,
+                "strong": 0.0
+              },
+              "confidence": 1.0,
+              "type": "choice",
+              "choice": "economy"
+            },
+            "ambiguous": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "insufficient_evidence": {
+              "type": "noul",
+              "noul": 0.0
+            }
+          },
+          "threshold": 0.8,
+          "rubric_version": "sensitivity-v2",
+          "task_rubric_version": "task-v2"
+        },
+        {
+          "purpose": "generation",
+          "provider": "engine:1",
+          "model": "synthetic-v1",
+          "status": "completed",
+          "cost": "0.00004000",
+          "cost_bound": "0.00226400",
+          "price_snapshot": {
+            "input_price": "1.00000000",
+            "output_price": "2.00000000",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "tariff_estimate",
+          "transport": "http",
+          "model_effective": "synthetic-v1",
+          "input_tokens": 20,
+          "output_tokens": 10,
+          "provider_request_id": null,
+          "usage": {},
+          "verification": {
+            "status": "passed",
+            "local_status": "passed",
+            "finish_reason": "complete",
+            "checks": [
+              {
+                "code": "nonempty",
+                "status": "passed"
+              },
+              {
+                "code": "completion",
+                "status": "passed",
+                "reason": "complete"
+              },
+              {
+                "code": "semantic",
+                "status": "passed"
+              }
+            ],
+            "mode": "enforce",
+            "rubric_version": "verification-v1",
+            "scope": "requirements",
+            "attempt": 1
+          }
+        },
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "verification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "completed",
+          "cost": "0.0000042",
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "tariff_estimate",
+          "transport": "http",
+          "model_effective": "typesafe-ai/jev",
+          "input_tokens": 100,
+          "output_tokens": 20,
+          "provider_request_id": "synthetic",
+          "usage": {
+            "input_tokens": 100,
+            "output_tokens": 20
+          },
+          "signals": {
+            "failure_omission": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "failure_contradiction": {
+              "type": "noul",
+              "noul": 0.0
+            }
+          },
+          "threshold": 0.8,
+          "rubric_version": "verification-v1"
+        }
+      ],
+      "verification": {
+        "status": "passed",
+        "local_status": "passed",
+        "finish_reason": "complete",
+        "checks": [
+          {
+            "code": "nonempty",
+            "status": "passed"
+          },
+          {
+            "code": "completion",
+            "status": "passed",
+            "reason": "complete"
+          },
+          {
+            "code": "semantic",
+            "status": "passed"
+          }
+        ],
+        "mode": "enforce",
+        "rubric_version": "verification-v1",
+        "scope": "requirements",
+        "attempt": 1
+      },
+      "total": {
+        "known_cost": "0.00004840",
+        "cost": "0.00004840",
+        "currency": "USD",
+        "complete": true,
+        "cost_status": "estimated",
+        "attempts": 1
+      },
+      "notices": [],
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "pending-consent",
+    "http_status": 200,
+    "status": "pending_consent",
+    "error_type": null,
+    "requires_consent": true,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "consent_required",
+        "reason_codes": [
+          "local_rule_consent"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [
+          {
+            "id": 1,
+            "name": "Fake secret",
+            "severity": "medium",
+            "description": "",
+            "action": "consent"
+          }
+        ],
+        "fingerprint": "080717f0c91a3e1081b24802447e811a25d5aa155c332c3dc864ac739dfa6ae1"
+      },
+      "calls": [],
+      "total": {
+        "known_cost": "0",
+        "cost": "0",
+        "currency": "USD",
+        "complete": true,
+        "cost_status": "estimated",
+        "attempts": 0
+      },
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30
+      }
+    }
+  },
+  {
+    "case": "verification-unsafe-code",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "verification_failed",
+    "requires_consent": false,
+    "has_assistant": false,
+    "receipt": {
+      "schema_version": 1,
+      "policy": {
+        "status": "allow",
+        "reason_codes": [
+          "local_policy_allowed"
+        ],
+        "sensitivity": "internal",
+        "allowed_destinations": [
+          "engine:1",
+          "jev",
+          "obfuscation:1"
+        ],
+        "rules": [],
+        "fingerprint": "b4b1de388971504df95e1e32f57fe14be8936e58c7e5f6112bedb57dd16c0899",
+        "rubric_version": "sensitivity-v2",
+        "model": "typesafe-ai/jev"
+      },
+      "route": {
+        "mode": "manual",
+        "company_engine_id": 1,
+        "model": "synthetic-v1",
+        "task": "general",
+        "level": "economy",
+        "quality": 0.0,
+        "reason_codes": [
+          "quality_cost_route"
+        ],
+        "input_tokens_bound": 264
+      },
+      "calls": [
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "classification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "completed",
+          "cost": "0.0000042",
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "tariff_estimate",
+          "transport": "http",
+          "model_effective": "typesafe-ai/jev",
+          "input_tokens": 100,
+          "output_tokens": 20,
+          "provider_request_id": "synthetic",
+          "usage": {
+            "input_tokens": 100,
+            "output_tokens": 20
+          },
+          "signals": {
+            "category": {
+              "probabilities": {
+                "public": 0.0,
+                "internal": 1.0,
+                "confidential": 0.0,
+                "restricted": 0.0,
+                "unknown": 0.0
+              },
+              "confidence": 1.0,
+              "type": "choice",
+              "choice": "internal"
+            },
+            "credentials": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "personal_data": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "business_confidential": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "manipulation": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "task": {
+              "probabilities": {
+                "extraction": 0.0,
+                "summary": 0.0,
+                "document_question": 0.0,
+                "general": 1.0
+              },
+              "confidence": 1.0,
+              "type": "choice",
+              "choice": "general"
+            },
+            "difficulty": {
+              "probabilities": {
+                "economy": 1.0,
+                "balanced": 0.0,
+                "strong": 0.0
+              },
+              "confidence": 1.0,
+              "type": "choice",
+              "choice": "economy"
+            },
+            "ambiguous": {
+              "type": "noul",
+              "noul": 0.0
+            },
+            "insufficient_evidence": {
+              "type": "noul",
+              "noul": 0.0
+            }
+          },
+          "threshold": 0.8,
+          "rubric_version": "sensitivity-v2",
+          "task_rubric_version": "task-v2"
+        },
+        {
+          "purpose": "generation",
+          "provider": "engine:1",
+          "model": "synthetic-v1",
+          "status": "completed",
+          "cost": "0.00004000",
+          "cost_bound": "0.00226400",
+          "price_snapshot": {
+            "input_price": "1.00000000",
+            "output_price": "2.00000000",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "tariff_estimate",
+          "transport": "http",
+          "model_effective": "synthetic-v1",
+          "input_tokens": 20,
+          "output_tokens": 10,
+          "provider_request_id": null,
+          "usage": {},
+          "verification": {
+            "status": "not_verified",
+            "local_status": "passed",
+            "finish_reason": "complete",
+            "checks": [
+              {
+                "code": "nonempty",
+                "status": "passed"
+              },
+              {
+                "code": "completion",
+                "status": "passed",
+                "reason": "complete"
+              },
+              {
+                "code": "semantic",
+                "status": "not_verified"
+              }
+            ],
+            "mode": "enforce",
+            "rubric_version": "verification-v1",
+            "scope": "requirements",
+            "attempt": 1
+          }
+        },
+        {
+          "purpose": "obfuscation",
+          "provider": "obfuscation:1",
+          "model": null,
+          "status": "completed",
+          "cost": "0",
+          "cost_bound": "0",
+          "price_snapshot": {},
+          "currency": "USD",
+          "cost_kind": "configured_zero",
+          "transport": "local",
+          "cost_scope": "api"
+        },
+        {
+          "purpose": "verification",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "status": "outcome_unknown",
+          "cost": null,
+          "cost_bound": "0.003",
+          "price_snapshot": {
+            "input_price": ".042",
+            "output_price": "0",
+            "currency": "USD",
+            "price_date": null
+          },
+          "currency": "USD",
+          "cost_kind": "unknown",
+          "transport": "http"
+        }
+      ],
+      "verification": {
+        "status": "not_verified",
+        "local_status": "passed",
+        "finish_reason": "complete",
+        "checks": [
+          {
+            "code": "nonempty",
+            "status": "passed"
+          },
+          {
+            "code": "completion",
+            "status": "passed",
+            "reason": "complete"
+          },
+          {
+            "code": "semantic",
+            "status": "not_verified"
+          }
+        ],
+        "mode": "enforce",
+        "rubric_version": "verification-v1",
+        "scope": "requirements",
+        "attempt": 1
+      },
+      "total": {
+        "known_cost": "0.00004420",
+        "cost": null,
+        "currency": "USD",
+        "complete": false,
+        "cost_status": "incomplete",
+        "attempts": 1
+      },
+      "notices": [],
+      "history": {
+        "sent_turns": 0,
+        "omitted_turns": 0,
+        "sent_bytes": 0,
+        "omitted_bytes": 0
+      },
+      "limits": {
+        "jev_state_bytes": 98304,
+        "max_output_tokens": 1000,
+        "history_max_bytes": 32768,
+        "history_max_turns": 20,
+        "call_timeout_seconds": 30,
+        "deadline_seconds": 90,
+        "jev_call_timeout_seconds": 30,
+        "response_bytes": 8000,
+        "judge_input_bytes_bound": 63921
+      }
+    }
+  },
+  {
+    "case": "observer-settlement",
+    "args": [
+      "synthetic-token"
+    ],
+    "kwargs": {
+      "cost": null,
+      "cost_kind": "unknown",
+      "status": "outcome_unknown",
+      "metadata": {}
+    },
+    "stop_reason": "failed_or_uncertain_provider_call"
+  }
+]

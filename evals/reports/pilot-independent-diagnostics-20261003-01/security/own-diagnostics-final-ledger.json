@@ -1,0 +1,188 @@
+[
+  {
+    "cap_usd": "1.00",
+    "known_cost_usd": "0",
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0",
+    "budget_exposure_usd": "0.003",
+    "remaining_usd": "0.997",
+    "uncertain_reservations_usd": "0.003",
+    "calls": [
+      {
+        "id": "52e8da97-46c3-42b1-bba5-26b965e2a6e5",
+        "at": "2026-10-03T16:02:08.903831+00:00",
+        "purpose": "obfuscation",
+        "reserved": "0",
+        "status": "completed",
+        "cost": "0",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "obfuscation:1",
+          "model": null,
+          "transport": "local",
+          "cost_scope": "api",
+          "cost_kind": "configured_zero"
+        }
+      },
+      {
+        "id": "076dbbc7-88dc-40b8-bd0e-2c9c29d09cfe",
+        "at": "2026-10-03T16:02:09.125549+00:00",
+        "purpose": "classification",
+        "reserved": "0.003",
+        "status": "outcome_unknown",
+        "cost": null,
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "transport": "http",
+          "cost_scope": "api",
+          "provider_error_code": "unknown_jev_error",
+          "cost_kind": "unknown"
+        }
+      }
+    ]
+  },
+  {
+    "cap_usd": "1.00",
+    "known_cost_usd": "0.00014016",
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00014016",
+    "budget_exposure_usd": "0.01144860",
+    "remaining_usd": "0.98855140",
+    "uncertain_reservations_usd": "0.006",
+    "calls": [
+      {
+        "id": "52e8da97-46c3-42b1-bba5-26b965e2a6e5",
+        "at": "2026-10-03T16:02:08.903831+00:00",
+        "purpose": "obfuscation",
+        "reserved": "0",
+        "status": "completed",
+        "cost": "0",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "obfuscation:1",
+          "model": null,
+          "transport": "local",
+          "cost_scope": "api",
+          "cost_kind": "configured_zero"
+        }
+      },
+      {
+        "id": "076dbbc7-88dc-40b8-bd0e-2c9c29d09cfe",
+        "at": "2026-10-03T16:02:09.125549+00:00",
+        "purpose": "classification",
+        "reserved": "0.003",
+        "status": "outcome_unknown",
+        "cost": null,
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "transport": "http",
+          "cost_scope": "api",
+          "provider_error_code": "unknown_jev_error",
+          "cost_kind": "unknown"
+        }
+      },
+      {
+        "id": "96293e44-9e12-4d9e-919b-5db24efbf8e7",
+        "at": "2026-10-03T16:02:09.501787+00:00",
+        "purpose": "obfuscation",
+        "reserved": "0",
+        "status": "completed",
+        "cost": "0",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "obfuscation:2",
+          "model": null,
+          "transport": "local",
+          "cost_scope": "api",
+          "cost_kind": "configured_zero"
+        }
+      },
+      {
+        "id": "37b1e77b-9d7c-4a97-bdb6-9c8778a0aacb",
+        "at": "2026-10-03T16:02:09.671833+00:00",
+        "purpose": "classification",
+        "reserved": "0.003",
+        "status": "completed",
+        "cost": "0.0000042",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "transport": "http",
+          "cost_scope": "api",
+          "model_effective": "typesafe-ai/jev",
+          "input_tokens": 100,
+          "output_tokens": 20,
+          "provider_request_id": "synthetic",
+          "cost_kind": "tariff_estimate"
+        }
+      },
+      {
+        "id": "73af84d2-0b81-4c5d-9444-98a834f51d91",
+        "at": "2026-10-03T16:02:09.811075+00:00",
+        "purpose": "generation",
+        "reserved": "0.00244860",
+        "status": "completed",
+        "cost": "0.00013596",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "engine:2",
+          "model": "deepseek-v4-pro",
+          "transport": "http",
+          "cost_scope": "api",
+          "model_effective": "deepseek-v4-pro",
+          "input_tokens": 100,
+          "output_tokens": 1,
+          "provider_request_id": "synthetic-response",
+          "cost_kind": "tariff_estimate"
+        }
+      },
+      {
+        "id": "b43daea5-0dcc-4c4e-bf65-ef482d372237",
+        "at": "2026-10-03T16:02:10.420397+00:00",
+        "purpose": "obfuscation",
+        "reserved": "0",
+        "status": "completed",
+        "cost": "0",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "obfuscation:2",
+          "model": null,
+          "transport": "local",
+          "cost_scope": "api",
+          "cost_kind": "configured_zero"
+        }
+      },
+      {
+        "id": "e3567586-157f-482f-af02-97ba210174a1",
+        "at": "2026-10-03T16:02:10.593393+00:00",
+        "purpose": "verification",
+        "reserved": "0.003",
+        "status": "outcome_unknown",
+        "cost": null,
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "jev",
+          "model": "typesafe-ai/jev",
+          "transport": "http",
+          "cost_scope": "api",
+          "provider_error_code": "unknown_jev_error",
+          "cost_kind": "unknown"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "base_commit": "535eb9d8421006ea8476ea511427a7dcda9cee3b",
+  "candidate_commit": "972edb88c82a5220a43ffcc89316a9f9033e82f7",
+  "sealed_at": "2026-10-03T16:05:18.122314+00:00",
+  "snapshots": {
+    "snapshot-535eb9d.json": {
+      "files_verified": 2099,
+      "sha256": "0ed287ef3638245d564fae2c5a9b702e466f5ec25cd035e117929e2a7205362d"
+    },
+    "snapshot-972edb8.json": {
+      "files_verified": 2100,
+      "sha256": "7c1a41f5b1730f4dfcdad3c645707c31076f10799edd99f19cd5edb97500a6f6"
+    }
+  },
+  "verdict": "No new blocking security findings in the fixed diagnostic patch",
+  "candidate_tests": {
+    "supplied": 5,
+    "independent": 3,
+    "failures": 0
+  },
+  "differential_scenarios": 18,
+  "behavior_differences": 0,
+  "historical_files_unchanged": 11,
+  "network_attempts": 0,
+  "bridge_executed": false,
+  "real_database_or_ledger_opened": false,
+  "report": "docs\\revisiones-piloto\\security-diagnostics-972edb8.md",
+  "report_sha256": "b35a67bd61ac89df4b04840b137848c5032e6429e3ebdff611e939cca76f0441",
+  "evidence": {
+    "audit.py": "4a4f32d7e33abece7ad62fe68f978ac6e67a600da87dd1c74df7c36f97cd5ab9",
+    "baseline-matrix-http-matrix.json": "d7ba9e7d976a8e17f12909c57e0753d8d7972cb55082d26d2e1136ebf13e1be2",
+    "baseline-matrix-isolated-http-matrix.json": "e079cf65d85516bc3cac7e469fa7d96f477f5128b0049eaafbdb0d4aaf380f7a",
+    "baseline-matrix-isolated.json": "51df474886491ee637dcbaa0e5e2811fb24bed1e07dfa86d8c342392ba6b394e",
+    "baseline-matrix-isolated.log": "ece4129d6375444e7d607f0fdddaf948f0c50c300565f1040117565f0bf221ac",
+    "baseline-matrix.json": "1a5acf8407a3305a5a073b2fd80cfd34d9373c192bdf3cea20fcc0015bafbfe7",
+    "baseline-matrix.log": "3e7fe18824bd8844d59a98a2d98446aa0b713fa03cf196a05a46f8279ba0ff00",
+    "candidate-matrix-isolated-http-matrix.json": "cfea5413ffe862330c801aaabc5eb9cdd5f73886db9c0202a3b70da96b8ee17c",
+    "candidate-matrix-isolated.json": "0228d913a204d623c08aaf226a6cb1a1095247e51b5afeddf5623ac306ebdf86",
+    "candidate-matrix-isolated.log": "f2cdabfcec50990a1469686cf45b10c1c65a6e86adfb172b8165a6efeb5b9709",
+    "differential-and-history-audit.json": "07f13a4580e35b11579ddf224326c2380d293aa2b41e027e2e0785304b9cf5fd",
+    "finalize_log_hashes.py": "01c91c4a188afe0f305824672e278532090dc5e7a1a87c67d870ba359248beb7",
+    "finalized-log-hashes.json": "53e6549772330833702bb42262dbd9340e4d3a6e73d22d0c0e1e21f58b34a43d",
+    "log-hash-errata.md": "fde5ec25a660ec58d4220352f68d62d33552d8d1e0edd1fe58b3c82d4f41443a",
+    "own-diagnostics-adversarial.json": "2c169f2834d4861322ebce13cff62e680fd0e86817efbc4619cdeabadda045a5",
+    "own-diagnostics-final-adversarial.json": "2c169f2834d4861322ebce13cff62e680fd0e86817efbc4619cdeabadda045a5",
+    "own-diagnostics-final-http-matrix.json": "cfea5413ffe862330c801aaabc5eb9cdd5f73886db9c0202a3b70da96b8ee17c",
+    "own-diagnostics-final-ledger.json": "6e54092d3e5d952e89011a8b19e8301dc36c9e62069d356035d8e39adad2641a",
+    "own-diagnostics-final.json": "b5afcb4fa055ac0ca670569699136b196dec23623e2a62c3344a8aaae1c67941",
+    "own-diagnostics-final.log": "5d9f3b6aab47f9522df6f7e8ae88e9c8f78112848e9b0dd22ff5a664471ce5d4",
+    "own-diagnostics-http-matrix.json": "59eb76c7dc89f041e1a3f6bb4ea461536cef2b40c476a6aef63c7e15e087e196",
+    "own-diagnostics-ledger.json": "454c603e91830b722f58ba98265f036d649f8cb2cfed1b1c8c6161a3685d050e",
+    "own-diagnostics.json": "4aa14bff901bdb4cbed8e4d650d238d7d64dd23147d7451c954d3818b1335259",
+    "own-diagnostics.log": "d78ede2fd777b95aba192022d14256f82d2b09c56abf96d50482d6220edfc986",
+    "prepare.py": "885213b5b1b763b76e68b94cfe0da42f49307da20e67ab2c779a68f401ab674d",
+    "review_cases.py": "caa88d03e74cd6b8f7fbac6bf31fa26843f41f029b62ba9317838e1a9e2cdfc6",
+    "review_cases_initial_fixture.py": "21b2aafcde7152c3da153ef11fed1bf815fd3999391b21c8476bbe2b59fb1826",
+    "run_tests.py": "8a1f4d92f81448e63c57d191d928b9337c24223470cfa924ec47388043b225f1",
+    "seal.py": "ef46b91fe50b9a9d9e6229ce45f055eb36459a073b7412ccab2e54a5efe48d1c",
+    "snapshot-535eb9d.json": "0ed287ef3638245d564fae2c5a9b702e466f5ec25cd035e117929e2a7205362d",
+    "snapshot-972edb8.json": "7c1a41f5b1730f4dfcdad3c645707c31076f10799edd99f19cd5edb97500a6f6",
+    "supplied-diagnostics.json": "ee670d56603eb98412f73889979d9d7a8cf2beb21b295e53111d105d6a8758a4",
+    "supplied-diagnostics.log": "5beca127d300122747eefd393c0e19d0c609b4ae3aee59c013b74c7df0695270"
+  }
+}

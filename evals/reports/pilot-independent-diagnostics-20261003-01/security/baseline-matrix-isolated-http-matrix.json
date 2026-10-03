@@ -1,0 +1,308 @@
+[
+  {
+    "fault": "connect-timeout",
+    "path": "/chat/send/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "failed",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "connect-timeout",
+    "path": "/api/chat/send/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "failed",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "connect-timeout",
+    "path": "/chat/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "failed",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "read-timeout",
+    "path": "/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "read-timeout",
+    "path": "/api/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "read-timeout",
+    "path": "/chat/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-403",
+    "path": "/chat/send/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "failed",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-403",
+    "path": "/api/chat/send/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "failed",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-403",
+    "path": "/chat/",
+    "http_status": 502,
+    "status": "failed",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "failed",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-503",
+    "path": "/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-503",
+    "path": "/api/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-503",
+    "path": "/chat/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-599",
+    "path": "/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-599",
+    "path": "/api/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "http-599",
+    "path": "/chat/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "malformed-json",
+    "path": "/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "malformed-json",
+    "path": "/api/chat/send/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  },
+  {
+    "fault": "malformed-json",
+    "path": "/chat/",
+    "http_status": 504,
+    "status": "outcome_unknown",
+    "error_type": "security_check_failed",
+    "call": {
+      "purpose": "classification",
+      "status": "outcome_unknown",
+      "cost": null,
+      "cost_bound": "0.003",
+      "cost_kind": "unknown",
+      "transport": "http"
+    },
+    "provider_error_code": null,
+    "new_provider_requests": 1
+  }
+]

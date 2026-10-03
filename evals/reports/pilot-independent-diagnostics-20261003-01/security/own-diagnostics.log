@@ -1,0 +1,168 @@
+Found 3 test(s).
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: admin, auth, authtoken, contenttypes, front, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
+  Applying authtoken.0003_tokenproxy... OK
+  Applying authtoken.0004_alter_tokenproxy_options... OK
+  Applying front.0001_initial... OK
+  Applying front.0002_engine_companyengine... OK
+  Applying front.0003_add_severity_to_rule... OK
+  Applying front.0004_add_conversation_and_message... OK
+  Applying front.0005_add_applies_to_rule... OK
+  Applying front.0006_add_file_to_message... OK
+  Applying front.0007_add_department_model... OK
+  Applying front.0008_add_avatar_to_profile... OK
+  Applying front.0009_add_default_engine_to_profile... OK
+  Applying front.0010_add_engine_models... OK
+  Applying front.0011_add_connector_type_to_engine... OK
+  Applying front.0012_seed_default_engines... OK
+  Applying front.0013_add_name_to_companyengine... OK
+  Applying front.0015_add_file_hashes_to_prompt... OK
+  Applying front.0016_encrypt_api_keys...{"timestamp": "2026-10-03T16:00:11.054650+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+ OK
+  Applying front.0017_alter_companyengine_api_key... OK
+  Applying front.0018_remove_companyengine_unique_together... OK
+  Applying front.0019_add_rule_action_field... OK
+  Applying front.0020_seed_default_rules_groups... OK
+  Applying front.0021_obfuscationconfig... OK
+  Applying front.0022_alert_source... OK
+  Applying front.0023_company_department_system_prompt... OK
+  Applying front.0024_seed_mistral_engine... OK
+  Applying front.0025_message_response_file... OK
+  Applying front.0026_authorized_chat_state... OK
+  Applying front.0027_enginemodel_context_window_enginemodel_currency_and_more... OK
+  Applying front.0028_auditlog_company... OK
+  Applying front.0029_model_price_units... OK
+  Applying front.0030_enginemodel_reasoning... OK
+  Applying front.0031_infer_historical_prompt_company... OK
+  Applying front.0032_obfuscationconfig_backend... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_adversarial_codes_never_enter_receipts_saved_decisions_or_log_records (review_cases.HttpDiagnosticsChecks.test_adversarial_codes_never_enter_receipts_saved_decisions_or_log_records) ... {"timestamp": "2026-10-03T16:00:13.327586+00:00", "level": "ERROR", "logger": "django.request", "request_id": "71a7ecef-921e-4e0a-b765-bb8726d07ca1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.387184+00:00", "level": "ERROR", "logger": "django.request", "request_id": "4588d6ba-353e-4d02-b2c7-4efff8ac43a1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.447197+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b2d77bcc-8056-4c79-89ff-96ceb7a30d0c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.505200+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0a430351-dead-421c-8400-f26bcc12ff30", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.579991+00:00", "level": "ERROR", "logger": "django.request", "request_id": "de4c76ec-59a9-4a8e-a556-64a0450efc7c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.642502+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5b944dc6-cf07-4dbe-af5b-7aedb809cc6b", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.722764+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ce49d205-2116-44e2-bbb3-f05c6a3342f4", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.781794+00:00", "level": "ERROR", "logger": "django.request", "request_id": "868dfdfc-dd54-469d-8772-e2cf8e4a39a3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.840815+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d39d7f69-e570-4c0c-bd0f-e9d6e8d67a84", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.900336+00:00", "level": "ERROR", "logger": "django.request", "request_id": "24e7406b-5040-4bf4-bdab-32fa3704abbc", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:13.957852+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7018e3b3-b8dd-46b1-a31f-68597eb1faa0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:14.704276+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0d10a2c4-eb66-4243-81bf-a6bc7daa8d83", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:15.047420+00:00", "level": "ERROR", "logger": "django.request", "request_id": "77f5bda0-04bd-45fa-9b5c-81da0ab6ee1d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:15.390114+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3fa2df51-05e3-4500-9145-1fd5f84899ec", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:15.718246+00:00", "level": "ERROR", "logger": "django.request", "request_id": "39d35c4e-66a0-4c2e-a2c6-1e498118e842", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:16.042367+00:00", "level": "ERROR", "logger": "django.request", "request_id": "fb08b451-fdd4-41c7-8636-9fb93c4687a2", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:16.379458+00:00", "level": "ERROR", "logger": "django.request", "request_id": "10044ded-b434-4392-8504-d5e664938e83", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:16.711534+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8943307f-a9ad-473e-8922-4d304fd2f97a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:17.104289+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7a73bfbb-9985-4400-a19e-b33e65198c8f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:17.642873+00:00", "level": "ERROR", "logger": "django.request", "request_id": "38c49a79-700c-4979-ab58-8269613dd67d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:18.175443+00:00", "level": "ERROR", "logger": "django.request", "request_id": "f15f5afe-37f2-41d3-a33f-dde6028bc56b", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:18.696481+00:00", "level": "ERROR", "logger": "django.request", "request_id": "18d5447b-9311-4174-8b06-8290d2034e24", "code": "unclassified_event", "exception_type": null}
+ok
+test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) ... {"timestamp": "2026-10-03T16:00:18.818807+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c90b9068-1aac-4a82-aac9-484bfa6993ae", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:18.826306+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8e0bd519-5524-4ffd-b752-4ffe46699be0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:18.940377+00:00", "level": "ERROR", "logger": "django.request", "request_id": "621b737e-fa4f-4485-b242-fb847bac6840", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:18.951875+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8c7e3aef-acea-4606-b156-bef52691d477", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.068874+00:00", "level": "ERROR", "logger": "django.request", "request_id": "758d24e1-f1cb-467e-b96e-ab80f6f1e55c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.071873+00:00", "level": "ERROR", "logger": "django.request", "request_id": "62d25883-d0da-4a3f-97fd-8c728b270b3c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.144548+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9c527e3e-cdb9-49dc-a021-5c6d8f1802b4", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.149559+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3a99a580-e457-4a4f-a510-a439f2376400", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.231947+00:00", "level": "ERROR", "logger": "django.request", "request_id": "75a52968-a467-4195-81f8-abafd1fb4bcf", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.236959+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c45a451a-96b7-4437-88f9-83196ee1160c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.318495+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a88f73bd-4a60-4ab0-a219-dffa403725e8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.324995+00:00", "level": "ERROR", "logger": "django.request", "request_id": "593cb4bb-ea60-4d60-908f-fab52056252a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.407032+00:00", "level": "ERROR", "logger": "django.request", "request_id": "34fa113d-5594-40b5-bb08-bdaf0a117fe1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.412533+00:00", "level": "ERROR", "logger": "django.request", "request_id": "70648ed3-46d0-4578-98a0-c709c33faed8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.498043+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0f015535-9c1d-4bf0-bfd2-35357ddc05ed", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.503543+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ede74c6f-5312-44db-8597-cd3e6b97282d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.586072+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c85ac7c0-b549-4d2c-acf8-72bf096fb954", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.591571+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2499a3ec-eadf-41e4-8170-2c35f79f566f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.677601+00:00", "level": "ERROR", "logger": "django.request", "request_id": "11cff712-2f3b-41ce-aa59-eabb641154a7", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.683600+00:00", "level": "ERROR", "logger": "django.request", "request_id": "284b018c-5ed4-4903-9211-55990b40c894", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.776621+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ca5db20b-62e6-48d9-8398-6ae301eb8a7d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.782624+00:00", "level": "ERROR", "logger": "django.request", "request_id": "781031d0-44ac-406b-9ffb-ae655c9336e6", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.865156+00:00", "level": "ERROR", "logger": "django.request", "request_id": "db731c94-de24-4beb-aac3-c31315321623", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.871155+00:00", "level": "ERROR", "logger": "django.request", "request_id": "4c0a2355-58c0-4a50-a32d-dd7676d2bbf6", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.954657+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c5e13f11-5002-4687-a1f2-013d25bc08a5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:19.960157+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0039e888-a8a1-4c33-9d3d-481adae8db48", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:20.045696+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d8c76116-7075-4c9f-abc3-18224a69bf66", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:20.051698+00:00", "level": "ERROR", "logger": "django.request", "request_id": "75d8f4bd-fe02-4996-8390-9c66435c7804", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:20.135214+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2046865e-ab34-4e21-a9e2-d5449002e40a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:20.140720+00:00", "level": "ERROR", "logger": "django.request", "request_id": "6d963af3-0a8c-4f57-a258-dee7fdd33ee9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:20.195764+00:00", "level": "WARNING", "logger": "django.request", "request_id": "f373639f-920b-4dbe-994f-e2b7a4339610", "code": "unclassified_event", "exception_type": null}
+
+  test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) (kind='malformed-json', path='/chat/send/') ... FAIL
+{"timestamp": "2026-10-03T16:00:20.198264+00:00", "level": "WARNING", "logger": "django.request", "request_id": "31e3fd38-3c3e-43ac-8a4c-ff9e34623886", "code": "unclassified_event", "exception_type": null}
+  test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) (kind='malformed-json', path='/api/chat/send/') ... FAIL
+{"timestamp": "2026-10-03T16:00:20.201764+00:00", "level": "WARNING", "logger": "django.request", "request_id": "398870bf-6687-4304-a302-df28dc3ed566", "code": "unclassified_event", "exception_type": null}
+  test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) (kind='malformed-json', path='/chat/') ... FAIL
+test_unknown_codes_reach_ledger_safely_without_reserve_release_or_replay (review_cases.LedgerDiagnosticsChecks.test_unknown_codes_reach_ledger_safely_without_reserve_release_or_replay) ... {"timestamp": "2026-10-03T16:00:20.895933+00:00", "level": "WARNING", "logger": "front.chat_service", "request_id": "b8052824-780e-4171-bf4e-80f0d494b53c", "code": "unknown_jev_error", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:20.896432+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "b8052824-780e-4171-bf4e-80f0d494b53c", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T16:00:23.489894+00:00", "level": "WARNING", "logger": "front.chat_service", "request_id": "e1967cb7-6c53-4d60-8629-49d415661415", "code": "unknown_jev_error", "exception_type": null}
+{"timestamp": "2026-10-03T16:00:23.489894+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e1967cb7-6c53-4d60-8629-49d415661415", "code": "unknown_jev_error", "exception_type": "RuntimeError"}
+ok
+
+======================================================================
+FAIL: test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) (kind='malformed-json', path='/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\review-diagnostics-security\review_cases.py", line 85, in test_classification_matrix_and_duplicate_request_preserve_public_state
+    with self.assertLogs('front.chat_service', level='WARNING') as logged:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\unittest\_log.py", line 84, in __exit__
+    self._raiseFailure(
+AssertionError: no logs of level WARNING or higher triggered on front.chat_service
+
+======================================================================
+FAIL: test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) (kind='malformed-json', path='/api/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\review-diagnostics-security\review_cases.py", line 85, in test_classification_matrix_and_duplicate_request_preserve_public_state
+    with self.assertLogs('front.chat_service', level='WARNING') as logged:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\unittest\_log.py", line 84, in __exit__
+    self._raiseFailure(
+AssertionError: no logs of level WARNING or higher triggered on front.chat_service
+
+======================================================================
+FAIL: test_classification_matrix_and_duplicate_request_preserve_public_state (review_cases.HttpDiagnosticsChecks.test_classification_matrix_and_duplicate_request_preserve_public_state) (kind='malformed-json', path='/chat/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\review-diagnostics-security\review_cases.py", line 85, in test_classification_matrix_and_duplicate_request_preserve_public_state
+    with self.assertLogs('front.chat_service', level='WARNING') as logged:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\unittest\_log.py", line 84, in __exit__
+    self._raiseFailure(
+AssertionError: no logs of level WARNING or higher triggered on front.chat_service
+
+----------------------------------------------------------------------
+Ran 3 tests in 11.848s
+
+FAILED (failures=3)
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
