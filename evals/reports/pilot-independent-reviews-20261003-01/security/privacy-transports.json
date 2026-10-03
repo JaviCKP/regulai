@@ -1,0 +1,125 @@
+[
+  {
+    "purpose": "mask",
+    "url": "https://mask.invalid/api/mask",
+    "payload": {
+      "text": "[\"Synthetic user ID 12345678Z\", \"Synthetic system ID 12345678Z\"]",
+      "detect": [
+        "pii",
+        "secrets"
+      ]
+    }
+  },
+  {
+    "purpose": "generation",
+    "url": "https://api.openai.com/v1/chat/completions",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Synthetic system ID [REVIEW_MASKED]"
+        },
+        {
+          "role": "user",
+          "content": "Synthetic user ID [REVIEW_MASKED]"
+        }
+      ],
+      "model": "synthetic-v1",
+      "max_tokens": 1000,
+      "temperature": 0.6
+    }
+  },
+  {
+    "purpose": "mask",
+    "url": "https://mask.invalid/api/mask",
+    "payload": {
+      "text": "[\"Synthetic answer 12345678Z\"]",
+      "detect": [
+        "pii",
+        "secrets"
+      ]
+    }
+  },
+  {
+    "purpose": "mask",
+    "url": "https://mask.invalid/api/mask",
+    "payload": {
+      "text": "[\"Synthetic user ID 12345678Z\", \"Synthetic system ID 12345678Z\"]",
+      "detect": [
+        "pii",
+        "secrets"
+      ]
+    }
+  },
+  {
+    "purpose": "generation",
+    "url": "https://api.openai.com/v1/chat/completions",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Synthetic system ID [REVIEW_MASKED]"
+        },
+        {
+          "role": "user",
+          "content": "Synthetic user ID [REVIEW_MASKED]"
+        }
+      ],
+      "model": "synthetic-v1",
+      "max_tokens": 1000,
+      "temperature": 0.6
+    }
+  },
+  {
+    "purpose": "mask",
+    "url": "https://mask.invalid/api/mask",
+    "payload": {
+      "text": "[\"Synthetic answer 12345678Z\"]",
+      "detect": [
+        "pii",
+        "secrets"
+      ]
+    }
+  },
+  {
+    "purpose": "mask",
+    "url": "https://mask.invalid/api/mask",
+    "payload": {
+      "text": "[\"Synthetic user ID 12345678Z\", \"Synthetic system ID 12345678Z\"]",
+      "detect": [
+        "pii",
+        "secrets"
+      ]
+    }
+  },
+  {
+    "purpose": "generation",
+    "url": "https://api.openai.com/v1/chat/completions",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Synthetic system ID [REVIEW_MASKED]"
+        },
+        {
+          "role": "user",
+          "content": "Synthetic user ID [REVIEW_MASKED]"
+        }
+      ],
+      "model": "synthetic-v1",
+      "max_tokens": 1000,
+      "temperature": 0.6
+    }
+  },
+  {
+    "purpose": "mask",
+    "url": "https://mask.invalid/api/mask",
+    "payload": {
+      "text": "[\"Synthetic answer 12345678Z\"]",
+      "detect": [
+        "pii",
+        "secrets"
+      ]
+    }
+  }
+]

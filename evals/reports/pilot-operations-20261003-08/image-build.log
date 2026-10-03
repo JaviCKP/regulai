@@ -1,0 +1,51 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 460B 0.1s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 1.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#4 resolve docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.1s done
+#4 DONE 0.1s
+
+#5 [internal] load build context
+#5 transferring context: 16.18MB 3.4s done
+#5 DONE 3.4s
+
+#6 [3/6] COPY requirements.txt ./
+#6 CACHED
+
+#7 [4/6] COPY ops/pilot/requirements.txt ops/pilot/requirements.txt
+#7 CACHED
+
+#8 [2/6] WORKDIR /app
+#8 CACHED
+
+#9 [5/6] RUN pip install --no-cache-dir -r ops/pilot/requirements.txt
+#9 CACHED
+
+#10 [6/6] COPY . .
+#10 DONE 0.3s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.7s done
+#11 exporting manifest sha256:d40d60b32f2cc5a8b47752520315a0a13a5f8cbb3f5349d8ebe59441150a6efa 0.0s done
+#11 exporting config sha256:d782d12bd82cbb34f3cee56404049e8829fb43ac744aa813d4d2ed24cce129e7 0.0s done
+#11 exporting attestation manifest sha256:6419ac3cccbff0303f61be635cc3904faec0ca327d7c8c450e3247dcfa128fb7 0.0s done
+#11 exporting manifest list sha256:2306d6972f899c35195e22c2470aab232582987777d2fc17a10e118b070d6bfc
+#11 exporting manifest list sha256:2306d6972f899c35195e22c2470aab232582987777d2fc17a10e118b070d6bfc 0.0s done
+#11 naming to docker.io/library/regulai-lab-43a3f7dd8eed:local done
+#11 unpacking to docker.io/library/regulai-lab-43a3f7dd8eed:local
+#11 unpacking to docker.io/library/regulai-lab-43a3f7dd8eed:local 3.2s done
+#11 DONE 4.1s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/r3vx8mqskxgl48nlld4na5z37

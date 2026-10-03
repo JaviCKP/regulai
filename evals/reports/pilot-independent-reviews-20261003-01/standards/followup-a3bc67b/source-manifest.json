@@ -1,0 +1,44 @@
+{
+  "source_sha256": {
+    "c1e3a360e7ba3051bb8f0bda487b005dd29834a0": {
+      "regulai/front/chat_service.py": {
+        "tested_source_sha256": "6c609c5651ba972a9d4f7c97305e1bcd94f32c496c82ae6669a5b952d335dc2f",
+        "git_blob_sha256": "efd08a5805f68df0c06f6cc05027c35902534c4b8921ab80cc7799ada63373cc",
+        "only_export_crlf_difference": true
+      },
+      "regulai/front/test_required_masking.py": {
+        "tested_source_sha256": "62c8792a8220d9e4b54c2012b47ba95de3f3de510c5255844abc9bc8e5fff099",
+        "git_blob_sha256": "06485b22cd622ceae0ac8a3b7ca0d8f56630c8c467b9fbe3d8385b773b27a780",
+        "only_export_crlf_difference": true
+      }
+    },
+    "a3bc67b25b341cb28172bebd5001ef48c5b8d34f": {
+      "regulai/front/chat_service.py": {
+        "tested_source_sha256": "87d0aa3462d94b8762eeef4071dbc503d080d020c62d3247f64d5ea4b1994a19",
+        "git_blob_sha256": "e7ae0d45aae9535a2ddbc45ea2a74a6789d9c2d9afe61f7e66eae6d7e7c661df",
+        "only_export_crlf_difference": true
+      },
+      "regulai/front/test_required_masking.py": {
+        "tested_source_sha256": "1523b299eacf9f84470eb2962d5609dea8d882aadc1a7d8e4f0e9fa6129144c6",
+        "git_blob_sha256": "5af3dba4e72efff7e59beab0583e51968adaa804f57b1ad650e31a69e9241a69",
+        "only_export_crlf_difference": true
+      }
+    }
+  },
+  "original_evidence_unchanged": {
+    "run_probe.py": "38a2561805d963783b41f6164305143fb3eea2d9d7a3a5dc1b8ef6aa6a5f658e",
+    "probe_tests.py": "1ba59f059ad04d3dc52299fe3a56bed092b1b71453767bd6342763e8e0a7d303",
+    "probe-output.txt": "140dd26439fb8690c7d504ed7cd6b7d45aa622d38d33f3dc9a28825f88373240",
+    "targeted-tests-output.txt": "beab3a957cfa30b6369358effa187a72d38c803fed66c30a791307455b28c317"
+  },
+  "evidence_sha256": {
+    "run_probe.py": "13c290a19dff9bf86c1afea7ef37c887006823f17b37713d78f8b01742f0ec28",
+    "probe_tests.py": "a213dcf1498c05107ce747773e77b2974855f9191a4cffa953eb2b9a6dcd6085",
+    "red-baseline.txt": "2a82dd9f09acc8ac13cc9d17eadf27c3f6c1667697a8de3402b8baa3bbb86538",
+    "green-followup.txt": "2e04f127e993e6d817ca5bb98357915d0276015e09dae87f87d312235d1e9044"
+  },
+  "red_exit": 1,
+  "green_exit": 0,
+  "green_tests": 60,
+  "paid_calls": 0
+}

@@ -1,0 +1,947 @@
+{
+  "schema_version": 1,
+  "captured_utc": "2026-10-03T14:40:16.909918+00:00",
+  "scope": "Closed initial reviews and fixed Standards, Spec and Security follow-ups; excludes the newly requested local detector.",
+  "copy_mode": "binary read/copy; no encoding or newline normalization",
+  "excluded_directories": [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "cache",
+    "candidate",
+    "node_modules",
+    "snapshot",
+    "snapshots"
+  ],
+  "excluded_suffixes": [
+    ".pyc",
+    ".pyo"
+  ],
+  "security_top_level_only": true,
+  "snapshots_represented_by_manifests_and_fixed_refs": true,
+  "source_files_removed_or_changed": false,
+  "product_or_provider_executed": false,
+  "entries": [
+    {
+      "source": ".claude/review-standards/followup-a3bc67b/green-followup.txt",
+      "destination": "standards/followup-a3bc67b/green-followup.txt",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+        "a3bc67b25b341cb28172bebd5001ef48c5b8d34f"
+      ],
+      "bytes": 24577,
+      "source_sha256": "2e04f127e993e6d817ca5bb98357915d0276015e09dae87f87d312235d1e9044",
+      "copy_sha256": "2e04f127e993e6d817ca5bb98357915d0276015e09dae87f87d312235d1e9044",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/followup-a3bc67b/probe_tests.py",
+      "destination": "standards/followup-a3bc67b/probe_tests.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+        "a3bc67b25b341cb28172bebd5001ef48c5b8d34f"
+      ],
+      "bytes": 6935,
+      "source_sha256": "a213dcf1498c05107ce747773e77b2974855f9191a4cffa953eb2b9a6dcd6085",
+      "copy_sha256": "a213dcf1498c05107ce747773e77b2974855f9191a4cffa953eb2b9a6dcd6085",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/followup-a3bc67b/red-baseline.txt",
+      "destination": "standards/followup-a3bc67b/red-baseline.txt",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+        "a3bc67b25b341cb28172bebd5001ef48c5b8d34f"
+      ],
+      "bytes": 5974,
+      "source_sha256": "2a82dd9f09acc8ac13cc9d17eadf27c3f6c1667697a8de3402b8baa3bbb86538",
+      "copy_sha256": "2a82dd9f09acc8ac13cc9d17eadf27c3f6c1667697a8de3402b8baa3bbb86538",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/followup-a3bc67b/run_probe.py",
+      "destination": "standards/followup-a3bc67b/run_probe.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+        "a3bc67b25b341cb28172bebd5001ef48c5b8d34f"
+      ],
+      "bytes": 1087,
+      "source_sha256": "13c290a19dff9bf86c1afea7ef37c887006823f17b37713d78f8b01742f0ec28",
+      "copy_sha256": "13c290a19dff9bf86c1afea7ef37c887006823f17b37713d78f8b01742f0ec28",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/followup-a3bc67b/source-manifest.json",
+      "destination": "standards/followup-a3bc67b/source-manifest.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+        "a3bc67b25b341cb28172bebd5001ef48c5b8d34f"
+      ],
+      "bytes": 2235,
+      "source_sha256": "c5859e87adb085b877581ca609a3c9f07aea76a9d7d9f97527c07d9fe584bd62",
+      "copy_sha256": "c5859e87adb085b877581ca609a3c9f07aea76a9d7d9f97527c07d9fe584bd62",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/probe-output.txt",
+      "destination": "standards/probe-output.txt",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 12599,
+      "source_sha256": "140dd26439fb8690c7d504ed7cd6b7d45aa622d38d33f3dc9a28825f88373240",
+      "copy_sha256": "140dd26439fb8690c7d504ed7cd6b7d45aa622d38d33f3dc9a28825f88373240",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/probe_tests.py",
+      "destination": "standards/probe_tests.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 3636,
+      "source_sha256": "1ba59f059ad04d3dc52299fe3a56bed092b1b71453767bd6342763e8e0a7d303",
+      "copy_sha256": "1ba59f059ad04d3dc52299fe3a56bed092b1b71453767bd6342763e8e0a7d303",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/review-manifest.json",
+      "destination": "standards/review-manifest.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 1954,
+      "source_sha256": "857f6dd2753641c3c096ec75991a138389bd92e2319d795fb90b2f067d5631b7",
+      "copy_sha256": "857f6dd2753641c3c096ec75991a138389bd92e2319d795fb90b2f067d5631b7",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/run_probe.py",
+      "destination": "standards/run_probe.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 703,
+      "source_sha256": "38a2561805d963783b41f6164305143fb3eea2d9d7a3a5dc1b8ef6aa6a5f658e",
+      "copy_sha256": "38a2561805d963783b41f6164305143fb3eea2d9d7a3a5dc1b8ef6aa6a5f658e",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-standards/targeted-tests-output.txt",
+      "destination": "standards/targeted-tests-output.txt",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 3738,
+      "source_sha256": "beab3a957cfa30b6369358effa187a72d38c803fed66c30a791307455b28c317",
+      "copy_sha256": "beab3a957cfa30b6369358effa187a72d38c803fed66c30a791307455b28c317",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/evidence.json",
+      "destination": "spec/evidence.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 1207,
+      "source_sha256": "f8e78b2454fa99045ddba209ce242b325175e4753c3d4e0797ce7f540d4395f9",
+      "copy_sha256": "f8e78b2454fa99045ddba209ce242b325175e4753c3d4e0797ce7f540d4395f9",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/existing-evaluation-tests.log",
+      "destination": "spec/existing-evaluation-tests.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 8588,
+      "source_sha256": "64c2753145a7718adcd147c6e3fb6470959bd1c2a1963496c0fc05b601891b34",
+      "copy_sha256": "64c2753145a7718adcd147c6e3fb6470959bd1c2a1963496c0fc05b601891b34",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/arithmetic-http.json",
+      "destination": "spec/followup-8731129/arithmetic-http.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 885,
+      "source_sha256": "f6949fdd30bae1705833c76729a78f1d78f761cad326bd3635afbac1507fd1ea",
+      "copy_sha256": "f6949fdd30bae1705833c76729a78f1d78f761cad326bd3635afbac1507fd1ea",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/closure_probes.py",
+      "destination": "spec/followup-8731129/closure_probes.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 3841,
+      "source_sha256": "0a41441e9af2387862699f661ddbe38307245f0fc9a45d8f870ebb4276b64b8a",
+      "copy_sha256": "0a41441e9af2387862699f661ddbe38307245f0fc9a45d8f870ebb4276b64b8a",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/document-success-http.json",
+      "destination": "spec/followup-8731129/document-success-http.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 1111,
+      "source_sha256": "65dc279fd25792f185698343ea8469c4aec561e5625e51bcd0c3a34e33ed56a2",
+      "copy_sha256": "65dc279fd25792f185698343ea8469c4aec561e5625e51bcd0c3a34e33ed56a2",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/evidence.json",
+      "destination": "spec/followup-8731129/evidence.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 1863,
+      "source_sha256": "dff72e04b62591ce11d4a6f0c5f785cddccb1889240c2de7a48c95fc3a8a1af2",
+      "copy_sha256": "dff72e04b62591ce11d4a6f0c5f785cddccb1889240c2de7a48c95fc3a8a1af2",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/independent-probes.log",
+      "destination": "spec/followup-8731129/independent-probes.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 4016,
+      "source_sha256": "6ef00cbf19d0e66fc6aa29b380fd3c2377c50d6582545895bf9019ee46f4f858",
+      "copy_sha256": "6ef00cbf19d0e66fc6aa29b380fd3c2377c50d6582545895bf9019ee46f4f858",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/option-drift.json",
+      "destination": "spec/followup-8731129/option-drift.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 530,
+      "source_sha256": "5ff2aa24b487eb8a81ebbdebbdcd011c180526f250b222f1248cb765846d0f88",
+      "copy_sha256": "5ff2aa24b487eb8a81ebbdebbdcd011c180526f250b222f1248cb765846d0f88",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/prepare_snapshot.py",
+      "destination": "spec/followup-8731129/prepare_snapshot.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 1767,
+      "source_sha256": "1c920e150d167d0e8b4349ffaaf18857431ef5730eb6f6fba8c237d35d429580",
+      "copy_sha256": "1c920e150d167d0e8b4349ffaaf18857431ef5730eb6f6fba8c237d35d429580",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/run_probes.py",
+      "destination": "spec/followup-8731129/run_probes.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 1100,
+      "source_sha256": "687800a34a0becaf7cb87d71d7a7c9c57088b749490e1c0ca854542e2f59b102",
+      "copy_sha256": "687800a34a0becaf7cb87d71d7a7c9c57088b749490e1c0ca854542e2f59b102",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/followup-8731129/snapshot.json",
+      "destination": "spec/followup-8731129/snapshot.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 28205,
+      "source_sha256": "748b8d2580a525b395601c02f1c6c7ae13c129ccc320fa6f5005569e8a0bc6ed",
+      "copy_sha256": "748b8d2580a525b395601c02f1c6c7ae13c129ccc320fa6f5005569e8a0bc6ed",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/prepare_snapshot.py",
+      "destination": "spec/prepare_snapshot.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 1264,
+      "source_sha256": "6b6a6439019af474db7f260f1ecd3b63d42bb57557c6ff5545f7d433d692eea2",
+      "copy_sha256": "6b6a6439019af474db7f260f1ecd3b63d42bb57557c6ff5545f7d433d692eea2",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/run_tests.py",
+      "destination": "spec/run_tests.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 1008,
+      "source_sha256": "850a197bd4be331c787b9da7de7bd087595451100d7635c7ca477fa3a080bdb6",
+      "copy_sha256": "850a197bd4be331c787b9da7de7bd087595451100d7635c7ca477fa3a080bdb6",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/snapshot.json",
+      "destination": "spec/snapshot.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 27742,
+      "source_sha256": "9d098a1d378b38daf25f9ff871f7c38133a6e123f7f612074ad7b3dce92087e2",
+      "copy_sha256": "9d098a1d378b38daf25f9ff871f7c38133a6e123f7f612074ad7b3dce92087e2",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/temperature-observed.json",
+      "destination": "spec/temperature-observed.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 167,
+      "source_sha256": "fe9538856e464131470a52a36b2b228eaaf70138419a2fc0569a24240e8de41b",
+      "copy_sha256": "fe9538856e464131470a52a36b2b228eaaf70138419a2fc0569a24240e8de41b",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/temperature-test.log",
+      "destination": "spec/temperature-test.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 4623,
+      "source_sha256": "b91dae3ee24cbebc6e651ae212cba65226b7645bcdc699513789bfad695d4a47",
+      "copy_sha256": "b91dae3ee24cbebc6e651ae212cba65226b7645bcdc699513789bfad695d4a47",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-spec/temperature_repro.py",
+      "destination": "spec/temperature_repro.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 1516,
+      "source_sha256": "c23abce6e2ccc9d46ded72f62180b85143b32720781245cc461058d5ff1b1ec4",
+      "copy_sha256": "c23abce6e2ccc9d46ded72f62180b85143b32720781245cc461058d5ff1b1ec4",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/approval-race.json",
+      "destination": "security/approval-race.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 441,
+      "source_sha256": "4dee3219b38cec2220ac1edd9624c5e688f55e5a1673e4fafeadd0bd235263a8",
+      "copy_sha256": "4dee3219b38cec2220ac1edd9624c5e688f55e5a1673e4fafeadd0bd235263a8",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/approval-race.log",
+      "destination": "security/approval-race.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 5397,
+      "source_sha256": "c435e2c2f815d2d14cf64cdbc8454f6f82b687172dc9883d9db6244c2fa5d92f",
+      "copy_sha256": "c435e2c2f815d2d14cf64cdbc8454f6f82b687172dc9883d9db6244c2fa5d92f",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/audit_evidence.py",
+      "destination": "security/audit_evidence.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 1292,
+      "source_sha256": "9612b4c196c2608a95de18af07f0e2c2b74c80a654a78afc6581cc7f96a00004",
+      "copy_sha256": "9612b4c196c2608a95de18af07f0e2c2b74c80a654a78afc6581cc7f96a00004",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/auth-state-logs.json",
+      "destination": "security/auth-state-logs.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 681,
+      "source_sha256": "146283551aeca7a896496264ae22e4d88b10b0b0b8b837245386a0936104537e",
+      "copy_sha256": "146283551aeca7a896496264ae22e4d88b10b0b0b8b837245386a0936104537e",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/auth-state-logs.log",
+      "destination": "security/auth-state-logs.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 25700,
+      "source_sha256": "c07f0dc1bb9d64f1d27e60530a19085a41aeacd416937056e0017f4b34df1885",
+      "copy_sha256": "c07f0dc1bb9d64f1d27e60530a19085a41aeacd416937056e0017f4b34df1885",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/control-S1-reservation-recheck.json",
+      "destination": "security/control-S1-reservation-recheck.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 2141,
+      "source_sha256": "3b0e08b6dd2fcd276ecc6223bade0aff0a1b1d42d227f679d208b40ed4e42767",
+      "copy_sha256": "3b0e08b6dd2fcd276ecc6223bade0aff0a1b1d42d227f679d208b40ed4e42767",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/coverage.md",
+      "destination": "security/coverage.md",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 7663,
+      "source_sha256": "4c5022f93105fae443ec0ab54ded3382ce51607349e5509ae16fdc5ceb4b26ee",
+      "copy_sha256": "4c5022f93105fae443ec0ab54ded3382ce51607349e5509ae16fdc5ceb4b26ee",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/evidence-audit.json",
+      "destination": "security/evidence-audit.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 892,
+      "source_sha256": "ef8a100651b666b365181e86d24a6835f32bba083957b046fdacef5fe3d7b0b0",
+      "copy_sha256": "ef8a100651b666b365181e86d24a6835f32bba083957b046fdacef5fe3d7b0b0",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/finding-S1-reservation-approval-race.json",
+      "destination": "security/finding-S1-reservation-approval-race.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 2682,
+      "source_sha256": "fdb34a6f9f338e29db501484507f57b77d51e9fc504a557c4c157fa818362dbc",
+      "copy_sha256": "fdb34a6f9f338e29db501484507f57b77d51e9fc504a557c4c157fa818362dbc",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/focused.json",
+      "destination": "security/focused.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 593,
+      "source_sha256": "2426965349aed2efc84c23dd6e68180edae60e1746331208cc5d45469d071639",
+      "copy_sha256": "2426965349aed2efc84c23dd6e68180edae60e1746331208cc5d45469d071639",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/focused.log",
+      "destination": "security/focused.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 55686,
+      "source_sha256": "f1827ba6e133c1c6531ee41c57e0a4d80ae2fe18395dd8c8f9026cfb46388e60",
+      "copy_sha256": "f1827ba6e133c1c6531ee41c57e0a4d80ae2fe18395dd8c8f9026cfb46388e60",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/independent-controls.json",
+      "destination": "security/independent-controls.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 492,
+      "source_sha256": "9fdaef78c484bd77ae72aec04a83853fc67cf8fef4d4e268125c1ecb217db565",
+      "copy_sha256": "9fdaef78c484bd77ae72aec04a83853fc67cf8fef4d4e268125c1ecb217db565",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/independent-controls.log",
+      "destination": "security/independent-controls.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 5010,
+      "source_sha256": "82575c30317ba0cf1dfdfbea895f0a61bf9bb8e3fb2104f5372c83c8d1b6f381",
+      "copy_sha256": "82575c30317ba0cf1dfdfbea895f0a61bf9bb8e3fb2104f5372c83c8d1b6f381",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/prepare_snapshot.py",
+      "destination": "security/prepare_snapshot.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 1785,
+      "source_sha256": "c7523d41993012feae37c5f1a6d56903f70f0e0ca4fd28414afbf2744b6f3f57",
+      "copy_sha256": "c7523d41993012feae37c5f1a6d56903f70f0e0ca4fd28414afbf2744b6f3f57",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/privacy-transports.json",
+      "destination": "security/privacy-transports.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 2802,
+      "source_sha256": "a52dc89fb5ead813843296ebc4db48951baa5b8adc253dc476e46253cf8ad121",
+      "copy_sha256": "a52dc89fb5ead813843296ebc4db48951baa5b8adc253dc476e46253cf8ad121",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/read_source.py",
+      "destination": "security/read_source.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 455,
+      "source_sha256": "99deb6ef0f11429bf5aa53e1f2429fa9bdab3dc1ae5ab3da64558cfabf4816eb",
+      "copy_sha256": "99deb6ef0f11429bf5aa53e1f2429fa9bdab3dc1ae5ab3da64558cfabf4816eb",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/review_cases.py",
+      "destination": "security/review_cases.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 6245,
+      "source_sha256": "bbcedd778e5c74282affd8df7195adf4d4b16743ed98e6d11e8324c423f62772",
+      "copy_sha256": "bbcedd778e5c74282affd8df7195adf4d4b16743ed98e6d11e8324c423f62772",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/reviewed.diff",
+      "destination": "security/reviewed.diff",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 293094,
+      "source_sha256": "a756849bf9c47bceb91bb9ac4ccc57af7af7334bc803aeaac3d2a300460560df",
+      "copy_sha256": "a756849bf9c47bceb91bb9ac4ccc57af7af7334bc803aeaac3d2a300460560df",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/run_tests.py",
+      "destination": "security/run_tests.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 2251,
+      "source_sha256": "6aa899dde65d7ed40c82c6e9312101413b3bb3ca6efea9574dd9eae0153417f1",
+      "copy_sha256": "6aa899dde65d7ed40c82c6e9312101413b3bb3ca6efea9574dd9eae0153417f1",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/snapshot-manifest.json",
+      "destination": "security/snapshot-manifest.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 31524,
+      "source_sha256": "6c4e05dfd9bf59eb0698342581925011ca69024626690bf88af421f644478eea",
+      "copy_sha256": "6c4e05dfd9bf59eb0698342581925011ca69024626690bf88af421f644478eea",
+      "source_equals_copy": true
+    },
+    {
+      "source": "docs/plan-blackhat/revisiones-piloto/standards-c1e3a36.md",
+      "destination": "reports-at-capture/standards-c1e3a36.md",
+      "kind": "report_before_evidence_link_update",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 5767,
+      "source_sha256": "079a1704e6714c331511d021ea4d5fd4f34b23137d08e481bab24af368ea0845",
+      "copy_sha256": "079a1704e6714c331511d021ea4d5fd4f34b23137d08e481bab24af368ea0845",
+      "source_equals_copy": true
+    },
+    {
+      "source": "docs/plan-blackhat/revisiones-piloto/standards-a3bc67b.md",
+      "destination": "reports-at-capture/standards-a3bc67b.md",
+      "kind": "report_before_evidence_link_update",
+      "fixed_refs": [
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+        "a3bc67b25b341cb28172bebd5001ef48c5b8d34f"
+      ],
+      "bytes": 4507,
+      "source_sha256": "faa8c603905b3e653dbcb0ecb1cfb23c06dbcacbcb3c3db8c2b2fe2b99b8e85e",
+      "copy_sha256": "faa8c603905b3e653dbcb0ecb1cfb23c06dbcacbcb3c3db8c2b2fe2b99b8e85e",
+      "source_equals_copy": true
+    },
+    {
+      "source": "docs/plan-blackhat/revisiones-piloto/spec-c1e3a36.md",
+      "destination": "reports-at-capture/spec-c1e3a36.md",
+      "kind": "report_before_evidence_link_update",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "c1e3a360e7ba3051bb8f0bda487b005dd29834a0"
+      ],
+      "bytes": 2682,
+      "source_sha256": "a0fef727abdd4c546ba080287c088cc310bb6960e5f7e1d40f6c0dddfec115e0",
+      "copy_sha256": "a0fef727abdd4c546ba080287c088cc310bb6960e5f7e1d40f6c0dddfec115e0",
+      "source_equals_copy": true
+    },
+    {
+      "source": "docs/plan-blackhat/revisiones-piloto/spec-8731129.md",
+      "destination": "reports-at-capture/spec-8731129.md",
+      "kind": "report_before_evidence_link_update",
+      "fixed_refs": [
+        "87311294631d9ffdf6b76ccf3fcb9140018a0977"
+      ],
+      "bytes": 2296,
+      "source_sha256": "6f3620b54d144a1592d48527d6ff03ee8bf397a47ac57feb6ce6e152549fdcf2",
+      "copy_sha256": "6f3620b54d144a1592d48527d6ff03ee8bf397a47ac57feb6ce6e152549fdcf2",
+      "source_equals_copy": true
+    },
+    {
+      "source": "docs/plan-blackhat/revisiones-piloto/security-febc8aa.md",
+      "destination": "reports-at-capture/security-febc8aa.md",
+      "kind": "report_before_evidence_link_update",
+      "fixed_refs": [
+        "6c78cd396eb72713e85b72d8592970e4b6b66585",
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7"
+      ],
+      "bytes": 8003,
+      "source_sha256": "1a0c06352534de4fcb5ef788fb48a4a265a1a4586637e8636e9dc5db99e613db",
+      "copy_sha256": "1a0c06352534de4fcb5ef788fb48a4a265a1a4586637e8636e9dc5db99e613db",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/additional-independent.json",
+      "destination": "security/followup-700389c/additional-independent.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 600,
+      "source_sha256": "0616d6ab9067f17fb637b852aab29e2b17eeadbdd8d761681031da8f00806c8e",
+      "copy_sha256": "0616d6ab9067f17fb637b852aab29e2b17eeadbdd8d761681031da8f00806c8e",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/additional-independent.log",
+      "destination": "security/followup-700389c/additional-independent.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 4455,
+      "source_sha256": "1ac6b0de537a20925e9c42275aefe37d26803a30f6f28c4099015b9f22ebd1d7",
+      "copy_sha256": "1ac6b0de537a20925e9c42275aefe37d26803a30f6f28c4099015b9f22ebd1d7",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/audit.py",
+      "destination": "security/followup-700389c/audit.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 1161,
+      "source_sha256": "a4968ec063ad4182d4249682a1c64b01a4f326cda2a72dadef160e1ec3ca56a3",
+      "copy_sha256": "a4968ec063ad4182d4249682a1c64b01a4f326cda2a72dadef160e1ec3ca56a3",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/clock-expiry.json",
+      "destination": "security/followup-700389c/clock-expiry.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 2007,
+      "source_sha256": "34e12f2ae90235703661580e926e0190464310f42a9ab47417ca7d794fb0420b",
+      "copy_sha256": "34e12f2ae90235703661580e926e0190464310f42a9ab47417ca7d794fb0420b",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/finding-S1-reservation-approval-race.json",
+      "destination": "security/followup-700389c/finding-S1-reservation-approval-race.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 2141,
+      "source_sha256": "efb5fb99b8ec32c136da2e8db3c16b780668a5074a7942c047281de80a1b3b4a",
+      "copy_sha256": "efb5fb99b8ec32c136da2e8db3c16b780668a5074a7942c047281de80a1b3b4a",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/fix-regression-suite.json",
+      "destination": "security/followup-700389c/fix-regression-suite.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 457,
+      "source_sha256": "daf355050f4374ffe91f1d18bda9db08adbbe9ce8668fe1c1047bc7739ba606a",
+      "copy_sha256": "daf355050f4374ffe91f1d18bda9db08adbbe9ce8668fe1c1047bc7739ba606a",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/fix-regression-suite.log",
+      "destination": "security/followup-700389c/fix-regression-suite.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 11223,
+      "source_sha256": "5f831b5c1696b195c447bfcc534198f0db8cf91f05629ece6bbcdcc27eaed77f",
+      "copy_sha256": "5f831b5c1696b195c447bfcc534198f0db8cf91f05629ece6bbcdcc27eaed77f",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/followup_cases.py",
+      "destination": "security/followup-700389c/followup_cases.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 3778,
+      "source_sha256": "9d60c41716e8f926c6c296a30b50f47624a6231eecbd5e560f39fda98faa12ae",
+      "copy_sha256": "9d60c41716e8f926c6c296a30b50f47624a6231eecbd5e560f39fda98faa12ae",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/independent-approval-race.json",
+      "destination": "security/followup-700389c/independent-approval-race.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 472,
+      "source_sha256": "ab1ba4535ea388665d05bb6133d2e80395b802244e97714b603efda1c19c16e9",
+      "copy_sha256": "ab1ba4535ea388665d05bb6133d2e80395b802244e97714b603efda1c19c16e9",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/independent-approval-race.log",
+      "destination": "security/followup-700389c/independent-approval-race.log",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 4015,
+      "source_sha256": "05b82c2ee468a1df77d68def9c1a382e82b8c1919ceb084c738693c89492a43d",
+      "copy_sha256": "05b82c2ee468a1df77d68def9c1a382e82b8c1919ceb084c738693c89492a43d",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/integrity.json",
+      "destination": "security/followup-700389c/integrity.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 907,
+      "source_sha256": "476b49753b0ceed31449d620f19527483a32566958329b56b7322d12aa30031d",
+      "copy_sha256": "476b49753b0ceed31449d620f19527483a32566958329b56b7322d12aa30031d",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/persistent-settlement-failure.json",
+      "destination": "security/followup-700389c/persistent-settlement-failure.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 735,
+      "source_sha256": "189a9fae3925e5c12d04e1a492482e00bbf9fac1ade929628e1a9cac7edb6d16",
+      "copy_sha256": "189a9fae3925e5c12d04e1a492482e00bbf9fac1ade929628e1a9cac7edb6d16",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/prepare.py",
+      "destination": "security/followup-700389c/prepare.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 2293,
+      "source_sha256": "4b843c76f769635b177871371d6933eb0ec822a5e19cb501f87193b1413a29b2",
+      "copy_sha256": "4b843c76f769635b177871371d6933eb0ec822a5e19cb501f87193b1413a29b2",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/review.md",
+      "destination": "security/followup-700389c/review.md",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 3850,
+      "source_sha256": "a9e83b2010947b9da2e96cd60d19bf3d32a23e0176699444b38bfc32ccbed3ad",
+      "copy_sha256": "a9e83b2010947b9da2e96cd60d19bf3d32a23e0176699444b38bfc32ccbed3ad",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/review_cases.py",
+      "destination": "security/followup-700389c/review_cases.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 6359,
+      "source_sha256": "6a36442bbc53cba047dda2be42a2dc137a0053071dcaa9be5999fda8a1fc5c48",
+      "copy_sha256": "6a36442bbc53cba047dda2be42a2dc137a0053071dcaa9be5999fda8a1fc5c48",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/reviewed.diff",
+      "destination": "security/followup-700389c/reviewed.diff",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 6085,
+      "source_sha256": "56f22fbc537caa6a6287b9a4c92ca8cba639306ec0107b12e6c9585d34004c56",
+      "copy_sha256": "56f22fbc537caa6a6287b9a4c92ca8cba639306ec0107b12e6c9585d34004c56",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/run_tests.py",
+      "destination": "security/followup-700389c/run_tests.py",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 2296,
+      "source_sha256": "686702e0664714abedc47b829d80113b03382482bd3dd6c94e069c70b76d94bf",
+      "copy_sha256": "686702e0664714abedc47b829d80113b03382482bd3dd6c94e069c70b76d94bf",
+      "source_equals_copy": true
+    },
+    {
+      "source": ".claude/review-security/followup-700389c/snapshot-manifest.json",
+      "destination": "security/followup-700389c/snapshot-manifest.json",
+      "kind": "closed_review_evidence",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 31524,
+      "source_sha256": "3e809cf3d502d7b6b48a1ac78a47af85ef239d1fc35d24307a018df3ea814a0f",
+      "copy_sha256": "3e809cf3d502d7b6b48a1ac78a47af85ef239d1fc35d24307a018df3ea814a0f",
+      "source_equals_copy": true
+    },
+    {
+      "source": "docs/plan-blackhat/revisiones-piloto/security-700389c.md",
+      "destination": "reports-at-capture/security-700389c.md",
+      "kind": "report_before_evidence_link_update",
+      "fixed_refs": [
+        "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+        "700389c216592db1e0c8725749bb4fd02cf3fa10"
+      ],
+      "bytes": 3850,
+      "source_sha256": "a9e83b2010947b9da2e96cd60d19bf3d32a23e0176699444b38bfc32ccbed3ad",
+      "copy_sha256": "a9e83b2010947b9da2e96cd60d19bf3d32a23e0176699444b38bfc32ccbed3ad",
+      "source_equals_copy": true
+    }
+  ],
+  "security_followup_appended_utc": "2026-10-03T14:42:46.405817+00:00",
+  "security_directories": [
+    ".claude/review-security",
+    ".claude/review-security/followup-700389c"
+  ]
+}

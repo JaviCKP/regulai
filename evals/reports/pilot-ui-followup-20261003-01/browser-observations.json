@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "kind": "automated visual followup in real Chromium",
+  "real_provider_calls": 0,
+  "human_trial": false,
+  "source": "browser-environment.json",
+  "browser": "HeadlessChrome/154.0.0.0, @playwright/cli 0.1.22",
+  "screenshots_visually_inspected": true,
+  "historical_completed": {
+    "request_id": "e7c85964-6e98-4fcd-86dc-daa86d669dc0",
+    "synthetic_reconstruction": false,
+    "provenance": "Original browser04 request actually expired and completed at 14:17 UTC; reopened with current sources without seed/reset/migrate.",
+    "status": "completed",
+    "consent_reason": "consent_expired",
+    "expected_and_observed": "Previous confirmation notice: A previous confirmation expired.",
+    "confirm_again_in_receipt": false,
+    "confirm_sending_button_present": false,
+    "cancel_request_button_present": false,
+    "updated_at_unchanged": "2026-10-03 14:17:45.915112",
+    "evidence": [
+      "browser-completed-snapshot.yml",
+      "browser-completed-desktop-notice.png",
+      "browser-completed-mobile-light.png"
+    ]
+  },
+  "pending_control": {
+    "request_id": "88f78237-1b17-4897-8a66-ab78432bac25",
+    "created_through": "actual chat UI, SYNTHETIC_CONSENT_CANCEL",
+    "status_observed": "pending_consent",
+    "label": "Confirmation: Review the decision before authorizing this same content and file.",
+    "confirm_sending_button_present": true,
+    "cancel_request_button_present": true,
+    "calls_before_confirm": 0,
+    "action": "Tab from Confirm sending to Cancel request, activeElement verified, then Enter",
+    "final_status": "cancelled",
+    "final_calls": 0,
+    "evidence": [
+      "browser-pending-snapshot.yml",
+      "browser-pending-desktop-light.png",
+      "browser-pending-mobile-light.png",
+      "browser-state-pending.json",
+      "browser-state-after-cancel.json"
+    ]
+  },
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "document_scroll_width": 375,
+      "body_scroll_width": 375
+    }
+  ],
+  "themes": {
+    "light": "Default application theme; current page has no data-bs-theme attribute or visible theme selector.",
+    "dark": "Exploratory CSS variant only: set root data-bs-theme=dark, supported by bundled Bootstrap CSS. No product setting or server state changed. Tested both widths and both request states.",
+    "notice_and_control_readability": "Readable and wrapped in both variants at both widths.",
+    "limit": "Forced dark CSS is not a supported theme-flow claim or full accessibility audit; other surfaces retain light backgrounds and inherited pale text."
+  },
+  "constraints": [
+    "No implementation files or prior report evidence changed.",
+    "No additional 300-second wait; reused actual persisted completed request.",
+    "No new reconstruction, no migrations and no seed.",
+    "New pending control cancelled with zero outbound provider calls."
+  ]
+}

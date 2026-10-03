@@ -1,0 +1,36 @@
+[
+  {
+    "commit": "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+    "source_files": 203,
+    "changed_files": []
+  },
+  {
+    "commit": "700389c216592db1e0c8725749bb4fd02cf3fa10",
+    "source_files": 203,
+    "changed_files": []
+  },
+  {
+    "fixed_events": [
+      "obfuscation",
+      "classification"
+    ],
+    "generation_payload_count": 0,
+    "approval_ready_after_reserve": false,
+    "live_socket_calls": 0,
+    "generation_settlement": {
+      "id": "e2078d0b-b0e0-4abc-b251-162709621d21",
+      "at": "2026-10-03T14:39:44.748446+00:00",
+      "purpose": "generation",
+      "reserved": "0.00244860",
+      "status": "not_started",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "engine:1",
+        "model": "deepseek-v4-pro",
+        "cost_kind": "not_incurred"
+      }
+    }
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "https_cookies_hosts_static_private_files_and_tenants": true,
+    "real_http_synthetic_transport_masking_and_local_block": true,
+    "overlapping_http_requests_generate_once": true,
+    "disconnected_client_recovers_without_duplicate_generation": true,
+    "killed_inflight_request_stays_unknown_without_resend": true,
+    "postgres_http_state_migration_security_suite": true,
+    "postgres_backup_restore_all_tables_media_keys": true,
+    "reencryption_new_key_only_concurrent_conflict_and_rollback": true
+  },
+  "private_work": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-43a3f7dd8eed",
+  "identity": "regulai-lab-43a3f7dd8eed",
+  "real_provider_calls": 0,
+  "public_deployment": false,
+  "remote_ci_executed": false
+}

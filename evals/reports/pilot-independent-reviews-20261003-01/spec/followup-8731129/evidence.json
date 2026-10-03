@@ -1,0 +1,36 @@
+{
+  "candidate": "87311294631d9ffdf6b76ccf3fcb9140018a0977",
+  "closed_findings": [
+    "S2",
+    "S3"
+  ],
+  "persistent_findings": [],
+  "commands": [
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe .claude/review-spec/followup-8731129/prepare_snapshot.py",
+      "exit_code": 0,
+      "copied_files": 240
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe .claude/review-spec/followup-8731129/run_probes.py",
+      "exit_code": 0,
+      "tests": 3,
+      "seconds": 8.203
+    },
+    {
+      "command": "rtk proxy git diff --check c1e3a360e7ba3051bb8f0bda487b005dd29834a0...87311294631d9ffdf6b76ccf3fcb9140018a0977 -- regulai/front/evaluation.py regulai/front/test_smoke.py evals/pilot-real/manifest.json evals/pilot-human/manifest.json docs/plan-blackhat/README.md docs/plan-blackhat/arranque-y-demo.md docs/plan-blackhat/informe-correcciones-community.md docs/plan-blackhat/estado-ejecucion.md",
+      "exit_code": 0
+    }
+  ],
+  "artifacts_sha256": {
+    "arithmetic-http.json": "f6949fdd30bae1705833c76729a78f1d78f761cad326bd3635afbac1507fd1ea",
+    "document-success-http.json": "65dc279fd25792f185698343ea8469c4aec561e5625e51bcd0c3a34e33ed56a2",
+    "option-drift.json": "5ff2aa24b487eb8a81ebbdebbdcd011c180526f250b222f1248cb765846d0f88",
+    "independent-probes.log": "6ef00cbf19d0e66fc6aa29b380fd3c2377c50d6582545895bf9019ee46f4f858",
+    "snapshot.json": "748b8d2580a525b395601c02f1c6c7ae13c129ccc320fa6f5005569e8a0bc6ed",
+    "closure_probes.py": "0a41441e9af2387862699f661ddbe38307245f0fc9a45d8f870ebb4276b64b8a",
+    "run_probes.py": "687800a34a0becaf7cb87d71d7a7c9c57088b749490e1c0ca854542e2f59b102",
+    "prepare_snapshot.py": "1c920e150d167d0e8b4349ffaaf18857431ef5730eb6f6fba8c237d35d429580"
+  },
+  "report_sha256": "6f3620b54d144a1592d48527d6ff03ee8bf397a47ac57feb6ce6e152549fdcf2"
+}

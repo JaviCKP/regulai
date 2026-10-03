@@ -1,0 +1,108 @@
+diff --git a/regulai/front/evaluation.py b/regulai/front/evaluation.py
+index 3588722..8686960 100644
+--- a/regulai/front/evaluation.py
++++ b/regulai/front/evaluation.py
+@@ -204,12 +204,22 @@ class LedgerObserver:
+         if bound > money(self.manifest['call_caps_usd'][purpose]):
+             raise BudgetExceeded('The application call exceeds the approved per-call bound.')
+         token = self.ledger.reserve(purpose, bound, zero_cost=purpose == 'obfuscation' and bound == 0,
+             metadata={'case_id': self.case_id, 'configuration': self.configuration,
+                       'provider': call['provider'], 'model': call['model']})
+         self.tokens.append(token)
++        try:
++            if self.authorize:
++                self.authorize()
++        except Exception:
++            self.stop_reason = 'authorization_changed_before_transport'
++            # Reservation can wait for a writer while the approval is revoked or
++            # expires. No transport has started, so this expense is provably zero.
++            # Keep the token for conservative recovery if settlement itself fails.
++            self.ledger.complete(token, cost='0', status='not_started', cost_kind='not_incurred')
++            raise
+         return token
+ 
+     def after_call(self, call, token):
+         effective = call.get('model_effective')
+         if call['purpose'] != 'obfuscation' and call.get('status') == 'completed':
+             expected = self.manifest['allowed_effective_models'].get(call['model'], [])
+diff --git a/regulai/front/test_smoke.py b/regulai/front/test_smoke.py
+index 873452f..a616256 100644
+--- a/regulai/front/test_smoke.py
++++ b/regulai/front/test_smoke.py
+@@ -189,12 +189,76 @@ class SmokeIsolationTests(TestCase):
+             self.run_smoke()
+         self.assertEqual(self.events, ['obfuscation'])
+         self.assertEqual(len(self.ledger()['calls']), 1)
+         self.assertFalse(self.ledger_path.with_suffix('.lock').exists())
+         self.assertTrue((self.root / 'run' / 'report.md').exists())
+ 
++    def test_authorization_changed_during_reservation_prevents_each_transport(self):
++        reserve = EvaluationBudget.reserve
++        prefixes = {
++            'obfuscation': [],
++            'classification': ['obfuscation'],
++            'generation': ['obfuscation', 'classification'],
++            'verification': ['obfuscation', 'classification', 'generation', 'obfuscation'],
++        }
++        for change in ('revoked', 'expired'):
++            for purpose, expected in prefixes.items():
++                with self.subTest(change=change, purpose=purpose):
++                    self.save_approval()
++                    self.events = []
++                    before = len(self.ledger()['calls']) if self.ledger_path.exists() else 0
++
++                    def reserve_then_change(ledger, call_purpose, maximum, **kwargs):
++                        token = reserve(ledger, call_purpose, maximum, **kwargs)
++                        if call_purpose == purpose:
++                            changed = {**self.approval}
++                            if change == 'revoked':
++                                changed['status'] = 'revoked'
++                            else:
++                                changed['valid_until'] = (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat()
++                            self.approval_path.write_text(json.dumps(changed), encoding='utf-8')
++                        return token
++
++                    with patch.object(EvaluationBudget, 'reserve', reserve_then_change):
++                        with self.assertRaises(CommandError):
++                            self.run_smoke(f'reserve-{change}-{purpose}')
++                    self.assertEqual(self.events, expected)
++                    calls = self.ledger()['calls'][before:]
++                    self.assertEqual(len(calls), len(expected) + 1)
++                    self.assertEqual(calls[-1]['purpose'], purpose)
++                    self.assertEqual(calls[-1]['status'], 'not_started')
++                    self.assertEqual(calls[-1]['cost'], '0')
++                    self.assertEqual(calls[-1]['metadata']['cost_kind'], 'not_incurred')
++                    self.assertGreater(Decimal(calls[-1]['reserved']), 0)
++                    self.socket.assert_not_called()
++
++    def test_failed_revocation_settlement_retains_unknown_reservation_without_transport(self):
++        reserve, complete = EvaluationBudget.reserve, EvaluationBudget.complete
++
++        def reserve_then_revoke(ledger, purpose, maximum, **kwargs):
++            token = reserve(ledger, purpose, maximum, **kwargs)
++            self.approval_path.write_text(json.dumps({**self.approval, 'status': 'revoked'}), encoding='utf-8')
++            return token
++
++        def fail_nonstarted_settlement(ledger, token, **kwargs):
++            if kwargs.get('status') == 'not_started':
++                raise sqlite3.OperationalError('Synthetic settlement failure')
++            return complete(ledger, token, **kwargs)
++
++        with patch.object(EvaluationBudget, 'reserve', reserve_then_revoke), \
++                patch.object(EvaluationBudget, 'complete', fail_nonstarted_settlement):
++            with self.assertRaises(CommandError):
++                self.run_smoke('reserve-settlement-failure')
++        snapshot = self.ledger()
++        self.assertEqual(self.events, [])
++        self.assertEqual(len(snapshot['calls']), 1)
++        self.assertEqual(snapshot['calls'][0]['status'], 'outcome_unknown')
++        self.assertIsNone(snapshot['calls'][0]['cost'])
++        self.assertEqual(snapshot['uncertain_reservations_usd'], '0.01')
++        self.socket.assert_not_called()
++
+     def test_timeout_or_invalid_judge_retains_reservation_and_stops_without_retry(self):
+         for fault, purposes in [('generation-timeout', ['obfuscation', 'classification', 'generation']),
+                                  ('malformed-judge', ['obfuscation', 'classification'])]:
+             with self.subTest(fault=fault):
+                 self.fault = fault
+                 self.events = []

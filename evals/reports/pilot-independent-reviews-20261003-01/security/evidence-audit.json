@@ -1,0 +1,34 @@
+{
+  "commit": "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+  "snapshot_files": 203,
+  "changed_files": [],
+  "red_events": [
+    "obfuscation",
+    "classification",
+    "generation"
+  ],
+  "red_generation_count": 1,
+  "red_authorization_ready_after_reserve": false,
+  "red_live_socket_calls": 0,
+  "control_events": [
+    "obfuscation",
+    "classification"
+  ],
+  "control_generation_count": 0,
+  "control_generation_settlement": {
+    "id": "d5011b8d-6994-41ec-930f-6e2ef0b9de58",
+    "at": "2026-10-03T14:33:58.130282+00:00",
+    "purpose": "generation",
+    "reserved": "0.00244860",
+    "status": "not_started",
+    "cost": "0",
+    "metadata": {
+      "case_id": "arithmetic",
+      "configuration": "strong",
+      "provider": "engine:1",
+      "model": "deepseek-v4-pro",
+      "cost_kind": "not_incurred"
+    }
+  },
+  "control_live_socket_calls": 0
+}

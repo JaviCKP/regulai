@@ -1,0 +1,818 @@
+{
+  "commit": "700389c216592db1e0c8725749bb4fd02cf3fa10",
+  "base": "febc8aa9b303070e82e3f27626371d5b67cb73f7",
+  "files": [
+    {
+      "path": "evals/DEMO.md",
+      "sha256": "a08d40b79e5e26645359a3e9ea09e4689fe548b3b63ed032c1a139c5e3d4f504"
+    },
+    {
+      "path": "evals/README.md",
+      "sha256": "fe476160d190c4f95b6fa7d574a13037bedab33bb022d73bbf48cc35b0df5231"
+    },
+    {
+      "path": "evals/cases.jsonl",
+      "sha256": "1ee523b98ec56dc2a5494dade88490485ecbfc46ee22ce15c1279c6d8d348ece"
+    },
+    {
+      "path": "evals/documents/demo-contract.txt",
+      "sha256": "306cbb6eb053c3f00adde11434c1e444a2c31c258f4d252da44740e4674c6ffb"
+    },
+    {
+      "path": "evals/documents/late-evidence.txt",
+      "sha256": "5375b9800cb6b134de774fef707fff0ac7ebfcdab135292631b4f27697368d8e"
+    },
+    {
+      "path": "evals/documents/pilot-20261003/README.md",
+      "sha256": "d000aecbb3ac0e1c2a9d17c06143ee635a2267c49be9af8c0957e1d8289c843b"
+    },
+    {
+      "path": "evals/documents/pilot-20261003/expectations.json",
+      "sha256": "f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c"
+    },
+    {
+      "path": "evals/documents/pilot-20261003/files/manifest.json",
+      "sha256": "7c15e475e7d50be316eb245ba6d75ebf5a9f3263cc3eba56ae267873dbcc76a9"
+    },
+    {
+      "path": "evals/documents/pilot-20261003/generate_corpus.py",
+      "sha256": "c58428a1a343eca2a40daa70964e9427a2586f0b96ba3eed6d4b886a61043490"
+    },
+    {
+      "path": "evals/documents/pilot-20261003/verify_corpus.py",
+      "sha256": "c27732e1f77d85abc69a6bbfdb72d60213781bf4b241dc9310f0a936fea6ec67"
+    },
+    {
+      "path": "evals/manifest.json",
+      "sha256": "058bd0cce35118b1c936fdd6954063f17ed7a506ef1c4f8fd255dbd01b27a910"
+    },
+    {
+      "path": "evals/pilot-human/README.md",
+      "sha256": "cb39ff410174e0b38266f01e3ed40d4eb228ff9cdd0f64aa3f05ae43d9de1130"
+    },
+    {
+      "path": "evals/pilot-human/cases.jsonl",
+      "sha256": "97b43a6452e05a7301d6b4354ab263074e5e73955620fd19ffad2b383f7e7c18"
+    },
+    {
+      "path": "evals/pilot-human/development-labels.pending.jsonl",
+      "sha256": "b5595817e8f385ca378d0e965db73e53b9d17837a961bb07df7ffa4bd7d34825"
+    },
+    {
+      "path": "evals/pilot-human/manifest.json",
+      "sha256": "f264ed6e21c37c6a77154e0c7c238938c1a30b7de07e731cfdbc8224f3196542"
+    },
+    {
+      "path": "evals/pilot-human/reserved-labels.pending.jsonl",
+      "sha256": "0c2d46eff373aa50219e5dea9882e5c335f91bfa64c3e43555873288fa685d7e"
+    },
+    {
+      "path": "evals/pilot-human/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c"
+    },
+    {
+      "path": "evals/pilot-real/README.md",
+      "sha256": "54f43e0cd5efaca3abd767073a8d3218091a1e8a0419a0938c578aee2fb9251c"
+    },
+    {
+      "path": "evals/pilot-real/authorization.pending.json",
+      "sha256": "089fcb547ca33673db6e1c59fb462c636529678a7cf9eeb16ac7bc114a118d69"
+    },
+    {
+      "path": "evals/pilot-real/cases.jsonl",
+      "sha256": "63e1754f6f6c3fdedc859a16f428ff7e6a21737c1091c1e7553ecf1daa1015f1"
+    },
+    {
+      "path": "evals/pilot-real/manifest.json",
+      "sha256": "b0e6fab5c46f202554b1a81d9bec8223b53b432b1d63d40ae731b8cd700521d5"
+    },
+    {
+      "path": "evals/pilot-real/rubric.md",
+      "sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c"
+    },
+    {
+      "path": "ops/pilot/Dockerfile",
+      "sha256": "c42fb10ee5bac585b02b4156f805ed293adb7eca44b15bbfc13eab5ac174d520"
+    },
+    {
+      "path": "ops/pilot/images.json",
+      "sha256": "391293f28eb3833c2b8fc5c2f751a9aa7ef94355e315a52e1936f9921471c547"
+    },
+    {
+      "path": "ops/pilot/manage_lab.py",
+      "sha256": "6bde6cfc92bdc372522991dd19478792bb8cd8b163289b51ecc2ae8f8b5fd2a3"
+    },
+    {
+      "path": "ops/pilot/nginx.conf",
+      "sha256": "4edfbc2d5bd38e0f7475d2bd2d9a7c84543a13115acb311927029f764c1509c1"
+    },
+    {
+      "path": "ops/pilot/requirements.txt",
+      "sha256": "8c480d9067424fbd06102bc7aab8e3a1b49da869e80ed250b6f52b20383a7cdd"
+    },
+    {
+      "path": "ops/pilot/synthetic_provider.py",
+      "sha256": "8e1f5e2aab126352e942e9ae0791b121a20c97bf9901f91eaffab59db4310bbe"
+    },
+    {
+      "path": "regulai/api/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regulai/api/admin.py",
+      "sha256": "b2e328e31f08dc907100505521d13ee6a9ea67a240655d051120011ce49cfaf8"
+    },
+    {
+      "path": "regulai/api/apps.py",
+      "sha256": "b4db90de55cd6dbcaa174df55724a73e2ff33f64760b0f3f12e3f5903944e314"
+    },
+    {
+      "path": "regulai/api/migrations/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regulai/api/models.py",
+      "sha256": "563734a765db00f804e87c9317abe597df00e1e0e103902f690aac738910f404"
+    },
+    {
+      "path": "regulai/api/permissions.py",
+      "sha256": "9425d7ef1721bc5e52bbabd02b587a581e8411dc8ae12be455eced78f6b9182f"
+    },
+    {
+      "path": "regulai/api/serializers.py",
+      "sha256": "5ab7714aee40109020f7fcce9bbde275e25b6c9a0f6dd35e9e28dd8f9460149d"
+    },
+    {
+      "path": "regulai/api/test_permissions.py",
+      "sha256": "a60c96fdfe84b2a60a588f87ec2324d4b7d53335ac7f308997da2fb325587233"
+    },
+    {
+      "path": "regulai/api/tests.py",
+      "sha256": "9ab6c6191360e63c1b4c9b5659aef348a743c9e078be68190917369e4e9563e8"
+    },
+    {
+      "path": "regulai/api/urls.py",
+      "sha256": "5bc216466b61cfcd4d3d45cf4f61e5b9a7129b682b3089411e3eb97a4bfa38d7"
+    },
+    {
+      "path": "regulai/api/urls_simple.py",
+      "sha256": "7ebc16be832aafba9e1a88f1c7b3fc986bea44512507aba570ed8ce8bd671cd3"
+    },
+    {
+      "path": "regulai/api/views.py",
+      "sha256": "594974c801c45fc2f4acf763d79a74b1a69e7a60c8ec6b42fd77aa8df5de38ed"
+    },
+    {
+      "path": "regulai/front/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regulai/front/access.py",
+      "sha256": "c562f14b232d7e70fad649eb87d3ba6fcc11b1bb69e776382008d2e8b01df460"
+    },
+    {
+      "path": "regulai/front/admin.py",
+      "sha256": "9843e72b7ed135b8dd24d38289ea61d64b8b0900615454f26c75385017c9ccea"
+    },
+    {
+      "path": "regulai/front/apps.py",
+      "sha256": "0f4c21237f368d9ab37765a381789aa141889c594f7f42039f634897f6c6d7c4"
+    },
+    {
+      "path": "regulai/front/chat_service.py",
+      "sha256": "e7ae0d45aae9535a2ddbc45ea2a74a6789d9c2d9afe61f7e66eae6d7e7c661df"
+    },
+    {
+      "path": "regulai/front/chat_ui.py",
+      "sha256": "1d08ddf4bcc5cf97445beee3cb10d01683bb18c8957fab7696c86f2095d90f62"
+    },
+    {
+      "path": "regulai/front/checks.py",
+      "sha256": "6ed7412f430da13521ea1d03f0dc4168e0a9fa8fe84eaac4c2cc4b9162269f61"
+    },
+    {
+      "path": "regulai/front/classification.py",
+      "sha256": "53a4aee7f3c76cfd73d6cae6dbcbe7a1fbd444e89b00e48ba3966bc69a561fe4"
+    },
+    {
+      "path": "regulai/front/connectors.py",
+      "sha256": "40c4f14880fce5aea7d6a4fc938814b4e915b0ed045c36b7b50a51da03accd7f"
+    },
+    {
+      "path": "regulai/front/context_processors.py",
+      "sha256": "463ea316ecfc5de729a67da2bd28cd38fa6c891a5916ce0e37b944ffa908c0b6"
+    },
+    {
+      "path": "regulai/front/documents.py",
+      "sha256": "cc489a756f5c2886fbe0284c802503e79d96218b85dd65ed223f853e8b3d70b5"
+    },
+    {
+      "path": "regulai/front/encrypted_fields.py",
+      "sha256": "3cfc497a78b4b695e953d3553823fbfa9a68398f81dc170199fa0c69e6dd25de"
+    },
+    {
+      "path": "regulai/front/encryption.py",
+      "sha256": "a795b2bc7148aa3e653c3c2ed5c81c61ca8ef489b416622cdeb5a250b7015a38"
+    },
+    {
+      "path": "regulai/front/evaluation.py",
+      "sha256": "ba6bfbd40008cc9fbeb778400d0bd30ab744391fc8c8339eb9253b5d1fa0b40c"
+    },
+    {
+      "path": "regulai/front/evaluation_budget.py",
+      "sha256": "eef799fc923ba67e9c88dfccc2c21669a666cff6a13a3f85ea18a5c8b00718e0"
+    },
+    {
+      "path": "regulai/front/file_security.py",
+      "sha256": "bc291374baccc8196249824de676a37fd2cc635282c1653f89a0ef31fb5f105b"
+    },
+    {
+      "path": "regulai/front/jev.py",
+      "sha256": "38e8eed3e59bc16e1d9afd5cfc3db886d2d54697b484c5c824f738a91e6d4bbf"
+    },
+    {
+      "path": "regulai/front/management/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regulai/front/management/commands/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regulai/front/management/commands/bootstrap_ai_policy.py",
+      "sha256": "1a74862a2d4ee625f581c29478014e86c5907065dc5eeeff8540a3ba0ea171ef"
+    },
+    {
+      "path": "regulai/front/management/commands/evaluate_ai.py",
+      "sha256": "4e0354fa7738486f0f1df4bf9aff574ef0211de6d7f0bd464f8332b4a3f76367"
+    },
+    {
+      "path": "regulai/front/management/commands/generate_encryption_key.py",
+      "sha256": "bb2e98e3a71df314dcb3a88478206d769226611ba53b65f95f5bfc2246ea8956"
+    },
+    {
+      "path": "regulai/front/management/commands/reencrypt_secrets.py",
+      "sha256": "58b3d619602248335b652eac4650827895f09ad64f7dda4292df03ed78d91149"
+    },
+    {
+      "path": "regulai/front/management/commands/run_demo.py",
+      "sha256": "f96e8be02f54083d5036f132462e0fd385f08116da12efd68fde14fc64e0d924"
+    },
+    {
+      "path": "regulai/front/management/commands/smoke_ai.py",
+      "sha256": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7"
+    },
+    {
+      "path": "regulai/front/masking.py",
+      "sha256": "2508742be605a0c6f74d5c4a5a4fca7860667b9bbdc139ca3b16bb502835f697"
+    },
+    {
+      "path": "regulai/front/middleware.py",
+      "sha256": "b0f54bed291118154e3e73353f76ee9440f768940bb0f52f22bea280b0515ff6"
+    },
+    {
+      "path": "regulai/front/migrations/0001_initial.py",
+      "sha256": "7cac815cfb17be72890bffd983277a225c867ce1ef660b89842b9d526dc08751"
+    },
+    {
+      "path": "regulai/front/migrations/0002_engine_companyengine.py",
+      "sha256": "d1c536cc77aeb3690aff26e4c96895503eea260d84bab9f132f4997aea48f287"
+    },
+    {
+      "path": "regulai/front/migrations/0003_add_severity_to_rule.py",
+      "sha256": "1539fc4119f2bbdfe3e45439c7d2fcc06af453736241662de5885609cdbb0eb3"
+    },
+    {
+      "path": "regulai/front/migrations/0004_add_conversation_and_message.py",
+      "sha256": "ad2a7a0ea33533447a0295280e0c3b8f1016466b8557a69e3e0e955f53289b00"
+    },
+    {
+      "path": "regulai/front/migrations/0005_add_applies_to_rule.py",
+      "sha256": "bcf4e5bbe018e9add7aeea60958820c9751a8c8b449dc7f5c4dc3b0a73c7adf9"
+    },
+    {
+      "path": "regulai/front/migrations/0006_add_file_to_message.py",
+      "sha256": "e68ac17e5dfb319e2af9cd255770e8d2a723203df98aa623aae2cda7c74b1eab"
+    },
+    {
+      "path": "regulai/front/migrations/0007_add_department_model.py",
+      "sha256": "910cece3ec5371b3e86df4157cf5018086dc48b2c578075bf7afe3e4bd6a050f"
+    },
+    {
+      "path": "regulai/front/migrations/0008_add_avatar_to_profile.py",
+      "sha256": "8437aa4c06f389e880b869c1761c1a49b54b5b1284a992b66f0bb3567e120f9b"
+    },
+    {
+      "path": "regulai/front/migrations/0009_add_default_engine_to_profile.py",
+      "sha256": "4f52cc63136b3f451fa7ace148b2dca1867587222ba0298c57e411bbf289e136"
+    },
+    {
+      "path": "regulai/front/migrations/0010_add_engine_models.py",
+      "sha256": "b7ee2b43f68f33c410ffa0473eed176004781b24d4c35d010d682e643a752612"
+    },
+    {
+      "path": "regulai/front/migrations/0011_add_connector_type_to_engine.py",
+      "sha256": "8be4c9f96946ff7937ed5905cf14d0e2f9bfb715b2fb1b989faa2d8bda7b4dfd"
+    },
+    {
+      "path": "regulai/front/migrations/0012_seed_default_engines.py",
+      "sha256": "7acc8a8969381bf00923161c205a5d89e64aafc962fca75d427e7af130ec9fd2"
+    },
+    {
+      "path": "regulai/front/migrations/0013_add_name_to_companyengine.py",
+      "sha256": "d35690222e6e92a7f822dbd54bb207ae93a130f90670ba04ada4ba86e00bec67"
+    },
+    {
+      "path": "regulai/front/migrations/0015_add_file_hashes_to_prompt.py",
+      "sha256": "9da143d4829dd76a7e68041c6f73baf8e7bf548a1d158b5f39c793474a3edcb2"
+    },
+    {
+      "path": "regulai/front/migrations/0016_encrypt_api_keys.py",
+      "sha256": "1a034e8a29af3c87fa9c01f5ccffa9e7a4fc18c12caebf3a767a7662b17f155b"
+    },
+    {
+      "path": "regulai/front/migrations/0017_alter_companyengine_api_key.py",
+      "sha256": "3164ee27c07b950faca44df236270d28b29093e6c038ff11ee375097a9c8c061"
+    },
+    {
+      "path": "regulai/front/migrations/0018_remove_companyengine_unique_together.py",
+      "sha256": "579038e90d7db1bdd92adbc81af9cadf418382bb0d5918268db050e81edcf598"
+    },
+    {
+      "path": "regulai/front/migrations/0019_add_rule_action_field.py",
+      "sha256": "e0b4dfc1eb669e700b063a5d4d2a1fc07512729e42603de9bcc2557a923e4909"
+    },
+    {
+      "path": "regulai/front/migrations/0020_seed_default_rules_groups.py",
+      "sha256": "d6164951ca6049b5c31236afa46162caeaae775bc13d4e1bec5e1bb5309d5414"
+    },
+    {
+      "path": "regulai/front/migrations/0021_obfuscationconfig.py",
+      "sha256": "34fd7109e4e4a23cd0f10a2c004375f9df327c4b233892e7808034d03e68b0ac"
+    },
+    {
+      "path": "regulai/front/migrations/0022_alert_source.py",
+      "sha256": "6fcd35326baf877300e2ca93701960804690f8bab914aa1d7e3da7cb494a30cf"
+    },
+    {
+      "path": "regulai/front/migrations/0023_company_department_system_prompt.py",
+      "sha256": "0e8b35ed8f61697074feb1db69860592ec3b3881efd81a8acc5d3171b53dd80b"
+    },
+    {
+      "path": "regulai/front/migrations/0024_seed_mistral_engine.py",
+      "sha256": "021e3444f0b1724b5699609efbc0fd2c06d3dd2b761ba2506171ce75e069657d"
+    },
+    {
+      "path": "regulai/front/migrations/0025_message_response_file.py",
+      "sha256": "23307ed4cd5b3efbab0967bfe4d2852d475c208869433b232e2d61d5dcc8227e"
+    },
+    {
+      "path": "regulai/front/migrations/0026_authorized_chat_state.py",
+      "sha256": "7378a9795ce439c62fb5f3fe757ab89fb92abbde7346e122777e554c0d30af5f"
+    },
+    {
+      "path": "regulai/front/migrations/0027_enginemodel_context_window_enginemodel_currency_and_more.py",
+      "sha256": "5e5dadb62c5e3b88ecca61b001576e7ac6e352826dd31901aa86b984c8d62135"
+    },
+    {
+      "path": "regulai/front/migrations/0028_auditlog_company.py",
+      "sha256": "85c71c2cc743ac1784ea26a87808095cfe6379b23b98710ad0d71134d3df784f"
+    },
+    {
+      "path": "regulai/front/migrations/0029_model_price_units.py",
+      "sha256": "b6aa698deff3e6960958599588f96850aa4a45e4f45f53f7e3e76a27a8fa7ef6"
+    },
+    {
+      "path": "regulai/front/migrations/0030_enginemodel_reasoning.py",
+      "sha256": "3c4a1d128e3267c58d71200595f2f578056e861d55aff409974f15002c1d62a5"
+    },
+    {
+      "path": "regulai/front/migrations/0031_infer_historical_prompt_company.py",
+      "sha256": "2bd95a3bec4ada8e30e7e90061beb1c48b18fbc8b449be34de1a82ea2d4a7b3a"
+    },
+    {
+      "path": "regulai/front/migrations/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regulai/front/models.py",
+      "sha256": "e39b822b541a2908860e9f2da98b79c2d47119c58004c3b61570939d5df218ca"
+    },
+    {
+      "path": "regulai/front/policy.py",
+      "sha256": "a252085c213fdf82e64967570dcdee63c1ea3499af9fb9933af288140bcfac30"
+    },
+    {
+      "path": "regulai/front/policy_simulator.py",
+      "sha256": "f7ba198487213644cfe90b848cc54cb3ef990eb479d8d9f43b167bf6f224ed66"
+    },
+    {
+      "path": "regulai/front/quota.py",
+      "sha256": "856389ec4400975b1b4a0c3ff766010c0041f7f4a79e3498c04a95de0f6ad016"
+    },
+    {
+      "path": "regulai/front/rate_limit.py",
+      "sha256": "0e94eab85d3836c14382e8aea105a89153bdf2fab7a3a5acef7bf8a5f19bfe68"
+    },
+    {
+      "path": "regulai/front/routing.py",
+      "sha256": "50877db775828716ca2d2f75573307a2105a8a6757ef316121f7e6b67b883fff"
+    },
+    {
+      "path": "regulai/front/safe_logging.py",
+      "sha256": "73b0b49424176fedf4a530e846724fc2a900c4f3c731af2b94a1f9b546121c34"
+    },
+    {
+      "path": "regulai/front/sources.py",
+      "sha256": "362679f87add56decb449c15358574cbaba2f4a79cb81cce8055a149925d4492"
+    },
+    {
+      "path": "regulai/front/templates/alerts/delete.html",
+      "sha256": "b7208bbca213f002d3c5b9d17fafb7496de9184fb89a2eba3f4955be001ed99a"
+    },
+    {
+      "path": "regulai/front/templates/alerts/detail.html",
+      "sha256": "146bbf24719e6494d0bd07d1ebfefe13e1ca848322305c858aa7429e428ce7df"
+    },
+    {
+      "path": "regulai/front/templates/alerts/list.html",
+      "sha256": "a0ac3b8a26707dda432501a1870dfe5d58e8ea9d1bdd7d0b81001c8b74182acd"
+    },
+    {
+      "path": "regulai/front/templates/auditlogs/delete.html",
+      "sha256": "e02e689acdb50c5383b99ee869a0e4eec9d8c30009d4d713744f7e006ef54d7a"
+    },
+    {
+      "path": "regulai/front/templates/auditlogs/detail.html",
+      "sha256": "1e0279d5b76b310977be804f199aa06ff29fdd7404678d15b4b86dd690f9671a"
+    },
+    {
+      "path": "regulai/front/templates/auditlogs/list.html",
+      "sha256": "8644001eba4502a799f4d36fc5b4fbda2a421b56bf4c63e4759e63b0b001396d"
+    },
+    {
+      "path": "regulai/front/templates/auth/login.html",
+      "sha256": "508bad0304044cde3cff7981d046bd9a2a744cdb54ff453db2098de2ccd26bba"
+    },
+    {
+      "path": "regulai/front/templates/auth/profile.html",
+      "sha256": "79979c0f9d8b313cb2227777c2b865b31ec9934aea236cb6f881f7e6e1862385"
+    },
+    {
+      "path": "regulai/front/templates/auth/signup.html",
+      "sha256": "9e68a877ae8ac75704544e443c3dae7fb6d1b359dd40730f8b1a74a06e0f7465"
+    },
+    {
+      "path": "regulai/front/templates/base.html",
+      "sha256": "e9a8ddc041c6e54df491e5f3723af919f9fe35ec9ae90f01df687f82f2d22fab"
+    },
+    {
+      "path": "regulai/front/templates/chat/chat.html",
+      "sha256": "9ec32cf123814b737b922f27c400ae1b1adc0c1db25193927e042baca4428473"
+    },
+    {
+      "path": "regulai/front/templates/chat/delete.html",
+      "sha256": "506a8bfd2435c43f68de803ed148f99d7f888daf1207a2af9fbd5017b7cdddb6"
+    },
+    {
+      "path": "regulai/front/templates/company/settings.html",
+      "sha256": "31b10c2c0d3ec05f9b39897c26f343c7688e4c0caa1b4258f817e18bc3580750"
+    },
+    {
+      "path": "regulai/front/templates/dashboard.html",
+      "sha256": "3240c4fbafe2df05f5c690af7cdce96f56a52dd8a2ececd79579a879138ca2b0"
+    },
+    {
+      "path": "regulai/front/templates/departments/delete.html",
+      "sha256": "b478bce7856b4cd9a49db645ae274c95a95096e05cdf6f61ef59139ee53216e9"
+    },
+    {
+      "path": "regulai/front/templates/departments/form.html",
+      "sha256": "9345f60029e0e851acc1202857ca104aa70c6d01df17852c5ca84d85045a5d80"
+    },
+    {
+      "path": "regulai/front/templates/departments/list.html",
+      "sha256": "4d116a04154fad3597e72e1b88344f106df87e4bcf7fb99256ddd08146283e59"
+    },
+    {
+      "path": "regulai/front/templates/engines/delete.html",
+      "sha256": "1d7a8b68858730bbad4286b4dceac180e9ed2444401541ad11b49bc3db015f28"
+    },
+    {
+      "path": "regulai/front/templates/engines/form.html",
+      "sha256": "3bbd917f88a7a672620ef5c9aeb7546ea25933f9841163613bb66070a989acf6"
+    },
+    {
+      "path": "regulai/front/templates/engines/list.html",
+      "sha256": "3e13bd74b818a3bdf5c4ce09027336854d1aab04b84d185853b94f4b7613e75b"
+    },
+    {
+      "path": "regulai/front/templates/errors/rate_limit.html",
+      "sha256": "7e2f30deab882ad8d6477409a144ee961a95c019809af1d15fafdbf95cb42821"
+    },
+    {
+      "path": "regulai/front/templates/home.html",
+      "sha256": "faee8a841f0f8c8962df7709da9dcda0518e2b7fa2697bc1db7d35dbf928db7c"
+    },
+    {
+      "path": "regulai/front/templates/obfuscation/delete.html",
+      "sha256": "0bcf2b8434d03713ecc8f72d609c935ea85fd30b719617795e43c41be7a84278"
+    },
+    {
+      "path": "regulai/front/templates/obfuscation/form.html",
+      "sha256": "74d0bae56bf04b6cf25a3a24372c5bb35a341de8c2aa95b23823fb4e4962a997"
+    },
+    {
+      "path": "regulai/front/templates/obfuscation/list.html",
+      "sha256": "e16d31f38ab2878a5019c01e0bb63a31f276a75c44faac7932327a1acf2a693b"
+    },
+    {
+      "path": "regulai/front/templates/policy_simulator.html",
+      "sha256": "faccde1c11f5f9f1bae981a4b5a96448b6ddcee4310fc7e8127c9dcf9fd7403f"
+    },
+    {
+      "path": "regulai/front/templates/prompts/detail.html",
+      "sha256": "9346030fb0e531321caa3c7b9630e632c0eda067cedd7cfadc76ae2083f62429"
+    },
+    {
+      "path": "regulai/front/templates/prompts/list.html",
+      "sha256": "d8bfe90559c633444f8639748557787bf1290e2077b983b6cfcf0eefa8e36e8e"
+    },
+    {
+      "path": "regulai/front/templates/rules/delete.html",
+      "sha256": "e10b0cf86fe576b9ec6ee5932bcbdfd3ca83218a533455c1fa97f08144ad53d9"
+    },
+    {
+      "path": "regulai/front/templates/rules/detail.html",
+      "sha256": "e5b25e51f235b715e989f67a242466af1d2086f2a9d6d190b2964b12124d23e3"
+    },
+    {
+      "path": "regulai/front/templates/rules/form.html",
+      "sha256": "bcf2cc094bc3b658e4e1e13429116cb3a6c4f70581828d16961a314525d66b9a"
+    },
+    {
+      "path": "regulai/front/templates/rules/list.html",
+      "sha256": "8be9d70cdd5c747349b0471af2bc633a00936ef2a644251acfbfa097361b8e25"
+    },
+    {
+      "path": "regulai/front/templates/rules_community/list.html",
+      "sha256": "5460d75c2f4df06aabe309d916a6ca33a08f15917c297d9830f34403adafb20a"
+    },
+    {
+      "path": "regulai/front/templates/rulesgroups/delete.html",
+      "sha256": "db94efb2e215327a7c816d5bcb9c16abc9f5cccecb55a93983cac0e7ef3b4afb"
+    },
+    {
+      "path": "regulai/front/templates/rulesgroups/detail.html",
+      "sha256": "f57237492f6f35d5abe1fa2993fe4039b0ddd0f6f5c7cfb62adcf71adf44ba93"
+    },
+    {
+      "path": "regulai/front/templates/rulesgroups/form.html",
+      "sha256": "a802cb9b09fd4e8e5bc0a8aee496c4322e26a59827e9448d949010d4b473b71b"
+    },
+    {
+      "path": "regulai/front/templates/rulesgroups/list.html",
+      "sha256": "f75b32fe5d5123312a1dbd13b67950682d3e3beffd58a2c856d76f42ea5224aa"
+    },
+    {
+      "path": "regulai/front/templates/users/delete.html",
+      "sha256": "cb89c837e42a34d263922bd498a809bfd9c7b2afd7192c7eda54af0e6e564aec"
+    },
+    {
+      "path": "regulai/front/templates/users/form.html",
+      "sha256": "8765c1d60716bc7037baca4c5c7008a2d7db029908a3425f494bbe76d14e0669"
+    },
+    {
+      "path": "regulai/front/templates/users/list.html",
+      "sha256": "6eaf8363a3967f08cfff944e755b0bca7e839aa764d6938325fc5b407f154322"
+    },
+    {
+      "path": "regulai/front/test_access.py",
+      "sha256": "e5b3d49d7fb52603a780cc3d9775142a853437324df345327d0cdb66b37c26bb"
+    },
+    {
+      "path": "regulai/front/test_backend_hardening.py",
+      "sha256": "7b1151ae3add3a0c4cc730378b34bab256892a4c8ff0f2deb40a98cf4bc389dc"
+    },
+    {
+      "path": "regulai/front/test_chat_flow.py",
+      "sha256": "6ec5b3da6242492da09cadc959fbb499837d9bc4d13e05442d1d0565ef48a1e3"
+    },
+    {
+      "path": "regulai/front/test_chat_ui.py",
+      "sha256": "6611ee8e1819864a1f5d35c48056a48acb74734ed859ab2ed0112bc642b37ca0"
+    },
+    {
+      "path": "regulai/front/test_classification.py",
+      "sha256": "a3f6ec39b23df94f075e0f2c4140d69982568a6091bf21354df6bd197b61a457"
+    },
+    {
+      "path": "regulai/front/test_connectors.py",
+      "sha256": "9d3119344c3ae7525220b5db7b645f4afd982a59c9cbfdf1c731b758ebf1e6e7"
+    },
+    {
+      "path": "regulai/front/test_demo.py",
+      "sha256": "d5e74cc4c2552d4325e684e2dc5e98c27889c254e6fbb4743cd187845a686476"
+    },
+    {
+      "path": "regulai/front/test_document_fidelity.py",
+      "sha256": "9c8d714710ba5cd8aab1fcba3a77d4eab2dea828a722fa311ab9e16798c0d00a"
+    },
+    {
+      "path": "regulai/front/test_documents.py",
+      "sha256": "34664b0fa4812da12fcb1094174a81313dc6c1ac45bd370abe6e173c121ee836"
+    },
+    {
+      "path": "regulai/front/test_evaluation.py",
+      "sha256": "e6ef73008c03a0da11953ae096275f761ec87f615b16f5b00b66e1a05e89f861"
+    },
+    {
+      "path": "regulai/front/test_evaluation_budget.py",
+      "sha256": "da17cc42d43ccb42166344ddf7f9fc17e333179e2667376eb25541443daf1b43"
+    },
+    {
+      "path": "regulai/front/test_evaluation_pilot.py",
+      "sha256": "2987d7e4f4e99291b1768cf3da7c6c83fcadf5a4bb9d9eb65a779fb2f377ed01"
+    },
+    {
+      "path": "regulai/front/test_frontend_chat.py",
+      "sha256": "f72dd6a5b96d257226ad1bcb4b8a37e6c4422fd13ae6ce7b3b46ea8307cdf793"
+    },
+    {
+      "path": "regulai/front/test_frontend_resources.py",
+      "sha256": "332ae6e17f72f5ec54c4cd2fde0d7972363e83c58188c59a18c1a97e5a09d5b3"
+    },
+    {
+      "path": "regulai/front/test_history_departments.py",
+      "sha256": "55b23097f3b570367259cd3166a9b635c96c80eaceed40d358248cb329b11c95"
+    },
+    {
+      "path": "regulai/front/test_jev.py",
+      "sha256": "1f2dfa6716ea51197bde797e7962e627606024405d5b67cf21f93596ed750fc3"
+    },
+    {
+      "path": "regulai/front/test_onboarding.py",
+      "sha256": "e12953d9114c80db1cc28266e5d7870ddc1df9cfb356876e67ab701b13da87a6"
+    },
+    {
+      "path": "regulai/front/test_onboarding_migrations.py",
+      "sha256": "da5e364b62b8c97503964b6099bb8264cec27ce2d40557f8746ffb5bf537641b"
+    },
+    {
+      "path": "regulai/front/test_operations.py",
+      "sha256": "d90e6959e9b3c85603411ec7557d9915cbc922bd362556462dc6d3bfdbb05004"
+    },
+    {
+      "path": "regulai/front/test_pipeline.py",
+      "sha256": "13a1f20045224d0f6bc489445367e0a6e59af74f84811b6fddc4317069455ff0"
+    },
+    {
+      "path": "regulai/front/test_pipeline_privacy.py",
+      "sha256": "a5ac74fd603c4c39f51b9bc7c98e006558394e9fa1e5583184aeea7f750d1704"
+    },
+    {
+      "path": "regulai/front/test_policy_simulator.py",
+      "sha256": "3386b6719e38af2b26af798969d42c50682853573bb76c7790af511a9726a5c1"
+    },
+    {
+      "path": "regulai/front/test_required_masking.py",
+      "sha256": "5af3dba4e72efff7e59beab0583e51968adaa804f57b1ad650e31a69e9241a69"
+    },
+    {
+      "path": "regulai/front/test_review.py",
+      "sha256": "6590be10b586cfd5bee075e0e81411fef0370651c9c54a489eed32e22a766b25"
+    },
+    {
+      "path": "regulai/front/test_review_regressions.py",
+      "sha256": "cad552d0924eb713165d0f85fca69e839ab761295e897c3da203b287bcf47ee2"
+    },
+    {
+      "path": "regulai/front/test_routing.py",
+      "sha256": "6c2af9afccc563418ebd5bb7e98360907c86432cc60b8b7684f8683da5b444cc"
+    },
+    {
+      "path": "regulai/front/test_runtime.py",
+      "sha256": "6fe00599d9fcaae536dd4dc22258dab7de6b5b85efdf3779915f750129944d2f"
+    },
+    {
+      "path": "regulai/front/test_smoke.py",
+      "sha256": "f4e75f6f0aa17ba9028d2fd8bfbcfe5268df2507b1a98b9293a760eeb3ab0ea6"
+    },
+    {
+      "path": "regulai/front/test_state.py",
+      "sha256": "4302a6c152f235464b29392758e871ad31acde1a9f19a4056da8c4464b6254c3"
+    },
+    {
+      "path": "regulai/front/test_verification.py",
+      "sha256": "b7e10ffda3936187f851c1af5079b8266d15255e0f889c80ba3bf65b6b72b4a5"
+    },
+    {
+      "path": "regulai/front/test_verification_flow.py",
+      "sha256": "ce524b88477bed0376055a9b024d699699158f135b470b0c8bedd5b6971ee606"
+    },
+    {
+      "path": "regulai/front/test_verification_judge.py",
+      "sha256": "56c889a867b47e41ce54367af75ced27cb1413b95692d22e431235b3f0881d10"
+    },
+    {
+      "path": "regulai/front/test_verification_offline.py",
+      "sha256": "7d5d0a0b5fdd32d66f4b7f5c4269c2b185a1d7b3d7495145375cfc69198f2093"
+    },
+    {
+      "path": "regulai/front/tests.py",
+      "sha256": "eadf0160135d86b9b6d46fccc86b91dd3503051ae7b1d668ca5bf3416d647fca"
+    },
+    {
+      "path": "regulai/front/urls.py",
+      "sha256": "5e3b1e4a29c5cd2425acbf8ed71c7a2b6db7c979609db37b9fe97041eee98c8f"
+    },
+    {
+      "path": "regulai/front/verification.py",
+      "sha256": "e12fce381580ea94df3634e71bda1e18183ecad61459d0fb8c8c16a79b150482"
+    },
+    {
+      "path": "regulai/front/views.py",
+      "sha256": "aaaf107bab1f414f67a9d267ac3ce4237018e44a52ebc7ea3665ba382af70213"
+    },
+    {
+      "path": "regulai/manage.py",
+      "sha256": "3930ac71971763c62f2c4358103fa46cd659c620bfdaa28b27b68ff31d357f47"
+    },
+    {
+      "path": "regulai/regulai/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regulai/regulai/asgi.py",
+      "sha256": "8d238a921718888727861206f8feba33a141811b225396292c4edabbd16927c7"
+    },
+    {
+      "path": "regulai/regulai/demo_settings.py",
+      "sha256": "e2168c5effa7cc438486740d3f80032c13ace395c367dd8801446f1d66461c87"
+    },
+    {
+      "path": "regulai/regulai/pilot_lab_settings.py",
+      "sha256": "58bbdb60041a3e67c3b916669069a62e7d169dd27f94e11497986de03234ebd9"
+    },
+    {
+      "path": "regulai/regulai/pilot_postgres_test_settings.py",
+      "sha256": "c4703aa1eaab401c7ee922391697c8bdb88f84be0769870d9263e4170faa792f"
+    },
+    {
+      "path": "regulai/regulai/settings.py",
+      "sha256": "2965ff7affb4e4dc795f6d657b22c98a2b1653d48edcf19e8c3f741961d01b8c"
+    },
+    {
+      "path": "regulai/regulai/test_settings.py",
+      "sha256": "ec2af8ac7da45664c3f4118f34efe61a24c8e46bd818fe7a7b44b0dc351099cb"
+    },
+    {
+      "path": "regulai/regulai/urls.py",
+      "sha256": "efc33cb7f5871b20fb2b7c6db7ff81d94a97a3b888a71160e58d2337998c3ef2"
+    },
+    {
+      "path": "regulai/regulai/wsgi.py",
+      "sha256": "825e8c33450af228578bce54088313079e82a8fad96dddaab25d41f08d97e3e8"
+    },
+    {
+      "path": "regulai/requirements.txt",
+      "sha256": "46692251b2c32be2388bba6a26469235fc15c9091934de4291f1207723f00316"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "712d77775bc0a5430dc7be20a59d62970447e68624debe3d6db586f813d1c4a3"
+    },
+    {
+      "path": "scripts/bootstrap_local.py",
+      "sha256": "2aa65deb8ea1ae812daa2e8e2feba589a4c3ded8d4bd97b3a13908461f88b24f"
+    },
+    {
+      "path": "scripts/pilot_document_app_inventory.ps1",
+      "sha256": "11b44c773164e4a6c7da0403d5a3b1a865dedad2e0bab1eb370b50c08e1bfe26"
+    },
+    {
+      "path": "scripts/pilot_document_demo.py",
+      "sha256": "9fd1495ee5338b3ece75ffe8a29fedb58d3bbd6697b010e28b7af5fce0e1fb82"
+    },
+    {
+      "path": "scripts/pilot_human_report.py",
+      "sha256": "0ba9144189c21580624ed00da573be0ccbd7bc858edbb59a45c65dc25a0a6093"
+    },
+    {
+      "path": "scripts/pilot_lab.py",
+      "sha256": "c812cd0a7ea41f11717a3bcbd0517f723bd7267814a12b9972aa34fac20e922a"
+    },
+    {
+      "path": "scripts/prepare_pilot_manifest.py",
+      "sha256": "ef6112a3db761878b1471817212bdc5753d2a28b8c5dfe58b45f71453fe1f0c1"
+    },
+    {
+      "path": "scripts/vendor_assets.py",
+      "sha256": "b677bdd06502e44891117018bbbbdd312c3f5e817a8760a321caa626048f66ba"
+    },
+    {
+      "path": "scripts/verify_community.py",
+      "sha256": "d34cc2eb47b1811cfa7e8335c10f51aa254fce646bdc3a3686ab59c6fe115ad8"
+    }
+  ]
+}

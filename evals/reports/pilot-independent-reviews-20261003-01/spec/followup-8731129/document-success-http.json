@@ -1,0 +1,49 @@
+{
+  "case": "document-success",
+  "options_declared": {
+    "thinking": {
+      "type": "disabled"
+    },
+    "temperature": 0.6,
+    "document_temperature": 0.1
+  },
+  "http_payloads": [
+    {
+      "url": "https://api.deepseek.com/chat/completions",
+      "temperature": 0.1,
+      "model": "deepseek-v4-pro",
+      "thinking": {
+        "type": "disabled"
+      },
+      "max_tokens": 512
+    },
+    {
+      "url": "https://api.deepseek.com/chat/completions",
+      "temperature": 0.1,
+      "model": "deepseek-flash",
+      "thinking": {
+        "type": "disabled"
+      },
+      "max_tokens": 512
+    },
+    {
+      "url": "https://api.deepseek.com/chat/completions",
+      "temperature": 0.1,
+      "model": "deepseek-v4-pro",
+      "thinking": {
+        "type": "disabled"
+      },
+      "max_tokens": 512
+    },
+    {
+      "url": "https://api.deepseek.com/chat/completions",
+      "temperature": 0.1,
+      "model": "deepseek-flash",
+      "thinking": {
+        "type": "disabled"
+      },
+      "max_tokens": 512
+    }
+  ],
+  "network_socket_calls": 0
+}

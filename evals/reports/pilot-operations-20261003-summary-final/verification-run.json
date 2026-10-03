@@ -1,0 +1,17 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "evals/reports/pilot-operations-20261003-summary-final/verify_evidence.py"
+  ],
+  "exit_code": 0,
+  "output": {
+    "executions": 8,
+    "all_command_hashes_match": true,
+    "synthetic_secret_and_payload_log_matches": 0
+  },
+  "script_identical_to_previous": true
+}

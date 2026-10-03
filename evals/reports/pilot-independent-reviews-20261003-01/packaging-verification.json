@@ -1,0 +1,87 @@
+{
+  "reports": [
+    {
+      "path": "docs/plan-blackhat/revisiones-piloto/standards-c1e3a36.md",
+      "before_sha256": "079a1704e6714c331511d021ea4d5fd4f34b23137d08e481bab24af368ea0845",
+      "after_sha256": "13a58ad264310485c3cb7a4593932ada84e2643e27274867e7fef69068f94595",
+      "findings_verdicts_and_limits_unchanged": true,
+      "command_blocks_unchanged": true
+    },
+    {
+      "path": "docs/plan-blackhat/revisiones-piloto/standards-a3bc67b.md",
+      "before_sha256": "faa8c603905b3e653dbcb0ecb1cfb23c06dbcacbcb3c3db8c2b2fe2b99b8e85e",
+      "after_sha256": "c7ccfdc60efceecd9bca05e4ba36b65b7d173224e258d67082b7d98dcf2f046a",
+      "findings_verdicts_and_limits_unchanged": true,
+      "command_blocks_unchanged": true
+    },
+    {
+      "path": "docs/plan-blackhat/revisiones-piloto/spec-c1e3a36.md",
+      "before_sha256": "a0fef727abdd4c546ba080287c088cc310bb6960e5f7e1d40f6c0dddfec115e0",
+      "after_sha256": "81a9a60c503d6b442cf964d3deef3919d533ab54c2f1a833f3d17b822a40ceff",
+      "findings_verdicts_and_limits_unchanged": true,
+      "command_blocks_unchanged": true
+    },
+    {
+      "path": "docs/plan-blackhat/revisiones-piloto/spec-8731129.md",
+      "before_sha256": "6f3620b54d144a1592d48527d6ff03ee8bf397a47ac57feb6ce6e152549fdcf2",
+      "after_sha256": "0b3727c20a17e6fbd04b6c3d973732f8d2126f4bae4095f48427b6792be82dee",
+      "findings_verdicts_and_limits_unchanged": true,
+      "command_blocks_unchanged": true
+    },
+    {
+      "path": "docs/plan-blackhat/revisiones-piloto/security-febc8aa.md",
+      "before_sha256": "1a0c06352534de4fcb5ef788fb48a4a265a1a4586637e8636e9dc5db99e613db",
+      "after_sha256": "6e5c32cd29857451b1f3accb532c9aac5a7fd0a87bdaa65cdff000c91b2fecec",
+      "findings_verdicts_and_limits_unchanged": true,
+      "command_blocks_unchanged": true
+    },
+    {
+      "path": "docs/plan-blackhat/revisiones-piloto/security-700389c.md",
+      "before_sha256": "a9e83b2010947b9da2e96cd60d19bf3d32a23e0176699444b38bfc32ccbed3ad",
+      "after_sha256": "b67a327341d4000997c9e95b670045aa5acc806e8ca0756c62372c97c8d9a81c",
+      "findings_verdicts_and_limits_unchanged": true,
+      "command_blocks_unchanged": true
+    }
+  ],
+  "local_links_checked": 78,
+  "missing_links": [],
+  "private_markdown_links": [],
+  "excluded_trees_or_bytecode_found": [],
+  "captured_evidence_files": 65,
+  "captured_reports": 6,
+  "product_or_provider_executed": false,
+  "commands": [
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe evals/reports/pilot-independent-reviews-20261003-01/preserve_evidence.py",
+      "exit_code": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe evals/reports/pilot-independent-reviews-20261003-01/append_security_followup.py",
+      "exit_code": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe evals/reports/pilot-independent-reviews-20261003-01/verify_archive.py",
+      "exit_code": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe evals/reports/pilot-independent-reviews-20261003-01/verify_archive.py --compare-originals",
+      "exit_code": 0
+    },
+    {
+      "command": "rtk proxy git check-attr text whitespace -- evals/reports/pilot-independent-reviews-20261003-01/standards/probe-output.txt evals/reports/pilot-independent-reviews-20261003-01/spec/temperature-test.log evals/reports/pilot-independent-reviews-20261003-01/security/approval-race.log",
+      "exit_code": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe evals/reports/pilot-independent-reviews-20261003-01/audit_link_updates.py",
+      "exit_code": 1,
+      "attempt": "initial",
+      "reason": "Self-output had not been written; packaging helper generated one bytecode cache. Initial result retained separately."
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe evals/reports/pilot-independent-reviews-20261003-01/audit_link_updates.py",
+      "exit_code": 0,
+      "attempt": "after correcting the packaging-only checks and removing owned bytecode"
+    }
+  ],
+  "passed": true
+}

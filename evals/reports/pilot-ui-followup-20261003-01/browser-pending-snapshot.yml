@@ -1,0 +1,86 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "regulAI regulAI" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "regulAI" [ref=e7]
+          - generic [ref=e8]: regulAI
+        - text: 
+      - navigation [ref=e9]:
+        - list [ref=e10]:
+          - listitem [ref=e11]: Home
+          - listitem [ref=e12]:
+            - link "Home" [ref=e13] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=e19]:
+            - link "Chat" [ref=e20] [cursor=pointer]:
+              - /url: /chat/
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - navigation [ref=e28]:
+        - list [ref=e29]:
+          - text: 
+          - listitem [ref=e30]:
+            - link "" [ref=e31] [cursor=pointer]:
+              - /url: /alerts/
+        - list [ref=e34]:
+          - listitem [ref=e35]:
+            - generic [ref=e36]:
+              - generic [ref=e37]: community-demo
+              - generic [ref=e38]: Community offline demo
+          - listitem [ref=e39]:
+            - link [ref=e40] [cursor=pointer]:
+              - /url: /profile/
+            - text:  
+          - listitem [ref=e41]:
+            - link "" [ref=e42] [cursor=pointer]:
+              - /url: /logout/
+    - generic [ref=e44]:
+      - status [ref=e45]:
+        - strong [ref=e46]: DEMO OFFLINE — fallo simulado.
+        - text: Datos, modelos y jueces sintéticos; sin llamadas a proveedores reales ni métricas de calidad real.
+      - generic [ref=e47]:
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - heading [level=6] [ref=e52]
+            - link [ref=e56] [cursor=pointer]:
+              - /url: /chat/
+          - generic [ref=e60]:
+            - link "Cual es el precio del contrato tras caducar la con Oct 03, 14:17" [ref=e61] [cursor=pointer]:
+              - /url: /chat/1/
+              - generic [ref=e62]:
+                - generic [ref=e63]: Cual es el precio del contrato tras caducar la con
+                - generic [ref=e64]: Oct 03, 14:17
+            - link "Delete" [ref=e65] [cursor=pointer]:
+              - /url: /chat/1/delete/
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - heading [level=5] [ref=e75]
+            - generic [ref=e79]:
+              - button [ref=e81] [cursor=pointer]
+              - button [ref=e91] [cursor=pointer]
+              - generic [ref=e103]:
+                - checkbox "Automatic model selection" [checked] [ref=e104]
+                - text: Automatic model selection
+              - generic [ref=e105]: Configured
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - text: You
+              - generic [ref=e140]: pending_consent
+            - generic [ref=e141]: SYNTHETIC_CONSENT_CANCEL
+            - group [ref=e142]:
+              - 'generic "Decision receipt: pending_consent" [ref=e143] [cursor=pointer]'
+            - generic [ref=e144]:
+              - paragraph [ref=e145]: "Confirmation: Review the decision before authorizing this same content and file."
+              - button "Confirm sending" [active] [ref=e146] [cursor=pointer]
+              - button "Cancel request" [ref=e147] [cursor=pointer]
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - button "Attach document" [ref=e121] [cursor=pointer]
+              - textbox "Message" [ref=e125]:
+                - /placeholder: Type your message here... You can also attach a supported document.
+              - button "Send message" [ref=e126] [cursor=pointer]
+            - generic [ref=e130]:
+              - generic [ref=e131]: Press Enter to send, Shift+Enter for new line
+              - generic [ref=e132]: "Supported: txt, pdf with text, docx, xlsx, csv, json, py, js, md. Reattach files for later questions."

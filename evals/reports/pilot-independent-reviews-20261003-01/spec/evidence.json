@@ -1,0 +1,27 @@
+{
+  "candidate": "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+  "report_words": 310,
+  "files": {
+    "temperature-observed.json": "fe9538856e464131470a52a36b2b228eaaf70138419a2fc0569a24240e8de41b",
+    "temperature-test.log": "b91dae3ee24cbebc6e651ae212cba65226b7645bcdc699513789bfad695d4a47",
+    "existing-evaluation-tests.log": "64c2753145a7718adcd147c6e3fb6470959bd1c2a1963496c0fc05b601891b34",
+    "snapshot.json": "9d098a1d378b38daf25f9ff871f7c38133a6e123f7f612074ad7b3dce92087e2",
+    "temperature_repro.py": "c23abce6e2ccc9d46ded72f62180b85143b32720781245cc461058d5ff1b1ec4",
+    "run_tests.py": "850a197bd4be331c787b9da7de7bd087595451100d7635c7ca477fa3a080bdb6"
+  },
+  "commands": [
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe .claude/review-spec/run_tests.py",
+      "exit_code": 1,
+      "tests": 1,
+      "seconds": 5.147,
+      "outcome": "Expected failure: document temperature differs from manifest"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe .claude/review-spec/run_tests.py front.test_evaluation_pilot front.test_smoke front.test_evaluation_budget",
+      "exit_code": 0,
+      "tests": 20,
+      "seconds": 12.668
+    }
+  ]
+}

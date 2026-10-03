@@ -1,0 +1,148 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - generic [ref=f2e5]:
+        - link "regulAI regulAI" [ref=f2e6] [cursor=pointer]:
+          - /url: /
+          - img "regulAI" [ref=f2e7]
+          - generic [ref=f2e8]: regulAI
+        - text: 
+      - navigation [ref=f2e9]:
+        - list [ref=f2e10]:
+          - listitem [ref=f2e11]: Home
+          - listitem [ref=f2e12]:
+            - link "Home" [ref=f2e13] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f2e19]:
+            - link "Chat" [ref=f2e20] [cursor=pointer]:
+              - /url: /chat/
+  - generic [ref=f2e26]:
+    - banner [ref=f2e27]:
+      - navigation [ref=f2e28]:
+        - list [ref=f2e29]:
+          - text: 
+          - listitem [ref=f2e30]:
+            - link "" [ref=f2e31] [cursor=pointer]:
+              - /url: /alerts/
+        - list [ref=f2e34]:
+          - listitem [ref=f2e35]:
+            - generic [ref=f2e36]:
+              - generic [ref=f2e37]: community-demo
+              - generic [ref=f2e38]: Community offline demo
+          - listitem [ref=f2e39]:
+            - link [ref=f2e40] [cursor=pointer]:
+              - /url: /profile/
+            - text:  
+          - listitem [ref=f2e41]:
+            - link "" [ref=f2e42] [cursor=pointer]:
+              - /url: /logout/
+    - generic [ref=f2e44]:
+      - status [ref=f2e45]:
+        - strong [ref=f2e46]: DEMO OFFLINE — fallo simulado.
+        - text: Datos, modelos y jueces sintéticos; sin llamadas a proveedores reales ni métricas de calidad real.
+      - generic [ref=f2e47]:
+        - generic [ref=f2e50]:
+          - generic [ref=f2e51]:
+            - heading [level=6] [ref=f2e52]
+            - link [ref=f2e56] [cursor=pointer]:
+              - /url: /chat/
+          - generic [ref=f2e60]:
+            - link "Cual es el precio del contrato tras caducar la con Oct 03, 14:17" [ref=f2e61] [cursor=pointer]:
+              - /url: /chat/1/
+              - generic [ref=f2e62]:
+                - generic [ref=f2e63]: Cual es el precio del contrato tras caducar la con
+                - generic [ref=f2e64]: Oct 03, 14:17
+            - link "Delete" [ref=f2e65] [cursor=pointer]:
+              - /url: /chat/1/delete/
+        - generic [ref=f2e73]:
+          - generic [ref=f2e74]:
+            - heading [level=5] [ref=f2e75]
+            - generic [ref=f2e79]:
+              - button [ref=f2e81] [cursor=pointer]
+              - button [ref=f2e91] [cursor=pointer]
+              - generic [ref=f2e103]:
+                - checkbox "Automatic model selection" [checked] [ref=f2e104]
+                - text: Automatic model selection
+              - generic [ref=f2e105]: Configured
+          - generic [ref=f2e109]:
+            - generic [ref=f2e110]:
+              - generic [ref=f2e111]: You
+              - generic [ref=f2e117]: Cual es el precio del contrato tras caducar la confirmacion?
+              - group [ref=f2e118]:
+                - 'generic "Decision receipt: completed" [active] [ref=f2e119] [cursor=pointer]'
+                - generic [ref=f2e158]:
+                  - paragraph [ref=f2e159]: "Request: completed"
+                  - paragraph [ref=f2e160]: "Security: allow"
+                  - paragraph [ref=f2e161]: "Reasons: local_policy_allowed"
+                  - paragraph [ref=f2e162]: "Document coverage: complete_text_only"
+                  - paragraph [ref=f2e163]: "Units read / total: 3 / 3"
+                  - paragraph [ref=f2e164]: "Coverage warnings: images_unread"
+                  - paragraph [ref=f2e165]: "Document notice: Imágenes no analizadas ni enviadas (1): word/document.xml/paragraph:3"
+                  - paragraph [ref=f2e166]: "Previous confirmation notice: A previous confirmation expired."
+                  - paragraph [ref=f2e167]: "History turns sent / omitted: 0 / 0"
+                  - paragraph [ref=f2e168]: "History bytes sent / omitted: 0 / 0"
+                  - paragraph [ref=f2e169]: "Evaluator input limit (bytes): 98304"
+                  - paragraph [ref=f2e170]: "Response limit (bytes): 8000"
+                  - paragraph [ref=f2e171]: "Output limit (tokens): 1000"
+                  - paragraph [ref=f2e172]: "Call timeout (seconds): 30"
+                  - paragraph [ref=f2e173]: "Request deadline (seconds): 90"
+                  - paragraph [ref=f2e174]: "History limit (bytes): 32768"
+                  - paragraph [ref=f2e175]: "History limit (turns): 20"
+                  - paragraph [ref=f2e176]: "Maximum judge input (bytes): 71682"
+                  - paragraph [ref=f2e177]: "Route: fallback"
+                  - paragraph [ref=f2e178]: "Destination: engine:1"
+                  - paragraph [ref=f2e179]: "Model: synthetic-strong-v1"
+                  - paragraph [ref=f2e180]: "Task: document_question"
+                  - paragraph [ref=f2e181]: "Route tier: strong"
+                  - paragraph [ref=f2e182]: "Route reasons: quality_cost_route"
+                  - paragraph [ref=f2e183]: "Verification: passed"
+                  - paragraph [ref=f2e184]: "Calls: 8"
+                  - paragraph [ref=f2e185]: "Call 1: obfuscation / completed / obfuscation:1"
+                  - paragraph [ref=f2e186]: "Call cost: 0 USD"
+                  - paragraph [ref=f2e187]: "Duration (ms): 0"
+                  - paragraph [ref=f2e188]: "Call 2: classification / completed / jev / jev-1.13.0"
+                  - paragraph [ref=f2e189]: "Call cost: 0.00006 USD"
+                  - paragraph [ref=f2e190]: "Duration (ms): 0"
+                  - paragraph [ref=f2e191]: "Call 3: generation / completed / engine:1 / synthetic-economy-v1"
+                  - paragraph [ref=f2e192]: "Call cost: 0.00014000 USD"
+                  - paragraph [ref=f2e193]: "Duration (ms): 0"
+                  - paragraph [ref=f2e194]: "Call 4: obfuscation / completed / obfuscation:1"
+                  - paragraph [ref=f2e195]: "Call cost: 0 USD"
+                  - paragraph [ref=f2e196]: "Duration (ms): 0"
+                  - paragraph [ref=f2e197]: "Call 5: verification / completed / jev / jev-1.13.0"
+                  - paragraph [ref=f2e198]: "Call cost: 0.00006 USD"
+                  - paragraph [ref=f2e199]: "Duration (ms): 0"
+                  - paragraph [ref=f2e200]: "Call 6: generation / completed / engine:1 / synthetic-strong-v1"
+                  - paragraph [ref=f2e201]: "Call cost: 0.00070000 USD"
+                  - paragraph [ref=f2e202]: "Duration (ms): 0"
+                  - paragraph [ref=f2e203]: "Call 7: obfuscation / completed / obfuscation:1"
+                  - paragraph [ref=f2e204]: "Call cost: 0 USD"
+                  - paragraph [ref=f2e205]: "Duration (ms): 0"
+                  - paragraph [ref=f2e206]: "Call 8: verification / completed / jev / jev-1.13.0"
+                  - paragraph [ref=f2e207]: "Call cost: 0.00006 USD"
+                  - paragraph [ref=f2e208]: "Duration (ms): 0"
+                  - paragraph [ref=f2e209]: "Effective route: engine:1 / synthetic-strong-v1"
+                  - paragraph [ref=f2e210]: "Total cost: 0.00102000"
+                  - paragraph [ref=f2e211]: "Cost completeness: estimated"
+                  - paragraph [ref=f2e212]: "Currency: USD"
+                  - paragraph [ref=f2e213]: "Total duration (ms): 547"
+                - link "Export receipt JSON" [ref=f2e214] [cursor=pointer]:
+                  - /url: /chat/requests/e7c85964-6e98-4fcd-86dc-daa86d669dc0/receipt/
+              - generic [ref=f2e120]:
+                - generic [ref=f2e126]: text-and-image.docx
+                - generic [ref=f2e127]: Reattach the original file to ask about it again.
+                - generic [ref=f2e128]: (45.6 KB)
+            - generic [ref=f2e129]:
+              - generic [ref=f2e130]: AI Assistant
+              - generic [ref=f2e139]: 10 euros [1]
+              - group [ref=f2e140]:
+                - generic "Document evidence" [ref=f2e141] [cursor=pointer]
+          - generic [ref=f2e144]:
+            - generic [ref=f2e145]:
+              - button "Attach document" [ref=f2e146] [cursor=pointer]
+              - textbox "Message" [ref=f2e150]:
+                - /placeholder: Type your message here... You can also attach a supported document.
+              - button "Send message" [ref=f2e151] [cursor=pointer]
+            - generic [ref=f2e155]:
+              - generic [ref=f2e156]: Press Enter to send, Shift+Enter for new line
+              - generic [ref=f2e157]: "Supported: txt, pdf with text, docx, xlsx, csv, json, py, js, md. Reattach files for later questions."

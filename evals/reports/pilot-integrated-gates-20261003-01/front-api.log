@@ -1,0 +1,760 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default'...
+
+{"timestamp": "2026-10-03T14:17:19.771094+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.157749+00:00", "level": "WARNING", "logger": "django.request", "request_id": "530a7bde-d273-4183-bf4b-82279e14556a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.168761+00:00", "level": "WARNING", "logger": "django.request", "request_id": "9c4ebe84-5f23-4944-8fd9-c24232a2ce31", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+.{"timestamp": "2026-10-03T14:17:20.206823+00:00", "level": "WARNING", "logger": "django.request", "request_id": "1d637659-79dd-403a-a5e6-179e83269a7f", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:20.233365+00:00", "level": "WARNING", "logger": "django.request", "request_id": "791b6594-5777-4574-a710-45c3c3c5df5f", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+.{"timestamp": "2026-10-03T14:17:20.241870+00:00", "level": "WARNING", "logger": "django.request", "request_id": "039fa446-8069-4a25-b7f3-b5569def27ff", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.244382+00:00", "level": "WARNING", "logger": "django.request", "request_id": "94c1c5a8-eb6f-41fe-bef7-a175999f33d9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.247382+00:00", "level": "WARNING", "logger": "django.request", "request_id": "121cd159-c4a2-4e94-8f66-593e5b126ef7", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.250382+00:00", "level": "WARNING", "logger": "django.request", "request_id": "47fb4e66-c4d6-4236-b097-38c315783ffa", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:20.270415+00:00", "level": "WARNING", "logger": "django.request", "request_id": "d5a8df3d-8d6c-46d4-8a7e-3982d8a2959d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.273932+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "1b733320-7b1e-4182-b86f-99a325594b3c", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:20.419650+00:00", "level": "WARNING", "logger": "django.request", "request_id": "1a4a06fe-a30a-4211-9a4c-e8c985af3880", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:20.437183+00:00", "level": "WARNING", "logger": "django.request", "request_id": "d14a5aca-e72d-4794-9c93-f6dee7e35f53", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+{"timestamp": "2026-10-03T14:17:20.440182+00:00", "level": "WARNING", "logger": "django.request", "request_id": "ae3b5b19-e208-49fd-b6b7-e6efb3f72045", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:17:20.467298+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b53048af-6b71-402e-81d0-6766d3caf30d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.468297+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "92f61e33-57e0-40d4-810b-2aa5879a28d4", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.469297+00:00", "level": "WARNING", "logger": "django.request", "request_id": "42e360f6-c468-44e1-853b-86c23bb498b5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.470297+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "2beed592-8e8f-46d6-92a7-a56c5014abb5", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:20.485832+00:00", "level": "WARNING", "logger": "django.request", "request_id": "9919cd4c-f247-414e-84df-0f47d4baef4c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.487333+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "896d3352-c159-497f-8573-d93ab483ddf6", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.488832+00:00", "level": "WARNING", "logger": "django.request", "request_id": "93cc04ce-b81d-468e-869e-77aefa160727", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.489832+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "dcf33bea-cd7e-4cc5-ad29-08c1d1f786b4", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:17:20.514395+00:00", "level": "WARNING", "logger": "django.request", "request_id": "eda358bc-80bf-4ba5-956b-91eae8488fa9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.515395+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "23736f41-7b64-4eae-9342-63b272877b93", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.528929+00:00", "level": "WARNING", "logger": "django.request", "request_id": "0147c19e-1c7b-48de-87d1-cafa72de9cee", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:20.537944+00:00", "level": "WARNING", "logger": "django.request", "request_id": "285d7656-bec1-4963-a252-de12bfd15f8c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.539944+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "00b90897-5588-4c79-ad72-655c56e393a0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.541450+00:00", "level": "WARNING", "logger": "django.request", "request_id": "4964f1ce-baaf-4dc1-9b55-bfbd1a0f9751", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.542956+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "29570b69-4935-49d8-aa1c-db6a538411b4", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.543961+00:00", "level": "WARNING", "logger": "django.request", "request_id": "9d5a03bf-0eae-438c-ad70-85b84eeb08fb", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:20.545461+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "2c5bbdb6-024a-48e9-89e1-bac18f00f0f9", "code": "unclassified_event", "exception_type": null}
+.......{"timestamp": "2026-10-03T14:17:21.646687+00:00", "level": "WARNING", "logger": "django.request", "request_id": "dfd58f13-df17-44f8-b0d7-a824cef1d337", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:21.679710+00:00", "level": "WARNING", "logger": "django.request", "request_id": "270857d1-564e-41c3-aa53-609613df6ccb", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:22.204659+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a6aef524-21ec-49cb-9d84-df99f4f135b6", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:22.255218+00:00", "level": "WARNING", "logger": "django.request", "request_id": "44287b43-ac23-44d1-b1e5-ccef5ed7c3ac", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:22.696023+00:00", "level": "ERROR", "logger": "django.request", "request_id": "1e075a4a-7ebf-4a1c-b245-b9bda4cca586", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:22.708033+00:00", "level": "ERROR", "logger": "django.request", "request_id": "62779aad-9976-4713-8868-4983e084ba0d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:22.725050+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ad48c844-1387-49ff-9ab0-4ec9d330601b", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:23.148588+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4f533650-82eb-4d56-ab2a-3c63fb7141c0", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.152594+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3a0fd534-cc90-46a9-92e1-e4fbe5494211", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:23.157094+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a220cf27-3d3a-4d70-bb2a-b9059aaada1b", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:23.180613+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b44e5eb9-95fe-46dc-8850-8558d5b30d4d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:23.193123+00:00", "level": "ERROR", "logger": "django.request", "request_id": "44700a27-01f4-498c-b620-eb44a0a7d7c0", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:17:23.238167+00:00", "level": "WARNING", "logger": "django.request", "request_id": "887a4123-488e-4b3f-838d-c605ede35564", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:23.249172+00:00", "level": "WARNING", "logger": "django.request", "request_id": "d5ff2e92-85c8-451f-a09e-7f97074748a2", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:23.264688+00:00", "level": "WARNING", "logger": "django.request", "request_id": "6669a259-561a-4c24-b155-5ad84144d8c6", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:23.283699+00:00", "level": "WARNING", "logger": "django.request", "request_id": "562ca767-430c-45bd-afec-2f9039b195d3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:23.290699+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8f9768ec-09b3-41c9-972b-334fda1ec726", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:23.300709+00:00", "level": "WARNING", "logger": "django.request", "request_id": "fce25333-dc62-4f92-94b5-1ac4558ac1a0", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:23.330737+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "60538d72-c3bf-47d4-a294-2b6a70d10739", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.332742+00:00", "level": "ERROR", "logger": "django.request", "request_id": "223962ff-5cf0-4732-bbd0-dce8ec2394ec", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.362265+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "3fff226a-9d85-409c-ad96-4ba3b81869b7", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.363765+00:00", "level": "ERROR", "logger": "django.request", "request_id": "162e834d-a7c6-4980-83db-333df9c54650", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.386286+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "12a25480-ce04-46b0-b96f-0db99aee399d", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.387786+00:00", "level": "ERROR", "logger": "django.request", "request_id": "f4de7ee3-a6b8-42c2-811a-6d3dfabdbf2c", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.406798+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "87a88d10-8fb9-4485-83ea-6472b1be10e2", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.407296+00:00", "level": "ERROR", "logger": "django.request", "request_id": "cc0aab38-5d95-4140-ba99-0ab95afae3dc", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.429330+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "0f31b0b9-42f4-4595-9751-535339a0d560", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.430830+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a12dd032-64b4-4c6f-a347-572871c77ad3", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.458849+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "6cae1354-b4a0-46c8-9177-8c1263b2b9ff", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.460349+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9fdeaa39-f03b-4f71-8be6-3709c69b2142", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.486367+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "0749a6c5-157f-4bb1-8ee7-7e8a63d78892", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.487867+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e0e7a682-e640-45fe-91db-c84cd5282285", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.509891+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "88bbbda9-a1c0-47ee-8dda-14a5901872cc", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.510397+00:00", "level": "ERROR", "logger": "django.request", "request_id": "85e312df-fa3e-4bd9-bf69-2893e86bbcdb", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.526420+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "f09fdc1c-84c2-477f-a194-da1ceb2c07ed", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.527921+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c4e800cf-83b2-47c2-b6a6-ea4c0153922d", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.552952+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1c77be95-0db4-4620-9fa1-de6317d2d870", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.554452+00:00", "level": "ERROR", "logger": "django.request", "request_id": "85bb6f41-36d2-4f3b-8270-1792a9c2b65a", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.578467+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "801aa991-bc37-43ae-b6fc-d40197f71307", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.579967+00:00", "level": "ERROR", "logger": "django.request", "request_id": "380dc768-0b82-48cb-b2f2-7e6bb5c08725", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.604485+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1b1e773b-8e28-402d-90e2-f564082bbfc4", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.605983+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5bd3c9ac-4d5b-4c23-95aa-05486d6a36d4", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.630011+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "32614ea0-a3ad-4558-ae45-71d992f4f52b", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.631514+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7dc8c4fc-58ee-4707-b948-cafa0e69cd28", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.656034+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1324ee97-84e4-4bd8-aa45-e811d4b76830", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.657533+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2187106a-e089-454b-be80-2f8d5d40e333", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.680547+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "72813003-2b38-4254-977f-5e75339205d1", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.682052+00:00", "level": "ERROR", "logger": "django.request", "request_id": "6af1eaf7-29ba-41c2-af9d-1df1f6ebec07", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.719587+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "57fe1b11-7061-43d8-80bc-58ee68eecf3c", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.720587+00:00", "level": "ERROR", "logger": "django.request", "request_id": "379dab60-6c20-4021-8493-6cb6736c5de1", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.744616+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9a4bfd82-d3f1-4821-8a4b-8e26a4266b77", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.745617+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3935af95-e7e9-4562-8b49-fc8ec423260e", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.765127+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "5289fa24-1205-4812-96df-070a2ab51909", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.766127+00:00", "level": "ERROR", "logger": "django.request", "request_id": "035ea30b-7cbd-4de3-831e-8b75155c8a3d", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.786639+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fb11030f-acbc-4e02-b7cd-e1faa1282521", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.788142+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5f8dde1e-78dd-4747-bd99-6f609f9313a0", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.811444+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "77d85c8b-18ee-40dc-aee4-fcf4857acb4c", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.812947+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a9b1a214-325b-4b83-90af-769634cab9c8", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:17:23.835541+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "67965095-26b4-4901-b080-ac7c009f5165", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:23.836540+00:00", "level": "ERROR", "logger": "django.request", "request_id": "09ff0724-1013-489e-a719-8a4d8cf1cd5f", "code": "unclassified_event", "exception_type": null}
+FFF{"timestamp": "2026-10-03T14:17:23.915401+00:00", "level": "ERROR", "logger": "front.policy_simulator", "request_id": null, "code": "masking_failed", "exception_type": "RuntimeError"}
+FF{"timestamp": "2026-10-03T14:17:23.974971+00:00", "level": "ERROR", "logger": "front.policy_simulator", "request_id": null, "code": "masking_failed", "exception_type": "RuntimeError"}
+.FFF.FEF{"timestamp": "2026-10-03T14:17:24.663439+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "152ed390-49c0-46c2-82ab-6f21cb0a30c4", "code": "timeout", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:25.098516+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "7cb38a75-20b3-4fc0-8658-5c1879d8555f", "code": "timeout", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:17:25.530501+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0a2d23ea-4d8d-4d52-a949-03e46c22b4e9", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:17:26.830169+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8e512985-2584-432b-a52b-dc126a221914", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:26.831671+00:00", "level": "ERROR", "logger": "django.request", "request_id": "558aea92-4b92-49c3-9085-59e544a32bc5", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:26.869190+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "16be2b70-a591-4fa9-a6bf-fdfe20a545e0", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:26.870690+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d547fef6-8eaf-424d-8216-fe1f29d5dcb9", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:27.358335+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "d820017a-05a6-42a8-8d5d-ff4aa8f36e6f", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:27.359335+00:00", "level": "ERROR", "logger": "django.request", "request_id": "58fbeb35-c571-4bfd-928a-a5a9b04eafcd", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:27.806376+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "394deba3-0650-4d85-9e11-69913f6134ed", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:27.809317+00:00", "level": "ERROR", "logger": "django.request", "request_id": "61e08a98-f19c-461e-840c-3bcaf45ad57d", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:27.834283+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8dec2d11-c250-4865-901e-2ac162b1f4da", "code": "unclassified_event", "exception_type": null}
+...{"timestamp": "2026-10-03T14:17:29.553328+00:00", "level": "WARNING", "logger": "django.request", "request_id": "f321311a-c210-4f07-b9f1-04b4715faea3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:29.571834+00:00", "level": "WARNING", "logger": "django.request", "request_id": "5f1fe284-09e5-400d-8dab-bee4307ec77a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:29.590347+00:00", "level": "WARNING", "logger": "django.request", "request_id": "750f3db5-2651-440c-974a-f35bf460a696", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:30.480364+00:00", "level": "ERROR", "logger": "django.request", "request_id": "dad3ff0a-bf9f-4cb4-a04e-431d0a29bfda", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:30.509387+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8eaa2834-1113-46a5-97cd-928e95d5ec3a", "code": "unknown_capacity", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:30.510387+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8e89fe12-8dbe-465b-8c79-20a94f34004e", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:30.535404+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4c7df216-2cbd-4a00-8902-2e385be0b00c", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:30.536904+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c11058f8-a52c-4966-9b55-f6015f4c004d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:30.552429+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9dd74932-4ad2-4200-a338-4cce368a1141", "code": "budget_exhausted", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:30.553929+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9dde0224-9f35-477b-bc2b-03ed40845c28", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:30.570022+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e091c52a-7f0f-4e70-8b3a-707817d74949", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:30.571524+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0cc10734-f930-4bd1-8d73-9e9a45e040d9", "code": "unclassified_event", "exception_type": null}
+...........{"timestamp": "2026-10-03T14:17:37.689512+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a53b99bc-d2e6-4857-896d-7caf7f102888", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:37.996144+00:00", "level": "ERROR", "logger": "django.request", "request_id": "89455253-e326-4c74-9d93-3f913b803cfc", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:38.289197+00:00", "level": "ERROR", "logger": "django.request", "request_id": "4de32632-408e-4024-8382-bcd6934b65db", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:38.576500+00:00", "level": "ERROR", "logger": "django.request", "request_id": "819f0641-cb15-4106-ab96-f659cc11f531", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:38.858659+00:00", "level": "ERROR", "logger": "django.request", "request_id": "72b409fd-8e72-4f44-87ea-e21772dce82b", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:39.208580+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0614179e-193f-4793-8d34-15edf56df98d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:39.560653+00:00", "level": "ERROR", "logger": "django.request", "request_id": "69fdf66d-e7cd-4b6c-999b-0cb087106099", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:39.888330+00:00", "level": "ERROR", "logger": "django.request", "request_id": "dfde1585-4af3-45fc-ab60-0afc1f915832", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:40.195458+00:00", "level": "ERROR", "logger": "django.request", "request_id": "06ed6644-8da4-4aff-bd15-e1060595075e", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:17:41.083111+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e21756dd-b976-4c72-9a61-fed8e731feb6", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:41.106117+00:00", "level": "ERROR", "logger": "django.request", "request_id": "791d7173-011d-4085-b61d-3eeff736950a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:41.144127+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7341ed04-74d4-4a14-a913-ef6cb5f70b2f", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:17:42.190493+00:00", "level": "ERROR", "logger": "django.request", "request_id": "979ba25b-0f8a-4837-944b-0b3f7099f012", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:42.531414+00:00", "level": "ERROR", "logger": "django.request", "request_id": "05e20ea1-a04c-4dd5-b4a1-0aec10411dc5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:17:42.910819+00:00", "level": "ERROR", "logger": "django.request", "request_id": "443dec65-c67f-44eb-947f-4912a3d5709b", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:17:49.302403+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8fa48195-3d6c-5d75-ad18-120379f00f99", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:54.055224+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "0e6f73cc-1040-5a11-bbc3-f276f97530b0", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:54.090256+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "de91ed5d-2a73-58b1-b951-262ce2471dee", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:54.131824+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c1083929-c841-512d-942e-9c9fb8e491c7", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:55.518690+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "067593ef-45a1-5261-bb81-f4eb17297183", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:55.585321+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "bc25921d-3668-56b3-8fb6-ce225caa8c28", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:17:55.654411+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "6dea7e3a-deea-541e-bd27-9efbdf7e3e22", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:17:57.505388+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "d41cf878-6877-5c87-b379-d37b3f34f8bc", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.440285+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2371f752-84c0-57e4-a707-8aca88298d3f", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.462808+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "30e0a45f-3906-5078-a5a3-13742ea92054", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.482829+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fd64ada2-6414-55f7-8be6-5f4d5d745733", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.494834+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8d7989d6-65a8-5993-abc6-14d8b9abc46d", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.520348+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9f5db102-6552-5762-8540-d0dd39547c2f", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.540457+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "abe5d4c9-07c9-5b38-968b-f9755c452035", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.616524+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a4a11ae8-16d3-5649-a740-9abd13db5f1b", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.695576+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9f3e00ee-cd45-5843-b27a-2483bdfcd0cd", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:00.772146+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "19388bdc-76b3-5392-97b0-d03c625c7a5a", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:01.163086+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8e647134-bb88-5de6-b94f-0ac4fca690c2", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:03.830398+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "adc44bb1-27a0-514b-b20d-410318f7f39e", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:03.849425+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "d0ddeab5-51af-5e81-8b8e-a2f4e43f073f", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:03.870513+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "81598111-2595-5f6a-97db-e7f7de44499e", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:03.889025+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "0ea28a93-e70f-5aad-a319-c5cb51158866", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:03.912541+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fd144ac8-1bf6-5f0f-ab06-312931e825d0", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:03.932552+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "5e529c7d-4b89-5cbc-9aad-cd78685aa2a9", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:04.028615+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e42e7148-fd3d-5ffb-a36c-8cf446102f5a", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:04.157207+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2ee933d4-cf5d-5697-af86-e7ac580be7ee", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:04.294783+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "dd85722b-b0ee-5c3e-8f6a-33c2d8d59330", "code": "invalid_response", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:04.788173+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "5562d790-f0dd-5e59-a50c-2c690a9be107", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:06.329829+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1c4699f1-a65c-576c-b8a8-31df76a24534", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:10.574395+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "ef996321-e51c-5880-9663-2d83571055ae", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:10.612435+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "56c05332-bbe5-5d87-a7bc-e0b8d9db6e59", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:10.645965+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "95bfd500-dafc-567b-8b06-3b35024fd372", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:13.692544+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "001d71a7-7058-529b-b635-94165d792f88", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:13.760617+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8f2aba46-2145-527d-b6da-38fc581ef4c9", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:13.826204+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c1ed591f-7bdc-5f3a-b78a-68f831e2a0df", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.150687+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fb21426f-cd0d-5245-9afd-7fcb3a47094a", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.172711+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a5160d9b-bab1-558b-83ef-1f356a608bf3", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.193232+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "7589a286-45d7-5596-a4ed-d6bf48e39daf", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.212246+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "7682e0a4-5322-542c-9bb8-1b4027607441", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.229752+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "289d8ce7-c620-5a5c-baa5-f405c11ab7e5", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.247262+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8fcaa32e-6a56-5418-b462-e65e92b3b369", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.366064+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e0c30faf-7e94-53c8-8409-d32a10eb6ac6", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.475657+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a38f7501-4b1e-557b-af8a-dc87e541eb06", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:15.547196+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "73213100-e9f2-564a-96ad-1ece8b72c52f", "code": "invalid_response", "exception_type": "RuntimeError"}
+.......{"timestamp": "2026-10-03T14:18:21.209450+00:00", "level": "ERROR", "logger": "django.request", "request_id": "70a6ece2-7e06-44f7-a184-a65923e541f6", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:22.393644+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9d710ab1-106d-48b7-b838-6317d484a726", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:23.330163+00:00", "level": "ERROR", "logger": "django.request", "request_id": "dabbe208-bd27-4ef4-b5b4-f418daf3677d", "code": "unclassified_event", "exception_type": null}
+...............{"timestamp": "2026-10-03T14:18:24.164476+00:00", "level": "WARNING", "logger": "django.request", "request_id": "590c3a97-b815-4189-9cd9-2d015e2e2484", "code": "unclassified_event", "exception_type": null}
+......{"timestamp": "2026-10-03T14:18:24.329420+00:00", "level": "WARNING", "logger": "django.request", "request_id": "14c670ac-7d58-4a09-a9ae-7a6c3960d163", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:24.333938+00:00", "level": "WARNING", "logger": "django.request", "request_id": "faa9322d-4b7c-40a8-aa4f-c7eaf7452fa9", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+{"timestamp": "2026-10-03T14:18:24.337445+00:00", "level": "WARNING", "logger": "django.request", "request_id": "59ac5875-e952-4c8c-a85d-41457d847455", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+.{"timestamp": "2026-10-03T14:18:24.361489+00:00", "level": "WARNING", "logger": "django.request", "request_id": "5dd8bdd6-2923-4531-a411-53948ffb10e1", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+.{"timestamp": "2026-10-03T14:18:24.377051+00:00", "level": "WARNING", "logger": "django.request", "request_id": "3cc96400-c5e0-4425-8c71-79aa9168c8b5", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:24.407670+00:00", "level": "WARNING", "logger": "django.request", "request_id": "e6374b4c-150f-4aa6-8d02-65b1808dfb5a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:24.415189+00:00", "level": "WARNING", "logger": "django.request", "request_id": "5be1c8a9-d6e2-4079-abd4-ad7482f0d504", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:24.421189+00:00", "level": "WARNING", "logger": "django.request", "request_id": "579f4967-4fdb-41e1-ba24-49591d12dc00", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:24.427269+00:00", "level": "WARNING", "logger": "django.request", "request_id": "ee24ef26-359c-44f7-84dd-94d6acafd657", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:24.432269+00:00", "level": "WARNING", "logger": "django.request", "request_id": "1ddae535-5a91-4297-a5a3-0e5f51271ed8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:24.462324+00:00", "level": "WARNING", "logger": "django.request", "request_id": "7afc848d-82ea-49c3-895c-f615032a97f0", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:24.503405+00:00", "level": "WARNING", "logger": "django.request", "request_id": "02d18400-3812-4a8d-aa6e-269dda7d0f3a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:24.506909+00:00", "level": "WARNING", "logger": "django.request", "request_id": "d9eb5aaf-0063-4a54-98d0-b37c13159c50", "code": "unclassified_event", "exception_type": null}
+.....{"timestamp": "2026-10-03T14:18:24.549957+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d45ee746-b06f-4186-b9a9-6a90784cdb1b", "code": "unclassified_event", "exception_type": "RuntimeError"}
+...{"timestamp": "2026-10-03T14:18:26.013266+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "bf670c48-1cdf-44e9-b346-57d8535f5e6b", "code": "budget_exhausted", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:26.015799+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b2fa1e4a-aa91-4b80-87df-fe1e5bc69aa2", "code": "unclassified_event", "exception_type": null}
+...{"timestamp": "2026-10-03T14:18:27.923220+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a305f2ca-5d9f-4d90-a017-2b931bd8ea79", "code": "evaluation_input_too_large", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:27.926746+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a0b7de79-1dfd-404d-a090-445a4c114cd2", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:18:29.762408+00:00", "level": "ERROR", "logger": "django.request", "request_id": "04a8fa04-d12d-4848-98be-e98ece1eb353", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:29.795942+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2e3795c4-f9f9-440d-ab09-921762072951", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:29.796941+00:00", "level": "ERROR", "logger": "django.request", "request_id": "6beec81f-3b4f-4e78-82f0-2849c15ebfda", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:30.708078+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4a1a3280-9e17-4311-9213-f59fe7f6256b", "code": "evaluation_input_too_large", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:30.709578+00:00", "level": "ERROR", "logger": "django.request", "request_id": "f9973371-67b4-4e81-b4bd-a4a93207c7c2", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:31.158967+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5660f3b4-2109-45ab-a370-b85d133c41f4", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:31.974164+00:00", "level": "ERROR", "logger": "django.request", "request_id": "f3837931-f6c3-4afd-90b3-e24c2a9addd3", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:31.999675+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "61758bac-d272-4af9-a81c-17da7117361e", "code": "budget_exhausted", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:32.002174+00:00", "level": "ERROR", "logger": "django.request", "request_id": "bf4166ce-85f0-4b01-96d1-ebadfe256cc0", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:32.045213+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fb75ce57-539b-4741-ae21-0849210449dc", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:32.046712+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9462b10b-5107-4eff-94af-b8bcf2c381ee", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:32.079246+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "ed9abee3-a818-434c-ae25-5a4232d16210", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:32.080747+00:00", "level": "ERROR", "logger": "django.request", "request_id": "fa841a54-9f6d-47b9-ab52-9d2be0f03d72", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:32.113271+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "d88db0a6-a750-4352-96ab-7bfd083c3963", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:32.114774+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d34240a8-a7e6-4afa-bff8-491c8035c0fd", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:32.561898+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9d8792d8-2cd2-4ba3-af93-c71ba7b2f59f", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:32.563400+00:00", "level": "ERROR", "logger": "django.request", "request_id": "4e314d34-6a76-45bb-96ca-996e22788663", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:33.006429+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b8b08805-9b0f-4782-9d65-e62535008b35", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:18:33.512574+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a09b0f94-3fd6-4bf6-8959-b7e40b6892c4", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:18:34.071061+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "125c531d-7731-42ea-8aeb-fe25dcc82cda", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:34.072566+00:00", "level": "ERROR", "logger": "django.request", "request_id": "1eac0023-0e53-406c-8583-434e8de32d3f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:34.112591+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c0ca1884-d93a-4326-b000-c71a4762f54f", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:34.114097+00:00", "level": "ERROR", "logger": "django.request", "request_id": "eb7c2e4d-bea0-4bb0-8c9c-a392e75343c0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:34.153795+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "f4c7904c-bbb7-4050-a179-7c4c434f3ac6", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:34.155295+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a3629c22-aada-4138-89ca-e6305165ebda", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:34.204327+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fc666eb5-ebbe-4b49-9296-05ecbc3c99fb", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:34.205827+00:00", "level": "ERROR", "logger": "django.request", "request_id": "72ec2463-72c2-4909-bea3-924691ba4589", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:34.238351+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "cb873a9c-cef4-4541-9b4f-d22b4c7d13bd", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:34.239351+00:00", "level": "ERROR", "logger": "django.request", "request_id": "92b95462-33e9-40cc-b3c0-63abbf94a30a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:34.283217+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2c51e746-5112-4f20-8590-1408e82f80e8", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:34.284717+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e3efb66f-678e-400f-9a93-dc0e8576d43f", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:35.181366+00:00", "level": "ERROR", "logger": "django.request", "request_id": "1846a729-606d-4257-b179-73323764f335", "code": "unclassified_event", "exception_type": null}
+.....{"timestamp": "2026-10-03T14:18:38.670372+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c28102e1-f48a-4307-b4dd-e1704f3235db", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:38.671871+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0e4b9e03-ceb4-45de-8414-d10f0667f146", "code": "unclassified_event", "exception_type": null}
+...{"timestamp": "2026-10-03T14:18:41.093188+00:00", "level": "WARNING", "logger": "django.request", "request_id": "95392003-2e1d-44ee-815b-5c89ca5fe7b7", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:18:41.206606+00:00", "level": "WARNING", "logger": "django.request", "request_id": "3d84638d-72e6-4dc8-9d45-860b67fbf693", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:41.244168+00:00", "level": "WARNING", "logger": "django.request", "request_id": "668dc49b-6ed7-46b4-92dd-d6c799caea35", "code": "unclassified_event", "exception_type": null}
+.....{"timestamp": "2026-10-03T14:18:41.498534+00:00", "level": "ERROR", "logger": "front.policy_simulator", "request_id": null, "code": "timeout", "exception_type": "RuntimeError"}
+....{"timestamp": "2026-10-03T14:18:41.797166+00:00", "level": "WARNING", "logger": "django.request", "request_id": "50e367f8-8917-44b3-a534-5a86f514efb5", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:41.813697+00:00", "level": "WARNING", "logger": "django.request", "request_id": "1256a2f4-6280-45b2-b52e-7eb0dcb85cfd", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+{"timestamp": "2026-10-03T14:18:41.819708+00:00", "level": "WARNING", "logger": "django.request", "request_id": "dd772ef1-6bb4-4979-82b0-b795fe3c2a7d", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+{"timestamp": "2026-10-03T14:18:41.838751+00:00", "level": "WARNING", "logger": "django.request", "request_id": "091d8b42-8854-4109-954d-10e65b75ec4f", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:41.886827+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a9b40f4d-23e1-4593-802b-6397ec6a4230", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:41.924875+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "53fc4fae-704e-4f01-b82d-b56332ea3655", "code": "authorization_changed", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:41.987015+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e5929dc2-9f8d-4191-a592-e0e64365202f", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:41.989015+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a87d0e12-5f35-4ece-956d-60b1ced03c81", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:42.030064+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "cdb92e45-ba27-4ae4-a0a5-024006c9aecd", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:42.032064+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8a36bf08-c7c7-4459-b307-746256fb9e22", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:42.065155+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a4e01d54-c843-4adf-a759-696a4fed1b0c", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:42.067155+00:00", "level": "ERROR", "logger": "django.request", "request_id": "bdf80396-67d2-4b98-88c0-13d69a2d3e60", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:42.098716+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "483288c6-5c8b-4719-ac9e-949828e49d1c", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:42.100217+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b1981f73-8008-45ad-b20f-dcb5187e55b1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:42.134765+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e1c12c40-3930-4bd2-b0b4-8d300cb11c3f", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:42.136766+00:00", "level": "ERROR", "logger": "django.request", "request_id": "546c1251-f8c1-417f-a99d-b743d01d0f43", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:42.173320+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1c9d20af-c9dc-4547-987a-07997c4aa6a8", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:42.175326+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b1a79a21-d70b-4a45-b650-3189094b5687", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:42.857479+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:42.933153+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:42.993348+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:43.049969+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "7dafa46c-540f-43be-ba0d-2654e74a920c", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.052467+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8423ddc6-c077-4b0b-b934-17755f1dce81", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.077012+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c5a39215-d4d8-489a-9260-80f0dcbb0b7c", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.078513+00:00", "level": "ERROR", "logger": "django.request", "request_id": "99b51bee-13a6-4e18-a832-1ee6ecbb4731", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.102067+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fb96db21-8c0d-470f-8f7c-5781ca22a78f", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.104077+00:00", "level": "ERROR", "logger": "django.request", "request_id": "6fe6fb32-1e61-4751-ac15-b5b34d843c94", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.126134+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "35a70928-d20f-4d4e-a879-bebfc469b02d", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.127633+00:00", "level": "ERROR", "logger": "django.request", "request_id": "418ed888-c8a2-4437-908e-f46dbdbaa826", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.150207+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "cca6b59b-7520-4425-93f0-a7f25cb80ce9", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.151706+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a7a6f954-7eb1-4786-86e4-4d57428a70de", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.174756+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "165b42d8-082c-4f25-a4fa-7880b6c3c16b", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.176754+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e9496c35-d63f-4ac6-91a0-37b2f58680ce", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.201787+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "f23703af-e514-40bf-83f8-ed41cb625d4e", "code": "provider_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.203295+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ff78b438-68c8-41b9-89a7-50a93504f481", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:43.234852+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4d028dbe-1089-4dab-9c48-e06bb568cca9", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:43.275436+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "dbf10381-cc07-47b5-9b15-5e800bc298a2", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:43.305012+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0fbcb5cf-483d-4372-aa5d-9ad3d29e65a8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.328042+00:00", "level": "ERROR", "logger": "django.request", "request_id": "96144a1d-9c85-4ac6-945a-2e8807be41f8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.350084+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7048fee1-faa6-4124-bebb-0d1b2ea1ce06", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.368596+00:00", "level": "ERROR", "logger": "django.request", "request_id": "6ac90068-a74c-4768-a4f8-7afa188cb244", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:43.415652+00:00", "level": "ERROR", "logger": "front.policy_simulator", "request_id": null, "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.456705+00:00", "level": "ERROR", "logger": "front.policy_simulator", "request_id": null, "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.505496+00:00", "level": "ERROR", "logger": "front.policy_simulator", "request_id": null, "code": "authorization_changed", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:43.545049+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8d37d406-98a2-4b95-9790-2cc433d871f8", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:43.546549+00:00", "level": "ERROR", "logger": "django.request", "request_id": "49f032b5-cd64-47b8-b7aa-bfe29cb1c85e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.552548+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5e058b46-156f-40f9-8a5e-1b2c7b2029f6", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:43.576100+00:00", "level": "WARNING", "logger": "django.request", "request_id": "56c49f24-dfe4-42a3-88a3-bcb9c3817817", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.588612+00:00", "level": "WARNING", "logger": "django.request", "request_id": "913fc267-e608-479d-855f-cb1527acc407", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.601222+00:00", "level": "WARNING", "logger": "django.request", "request_id": "777e332c-a358-4d21-a1b1-84dd4a173ae4", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.615235+00:00", "level": "WARNING", "logger": "django.request", "request_id": "27ef4d85-58f9-4cd3-a8bf-66f1bb81564f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.627241+00:00", "level": "WARNING", "logger": "django.request", "request_id": "2c6270b9-9a98-4e6f-8c82-d1b77f62a992", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.639246+00:00", "level": "WARNING", "logger": "django.request", "request_id": "00046ce4-f64b-4154-a5d6-ec85780ecd5a", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:43.660780+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9cf4c6e7-2937-463b-a173-eeae5e11b243", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:43.685304+00:00", "level": "ERROR", "logger": "django.request", "request_id": "40ece4c5-a457-4e46-b68a-e28ffc0d81c4", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.700816+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0c510033-d05a-4595-a1fe-56c46f4fc03c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:43.715343+00:00", "level": "ERROR", "logger": "django.request", "request_id": "54f19986-a791-478c-b56f-5cdd2a8e70bf", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:18:43.766446+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a1966f00-d306-454d-9883-6a9ddcb7fbf5", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:18:43.790964+00:00", "level": "WARNING", "logger": "django.request", "request_id": "630990ae-030f-4f96-8eac-9a5939385a18", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:43.803982+00:00", "level": "WARNING", "logger": "django.request", "request_id": "248e2996-e9b5-419c-a93e-433c369042fc", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+...{"timestamp": "2026-10-03T14:18:44.805612+00:00", "level": "ERROR", "logger": "django.request", "request_id": "fcf6a0de-928d-4fb9-95c3-eaaa61d3af1e", "code": "unclassified_event", "exception_type": null}
+...{"timestamp": "2026-10-03T14:18:45.800637+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "6783527c-a24d-4c9c-95da-3c19b9539ddd", "code": "evaluation_input_too_large", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:45.806157+00:00", "level": "ERROR", "logger": "django.request", "request_id": "853c95c5-c733-418e-8740-46e5791ad9d5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:45.841174+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "27328612-c7f8-4b70-89a9-006a6caaca4d", "code": "evaluation_input_too_large", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:45.842174+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3eb08948-074e-4932-abd8-83d051b188e8", "code": "unclassified_event", "exception_type": null}
+...{"timestamp": "2027-01-15T08:05:01+00:00", "level": "WARNING", "logger": "django.request", "request_id": "d2bc1b53-5da8-41cc-b777-9b0b7f395d60", "code": "unclassified_event", "exception_type": null}
+...{"timestamp": "2026-10-03T14:18:47.583608+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c0488840-4ab1-46fe-89d2-2b7426d5bacb", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:47.585610+00:00", "level": "WARNING", "logger": "django.request", "request_id": "28da2224-16f1-4e06-9806-d995fec14141", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:18:47.594930+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "eb993da0-3f9d-44a9-8b5f-9c9bb63edece", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:47.948139+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e7af69c9-293c-4650-bf72-0e45c37edf1d", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:48.600827+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4cf49f61-e0c1-4571-81bc-f02fedde91d1", "code": "internal_error", "exception_type": "RuntimeError"}
+..{"timestamp": "2026-10-03T14:18:48.921093+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "43785354-a22e-4d97-bf00-5e2f883d94b1", "code": "provider_failed", "exception_type": "RuntimeError"}
+...{"timestamp": "2026-10-03T14:18:53.336621+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "f50940de-94f3-4ed0-8727-bfbfec3e7163", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:53.974586+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "262e0296-ecf0-4c34-8a5e-96ec4c1df904", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:18:54.300427+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "e3848963-13cc-45b3-a59e-9c1912103b59", "code": "security_check_failed", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:18:54.772412+00:00", "level": "ERROR", "logger": "django.request", "request_id": "52a19118-b372-494c-bdb3-9e37049153c1", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:18:55.231793+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3ff70c01-9cff-4d10-9b94-b586372ada71", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:18:55.648666+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2c3795d6-fe5b-4caa-9686-aa0dc2452c76", "code": "unclassified_event", "exception_type": null}
+F.{"timestamp": "2026-10-03T14:18:57.495592+00:00", "level": "ERROR", "logger": "django.request", "request_id": "e17cd794-8a70-4869-a2bf-365241237d66", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:18:58.009315+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a21df498-e0f2-4ebd-aae5-d8ba4298a048", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:18:58.532312+00:00", "level": "ERROR", "logger": "django.request", "request_id": "fb825c43-62c2-4f46-9130-f5f18330ad59", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:18:58.993699+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a11b5418-73d5-4bd5-894c-1a215eedc79e", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:18:59.446737+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9ab1211e-539f-4210-a0c0-ea53f0f3f25c", "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:18:59.922288+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ee7d8c05-3677-497b-bca9-3e8e634bee98", "code": "unclassified_event", "exception_type": null}
+F.{"timestamp": "2026-10-03T14:18:59.933799+00:00", "level": "WARNING", "logger": "django.request", "request_id": "6dcf7233-edc3-4b47-b52e-498e4e500730", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:59.938304+00:00", "level": "WARNING", "logger": "django.request", "request_id": "93151af9-359c-47dd-a589-576de474ebcb", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:59.945316+00:00", "level": "WARNING", "logger": "django.request", "request_id": "c4fe322f-446d-46eb-a465-ad77419fde71", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:59.954326+00:00", "level": "WARNING", "logger": "django.request", "request_id": "0b4413bb-8dc4-40e9-a7ae-99c3eaacc215", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:59.958325+00:00", "level": "WARNING", "logger": "django.request", "request_id": "63ca73da-decb-4ac1-a21e-0db4ebb88e25", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:18:59.964336+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8fb2b3f3-0da5-4ff2-af1a-c9858ab96138", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:59.967838+00:00", "level": "WARNING", "logger": "django.request", "request_id": "0344e35d-1a59-459b-a081-25de3d616d18", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:59.969339+00:00", "level": "WARNING", "logger": "django.request", "request_id": "03c123c1-6220-4cd4-8a6c-f9fbc1b5acb5", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:18:59.970338+00:00", "level": "WARNING", "logger": "django.request", "request_id": "28f97926-e7dd-4bf3-817a-e1037db24818", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:19:00.013384+00:00", "level": "WARNING", "logger": "django.request", "request_id": "810e7a68-e74f-4443-9fbb-a5815ad0608a", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:00.021419+00:00", "level": "WARNING", "logger": "django.request", "request_id": "73f2c100-e11b-4b64-a423-bae986a4c7e0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.022419+00:00", "level": "WARNING", "logger": "django.request", "request_id": "d36521c2-342e-468b-a14f-5f21ca0d7e94", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.023924+00:00", "level": "WARNING", "logger": "django.request", "request_id": "6b5401c7-bca1-4b13-bce0-de89c692b511", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:00.037436+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a544c567-e8c3-4838-b64c-662d72d3f381", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.044942+00:00", "level": "WARNING", "logger": "django.request", "request_id": "f740bca3-089f-4d74-982f-d94bfad8a024", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.050946+00:00", "level": "WARNING", "logger": "django.request", "request_id": "22994662-17bf-4b4b-8314-2703d2f12ed8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.059951+00:00", "level": "WARNING", "logger": "django.request", "request_id": "75024551-0368-4186-9940-9e767d82d359", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.062451+00:00", "level": "WARNING", "logger": "django.request", "request_id": "71cddeb8-d797-45a3-9a4b-fd454dc151cc", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:00.075462+00:00", "level": "WARNING", "logger": "django.request", "request_id": "7e62afea-80c2-4edc-b4be-c6a813554b63", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:00.086468+00:00", "level": "WARNING", "logger": "django.request", "request_id": "4d08297e-5e67-4674-a8f5-fe8d9f320f4d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.098480+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a196875b-60b9-440d-b23f-06c4256c006f", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:00.120508+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a66ab779-5d71-469b-b520-5b1f5a7bb038", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.129015+00:00", "level": "WARNING", "logger": "django.request", "request_id": "509194f4-fd81-443a-af30-924edbecbb3e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.138020+00:00", "level": "WARNING", "logger": "django.request", "request_id": "0926be4b-3e0d-4d4e-91e6-eb801ccc8b2c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.142020+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b35011c8-6f38-4258-a2b8-efb852c02482", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.149531+00:00", "level": "WARNING", "logger": "django.request", "request_id": "17196109-2b36-4457-92c5-48181101c55b", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.153534+00:00", "level": "WARNING", "logger": "django.request", "request_id": "2664cdad-9838-4ce4-b16b-ce042519b79f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.160543+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8b843588-4097-4b1f-aae4-083f0cd31242", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.165549+00:00", "level": "WARNING", "logger": "django.request", "request_id": "bc3ca567-a917-4dbb-955d-962cc70ba6f7", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.169549+00:00", "level": "WARNING", "logger": "django.request", "request_id": "c044cda7-2660-4afd-a93e-1d7f3d968a56", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.174555+00:00", "level": "WARNING", "logger": "django.request", "request_id": "62eae43e-e485-4057-a1a5-ef396b6e16a2", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:00.193576+00:00", "level": "WARNING", "logger": "django.request", "request_id": "e03ec2d0-5019-42c2-bacc-93f9ca2632f0", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.197576+00:00", "level": "WARNING", "logger": "django.request", "request_id": "9b36f119-0af8-4a47-b828-45d485889721", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.202076+00:00", "level": "WARNING", "logger": "django.request", "request_id": "06e6a4c8-c4bd-428a-bac6-899d92f43ecc", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.206583+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b85fb19a-7b7c-4b39-bd72-2578dc2a4666", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.210083+00:00", "level": "WARNING", "logger": "django.request", "request_id": "f3309c7d-cd3a-4999-9cad-366415b868fd", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:00.211082+00:00", "level": "WARNING", "logger": "django.request", "request_id": "045efedc-5488-4e43-a54a-764c129cd6f0", "code": "unclassified_event", "exception_type": null}
+................................................................................................{"timestamp": "2026-10-03T14:19:26.698272+00:00", "level": "ERROR", "logger": "django.request", "request_id": "f5f27f39-3614-4357-977a-5366159bb0c1", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:26.700772+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a688e476-48c6-4ba5-bab5-c8d0493bf324", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:26.712289+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3ec5f861-1a9a-4030-a931-fed80e885c15", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:26.716167+00:00", "level": "ERROR", "logger": "django.request", "request_id": "87bf870a-8ee4-42a2-86ff-416365d7a1a8", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:26.783525+00:00", "level": "WARNING", "logger": "django.request", "request_id": "caf3aebd-15d8-461a-96ea-7598442ecd1b", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:26.807042+00:00", "level": "WARNING", "logger": "django.request", "request_id": "7f7a46f9-51ed-48e8-b558-19ead8d239ab", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:26.829566+00:00", "level": "WARNING", "logger": "django.request", "request_id": "783559af-3195-4c95-b3a3-e475b0bdfa68", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:26.863100+00:00", "level": "WARNING", "logger": "django.request", "request_id": "6f8ac537-4401-421b-a251-ae38064d552c", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:26.897624+00:00", "level": "WARNING", "logger": "django.request", "request_id": "00e22b62-d9d6-418e-aef4-adc3c11396c9", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:26.944663+00:00", "level": "WARNING", "logger": "django.request", "request_id": "42c9f7e4-97d9-4d0d-afdf-12f577007eb9", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:19:27.450938+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8a6942e1-8fad-4636-8523-7a8ff045f092", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:19:27.463936+00:00", "level": "ERROR", "logger": "django.request", "request_id": "edc73804-e7fe-4646-93d3-21169c4189c7", "code": "unclassified_event", "exception_type": null}
+.........................
+======================================================================
+ERROR: test_uncertain_task_routes_by_lowest_quality_among_plausible_tasks (front.test_classification.ClassificationSimulatorTests.test_uncertain_task_routes_by_lowest_quality_among_plausible_tasks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 281, in test_uncertain_task_routes_by_lowest_quality_among_plausible_tasks
+    self.assertEqual(outcome['task'], 'general')
+                     ~~~~~~~^^^^^^^^
+KeyError: 'task'
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/send/', notice='classification_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/api/chat/send/', notice='classification_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/', notice='classification_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 302
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/send/', notice='task_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/api/chat/send/', notice='task_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/', notice='task_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 302
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/send/', notice='difficulty_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/api/chat/send/', notice='difficulty_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/', notice='difficulty_ambiguous')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 302
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/send/', notice='clarification_required')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/api/chat/send/', notice='clarification_required')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/', notice='clarification_required')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 302
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/send/', notice='insufficient_evidence')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/api/chat/send/', notice='insufficient_evidence')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 200
+
+======================================================================
+FAIL: test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed (front.test_classification.ClassificationChatTests.test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed) (path='/chat/', notice='insufficient_evidence')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 396, in test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed
+    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+AssertionError: 502 != 302
+
+======================================================================
+FAIL: test_single_plausible_task_cannot_borrow_general_quality (front.test_classification.ClassificationChatTests.test_single_plausible_task_cannot_borrow_general_quality) (path='/chat/send/', quality={'general': 0.9, 'summary': 0.1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 368, in test_single_plausible_task_cannot_borrow_general_quality
+    self.assertEqual(result['error_type'], 'quality_unavailable')
+AssertionError: 'provider_failed' != 'quality_unavailable'
+- provider_failed
++ quality_unavailable
+
+
+======================================================================
+FAIL: test_single_plausible_task_cannot_borrow_general_quality (front.test_classification.ClassificationChatTests.test_single_plausible_task_cannot_borrow_general_quality) (path='/api/chat/send/', quality={'general': 0.9, 'summary': 0.1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 368, in test_single_plausible_task_cannot_borrow_general_quality
+    self.assertEqual(result['error_type'], 'quality_unavailable')
+AssertionError: 'provider_failed' != 'quality_unavailable'
+- provider_failed
++ quality_unavailable
+
+
+======================================================================
+FAIL: test_single_plausible_task_cannot_borrow_general_quality (front.test_classification.ClassificationChatTests.test_single_plausible_task_cannot_borrow_general_quality) (path='/chat/', quality={'general': 0.9, 'summary': 0.1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 368, in test_single_plausible_task_cannot_borrow_general_quality
+    self.assertEqual(result['error_type'], 'quality_unavailable')
+AssertionError: 'provider_failed' != 'quality_unavailable'
+- provider_failed
++ quality_unavailable
+
+
+======================================================================
+FAIL: test_single_plausible_task_cannot_borrow_general_quality (front.test_classification.ClassificationChatTests.test_single_plausible_task_cannot_borrow_general_quality) (path='/chat/send/', quality={'general': 0.9})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 368, in test_single_plausible_task_cannot_borrow_general_quality
+    self.assertEqual(result['error_type'], 'quality_unavailable')
+AssertionError: 'provider_failed' != 'quality_unavailable'
+- provider_failed
++ quality_unavailable
+
+
+======================================================================
+FAIL: test_single_plausible_task_cannot_borrow_general_quality (front.test_classification.ClassificationChatTests.test_single_plausible_task_cannot_borrow_general_quality) (path='/api/chat/send/', quality={'general': 0.9})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 368, in test_single_plausible_task_cannot_borrow_general_quality
+    self.assertEqual(result['error_type'], 'quality_unavailable')
+AssertionError: 'provider_failed' != 'quality_unavailable'
+- provider_failed
++ quality_unavailable
+
+
+======================================================================
+FAIL: test_single_plausible_task_cannot_borrow_general_quality (front.test_classification.ClassificationChatTests.test_single_plausible_task_cannot_borrow_general_quality) (path='/chat/', quality={'general': 0.9})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 368, in test_single_plausible_task_cannot_borrow_general_quality
+    self.assertEqual(result['error_type'], 'quality_unavailable')
+AssertionError: 'provider_failed' != 'quality_unavailable'
+- provider_failed
++ quality_unavailable
+
+
+======================================================================
+FAIL: test_active_mask_without_a_bound_is_rejected_before_semantic_calls (front.test_classification.ClassificationSimulatorTests.test_active_mask_without_a_bound_is_rejected_before_semantic_calls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 193, in test_active_mask_without_a_bound_is_rejected_before_semantic_calls
+    self.assertEqual(result.status_code, 400)
+AssertionError: 200 != 400
+
+======================================================================
+FAIL: test_bounded_draft_cannot_authorize_semantics_with_unbounded_active_mask_policy (front.test_classification.ClassificationSimulatorTests.test_bounded_draft_cannot_authorize_semantics_with_unbounded_active_mask_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 208, in test_bounded_draft_cannot_authorize_semantics_with_unbounded_active_mask_policy
+    self.assertEqual(result.context['comparison']['semantic']['reason_codes'], ['policy_configuration_invalid'])
+AssertionError: Lists differ: ['destination_not_allowed'] != ['policy_configuration_invalid']
+
+First differing element 0:
+'destination_not_allowed'
+'policy_configuration_invalid'
+
+- ['destination_not_allowed']
++ ['policy_configuration_invalid']
+
+======================================================================
+FAIL: test_credentials_below_choice_threshold_still_block (front.test_classification.ClassificationSimulatorTests.test_credentials_below_choice_threshold_still_block)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 248, in test_credentials_below_choice_threshold_still_block
+    self.assertEqual(policy['sensitivity'], 'restricted')
+AssertionError: 'internal' != 'restricted'
+- internal
++ restricted
+
+
+======================================================================
+FAIL: test_incoherent_confidence_fails_closed_in_http_simulation (front.test_classification.ClassificationSimulatorTests.test_incoherent_confidence_fails_closed_in_http_simulation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 321, in test_incoherent_confidence_fails_closed_in_http_simulation
+    self.assertEqual(outcome['policy']['status'], 'unavailable')
+AssertionError: 'block' != 'unavailable'
+- block
++ unavailable
+
+
+======================================================================
+FAIL: test_manipulation_is_distinct_from_ambiguity_in_http_simulation (front.test_classification.ClassificationSimulatorTests.test_manipulation_is_distinct_from_ambiguity_in_http_simulation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 333, in test_manipulation_is_distinct_from_ambiguity_in_http_simulation
+    self.assertEqual(outcome['policy']['reason_codes'], ['classification_manipulation'])
+AssertionError: Lists differ: ['destination_not_allowed'] != ['classification_manipulation']
+
+First differing element 0:
+'destination_not_allowed'
+'classification_manipulation'
+
+- ['destination_not_allowed']
++ ['classification_manipulation']
+
+======================================================================
+FAIL: test_real_distribution_is_conservatively_confidential (front.test_classification.ClassificationSimulatorTests.test_real_distribution_is_conservatively_confidential)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 182, in test_real_distribution_is_conservatively_confidential
+    self.assertEqual(comparison['current']['policy']['status'], 'allow')
+AssertionError: 'block' != 'allow'
+- block
++ allow
+
+
+======================================================================
+FAIL: test_semantic_classification_never_adds_a_destination (front.test_classification.ClassificationSimulatorTests.test_semantic_classification_never_adds_a_destination)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 344, in test_semantic_classification_never_adds_a_destination
+    self.assertEqual(outcome['route']['status'], 'unavailable')
+AssertionError: 'not_evaluated' != 'unavailable'
+- not_evaluated
++ unavailable
+
+
+======================================================================
+FAIL: test_single_plausible_task_retains_its_quality_requirement (front.test_classification.ClassificationSimulatorTests.test_single_plausible_task_retains_its_quality_requirement)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 293, in test_single_plausible_task_retains_its_quality_requirement
+    self.assertEqual(comparison['semantic']['status'], 'completed')
+AssertionError: 'not_authorized' != 'completed'
+- not_authorized
++ completed
+
+
+======================================================================
+FAIL: test_unmeasured_plausible_task_quality_cannot_route_even_at_zero_minimum (front.test_classification.ClassificationSimulatorTests.test_unmeasured_plausible_task_quality_cannot_route_even_at_zero_minimum)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_classification.py", line 312, in test_unmeasured_plausible_task_quality_cannot_route_even_at_zero_minimum
+    self.assertEqual(result.context['comparison']['current']['route']['reason_codes'], ['quality_unavailable'])
+AssertionError: Lists differ: ['security_not_allowed'] != ['quality_unavailable']
+
+First differing element 0:
+'security_not_allowed'
+'quality_unavailable'
+
+- ['security_not_allowed']
++ ['quality_unavailable']
+
+======================================================================
+FAIL: test_missing_provider_completion_is_failed_on_all_three_entries (front.test_verification_flow.VerificationFlowTests.test_missing_provider_completion_is_failed_on_all_three_entries) (path='/chat/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 67, in test_missing_provider_completion_is_failed_on_all_three_entries
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_missing_provider_completion_is_failed_on_all_three_entries (front.test_verification_flow.VerificationFlowTests.test_missing_provider_completion_is_failed_on_all_three_entries) (path='/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 67, in test_missing_provider_completion_is_failed_on_all_three_entries
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_missing_provider_completion_is_failed_on_all_three_entries (front.test_verification_flow.VerificationFlowTests.test_missing_provider_completion_is_failed_on_all_three_entries) (path='/api/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 67, in test_missing_provider_completion_is_failed_on_all_three_entries
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_short_quotes_and_fence_prose_never_reach_the_judge (front.test_verification_flow.VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge) (path='/chat/', transform=<function VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge.<locals>.<lambda> at 0x0000015372B26480>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 53, in test_short_quotes_and_fence_prose_never_reach_the_judge
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_short_quotes_and_fence_prose_never_reach_the_judge (front.test_verification_flow.VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge) (path='/chat/', transform=<function VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge.<locals>.<lambda> at 0x0000015372B26D40>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 53, in test_short_quotes_and_fence_prose_never_reach_the_judge
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_short_quotes_and_fence_prose_never_reach_the_judge (front.test_verification_flow.VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge) (path='/chat/send/', transform=<function VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge.<locals>.<lambda> at 0x0000015372B253A0>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 53, in test_short_quotes_and_fence_prose_never_reach_the_judge
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_short_quotes_and_fence_prose_never_reach_the_judge (front.test_verification_flow.VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge) (path='/chat/send/', transform=<function VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge.<locals>.<lambda> at 0x0000015372B24F40>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 53, in test_short_quotes_and_fence_prose_never_reach_the_judge
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_short_quotes_and_fence_prose_never_reach_the_judge (front.test_verification_flow.VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge) (path='/api/chat/send/', transform=<function VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge.<locals>.<lambda> at 0x0000015372A1B420>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 53, in test_short_quotes_and_fence_prose_never_reach_the_judge
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+======================================================================
+FAIL: test_short_quotes_and_fence_prose_never_reach_the_judge (front.test_verification_flow.VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge) (path='/api/chat/send/', transform=<function VerificationFlowTests.test_short_quotes_and_fence_prose_never_reach_the_judge.<locals>.<lambda> at 0x0000015372A18720>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_verification_flow.py", line 53, in test_short_quotes_and_fence_prose_never_reach_the_judge
+    self.assertEqual(self.http.call_count, 1)
+AssertionError: 3 != 1
+
+----------------------------------------------------------------------
+Ran 332 tests in 129.175s
+
+FAILED (failures=39, errors=1)
+Destroying test database for alias 'default'...
+
+Found 332 test(s).
+System check identified no issues (0 silenced).
+90 simulated runs; 6 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmp4ydg1gx1\run
+60 simulated runs; 0 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmpf2jamaio\0
+60 simulated runs; 0 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmpf2jamaio\1
+150 simulated runs; 0 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmpioo0mary\run

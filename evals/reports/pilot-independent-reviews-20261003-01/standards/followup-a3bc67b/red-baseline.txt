@@ -1,0 +1,72 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+SOURCE c1e3a360e7ba3051bb8f0bda487b005dd29834a0
+Creating test database for alias 'default'...
+{"timestamp": "2026-10-03T14:26:42.460076+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:26:43.931135+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:26:43.973861+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:26:44.013941+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+F{"timestamp": "2026-10-03T14:26:44.052504+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+
+======================================================================
+FAIL: test_revocation_during_external_reservation_has_zero_sdk_transports (probe_tests.ObserverDestinationRevocationProbe.test_revocation_during_external_reservation_has_zero_sdk_transports) (kind='engine_inactive')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\review-standards\followup-a3bc67b\probe_tests.py", line 65, in test_revocation_during_external_reservation_has_zero_sdk_transports
+    self.assertEqual(events, [], 'No generation may start after revocation during its reservation')
+AssertionError: Lists differ: [{'engine_active_at_transport': False, 'mo[63 chars]rue}] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+{'engine_active_at_transport': False, 'model_active_at_transport': True, 'credential_matches_current': True}
+
++ []
+- [{'credential_matches_current': True,
+-   'engine_active_at_transport': False,
+-   'model_active_at_transport': True}] : No generation may start after revocation during its reservation
+
+======================================================================
+FAIL: test_revocation_during_external_reservation_has_zero_sdk_transports (probe_tests.ObserverDestinationRevocationProbe.test_revocation_during_external_reservation_has_zero_sdk_transports) (kind='model_inactive')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\review-standards\followup-a3bc67b\probe_tests.py", line 65, in test_revocation_during_external_reservation_has_zero_sdk_transports
+    self.assertEqual(events, [], 'No generation may start after revocation during its reservation')
+AssertionError: Lists differ: [{'engine_active_at_transport': True, 'mod[63 chars]rue}] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+{'engine_active_at_transport': True, 'model_active_at_transport': False, 'credential_matches_current': True}
+
++ []
+- [{'credential_matches_current': True,
+-   'engine_active_at_transport': True,
+-   'model_active_at_transport': False}] : No generation may start after revocation during its reservation
+
+======================================================================
+FAIL: test_revocation_during_external_reservation_has_zero_sdk_transports (probe_tests.ObserverDestinationRevocationProbe.test_revocation_during_external_reservation_has_zero_sdk_transports) (kind='credential_changed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\review-standards\followup-a3bc67b\probe_tests.py", line 65, in test_revocation_during_external_reservation_has_zero_sdk_transports
+    self.assertEqual(events, [], 'No generation may start after revocation during its reservation')
+AssertionError: Lists differ: [{'engine_active_at_transport': True, 'mod[63 chars]lse}] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+{'engine_active_at_transport': True, 'model_active_at_transport': True, 'credential_matches_current': False}
+
++ []
+- [{'credential_matches_current': False,
+-   'engine_active_at_transport': True,
+-   'model_active_at_transport': True}] : No generation may start after revocation during its reservation
+
+----------------------------------------------------------------------
+Ran 1 test in 0.899s
+
+FAILED (failures=3)
+Destroying test database for alias 'default'...
+Found 1 test(s).
+System check identified no issues (0 silenced).
+FOLLOWUP_PROBE {"error_type": null, "events": [{"credential_matches_current": true, "engine_active_at_transport": false, "model_active_at_transport": true}], "generation_cost": "0.00004000", "generation_cost_kind": "tariff_estimate", "generation_status": "completed", "mutation": "engine_inactive", "status": "completed"}
+FOLLOWUP_PROBE {"error_type": null, "events": [{"credential_matches_current": true, "engine_active_at_transport": true, "model_active_at_transport": false}], "generation_cost": "0.00004000", "generation_cost_kind": "tariff_estimate", "generation_status": "completed", "mutation": "model_inactive", "status": "completed"}
+FOLLOWUP_PROBE {"error_type": null, "events": [{"credential_matches_current": false, "engine_active_at_transport": true, "model_active_at_transport": true}], "generation_cost": "0.00004000", "generation_cost_kind": "tariff_estimate", "generation_status": "completed", "mutation": "credential_changed", "status": "completed"}
+FOLLOWUP_PROBE {"error_type": null, "events": [{"credential_matches_current": true, "engine_active_at_transport": true, "model_active_at_transport": true}], "generation_cost": "0.00004000", "generation_cost_kind": "tariff_estimate", "generation_status": "completed", "mutation": "unchanged", "status": "completed"}
+

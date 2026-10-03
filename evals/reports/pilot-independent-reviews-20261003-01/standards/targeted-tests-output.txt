@@ -1,0 +1,27 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default'...
+{"timestamp": "2026-10-03T14:20:42.194922+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+....{"timestamp": "2026-10-03T14:20:47.485366+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8934b5a7-88d5-4282-b187-488fdce44b6c", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:20:49.131348+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "b7d87fb1-a281-4db7-8715-863c7ed23aee", "code": "internal_error", "exception_type": "RuntimeError"}
+..{"timestamp": "2026-10-03T14:20:49.443120+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a196d9fa-8c91-435a-b307-dc70f5a0fe1f", "code": "provider_failed", "exception_type": "RuntimeError"}
+...{"timestamp": "2026-10-03T14:20:54.499965+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "98ef4e65-b32d-4e71-b9c9-7cc3deb8f5a6", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:20:55.149859+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "ad854fdb-cb68-4a74-9ef4-ca715faafeb4", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:20:55.420668+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a732e70f-58d1-468f-939f-9ec6a87ec6d1", "code": "security_check_failed", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:20:55.529746+00:00", "level": "WARNING", "logger": "django.request", "request_id": "1c95d4f1-68ae-41c1-9bc3-d6670ac548c6", "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-03T14:20:55.607869+00:00", "level": "WARNING", "logger": "django.request", "request_id": "210dd954-e554-4f40-95e3-5daeb1805f50", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:20:55.699943+00:00", "level": "WARNING", "logger": "django.request", "request_id": "c0de2bdb-bb76-4b46-8628-e5b0def6ac63", "code": "unclassified_event", "exception_type": null}
+.....{"timestamp": "2026-10-03T14:20:55.873580+00:00", "level": "ERROR", "logger": "front.policy_simulator", "request_id": null, "code": "timeout", "exception_type": "RuntimeError"}
+....{"timestamp": "2026-10-03T14:20:56.099760+00:00", "level": "WARNING", "logger": "django.request", "request_id": "6f66f84c-66f5-4d70-96d3-45b4bdecb2ea", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:20:56.113290+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8acd5952-e594-4189-9efc-c8084d1b6fa9", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+{"timestamp": "2026-10-03T14:20:56.117289+00:00", "level": "WARNING", "logger": "django.request", "request_id": "21394a43-9182-4263-be58-9ec0b4286a43", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+{"timestamp": "2026-10-03T14:20:56.129795+00:00", "level": "WARNING", "logger": "django.request", "request_id": "785c4003-df56-411b-b9c1-918d8ad699ea", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-03T14:20:56.167822+00:00", "level": "WARNING", "logger": "django.request", "request_id": "22477724-58a9-4d7a-b69e-5f7e21857157", "code": "unclassified_event", "exception_type": null}
+.........
+----------------------------------------------------------------------
+Ran 34 tests in 13.557s
+
+OK
+Destroying test database for alias 'default'...
+Found 34 test(s).
+System check identified no issues (0 silenced).
+

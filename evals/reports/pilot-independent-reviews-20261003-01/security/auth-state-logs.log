@@ -1,0 +1,183 @@
+Found 52 test(s).
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: admin, auth, authtoken, contenttypes, front, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
+  Applying authtoken.0003_tokenproxy... OK
+  Applying authtoken.0004_alter_tokenproxy_options... OK
+  Applying front.0001_initial... OK
+  Applying front.0002_engine_companyengine... OK
+  Applying front.0003_add_severity_to_rule... OK
+  Applying front.0004_add_conversation_and_message... OK
+  Applying front.0005_add_applies_to_rule... OK
+  Applying front.0006_add_file_to_message... OK
+  Applying front.0007_add_department_model... OK
+  Applying front.0008_add_avatar_to_profile... OK
+  Applying front.0009_add_default_engine_to_profile... OK
+  Applying front.0010_add_engine_models... OK
+  Applying front.0011_add_connector_type_to_engine... OK
+  Applying front.0012_seed_default_engines... OK
+  Applying front.0013_add_name_to_companyengine... OK
+  Applying front.0015_add_file_hashes_to_prompt... OK
+  Applying front.0016_encrypt_api_keys...{"timestamp": "2026-10-03T14:34:02.534043+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+ OK
+  Applying front.0017_alter_companyengine_api_key... OK
+  Applying front.0018_remove_companyengine_unique_together... OK
+  Applying front.0019_add_rule_action_field... OK
+  Applying front.0020_seed_default_rules_groups... OK
+  Applying front.0021_obfuscationconfig... OK
+  Applying front.0022_alert_source... OK
+  Applying front.0023_company_department_system_prompt... OK
+  Applying front.0024_seed_mistral_engine... OK
+  Applying front.0025_message_response_file... OK
+  Applying front.0026_authorized_chat_state... OK
+  Applying front.0027_enginemodel_context_window_enginemodel_currency_and_more... OK
+  Applying front.0028_auditlog_company... OK
+  Applying front.0029_model_price_units... OK
+  Applying front.0030_enginemodel_reasoning... OK
+  Applying front.0031_infer_historical_prompt_company... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_price_per_token_is_rejected_and_free_or_per_million_price_is_valid (front.test_onboarding_migrations.PriceUnitsTests.test_price_per_token_is_rejected_and_free_or_per_million_price_is_valid) ... ok
+test_alert_unresolve_requires_post_csrf_and_preserves_get_state (front.test_backend_hardening.BackendHardeningTests.test_alert_unresolve_requires_post_csrf_and_preserves_get_state) ... {"timestamp": "2026-10-03T14:34:02.917944+00:00", "level": "WARNING", "logger": "django.request", "request_id": "edf8ed5a-a32e-467c-825d-c71f453d018f", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:02.929921+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "fd28a163-d6e1-4975-bb31-28abc9aae508", "code": "unclassified_event", "exception_type": null}
+ok
+test_api_avatar_rejects_large_valid_images_and_accepts_small_ones (front.test_backend_hardening.BackendHardeningTests.test_api_avatar_rejects_large_valid_images_and_accepts_small_ones) ... {"timestamp": "2026-10-03T14:34:03.051201+00:00", "level": "WARNING", "logger": "django.request", "request_id": "49113476-de08-4d75-b678-74b90a36c8c3", "code": "unclassified_event", "exception_type": null}
+ok
+test_community_sync_requires_platform_operator_and_post (front.test_backend_hardening.BackendHardeningTests.test_community_sync_requires_platform_operator_and_post) ... {"timestamp": "2026-10-03T14:34:03.068725+00:00", "level": "WARNING", "logger": "django.request", "request_id": "e86a67e2-7361-46da-b4dc-01f7121b2acb", "code": "unclassified_event", "exception_type": "PermissionDenied"}
+{"timestamp": "2026-10-03T14:34:03.071230+00:00", "level": "WARNING", "logger": "django.request", "request_id": "81a3d03e-b5ec-4d73-842c-e79078573182", "code": "unclassified_event", "exception_type": null}
+ok
+test_employee_cannot_read_notifications_even_inside_own_company (front.test_backend_hardening.BackendHardeningTests.test_employee_cannot_read_notifications_even_inside_own_company) ... ok
+test_engine_toggle_and_alert_resolve_require_post (front.test_backend_hardening.BackendHardeningTests.test_engine_toggle_and_alert_resolve_require_post) ... {"timestamp": "2026-10-03T14:34:03.108579+00:00", "level": "WARNING", "logger": "django.request", "request_id": "9ab4cf95-cad4-4500-a047-ca631e33da30", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.109579+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "074db880-7609-435a-8c89-560ec94ed68d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.111084+00:00", "level": "WARNING", "logger": "django.request", "request_id": "4a1294bc-6ae2-4e22-9f1d-b86b9b1a6c64", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.112089+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "d3f25254-a96c-4b04-900f-2736b1800751", "code": "unclassified_event", "exception_type": null}
+ok
+test_global_model_mutations_require_post_and_csrf (front.test_backend_hardening.BackendHardeningTests.test_global_model_mutations_require_post_and_csrf) ... {"timestamp": "2026-10-03T14:34:03.127105+00:00", "level": "WARNING", "logger": "django.request", "request_id": "c179c007-5a62-4cc8-89fd-17f3ad80928d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.128605+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "d845929c-3347-479f-b6d3-d3e91748d5ce", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.130105+00:00", "level": "WARNING", "logger": "django.request", "request_id": "fb28add1-e271-410e-8d9c-c975224f1136", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.131110+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "a6e94a2a-a9d2-4a00-ada7-1cecf77d5637", "code": "unclassified_event", "exception_type": null}
+ok
+test_notifications_show_only_company_alerts_to_security_staff (front.test_backend_hardening.BackendHardeningTests.test_notifications_show_only_company_alerts_to_security_staff) ... ok
+test_obfuscation_toggle_requires_post_csrf_and_company_ownership (front.test_backend_hardening.BackendHardeningTests.test_obfuscation_toggle_requires_post_csrf_and_company_ownership) ... {"timestamp": "2026-10-03T14:34:03.162650+00:00", "level": "WARNING", "logger": "django.request", "request_id": "09832296-fdd8-44af-91e6-9d71aa0c8a65", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.164152+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "347f804c-b0ce-43b1-a219-452e2ae655f3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.178656+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a86916e3-5550-447f-b53f-9186bc88b32e", "code": "unclassified_event", "exception_type": null}
+ok
+test_rule_mutations_require_post_and_do_not_modify_on_get (front.test_backend_hardening.BackendHardeningTests.test_rule_mutations_require_post_and_do_not_modify_on_get) ... {"timestamp": "2026-10-03T14:34:03.187167+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b24c0256-2b94-4167-9e25-2fe6baceaa0a", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.188668+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "6f80547a-1118-4ac7-9449-d0931525fcba", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.190167+00:00", "level": "WARNING", "logger": "django.request", "request_id": "6bd3ba07-9250-4b3c-94c2-8d06f3876475", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.191171+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "3f2354e4-c58c-44bf-80af-5cd51900aa51", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.192175+00:00", "level": "WARNING", "logger": "django.request", "request_id": "97409418-041b-454c-b0cc-eb1020db56b3", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:03.193675+00:00", "level": "WARNING", "logger": "django.security.csrf", "request_id": "4628399e-2791-4d9f-bbfb-a9a66370e3a5", "code": "unclassified_event", "exception_type": null}
+ok
+test_yara_includes_are_disabled_for_creation_and_editing (front.test_backend_hardening.BackendHardeningTests.test_yara_includes_are_disabled_for_creation_and_editing) ... ok
+test_command_rotates_all_encrypted_fields_with_dry_run_and_small_batches (front.test_backend_hardening.SecretRotationTests.test_command_rotates_all_encrypted_fields_with_dry_run_and_small_batches) ... ok
+test_fallback_decrypts_old_values_and_new_writes_use_primary (front.test_backend_hardening.SecretRotationTests.test_fallback_decrypts_old_values_and_new_writes_use_primary) ... ok
+test_invalid_ciphertext_rolls_back_every_changed_row (front.test_backend_hardening.SecretRotationTests.test_invalid_ciphertext_rolls_back_every_changed_row) ... ok
+test_skipped_compare_and_swap_update_aborts_and_rolls_back (front.test_backend_hardening.SecretRotationTests.test_skipped_compare_and_swap_update_aborts_and_rolls_back) ... ok
+test_failed_audit_is_logged_without_exception_or_request_content (front.test_operations.ExceptionAuditHTTPTests.test_failed_audit_is_logged_without_exception_or_request_content) ... ok
+test_http_exception_audit_omits_content_query_and_path_values (front.test_operations.ExceptionAuditHTTPTests.test_http_exception_audit_omits_content_query_and_path_values) ... {"timestamp": "2026-10-03T14:34:03.260250+00:00", "level": "ERROR", "logger": "django.request", "request_id": "ea525c54-898f-4921-9944-5c3ab9d40bcf", "code": "unclassified_event", "exception_type": "RuntimeError"}
+ok
+test_logger_exception_omits_messages_locals_and_arbitrary_extras (front.test_operations.SafeLoggingTests.test_logger_exception_omits_messages_locals_and_arbitrary_extras) ... ok
+test_untrusted_metadata_is_discarded_without_stringifying_objects (front.test_operations.SafeLoggingTests.test_untrusted_metadata_is_discarded_without_stringifying_objects) ... ok
+test_advisory_answer_is_labelled_and_retains_no_verified_evidence (front.test_frontend_chat.ChatUiTests.test_advisory_answer_is_labelled_and_retains_no_verified_evidence) ... ok
+test_escalated_destination_survives_send_export_and_history_restore (front.test_frontend_chat.ChatUiTests.test_escalated_destination_survives_send_export_and_history_restore) ... {"timestamp": "2026-10-03T14:34:05.408781+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a95cd093-4a71-4d21-97c2-06ddf0334754", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:06.445780+00:00", "level": "ERROR", "logger": "django.request", "request_id": "562e82eb-2f64-4264-b59f-4a962ff818ee", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:07.424898+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d20bee68-1bc9-4e0b-a19f-7121c5c095aa", "code": "unclassified_event", "exception_type": null}
+ok
+test_finished_receipt_does_not_request_confirmation_for_historical_reason (front.test_frontend_chat.ChatUiTests.test_finished_receipt_does_not_request_confirmation_for_historical_reason) ... ok
+test_html_quotes_cannot_escape_download_attributes (front.test_frontend_chat.ChatUiTests.test_html_quotes_cannot_escape_download_attributes) ... ok
+test_informational_disclosures_are_not_reported_as_omitted_content (front.test_frontend_chat.ChatUiTests.test_informational_disclosures_are_not_reported_as_omitted_content) ... ok
+test_pending_consent_shows_omissions_and_preserves_request_and_file (front.test_frontend_chat.ChatUiTests.test_pending_consent_shows_omissions_and_preserves_request_and_file) ... ok
+test_unknown_outcome_without_total_never_renders_zero_cost_or_success (front.test_frontend_chat.ChatUiTests.test_unknown_outcome_without_total_never_renders_zero_cost_or_success) ... ok
+test_advisory_judge_unavailable_is_visible_and_excluded_from_history (front.test_pipeline.PipelineTests.test_advisory_judge_unavailable_is_visible_and_excluded_from_history) ... {"timestamp": "2026-10-03T14:34:08.621645+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "820931d3-38d0-4700-9b73-79efb93b8c7c", "code": "timeout", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:09.127241+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "b8b158f5-b553-4b63-8d10-955721e60054", "code": "timeout", "exception_type": "RuntimeError"}
+ok
+test_advisory_never_delivers_truncated_answer (front.test_pipeline.PipelineTests.test_advisory_never_delivers_truncated_answer) ... {"timestamp": "2026-10-03T14:34:09.607395+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c3ba0ba3-0dbb-4f42-98ee-881ac4ef3979", "code": "unclassified_event", "exception_type": null}
+ok
+test_all_http_entries_reach_the_real_connector_sdk_boundary (front.test_pipeline.PipelineTests.test_all_http_entries_reach_the_real_connector_sdk_boundary) ... ok
+test_classifier_timeout_never_generates_and_cost_is_incomplete (front.test_pipeline.PipelineTests.test_classifier_timeout_never_generates_and_cost_is_incomplete) ... {"timestamp": "2026-10-03T14:34:10.915064+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "160d8a5c-ccbf-481a-9f10-aeaf3263fabc", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:10.917064+00:00", "level": "ERROR", "logger": "django.request", "request_id": "42bbc408-1365-4c78-81cc-c23f1a4ce413", "code": "unclassified_event", "exception_type": null}
+ok
+test_company_reconfiguration_during_classification_stops_generator (front.test_pipeline.PipelineTests.test_company_reconfiguration_during_classification_stops_generator) ... {"timestamp": "2026-10-03T14:34:10.959492+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8150a1fe-f516-4199-ad15-4b70aebffaf8", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:10.960495+00:00", "level": "ERROR", "logger": "django.request", "request_id": "f6140685-0b31-42fe-8bb5-c02a25a0a4d2", "code": "unclassified_event", "exception_type": null}
+ok
+test_history_mutation_during_classification_prevents_next_egress (front.test_pipeline.PipelineTests.test_history_mutation_during_classification_prevents_next_egress) ... {"timestamp": "2026-10-03T14:34:11.450460+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fa1d9bab-af4b-43e4-a68c-2523590567ba", "code": "authorization_changed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:11.451960+00:00", "level": "ERROR", "logger": "django.request", "request_id": "533f59c5-3333-4ca6-85f1-d83eac94fb80", "code": "unclassified_event", "exception_type": null}
+ok
+test_judge_cannot_receive_a_response_blocked_by_yara (front.test_pipeline.PipelineTests.test_judge_cannot_receive_a_response_blocked_by_yara) ... {"timestamp": "2026-10-03T14:34:11.890078+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2913c620-d345-4f70-886f-e53fad92d011", "code": "security_check_failed", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:11.893078+00:00", "level": "ERROR", "logger": "django.request", "request_id": "a086f45f-f35b-4231-8fc3-0ad56962d5c7", "code": "unclassified_event", "exception_type": null}
+ok
+test_local_block_makes_no_calls_even_with_required_jev (front.test_pipeline.PipelineTests.test_local_block_makes_no_calls_even_with_required_jev) ... {"timestamp": "2026-10-03T14:34:11.917213+00:00", "level": "WARNING", "logger": "django.request", "request_id": "82243a5a-a056-44e4-b372-8464c0552753", "code": "unclassified_event", "exception_type": null}
+ok
+test_masking_is_authorized_and_logged_per_call (front.test_pipeline.PipelineTests.test_masking_is_authorized_and_logged_per_call) ... ok
+test_required_classification_and_judge_run_on_all_three_entries (front.test_pipeline.PipelineTests.test_required_classification_and_judge_run_on_all_three_entries) ... ok
+test_required_classification_never_silently_skips_jev (front.test_pipeline.PipelineTests.test_required_classification_never_silently_skips_jev) ... {"timestamp": "2026-10-03T14:34:13.700405+00:00", "level": "WARNING", "logger": "django.request", "request_id": "876300f8-2315-4ea2-a87e-a6027d8a4786", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:13.716482+00:00", "level": "WARNING", "logger": "django.request", "request_id": "8284ab15-1737-4141-87ef-4ab694ac31c2", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:13.732069+00:00", "level": "WARNING", "logger": "django.request", "request_id": "bc4e8a40-3ad2-4358-8f1a-89a9f3a0262e", "code": "unclassified_event", "exception_type": null}
+ok
+test_second_generation_is_verified_and_third_never_starts (front.test_pipeline.PipelineTests.test_second_generation_is_verified_and_third_never_starts) ... {"timestamp": "2026-10-03T14:34:14.580372+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0e494818-6cec-4f6c-81de-ae7c1b0565ac", "code": "unclassified_event", "exception_type": null}
+ok
+test_unknown_capacity_never_sends (front.test_pipeline.PipelineTests.test_unknown_capacity_never_sends) ... {"timestamp": "2026-10-03T14:34:14.603476+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "3a0a7877-e0eb-4ce0-8af6-5a5cfe439d91", "code": "unknown_capacity", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:14.604976+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d4c7c499-12de-4090-87b1-d4276b91d7b6", "code": "unclassified_event", "exception_type": null}
+ok
+test_unknown_price_and_judge_reserve_prevent_generation (front.test_pipeline.PipelineTests.test_unknown_price_and_judge_reserve_prevent_generation) ... {"timestamp": "2026-10-03T14:34:14.628495+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "39ce9978-c35f-4edd-9dc4-e031216354c9", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:14.629994+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b5be653c-a900-4558-a9a1-1377d02f0275", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:14.646505+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4ef40454-3a67-4ed0-a914-3cdf7a794528", "code": "budget_exhausted", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:14.647006+00:00", "level": "ERROR", "logger": "django.request", "request_id": "379eec99-fd21-4b9e-bbea-a9173d776666", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:14.663089+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "07c201e2-b5f4-486b-ade4-954076725d0d", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:34:14.664597+00:00", "level": "ERROR", "logger": "django.request", "request_id": "9bd44788-9eea-4075-960a-0130af358366", "code": "unclassified_event", "exception_type": null}
+ok
+test_verified_citations_are_resolved_from_current_attachment (front.test_pipeline.PipelineTests.test_verified_citations_are_resolved_from_current_attachment) ... ok
+test_web_automatic_mode_ignores_stale_manual_session_selection (front.test_pipeline.PipelineTests.test_web_automatic_mode_ignores_stale_manual_session_selection) ... ok
+test_legacy_rows_keep_distinct_ids_and_remain_unlinked (front.test_state.LegacyMigrationTests.test_legacy_rows_keep_distinct_ids_and_remain_unlinked) ... ok
+test_cancelled_request_and_stale_processing_never_regenerate (front.test_state.RequestStateTests.test_cancelled_request_and_stale_processing_never_regenerate) ... {"timestamp": "2026-10-03T14:34:16.687709+00:00", "level": "ERROR", "logger": "django.request", "request_id": "66ebcad3-8642-43b2-9e19-1a8c12579485", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:16.690209+00:00", "level": "ERROR", "logger": "django.request", "request_id": "c5c17810-e48c-4ede-8c26-74998a1573bc", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:16.703209+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7f577eb9-e51c-4637-a61a-9282bff81e98", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:16.705709+00:00", "level": "ERROR", "logger": "django.request", "request_id": "4c42e001-33b4-4ea7-9eec-c57e2c304454", "code": "unclassified_event", "exception_type": null}
+ok
+test_confirmation_binds_actor_company_content_policy_and_endpoint (front.test_state.RequestStateTests.test_confirmation_binds_actor_company_content_policy_and_endpoint) ... {"timestamp": "2026-10-03T14:34:16.743214+00:00", "level": "WARNING", "logger": "django.request", "request_id": "00cf46e4-0030-4497-8ba5-0fd5f24a589b", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:16.757720+00:00", "level": "WARNING", "logger": "django.request", "request_id": "7cbd8860-cc7d-4bcb-a339-c4867b18d4a9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:16.770720+00:00", "level": "WARNING", "logger": "django.request", "request_id": "24f544e8-88e2-47c9-b5b7-77567915d23e", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:16.790733+00:00", "level": "WARNING", "logger": "django.request", "request_id": "ca975343-4f72-4ebc-a066-043656158096", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:16.827234+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a47e0ada-155b-426e-a0c5-dae473cc1c12", "code": "unclassified_event", "exception_type": null}
+ok
+test_confirmation_rejects_changed_attachment_but_accepts_same_bytes (front.test_state.RequestStateTests.test_confirmation_rejects_changed_attachment_but_accepts_same_bytes) ... {"timestamp": "2026-10-03T14:34:16.900329+00:00", "level": "WARNING", "logger": "django.request", "request_id": "733f30c5-60d8-498d-9606-1b01e81a52c4", "code": "unclassified_event", "exception_type": null}
+ok
+test_foreign_conversation_and_credential_never_fall_back_to_own_destination (front.test_state.RequestStateTests.test_foreign_conversation_and_credential_never_fall_back_to_own_destination) ... {"timestamp": "2026-10-03T14:34:17.350375+00:00", "level": "WARNING", "logger": "django.request", "request_id": "b15ae8c9-f822-4ceb-b840-eaa0898daac8", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:34:17.367383+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3f33292a-ced1-43fa-aa05-022ff2fb4d62", "code": "unclassified_event", "exception_type": null}
+ok
+test_mutated_or_deleted_turn_is_excluded_from_history (front.test_state.RequestStateTests.test_mutated_or_deleted_turn_is_excluded_from_history) ... ok
+test_overlapping_confirmation_posts_generate_once_without_open_transaction (front.test_state.RequestStateTests.test_overlapping_confirmation_posts_generate_once_without_open_transaction) ... ok
+test_inference_preserves_decisions_relations_and_reverse_respects_later_changes (front.test_onboarding_migrations.HistoricalCompanyMigrationTests.test_inference_preserves_decisions_relations_and_reverse_respects_later_changes) ... ok
+test_old_prices_survive_forward_and_reverse_and_units_are_explicit (front.test_onboarding_migrations.PriceUnitsMigrationTests.test_old_prices_survive_forward_and_reverse_and_units_are_explicit) ... ok
+test_existing_models_default_to_no_reasoning_and_reverse_preserves_catalog (front.test_onboarding_migrations.ReasoningMigrationTests.test_existing_models_default_to_no_reasoning_and_reverse_preserves_catalog) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 17.483s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

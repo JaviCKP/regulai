@@ -1,0 +1,218 @@
+{
+  "observed_at_utc": "2026-10-03T14:39:31.905602+00:00",
+  "inspection_only": true,
+  "lab_rerun": false,
+  "source_report": "evals/reports/pilot-operations-20261003-08",
+  "source_head": "87311294631d9ffdf6b76ccf3fcb9140018a0977",
+  "source_manifest_sha256": "558eb5e96bf0fdc650ab57051fa2c410d64d787351624ab2509a5aa26e56ae85",
+  "original_run_exit_code": 0,
+  "original_exit_provenance": "Parent orchestration observed completion of session46145; no new lab execution here.",
+  "suite": {
+    "tests": 84,
+    "runner_seconds": 12.128,
+    "skipped": 1,
+    "command_exit_code": 0,
+    "skip": "SQLite deterministic trigger only; PostgreSQL concurrent writer separately passed"
+  },
+  "restore": {
+    "tables": 27,
+    "media_files": 2,
+    "restored_exact": true,
+    "rollback_exact": true,
+    "new_key_only_credentials_readable": true
+  },
+  "restart": {
+    "status": "outcome_unknown",
+    "success": false,
+    "generation_status": "started",
+    "generation_cost": null,
+    "receipt_total_present": false,
+    "no_resend_check": true
+  },
+  "command_count": 67,
+  "nonzero_commands": [
+    {
+      "log": "db-ready-0.log",
+      "exit_code": 2
+    }
+  ],
+  "original_cleanup_commands": [
+    {
+      "log": "verify-owned-https.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-https.log",
+      "exit_code": 0
+    },
+    {
+      "log": "verify-owned-app.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-app.log",
+      "exit_code": 0
+    },
+    {
+      "log": "verify-owned-provider.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-provider.log",
+      "exit_code": 0
+    },
+    {
+      "log": "verify-owned-db.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-db.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-volume.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-static-volume.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-network.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-ingress.log",
+      "exit_code": 0
+    },
+    {
+      "log": "remove-owned-image.log",
+      "exit_code": 0
+    }
+  ],
+  "post_run_resource_queries": [
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "label=regulai.synthetic-lab",
+        "--format",
+        "{{.Names}} {{.Status}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "network",
+        "ls",
+        "--filter",
+        "label=regulai.synthetic-lab",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "volume",
+        "ls",
+        "--filter",
+        "label=regulai.synthetic-lab",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "name=regulai-lab-43a3f7dd8eed",
+        "--format",
+        "{{.Names}} {{.Status}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "network",
+        "ls",
+        "--filter",
+        "name=regulai-lab-43a3f7dd8eed",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "volume",
+        "ls",
+        "--filter",
+        "name=regulai-lab-43a3f7dd8eed",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "image",
+        "ls",
+        "--filter",
+        "label=regulai.synthetic-lab",
+        "--format",
+        "{{.Repository}}:{{.Tag}} {{.ID}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "image",
+        "ls",
+        "regulai-lab-43a3f7dd8eed:local",
+        "--format",
+        "{{.Repository}}:{{.Tag}} {{.ID}}"
+      ],
+      "exit_code": 0,
+      "matching_resources": []
+    }
+  ],
+  "synthetic_private_backup_retained": true,
+  "real_provider_calls": 0,
+  "remote_ci": false,
+  "public_deployment": false
+}

@@ -1,0 +1,73 @@
+{
+  "authorization_ready_after_reserve": false,
+  "blockers_after_reserve": [
+    "new_explicit_authorization_required"
+  ],
+  "reservation_id": "d5011b8d-6994-41ec-930f-6e2ef0b9de58",
+  "events": [
+    "obfuscation",
+    "classification"
+  ],
+  "generation_payloads": [],
+  "ledger": {
+    "cap_usd": "1.00",
+    "known_cost_usd": "0.0000021",
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.0000021",
+    "budget_exposure_usd": "0.013",
+    "remaining_usd": "0.987",
+    "uncertain_reservations_usd": "0.01",
+    "calls": [
+      {
+        "id": "f65fd541-b209-4435-9b4c-a2dc7ac9314a",
+        "at": "2026-10-03T14:33:58.023381+00:00",
+        "purpose": "obfuscation",
+        "reserved": "0.01",
+        "status": "completed",
+        "cost": null,
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "obfuscation:1",
+          "model": null,
+          "cost_kind": "unknown"
+        }
+      },
+      {
+        "id": "d605909b-d501-49ae-9d8f-ceb89f331334",
+        "at": "2026-10-03T14:33:58.073568+00:00",
+        "purpose": "classification",
+        "reserved": "0.003",
+        "status": "completed",
+        "cost": "0.0000021",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "jev",
+          "model": "jev-1.13.0",
+          "model_effective": "jev-1.13.0",
+          "input_tokens": 50,
+          "output_tokens": 10,
+          "provider_request_id": null,
+          "cost_kind": "tariff_estimate"
+        }
+      },
+      {
+        "id": "d5011b8d-6994-41ec-930f-6e2ef0b9de58",
+        "at": "2026-10-03T14:33:58.130282+00:00",
+        "purpose": "generation",
+        "reserved": "0.00244860",
+        "status": "not_started",
+        "cost": "0",
+        "metadata": {
+          "case_id": "arithmetic",
+          "configuration": "strong",
+          "provider": "engine:1",
+          "model": "deepseek-v4-pro",
+          "cost_kind": "not_incurred"
+        }
+      }
+    ]
+  },
+  "live_socket_calls": 0
+}
