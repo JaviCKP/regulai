@@ -2956,6 +2956,7 @@ def obfuscation_delete(request, pk):
 
 
 @security_required
+@require_POST
 def obfuscation_toggle(request, pk):
     """Toggle active/inactive status of an obfuscation configuration."""
     company = get_user_company(request.user)

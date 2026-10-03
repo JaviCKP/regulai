@@ -18,7 +18,7 @@ from django.db import connection
 from django.test import TestCase, SimpleTestCase, Client, override_settings
 from django.urls import reverse
 
-from front.models import Alert, Company, CompanyEngine, Engine, EngineModel, Profile, Rule, RulesGroup
+from front.models import Alert, Company, CompanyEngine, Engine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
 from PIL import Image
 from cryptography.fernet import Fernet
 from front.encryption import encrypt_value, decrypt_value, EncryptionError
@@ -202,6 +202,31 @@ class BackendHardeningTests(TestCase):
             self.assertFalse(model.active)
             self.assertEqual(self.client.post(reverse('front:model_delete', args=[model.pk])).status_code, 302)
             self.assertFalse(EngineModel.objects.filter(pk=model.pk).exists())
+
+    def test_obfuscation_toggle_requires_post_csrf_and_company_ownership(self):
+        config = ObfuscationConfig.objects.create(company=self.company, name='Synthetic mask',
+            api_url='https://mask.invalid', active=True)
+        secure = Client(enforce_csrf_checks=True)
+        secure.force_login(self.staff)
+        url = reverse('front:obfuscation_toggle', args=[config.pk])
+        self.assertEqual(secure.get(url).status_code, 405)
+        self.assertEqual(secure.post(url).status_code, 403)
+        config.refresh_from_db()
+        self.assertTrue(config.active)
+        listing = secure.get(reverse('front:obfuscation_list'))
+        self.assertContains(listing, f'<form method="post" action="{url}"')
+        self.assertContains(listing, 'name="csrfmiddlewaretoken"')
+        token = secure.cookies['csrftoken'].value
+        self.assertEqual(secure.post(url, {'csrfmiddlewaretoken': token}).status_code, 302)
+        config.refresh_from_db()
+        self.assertFalse(config.active)
+        foreign = Company.objects.create(name='Foreign mask company')
+        other = ObfuscationConfig.objects.create(company=foreign, name='Other synthetic mask',
+            api_url='https://mask.invalid', active=True)
+        self.assertEqual(secure.post(reverse('front:obfuscation_toggle', args=[other.pk]),
+            {'csrfmiddlewaretoken': token}).status_code, 404)
+        other.refresh_from_db()
+        self.assertTrue(other.active)
 
     def test_community_sync_requires_platform_operator_and_post(self):
         self.client.force_login(self.admin)
