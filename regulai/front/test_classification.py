@@ -217,7 +217,7 @@ class ClassificationSimulatorTests(TestCase):
             result = self.client.post(self.url, self.command(mode='semantic'))
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.context['comparison']['semantic']['status'], 'not_authorized')
-        self.assertEqual(result.context['comparison']['semantic']['reason_codes'], ['masking_required'])
+        self.assertEqual(result.context['comparison']['semantic']['reason_codes'], ['destination_not_allowed'])
         network.assert_not_called()
 
     def test_local_classification_ignores_semantic_category_for_routing(self):

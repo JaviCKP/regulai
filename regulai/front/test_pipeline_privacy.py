@@ -6,6 +6,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 import re
 from decimal import Decimal
+import io
 
 from django.utils import timezone
 from django.urls import reverse
@@ -266,3 +267,61 @@ class PipelinePrivacyTests(ChatFixture):
             self.assertEqual(result['error_type'], 'budget_exhausted', result)
             self.http.assert_not_called()
             provider.assert_not_called()
+
+    def test_zero_mask_cost_is_known_for_every_decimal_representation(self):
+        self.configure()
+        self.mask(bound='0.000')
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertTrue(result['receipt']['total']['complete'], result)
+        self.assertEqual([call['cost'] for call in result['receipt']['calls'] if call['purpose']=='obfuscation'], ['0', '0'])
+
+    def test_text_only_document_coverage_requires_confirmation_without_sending_omitted_image(self):
+        self.configure()
+        from docx import Document
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        doc = Document()
+        doc.add_paragraph('The approved period is seventeen days.')
+        image = io.BytesIO()
+        Image.new('RGB', (1, 1), 'white').save(image, format='PNG')
+        image.seek(0)
+        doc.add_picture(image)
+        raw = io.BytesIO()
+        doc.save(raw)
+        request_id = str(uuid.uuid4())
+        first = self.send('/api/chat/send/', 'What is the period?', request_id=request_id,
+            file=SimpleUploadedFile('period.docx', raw.getvalue())).json()
+        self.assertEqual(first['status'], 'pending_consent', first)
+        self.assertEqual(first['receipt']['coverage']['status'], 'complete_text_only')
+        self.assertEqual(first['consent_reason'], 'coverage_incomplete')
+        self.http.assert_not_called()
+        self.provider.assert_not_called()
+        self.provider.return_value = ChatResponse(json.dumps({'claims': [{'text': 'The approved period is seventeen days.',
+            'citations': [{'id': 'S1', 'quote': 'The approved period is seventeen days.'}]}]}),
+            30, 'synthetic-v1', 'stop', 20, 10)
+        result = self.send('/api/chat/send/', 'What is the period?', request_id=request_id,
+            consent_token=first['consent_token'], file=SimpleUploadedFile('period.docx', raw.getvalue())).json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertEqual(result['user_message']['id'], first['user_message']['id'])
+        self.assertNotIn('image/png', str(self.provider.call_args))
+
+    def test_timeout_configuration_reaches_all_network_boundaries(self):
+        self.configure(limits={'budget': '1', 'deadline_seconds': 120, 'call_timeout_seconds': 70})
+        self.mask()
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertEqual(self.provider.call_args.kwargs['timeout'], 70)
+        for call in self.http.call_args_list:
+            timeout = call.kwargs['timeout']
+            self.assertEqual(sum(timeout) if isinstance(timeout, tuple) else timeout, 70)
+
+    def test_uncertain_503_is_not_automatically_retried(self):
+        self.configure()
+        self.fallback()
+        error = RuntimeError('sensitive error')
+        error.status_code, error.outcome_unknown = 503, True
+        self.provider.side_effect = error
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['status'], 'outcome_unknown', result)
+        self.assertEqual(self.provider.call_count, 1)

@@ -305,7 +305,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
     """One bounded execution; closures share the immutable authorization and ledger."""
     cfg = AIConfig.model_validate(profile.company.ai_config)
     prompt.decision['limits'] = {'jev_state_bytes': jev.MAX_STATE_BYTES, 'max_output_tokens': cfg.routing.max_output_tokens,
-        'call_timeout_seconds': cfg.limits.call_timeout_seconds, 'deadline_seconds': cfg.limits.deadline_seconds}
+        'call_timeout_seconds': cfg.limits.call_timeout_seconds, 'deadline_seconds': cfg.limits.deadline_seconds,
+        'jev_call_timeout_seconds': min(120, cfg.limits.call_timeout_seconds)}
     deadline = prompt._started + cfg.limits.deadline_seconds
     budget = Decimal(cfg.limits.budget) if cfg.limits.budget is not None else None
     sensitivity = local.sensitivity
@@ -464,7 +465,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 call['cost_bound'] = call['cost']
                 prompt.save(update_fields=['decision', 'updated_at'])
                 raise PipelineStop('budget_bound_exceeded')
-        elif call['purpose'] == 'obfuscation' and call['cost_bound'] == '0':
+        elif call['purpose'] == 'obfuscation' and call['cost_bound'] is not None and Decimal(call['cost_bound']) == 0:
             call['cost'] = '0'
         prompt.save(update_fields=['decision', 'updated_at'])
         remaining()
@@ -501,8 +502,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             raise PipelineStop('evaluation_input_too_large')
         call, started = start_call(purpose, 'jev', cfg.jev.model,
             policy_texts + [('prompts', serialized)], jev_bound, jev_prices, reserve)
-        seconds = remaining()
-        connect_seconds = min(3, seconds / 2)
+        seconds = min(120, remaining())
+        connect_seconds = min(seconds / 2, max(3, seconds - 60))
         result = jev.evaluate(profile.company.jev_api_key, cfg.jev.model, state, questions,
             timeout=(connect_seconds, seconds - connect_seconds), transport=cfg.jev.transport)
         complete_call(call, started, result)

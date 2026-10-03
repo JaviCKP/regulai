@@ -306,8 +306,8 @@ def _semantic(actor, company, sample, rules):
     started = time.monotonic()
     semantic, signals = {'status': 'completed', 'reason_codes': []}, None
     try:
-        seconds = min(cfg.limits.call_timeout_seconds, deadline - time.monotonic())
-        connect_seconds = min(3, seconds / 2)
+        seconds = min(120, cfg.limits.call_timeout_seconds, deadline - time.monotonic())
+        connect_seconds = min(seconds / 2, max(3, seconds - 60))
         result = jev.evaluate(fresh.company.jev_api_key, cfg.jev.model, state, questions,
             transport=cfg.jev.transport, timeout=(connect_seconds, seconds - connect_seconds))
         cost = actual_cost(prices, result.input_tokens, result.output_tokens)
