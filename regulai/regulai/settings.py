@@ -212,3 +212,20 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+# Content must never be interpolated into logs, including Django HTTP errors.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'safe_json': {'()': 'front.logging.SafeJSONFormatter'}},
+    'handlers': {'safe_console': {
+        'class': 'logging.StreamHandler', 'formatter': 'safe_json',
+    }},
+    'root': {'handlers': ['safe_console'], 'level': 'INFO'},
+    'loggers': {
+        'django': {'handlers': ['safe_console'], 'level': 'INFO', 'propagate': False},
+        'django.server': {'handlers': ['safe_console'], 'level': 'INFO', 'propagate': False},
+        'gunicorn.error': {'handlers': ['safe_console'], 'level': 'INFO', 'propagate': False},
+        'gunicorn.access': {'handlers': ['safe_console'], 'level': 'INFO', 'propagate': False},
+    },
+}
