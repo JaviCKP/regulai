@@ -210,7 +210,7 @@ class Prompt(models.Model):
     filtered = models.BooleanField(default=False)
     request_id = models.UUIDField(default=uuid.uuid4, editable=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
-    historical_company_id = models.PositiveIntegerField(null=True, blank=True, editable=False)
+    historical_company_id = models.PositiveBigIntegerField(null=True, blank=True, editable=False)
     user_message = models.OneToOneField(Message, on_delete=models.SET_NULL, null=True, blank=True, related_name='request_record')
     status = models.CharField(max_length=24, default='legacy')
     decision = models.JSONField(default=dict, blank=True)

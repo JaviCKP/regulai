@@ -38,6 +38,6 @@ class Migration(migrations.Migration):
     dependencies = [('front', '0030_enginemodel_reasoning')]
     operations = [
         migrations.AddField(model_name='prompt', name='historical_company_id',
-            field=models.PositiveIntegerField(null=True, blank=True, editable=False)),
+            field=models.PositiveBigIntegerField(null=True, blank=True, editable=False)),
         migrations.RunPython(infer_company, restore_company),
     ]
