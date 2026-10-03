@@ -142,12 +142,7 @@
                 <span class="hide-menu">Company</span>
               </a>
             </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link {% if 'policy_simulator' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'front:policy_simulator' %}" aria-expanded="false">
-                <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
-                <span class="hide-menu">Policy simulator</span>
-              </a>
-            </li>
+
             <li class="sidebar-item">
               <a class="sidebar-link {% if request.resolver_match.url_name == 'users_list' or request.resolver_match.url_name == 'user_create' or request.resolver_match.url_name == 'user_edit' or request.resolver_match.url_name == 'user_delete' %}active{% endif %}" href="{% url 'front:users_list' %}" aria-expanded="false">
                 <iconify-icon icon="solar:users-group-rounded-line-duotone"></iconify-icon>
@@ -179,6 +174,12 @@
               </a>
             </li>{% endif %}
             {% endif %}
+{% if can_manage_company_policy %}            <li class="sidebar-item">
+              <a class="sidebar-link {% if 'policy_simulator' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'front:policy_simulator' %}" aria-expanded="false">
+                <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+                <span class="hide-menu">Policy simulator</span>
+              </a>
+            </li>{% endif %}
           </ul>
         </nav>
         <!-- End Sidebar navigation -->

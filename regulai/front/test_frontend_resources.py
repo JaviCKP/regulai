@@ -3,8 +3,12 @@ from html.parser import HTMLParser
 import json
 from pathlib import Path
 import re
+import runpy
 import shutil
 import subprocess
+import tempfile
+from unittest.mock import patch
+import io
 
 from django.test import SimpleTestCase
 from django.template.loader import render_to_string
@@ -21,6 +25,34 @@ NAVIGATION = {
 
 
 class ResourceTests(SimpleTestCase):
+    def test_bad_download_hash_preserves_every_existing_asset(self):
+        namespace = runpy.run_path(str(ROOT / 'scripts/vendor_assets.py'))
+        main = namespace['main']
+        with tempfile.TemporaryDirectory() as directory:
+            vendor = Path(directory)
+            manifest = {name: {'source': 'https://assets.invalid/' + name,
+                'sha256': 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'}
+                for name in ('first.js', 'second.js')}
+            (vendor / 'manifest.json').write_text(json.dumps(manifest))
+            for name in manifest:
+                (vendor / name).write_bytes(b'original')
+            with patch.dict(main.__globals__, {'ROOT': vendor}), patch('sys.argv', ['vendor_assets.py']), \
+                 patch.dict(main.__globals__, {'urlopen': lambda url, **kwargs: io.BytesIO(
+                     b'abc' if url.endswith('first.js') else b'changed-source')}):
+                with self.assertRaisesRegex(ValueError, 'Checksum mismatch for second.js'):
+                    main()
+            self.assertEqual([(vendor / name).read_bytes() for name in manifest], [b'original', b'original'])
+
+    def test_registered_icons_cover_template_names_and_dynamic_toggle_states(self):
+        manifest = json.loads((ROOT / 'regulai/static/vendor/manifest.json').read_text())
+        expected = {'solar': {'pause-bold', 'play-bold', 'pen-bold', 'add-circle-bold', 'check-circle-bold'},
+                    'simple-icons': set()}
+        for path in (ROOT / 'regulai/front/templates').rglob('*.html'):
+            for prefix, name in re.findall(r'(solar|simple-icons):([a-z0-9-]+)', path.read_text(encoding='utf-8')):
+                expected[prefix].add(name)
+        self.assertTrue(expected['solar'].issubset(manifest['solar-icons.js']['icons']))
+        self.assertTrue(expected['simple-icons'].issubset(manifest['brand-icons.js']['icons']))
+
     def test_templates_and_styles_load_only_local_resources(self):
         violations = []
 
@@ -66,6 +98,13 @@ assert.ok(collections.find(c => c.prefix === 'simple-icons').icons.openai);
 
 
 class BrowserPolicyTests(ChatFixture):
+    def test_initial_policy_generation_is_a_separate_csrf_draft_action(self):
+        html = render_to_string('policy_simulator.html', {'user': self.user,
+            'can_manage_company_policy': True, 'csrf_token': 'synthetic-csrf'})
+        self.assertIn('name="action" value="bootstrap"', html)
+        self.assertIn('Generar política inicial', html)
+        self.assertIn('name="csrfmiddlewaretoken" value="synthetic-csrf"', html)
+
     def test_company_admin_keeps_engine_controls_without_operator_model_controls(self):
         self.user.is_superuser = True
         self.user.is_staff = True
