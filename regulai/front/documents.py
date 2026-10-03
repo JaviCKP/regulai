@@ -369,7 +369,12 @@ def _parse_docx(document, content):
                         levels[index] = level
                     if start is not None:
                         starts[index] = int(start.get(namespace + "val"))
-                numbers[node.get(namespace + "numId")] = (levels, starts)
+                restarts = {}
+                for index, level in levels.items():
+                    restart = level.find(namespace + "lvlRestart")
+                    value = restart.get(namespace + "val", "") if restart is not None else str(index)
+                    restarts[index] = min(int(value), index) if re.fullmatch(r"[0-9]+", value) else None
+                numbers[node.get(namespace + "numId")] = (levels, starts, restarts)
         if "word/styles.xml" in names:
             styles = {node.get(namespace + "styleId"): node
                       for node in ET.fromstring(archive.read("word/styles.xml")).findall(namespace + "style")}
@@ -451,10 +456,11 @@ def _parse_docx(document, content):
                         number_id = number_id.get(namespace + "val") if number_id is not None else None
                         level_id = int(level_id.get(namespace + "val")) if level_id is not None else 0
                         if number_id and number_id != "0":
-                            levels, starts = numbers.get(number_id, ({}, {}))
+                            levels, starts, restarts = numbers.get(number_id, ({}, {}, {}))
                             level = levels.get(level_id)
                             fmt = level.find(namespace + "numFmt") if level is not None else None
-                            if fmt is None or fmt.get(namespace + "val") != "decimal" or not 0 <= level_id <= 8:
+                            if (fmt is None or fmt.get(namespace + "val") != "decimal" or not 0 <= level_id <= 8
+                                    or restarts.get(level_id) is None):
                                 _disclose(document, "numbering_unsupported", locator)
                             else:
                                 values = counters.setdefault((part, number_id), {})
@@ -463,12 +469,17 @@ def _parse_docx(document, content):
                                 values[level_id] = values.get(level_id, initial - 1) + 1
                                 for deeper in list(values):
                                     if deeper > level_id:
-                                        del values[deeper]
+                                        trigger = restarts[deeper]
+                                        # One-based triggering level; zero never restarts.
+                                        # Invalid forward references are ignored by Word.
+                                        if trigger and trigger - 1 == level_id:
+                                            del values[deeper]
                                 pattern = level.find(namespace + "lvlText")
                                 pattern = pattern.get(namespace + "val") if pattern is not None else f"%{level_id + 1}."
                                 indices = [int(index) - 1 for index in re.findall(r"%([1-9])", pattern)]
                                 if any(index not in levels or levels[index].find(namespace + "numFmt") is None
-                                       or levels[index].find(namespace + "numFmt").get(namespace + "val") != "decimal" for index in indices):
+                                       or levels[index].find(namespace + "numFmt").get(namespace + "val") != "decimal"
+                                       or restarts.get(index) is None for index in indices):
                                     _disclose(document, "numbering_unsupported", locator)
                                 else:
                                     prefix = re.sub(r"%([1-9])", lambda match: str(values.get(int(match[1]) - 1,

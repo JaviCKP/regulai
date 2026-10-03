@@ -49,6 +49,38 @@ def inline_image_pdf(image=None, nested=False):
     return output.getvalue()
 
 
+def decimal_numbering_docx(restarts, paragraphs):
+    word = WordDocument()
+    definition = OxmlElement("w:abstractNum")
+    definition.set(qn("w:abstractNumId"), "42")
+    for index, restart in enumerate(restarts):
+        level = OxmlElement("w:lvl")
+        level.set(qn("w:ilvl"), str(index))
+        attributes = [("start", "1"), ("numFmt", "decimal"),
+                      ("lvlText", ".".join(f"%{number}" for number in range(1, index + 2)) + ".")]
+        if restart is not None:
+            attributes.append(("lvlRestart", restart))
+        for name, value in attributes:
+            child = OxmlElement("w:" + name)
+            child.set(qn("w:val"), value)
+            level.append(child)
+        definition.append(level)
+    word.part.numbering_part.element.append(definition)
+    number = OxmlElement("w:num")
+    number.set(qn("w:numId"), "42")
+    reference = OxmlElement("w:abstractNumId")
+    reference.set(qn("w:val"), "42")
+    number.append(reference)
+    word.part.numbering_part.element.append(number)
+    for index, text in paragraphs:
+        properties = word.add_paragraph(text)._p.get_or_add_pPr().get_or_add_numPr()
+        properties.get_or_add_numId().val = 42
+        properties.get_or_add_ilvl().val = index
+    output = io.BytesIO()
+    word.save(output)
+    return output.getvalue()
+
+
 class FidelityTests(SimpleTestCase):
     def extract(self, name, content):
         return extract_document(SimpleUploadedFile(name, content))
@@ -232,6 +264,27 @@ class FidelityTests(SimpleTestCase):
         self.assertEqual(document.text, "1. First\n1.1. Child\n1.2. Next child\n2. Second\n2.1. Reset child\nRoman")
         self.assertEqual(document.disclosures, [{"code": "numbering_unsupported", "count": 1,
             "locators": ["word/document.xml/paragraph:6"]}])
+
+    def test_decimal_numbering_obeys_never_restart_and_explicit_restart_levels(self):
+        for restart, after_parent, expected in (("0", "2.1.3.", "2.2.4. Last grandchild"),
+                                               ("1", "2.1.1.", "2.2.2. Last grandchild"),
+                                               ("2", "2.1.3.", "2.2.1. Last grandchild"),
+                                               (None, "2.1.3.", "2.2.1. Last grandchild")):
+            with self.subTest(restart=restart):
+                raw = decimal_numbering_docx([None, "0", restart], [
+                    (0, "First"), (1, "Child"), (2, "Grandchild"), (2, "Next grandchild"),
+                    (0, "Second"), (2, "Grandchild after parent"), (1, "Continuing child"), (2, "Last grandchild")])
+                document = self.extract("restart.docx", raw)
+                self.assertEqual(document.status, "complete")
+                self.assertIn("2.2. Continuing child", document.text)
+                self.assertIn(after_parent + " Grandchild after parent", document.text)
+                self.assertTrue(document.text.endswith(expected), document.text)
+
+    def test_decimal_numbering_with_invalid_restart_is_an_explicit_omission(self):
+        document = self.extract("invalid-restart.docx", decimal_numbering_docx(["-1"], [(0, "Readable text")]))
+        self.assertEqual(document.status, "complete_text_only")
+        self.assertEqual(document.text, "Readable text")
+        self.assertIn("numbering_unsupported", document.warnings)
 
     def xlsx_bytes(self, workbook, cache=None):
         output = io.BytesIO()
@@ -431,6 +484,19 @@ class FidelityTests(SimpleTestCase):
 
 class DocumentHTTPTests(ChatFixture):
     configure = test_pipeline.PipelineTests.configure
+
+    def test_decimal_numbering_never_restart_reaches_the_generator_and_cited_evidence(self):
+        self.configure()
+        raw = decimal_numbering_docx([None, "0"], [
+            (0, "First"), (1, "Child"), (0, "Second"), (1, "Continuing child")])
+        self.provider.return_value = ChatResponse(json.dumps({"claims": [{"text": "2.2. Continuing child",
+            "citations": [{"id": "S4", "quote": "2.2. Continuing child"}]}]}), 30, "synthetic-v1", "stop", 20, 10)
+        result = self.send("/api/chat/send/", "What is the final item?",
+            file=SimpleUploadedFile("restart.docx", raw)).json()
+        self.assertIn("2.2. Continuing child", str(self.provider.call_args))
+        self.assertNotIn("2.1. Continuing child", str(self.provider.call_args))
+        self.assertEqual(result["status"], "completed", result)
+        self.assertEqual(result["evidence"]["items"][0]["excerpt"], "2.2. Continuing child")
 
     def test_uneven_csv_sends_correct_cells_and_ambiguous_csv_blocks_without_network(self):
         self.configure()
