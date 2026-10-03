@@ -333,7 +333,7 @@
                   </div>
                 </td>
                 <td class="border-bottom-0">
-                  {% if alert.user.profile.department %}
+                  {% if alert.user.profile.company_id == alert.company_id and alert.user.profile.department.company_id == alert.company_id %}
                   <a href="{% url 'front:alerts_list' %}?department={{ alert.user.profile.department.id }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_severity %}&severity={{ current_severity }}{% endif %}{% if current_rule %}&rule={{ current_rule }}{% endif %}" class="badge bg-info-subtle text-info rounded-3 text-decoration-none" title="Filter by this department">
                     {{ alert.user.profile.department.name }}
                   </a>

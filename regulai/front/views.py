@@ -2368,7 +2368,9 @@ def alerts_list(request):
             alerts = alerts.filter(rule__action=action_filter, source='rule')
 
     if department_filter:
-        alerts = alerts.filter(user__profile__department_id=department_filter)
+        alerts = alerts.filter(user__profile__company=user_company,
+            user__profile__department__company=user_company,
+            user__profile__department_id=department_filter)
 
     if search:
         alerts = alerts.filter(description__icontains=search)
@@ -2702,7 +2704,9 @@ def prompts_list(request):
         prompts = prompts.filter(filtered=False)
 
     if department_filter:
-        prompts = prompts.filter(user__profile__department_id=department_filter)
+        prompts = prompts.filter(user__profile__company=user_company,
+            user__profile__department__company=user_company,
+            user__profile__department_id=department_filter)
 
     if date_from:
         prompts = prompts.filter(created_at__date__gte=date_from)
