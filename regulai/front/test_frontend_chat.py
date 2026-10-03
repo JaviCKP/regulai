@@ -41,6 +41,21 @@ vm.runInContext('createAssistantBubble = () => new Element(); createSystemBubble
     def test_html_quotes_cannot_escape_download_attributes(self):
         self.browser("assert.equal(escapeHtml(`<&>\"'`), '&lt;&amp;&gt;&quot;&#39;');")
 
+    def test_finished_receipt_does_not_request_confirmation_for_historical_reason(self):
+        self.browser(r"""
+for (const status of ['completed', 'cancelled', 'blocked', 'failed', 'outcome_unknown']) {
+  for (const reason of ['consent_expired', 'consent_context_changed']) {
+    const output = new Element();
+    renderReceipt(output, {consent_reason: reason}, status);
+    assert.match(output.text, /Previous confirmation notice/);
+    assert.doesNotMatch(output.text, /confirm again|Review and confirm/i);
+  }
+}
+const pending = new Element();
+renderReceipt(pending, {consent_reason: 'consent_expired'}, 'pending_consent');
+assert.match(pending.text, /Confirmation expired\. Review and confirm again\./);
+""")
+
     def test_unknown_outcome_without_total_never_renders_zero_cost_or_success(self):
         self.browser(r"""
 const command = {requestId: 'synthetic-interrupted', userBubble: new Element()};

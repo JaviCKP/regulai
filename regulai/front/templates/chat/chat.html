@@ -768,7 +768,10 @@
     });
   }
 
-  function consentReason(reason) {
+  function consentReason(reason, pending = true) {
+    if (!pending) return ({consent_expired: 'A previous confirmation expired.',
+      consent_context_changed: 'Policy or context changed during this request.',
+      coverage_incomplete: 'Some document content was not analyzed or sent.'})[reason] || reason;
     return ({consent_expired: 'Confirmation expired. Review and confirm again.',
       consent_context_changed: 'Policy or context changed. Review and confirm again.',
       coverage_incomplete: 'Some document content was not analyzed and will not be sent.'})[reason] || reason;
@@ -788,7 +791,9 @@
       renderDisclosures(parent, coverage);
     }
     if (Array.isArray(receipt.notices)) receipt.notices.forEach(notice => receiptLine(parent, 'Notice', notice));
-    if (receipt.consent_reason) receiptLine(parent, 'Confirmation', consentReason(receipt.consent_reason));
+    if (receipt.consent_reason) receiptLine(parent,
+      status === 'pending_consent' ? 'Confirmation' : 'Previous confirmation notice',
+      consentReason(receipt.consent_reason, status === 'pending_consent'));
     if (receipt.history) {
       receiptLine(parent, 'History turns sent / omitted', `${receipt.history.sent_turns ?? 'unknown'} / ${receipt.history.omitted_turns ?? 'unknown'}`);
       receiptLine(parent, 'History bytes sent / omitted', `${receipt.history.sent_bytes ?? 'unknown'} / ${receipt.history.omitted_bytes ?? 'unknown'}`);

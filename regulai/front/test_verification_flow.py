@@ -50,7 +50,9 @@ class VerificationFlowTests(ChatFixture):
                     self.assertEqual(response.status_code, 502)
                     result = response.json()
                     self.assertEqual((result['status'], result['error_type']), ('failed', 'verification_failed'))
-                    self.assertEqual(self.http.call_count, 1)
+                    self.assertEqual(self.http.call_count, 3)
+                    self.assertEqual([call['purpose'] for call in result['receipt']['calls']],
+                        ['obfuscation', 'classification', 'generation', 'obfuscation'])
                     self.assertNotIn('assistant_message', result)
 
     def test_missing_provider_completion_is_failed_on_all_three_entries(self):
@@ -64,4 +66,6 @@ class VerificationFlowTests(ChatFixture):
                 verification = result['receipt']['verification']
                 self.assertEqual((verification['local_status'], verification['finish_reason']), ('failed', 'unknown'))
                 self.assertNotIn('assistant_message', result)
-                self.assertEqual(self.http.call_count, 1)
+                self.assertEqual(self.http.call_count, 3)
+                self.assertEqual([call['purpose'] for call in result['receipt']['calls']],
+                    ['obfuscation', 'classification', 'generation', 'obfuscation'])

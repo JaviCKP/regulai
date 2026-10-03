@@ -11,13 +11,20 @@ from front import test_policy_simulator
 from front.policy import AIConfig
 from front.classification import decide
 from front.models import CompanyEngine, Engine, EngineModel, ObfuscationConfig
-from front.test_chat_flow import ChatFixture
+from front.test_chat_flow import ChatFixture, mask_response
 from front.test_pipeline import PipelineTests
 
 
 def provider_response(payload):
     return SimpleNamespace(status_code=200, headers={}, close=lambda: None,
         iter_content=lambda **kwargs: iter([json.dumps(payload).encode()]))
+
+
+def classification_transport(payload):
+    def transport(*args, **kwargs):
+        url = kwargs.pop('url', None) or args[0]
+        return mask_response(url, **kwargs) if url.endswith('/api/mask') else provider_response(payload)
+    return transport
 
 
 def answers():
@@ -165,7 +172,7 @@ class ClassificationSimulatorTests(TestCase):
 
     def test_real_distribution_is_conservatively_confidential(self):
         self.company.ai_config.update(classification='required',
-            destinations={'internal': ['jev'], 'confidential': ['jev']},
+            destinations={level: ['jev', f'obfuscation:{self.mask.pk}'] for level in ('internal', 'confidential')},
             jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
             limits={'budget': '0.002'})
         self.company.jev_api_key = 'synthetic-key'
@@ -174,18 +181,18 @@ class ClassificationSimulatorTests(TestCase):
         payload['answers']['category'].update(confidence=0.49, probabilities={
             'public': 0.14, 'internal': 0.59, 'unknown': 0.22,
             'confidential': 0.05, 'restricted': 0.0})
-        response = provider_response(payload)
-        with patch('requests.sessions.Session.request', return_value=response) as network:
+        with patch('requests.sessions.Session.request', side_effect=classification_transport(payload)) as network:
             result = self.client.post(self.url, self.command(mode='semantic'))
         self.assertEqual(result.status_code, 200)
         comparison = result.context['comparison']
         self.assertEqual(comparison['current']['policy']['status'], 'allow')
         self.assertEqual(comparison['current']['policy']['sensitivity'], 'confidential')
         self.assertEqual(comparison['semantic']['status'], 'completed')
-        self.assertEqual(network.call_count, 1)
+        self.assertEqual(network.call_count, 2)
+        self.assertTrue(network.call_args_list[0].kwargs['url'].endswith('/api/mask'))
 
     def test_active_mask_without_a_bound_is_rejected_before_semantic_calls(self):
-        ObfuscationConfig.objects.create(company=self.company, name='Synthetic mask', api_url='https://mask.invalid')
+        self.company.ai_config.pop('masking')
         self.company.ai_config.update(limits={'budget': '1'})
         self.company.save()
         with patch('requests.sessions.Session.request') as network:
@@ -194,7 +201,7 @@ class ClassificationSimulatorTests(TestCase):
         network.assert_not_called()
 
     def test_bounded_draft_cannot_authorize_semantics_with_unbounded_active_mask_policy(self):
-        ObfuscationConfig.objects.create(company=self.company, name='Synthetic mask', api_url='https://mask.invalid')
+        self.company.ai_config.pop('masking')
         self.company.ai_config.update(classification='required',
             jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
             limits={'budget': '1'})
@@ -229,8 +236,9 @@ class ClassificationSimulatorTests(TestCase):
             limits={'budget': '0.002'})
         self.company.jev_api_key = 'synthetic-key'
         self.company.save()
-        with patch('requests.sessions.Session.request', return_value=test_policy_simulator.jev_response('restricted')):
+        with patch('requests.sessions.Session.request', side_effect=test_policy_simulator.simulation_transport('restricted')):
             result = self.client.post(self.url, self.command(mode='semantic'))
+        self.assertEqual(result.context['comparison']['semantic']['status'], 'blocked')
         self.assertEqual(result.context['comparison']['current']['policy']['sensitivity'], 'internal')
         self.assertEqual(result.context['comparison']['current']['policy']['status'], 'allow')
 
@@ -242,13 +250,14 @@ class ClassificationSimulatorTests(TestCase):
         self.company.save()
         payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
         payload['answers']['credentials']['noul'] = 0.75
-        with patch('requests.sessions.Session.request', return_value=provider_response(payload)) as network:
+        with patch('requests.sessions.Session.request', side_effect=classification_transport(payload)) as network:
             result = self.client.post(self.url, self.command(mode='semantic'))
         policy = result.context['comparison']['current']['policy']
         self.assertEqual(policy['sensitivity'], 'restricted')
         self.assertEqual(policy['status'], 'block')
         self.assertEqual(policy['reason_codes'], ['restricted_content'])
-        self.assertEqual(network.call_count, 1)
+        self.assertEqual(network.call_count, 2)
+        self.assertTrue(network.call_args_list[0].kwargs['url'].endswith('/api/mask'))
 
     def route_catalogue(self):
         engine = Engine.objects.create(name='Classification route engine')
@@ -258,7 +267,7 @@ class ClassificationSimulatorTests(TestCase):
         strong = EngineModel.objects.create(engine=engine, name='Strong', model_id='synthetic-strong',
             context_window=20_000, max_tokens=2000, input_price='10', output_price='20')
         self.company.ai_config.update(classification='required',
-            destinations={'internal': ['jev', f'engine:{credential.pk}']},
+            destinations={'internal': ['jev', f'engine:{credential.pk}', f'obfuscation:{self.mask.pk}']},
             jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
             limits={'budget': '1'}, routing={'candidates': [
                 {'company_engine_id': credential.pk, 'model_id': cheap.pk, 'level': 'economy',
@@ -275,7 +284,7 @@ class ClassificationSimulatorTests(TestCase):
         payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
         payload['answers']['task'].update(confidence=0.4, choice='summary',
             probabilities={'summary': 0.6, 'document_question': 0.4, 'general': 0.0, 'extraction': 0.0})
-        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+        with patch('requests.sessions.Session.request', side_effect=classification_transport(payload)):
             result = self.client.post(self.url, self.command(mode='semantic'))
         outcome = result.context['comparison']['current']
         self.assertEqual(outcome['task'], 'general')
@@ -287,7 +296,7 @@ class ClassificationSimulatorTests(TestCase):
         payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
         payload['answers']['task'].update(confidence=0.4, choice='summary',
             probabilities={'summary': 1.0, 'document_question': 0.0, 'general': 0.0, 'extraction': 0.0})
-        with patch('requests.sessions.Session.request', return_value=provider_response(payload)) as network:
+        with patch('requests.sessions.Session.request', side_effect=classification_transport(payload)) as network:
             result = self.client.post(self.url, self.command(mode='semantic'))
         comparison = result.context['comparison']
         self.assertEqual(comparison['semantic']['status'], 'completed')
@@ -296,7 +305,8 @@ class ClassificationSimulatorTests(TestCase):
             self.assertEqual(outcome['task'], 'general')
             self.assertEqual(outcome['plausible_tasks'], ['summary'])
             self.assertEqual(outcome['route']['model'], strong.model_id)
-        self.assertEqual(network.call_count, 1)
+        self.assertEqual(network.call_count, 2)
+        self.assertTrue(network.call_args_list[0].kwargs['url'].endswith('/api/mask'))
 
     def test_unmeasured_plausible_task_quality_cannot_route_even_at_zero_minimum(self):
         self.route_catalogue()
@@ -307,7 +317,7 @@ class ClassificationSimulatorTests(TestCase):
         payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
         payload['answers']['task'].update(confidence=0.4, choice='summary',
             probabilities={'summary': 0.6, 'document_question': 0.4, 'general': 0.0, 'extraction': 0.0})
-        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+        with patch('requests.sessions.Session.request', side_effect=classification_transport(payload)):
             result = self.client.post(self.url, self.command(mode='semantic'))
         self.assertEqual(result.context['comparison']['current']['route']['reason_codes'], ['quality_unavailable'])
 
@@ -315,7 +325,7 @@ class ClassificationSimulatorTests(TestCase):
         self.route_catalogue()
         payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
         payload['answers']['category']['confidence'] = 0.99
-        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+        with patch('requests.sessions.Session.request', side_effect=classification_transport(payload)):
             result = self.client.post(self.url, self.command(mode='semantic'))
         outcome = result.context['comparison']['current']
         self.assertEqual(outcome['policy']['status'], 'unavailable')
@@ -326,7 +336,7 @@ class ClassificationSimulatorTests(TestCase):
         self.route_catalogue()
         payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
         payload['answers']['manipulation']['noul'] = 0.75
-        with patch('requests.sessions.Session.request', return_value=provider_response(payload)):
+        with patch('requests.sessions.Session.request', side_effect=classification_transport(payload)):
             result = self.client.post(self.url, self.command(mode='semantic'))
         outcome = result.context['comparison']['current']
         self.assertEqual(outcome['policy']['status'], 'block')
@@ -334,13 +344,13 @@ class ClassificationSimulatorTests(TestCase):
 
     def test_semantic_classification_never_adds_a_destination(self):
         credential, _, _ = self.route_catalogue()
-        self.company.ai_config['destinations'] = {'internal': ['jev'],
-            'confidential': ['jev', f'engine:{credential.pk}']}
+        self.company.ai_config['destinations'] = {'internal': ['jev', f'obfuscation:{self.mask.pk}'],
+            'confidential': ['jev', f'engine:{credential.pk}', f'obfuscation:{self.mask.pk}']}
         self.company.save()
-        with patch('requests.sessions.Session.request', return_value=test_policy_simulator.jev_response('confidential')):
+        with patch('requests.sessions.Session.request', side_effect=test_policy_simulator.simulation_transport('confidential')):
             result = self.client.post(self.url, self.command(mode='semantic'))
         outcome = result.context['comparison']['current']
-        self.assertEqual(outcome['policy']['allowed_destinations'], ['jev'])
+        self.assertEqual(outcome['policy']['allowed_destinations'], ['jev', f'obfuscation:{self.mask.pk}'])
         self.assertEqual(outcome['route']['status'], 'unavailable')
         self.assertEqual(outcome['route']['reason_codes'], ['no_authorized_candidates'])
 
@@ -357,7 +367,7 @@ class ClassificationChatTests(ChatFixture):
                 'company_engine_id': self.credential.pk, 'model_id': self.model.pk,
                 'level': 'economy', 'quality': quality}],
                 'min_quality': {'economy': minimum, 'balanced': minimum, 'strong': minimum}})
-            self.http.side_effect = lambda *args, **kwargs: provider_response(payload)
+            self.http.side_effect = classification_transport(payload)
             for path in ('/chat/send/', '/api/chat/send/', '/chat/'):
                 with self.subTest(path=path, quality=quality):
                     self.provider.reset_mock()
@@ -366,8 +376,8 @@ class ClassificationChatTests(ChatFixture):
                     self.provider.assert_not_called()
                     result = response.json()
                     self.assertEqual(result['error_type'], 'quality_unavailable')
-                    self.assertEqual(self.http.call_count, 1)
-                    self.assertEqual([call['purpose'] for call in result['receipt']['calls']], ['classification'])
+                    self.assertEqual(self.http.call_count, 2)
+                    self.assertEqual([call['purpose'] for call in result['receipt']['calls']], ['obfuscation', 'classification'])
                     self.assertEqual(result['receipt']['total']['attempts'], 0)
 
     def test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed(self):
@@ -388,7 +398,7 @@ class ClassificationChatTests(ChatFixture):
         for key, notice, values in cases:
             payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
             payload['answers'][key].update(values)
-            self.http.side_effect = lambda *args, **kwargs: provider_response(payload)
+            self.http.side_effect = classification_transport(payload)
             for path in ('/chat/send/', '/api/chat/send/', '/chat/'):
                 with self.subTest(path=path, notice=notice):
                     self.provider.reset_mock()
