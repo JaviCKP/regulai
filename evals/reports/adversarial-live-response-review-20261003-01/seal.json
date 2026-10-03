@@ -1,0 +1,18 @@
+{
+  "source_commit": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "review_type": "Independent read-only live response analysis",
+  "main_command": "rtk proxy .venv\\Scripts\\python.exe -B .claude\\adversarial-live-response-review\\analyze.py",
+  "main_command_exit_code": 0,
+  "classification_replays": 12,
+  "verification_replays": 4,
+  "public_input_files": 11,
+  "source_files": 7,
+  "public_files": 34,
+  "evidence_sha256": "877aa9c272acfc8c32587ee77253fb8e73e10f951ecc9d6aee6495767cd2f7d4",
+  "analysis_sha256": "04a3d6304affc67a5e28c7c02b7b24c419dd0cc4d6cd50424674ee85a47ede1e",
+  "package_files_sha256": "04af43007906fb6de07e90d43d3102f0a2af40de882f5164233062da4717fd60",
+  "product_calls_by_reviewer": 0,
+  "persistent_ledger_opened": false,
+  "human_review_created": false,
+  "earlier_review_package_modified": false
+}

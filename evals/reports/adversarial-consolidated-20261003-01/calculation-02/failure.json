@@ -1,0 +1,9 @@
+{
+  "command": "rtk proxy .venv\\Scripts\\python.exe -X utf8 -B evals\\reports\\adversarial-consolidated-20261003-01\\build_report.py --output evals\\reports\\adversarial-consolidated-20261003-01\\calculation-02",
+  "exit_code": 1,
+  "error": "AssertionError validating content_sha256 as a raw UTF-8 string hash",
+  "cause": "evaluation.py digest(text) hashes the canonical JSON encoding of the string, not raw string bytes. The helper assumed the wrong encoding.",
+  "repair": "Validate the exact canonical JSON encoding defined by evaluation.py:49-54, preserving the hash assertion for every generation.",
+  "results_written_before_error": false,
+  "network_calls": 0
+}

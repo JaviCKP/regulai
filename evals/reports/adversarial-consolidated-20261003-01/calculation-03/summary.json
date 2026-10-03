@@ -1,0 +1,254 @@
+{
+  "runtime_of_observed_calls": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "input_sha256": {
+    "evals\\adversarial\\community-20261003\\cases.jsonl": "1576e3128bdf1257dbd437396cdfa6f2e39b1a58a79a1111824ed7f6ced8456e",
+    "evals\\reports\\adversarial-real-20261003-01\\live-run-01\\results.jsonl": "4fda5c24e6376739f9107dc39b3f639a69920a8af3a5f88b37c85146cc160494",
+    "evals\\reports\\adversarial-real-20261003-01\\live-run-01\\budget.json": "5727fb697475af9696de755e66ca0c5c4bb878b6cb03c0bd06c330c4f85ed379",
+    "evals\\reports\\adversarial-real-20261003-01\\live-run-01\\manifest.json": "b474f26dd522852148786cd35d86d8c9beae91b75b51a8d66b4bc470ed2229bd",
+    "evals\\reports\\adversarial-real-20261003-01\\live-result.json": "3798312fabd5fe568134a6e0ee28ab1c95e1f3563fb09207826155c51b9413cd",
+    "evals\\reports\\adversarial-real-20261003-02\\live-run-01\\results.jsonl": "50c0cc9b092e79bb93326434ff8bcf222061e00993b4178328c70cd53a2f0d4e",
+    "evals\\reports\\adversarial-real-20261003-02\\live-run-01\\budget.json": "c8941b6c1fab085bf7fe3a3565811e4dea89490b6ce51f01e27de37904792965",
+    "evals\\reports\\adversarial-real-20261003-02\\live-run-01\\manifest.json": "d5771460624509eee09d174365af1bb48a2b9bcd7c8a20340b50b4d0a6026455",
+    "evals\\reports\\adversarial-real-20261003-02\\live-result.json": "d0331247afc976fef967f48251efa71dcfb497ed33673ee21576157c2d5f03b8"
+  },
+  "runs": [
+    {
+      "run": "01",
+      "n": 12,
+      "distinct_cases": 4,
+      "delivered": 0,
+      "states": {
+        "blocked": 9,
+        "failed": 3
+      },
+      "errors": {
+        "classification_manipulation": 9,
+        "verification_failed": 3
+      },
+      "second_attempts": 1,
+      "external_calls": 20,
+      "local_transformations": 16,
+      "external_calls_by_purpose": {
+        "classification": 12,
+        "generation": 4,
+        "verification": 4
+      },
+      "p50_latency_ms": 1305.0,
+      "p95_latency_ms": 6844.0,
+      "p95_method": "nearest_rank",
+      "latency_includes_blocks": true,
+      "costs": {
+        "provider_reported_usd": "0.000508284",
+        "tariff_estimated_usd": "0.00022056",
+        "uncertain_reservations_usd": "0",
+        "budget_exposure_usd": "0.008841684"
+      },
+      "human_reviewed_n": 0,
+      "quality_accuracy": null,
+      "cost_per_correct_answer": null,
+      "savings_claim": null,
+      "started_utc": "2026-10-03T17:10:55.313665+00:00",
+      "finished_utc": "2026-10-03T17:11:27.527770+00:00"
+    },
+    {
+      "run": "02",
+      "n": 12,
+      "distinct_cases": 4,
+      "delivered": 1,
+      "states": {
+        "completed": 1,
+        "failed": 5,
+        "blocked": 6
+      },
+      "errors": {
+        "none": 1,
+        "verification_failed": 5,
+        "classification_manipulation": 6
+      },
+      "second_attempts": 1,
+      "external_calls": 26,
+      "local_transformations": 19,
+      "external_calls_by_purpose": {
+        "classification": 12,
+        "generation": 7,
+        "verification": 7
+      },
+      "p50_latency_ms": 2594.0,
+      "p95_latency_ms": 8031.0,
+      "p95_method": "nearest_rank",
+      "latency_includes_blocks": true,
+      "costs": {
+        "provider_reported_usd": "0.000640332",
+        "tariff_estimated_usd": "0.00378978",
+        "uncertain_reservations_usd": "0",
+        "budget_exposure_usd": "0.015741132"
+      },
+      "human_reviewed_n": 0,
+      "quality_accuracy": null,
+      "cost_per_correct_answer": null,
+      "savings_claim": null,
+      "started_utc": "2026-10-03T17:28:26.809747+00:00",
+      "finished_utc": "2026-10-03T17:29:12.120280+00:00"
+    }
+  ],
+  "combined": {
+    "n": 24,
+    "distinct_cases": 8,
+    "delivered": 1,
+    "states": {
+      "blocked": 15,
+      "failed": 8,
+      "completed": 1
+    },
+    "errors": {
+      "classification_manipulation": 15,
+      "verification_failed": 8,
+      "none": 1
+    },
+    "second_attempts": 2,
+    "external_calls": 46,
+    "local_transformations": 35,
+    "external_calls_by_purpose": {
+      "classification": 24,
+      "generation": 11,
+      "verification": 11
+    },
+    "p50_latency_ms": 1305.0,
+    "p95_latency_ms": 7500.0,
+    "p95_method": "nearest_rank",
+    "latency_includes_blocks": true,
+    "costs": {
+      "provider_reported_usd": "0.001148616",
+      "tariff_estimated_usd": "0.00401034",
+      "uncertain_reservations_usd": "0",
+      "budget_exposure_usd": "0.024582816"
+    },
+    "human_reviewed_n": 0,
+    "quality_accuracy": null,
+    "cost_per_correct_answer": null,
+    "savings_claim": null
+  },
+  "configurations": {
+    "economy": {
+      "n": 8,
+      "distinct_cases": 8,
+      "delivered": 0,
+      "states": {
+        "blocked": 5,
+        "failed": 3
+      },
+      "errors": {
+        "classification_manipulation": 5,
+        "verification_failed": 3
+      },
+      "second_attempts": 0,
+      "external_calls": 14,
+      "local_transformations": 11,
+      "external_calls_by_purpose": {
+        "classification": 8,
+        "generation": 3,
+        "verification": 3
+      },
+      "p50_latency_ms": 1273.5,
+      "p95_latency_ms": 5078.0,
+      "p95_method": "nearest_rank",
+      "latency_includes_blocks": true,
+      "costs": {
+        "provider_reported_usd": "0.000374220",
+        "tariff_estimated_usd": "0.00061320",
+        "uncertain_reservations_usd": "0",
+        "budget_exposure_usd": "0.003075120"
+      },
+      "human_reviewed_n": 0,
+      "quality_accuracy": null,
+      "cost_per_correct_answer": null,
+      "savings_claim": null
+    },
+    "strong": {
+      "n": 8,
+      "distinct_cases": 8,
+      "delivered": 0,
+      "states": {
+        "blocked": 5,
+        "failed": 3
+      },
+      "errors": {
+        "classification_manipulation": 5,
+        "verification_failed": 3
+      },
+      "second_attempts": 0,
+      "external_calls": 14,
+      "local_transformations": 11,
+      "external_calls_by_purpose": {
+        "classification": 8,
+        "generation": 3,
+        "verification": 3
+      },
+      "p50_latency_ms": 1312.0,
+      "p95_latency_ms": 6813.0,
+      "p95_method": "nearest_rank",
+      "latency_includes_blocks": true,
+      "costs": {
+        "provider_reported_usd": "0.000371070",
+        "tariff_estimated_usd": "0.00197340",
+        "uncertain_reservations_usd": "0",
+        "budget_exposure_usd": "0.010227510"
+      },
+      "human_reviewed_n": 0,
+      "quality_accuracy": null,
+      "cost_per_correct_answer": null,
+      "savings_claim": null
+    },
+    "router": {
+      "n": 8,
+      "distinct_cases": 8,
+      "delivered": 1,
+      "states": {
+        "blocked": 5,
+        "failed": 2,
+        "completed": 1
+      },
+      "errors": {
+        "classification_manipulation": 5,
+        "verification_failed": 2,
+        "none": 1
+      },
+      "second_attempts": 2,
+      "external_calls": 18,
+      "local_transformations": 13,
+      "external_calls_by_purpose": {
+        "classification": 8,
+        "generation": 5,
+        "verification": 5
+      },
+      "p50_latency_ms": 2476.5,
+      "p95_latency_ms": 8031.0,
+      "p95_method": "nearest_rank",
+      "latency_includes_blocks": true,
+      "costs": {
+        "provider_reported_usd": "0.000403326",
+        "tariff_estimated_usd": "0.00142374",
+        "uncertain_reservations_usd": "0",
+        "budget_exposure_usd": "0.011280186"
+      },
+      "human_reviewed_n": 0,
+      "quality_accuracy": null,
+      "cost_per_correct_answer": null,
+      "savings_claim": null
+    }
+  },
+  "budget_cumulative_including_earlier_trial": {
+    "cap_usd": "1.00",
+    "known_cost_usd": "0.006216438",
+    "provider_reported_usd": "0.001461138",
+    "tariff_estimated_usd": "0.00475530",
+    "budget_exposure_usd": "0.038440878",
+    "remaining_usd": "0.961559122",
+    "uncertain_reservations_usd": "0.003"
+  },
+  "prior_ledger_entries_preserved_in_second_snapshot": 65,
+  "generation_response_hashes_verified": 11,
+  "new_network_calls_by_this_script": 0,
+  "database_opened": false,
+  "human_review_complete": false
+}

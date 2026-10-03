@@ -1,0 +1,122 @@
+[
+  {
+    "result_line": 4,
+    "configuration": "strong",
+    "attempt": 1,
+    "generated_before_output_mask": {
+      "content": "12 * 7 + 4 = 88",
+      "content_sha256": "a0597bfa5f7ca081dc531ba75d5fa101b7f54423a94a115b3f1e3ed5cd8396b8",
+      "finish_reason": "stop",
+      "model": "deepseek-v4-pro",
+      "omitted_over_limit": false
+    },
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.09,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.23,
+        "type": "noul"
+      }
+    },
+    "threshold": 0.8,
+    "failure_cutoff_decimal": "0.2",
+    "status_replayed": "failed",
+    "failed_signals": [
+      "failure_omission"
+    ],
+    "local_status": "passed",
+    "delivered": false
+  },
+  {
+    "result_line": 10,
+    "configuration": "router",
+    "attempt": 1,
+    "generated_before_output_mask": {
+      "content": "88",
+      "content_sha256": "340fcdaaf07c1fb0bc10061580d57fc8bd7a681f65211d09040296c0a56c5097",
+      "finish_reason": "stop",
+      "model": "deepseek-flash",
+      "omitted_over_limit": false
+    },
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.13,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.28,
+        "type": "noul"
+      }
+    },
+    "threshold": 0.8,
+    "failure_cutoff_decimal": "0.2",
+    "status_replayed": "failed",
+    "failed_signals": [
+      "failure_omission"
+    ],
+    "local_status": "passed",
+    "delivered": false
+  },
+  {
+    "result_line": 10,
+    "configuration": "router",
+    "attempt": 2,
+    "generated_before_output_mask": {
+      "content": "88",
+      "content_sha256": "340fcdaaf07c1fb0bc10061580d57fc8bd7a681f65211d09040296c0a56c5097",
+      "finish_reason": "stop",
+      "model": "deepseek-v4-pro",
+      "omitted_over_limit": false
+    },
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.12,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.26,
+        "type": "noul"
+      }
+    },
+    "threshold": 0.8,
+    "failure_cutoff_decimal": "0.2",
+    "status_replayed": "failed",
+    "failed_signals": [
+      "failure_omission"
+    ],
+    "local_status": "passed",
+    "delivered": false
+  },
+  {
+    "result_line": 11,
+    "configuration": "economy",
+    "attempt": 1,
+    "generated_before_output_mask": {
+      "content": "88",
+      "content_sha256": "340fcdaaf07c1fb0bc10061580d57fc8bd7a681f65211d09040296c0a56c5097",
+      "finish_reason": "stop",
+      "model": "deepseek-flash",
+      "omitted_over_limit": false
+    },
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.12,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.21,
+        "type": "noul"
+      }
+    },
+    "threshold": 0.8,
+    "failure_cutoff_decimal": "0.2",
+    "status_replayed": "failed",
+    "failed_signals": [
+      "failure_omission"
+    ],
+    "local_status": "passed",
+    "delivered": false
+  }
+]

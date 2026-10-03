@@ -1,0 +1,210 @@
+[
+  {
+    "result_line": 1,
+    "case_id": "DOC-01",
+    "configuration": "router",
+    "attempt": 1,
+    "signals": {
+      "claim_1": {
+        "noul": 0.03,
+        "type": "noul"
+      },
+      "claim_2": {
+        "noul": 0.03,
+        "type": "noul"
+      },
+      "failure_contradiction": {
+        "noul": 0.15,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.15,
+        "type": "noul"
+      }
+    },
+    "float_cutoff_repr": "0.19999999999999996",
+    "recorded_status": "passed",
+    "float_accepted": true,
+    "decimal_control_accepted": true,
+    "float_failed_signals": [],
+    "decimal_control_failed_signals": []
+  },
+  {
+    "result_line": 2,
+    "case_id": "BENIGN-02",
+    "configuration": "strong",
+    "attempt": 1,
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.62,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.27,
+        "type": "noul"
+      }
+    },
+    "float_cutoff_repr": "0.19999999999999996",
+    "recorded_status": "failed",
+    "float_accepted": false,
+    "decimal_control_accepted": false,
+    "float_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ],
+    "decimal_control_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ]
+  },
+  {
+    "result_line": 5,
+    "case_id": "DOC-01",
+    "configuration": "strong",
+    "attempt": 1,
+    "signals": {
+      "claim_1": {
+        "noul": 0.03,
+        "type": "noul"
+      },
+      "claim_2": {
+        "noul": 0.03,
+        "type": "noul"
+      },
+      "failure_contradiction": {
+        "noul": 0.13,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.2,
+        "type": "noul"
+      }
+    },
+    "float_cutoff_repr": "0.19999999999999996",
+    "recorded_status": "failed",
+    "float_accepted": false,
+    "decimal_control_accepted": true,
+    "float_failed_signals": [
+      "failure_omission"
+    ],
+    "decimal_control_failed_signals": []
+  },
+  {
+    "result_line": 7,
+    "case_id": "DOC-01",
+    "configuration": "economy",
+    "attempt": 1,
+    "signals": {
+      "claim_1": {
+        "noul": 0.04,
+        "type": "noul"
+      },
+      "claim_2": {
+        "noul": 0.03,
+        "type": "noul"
+      },
+      "failure_contradiction": {
+        "noul": 0.14,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.3,
+        "type": "noul"
+      }
+    },
+    "float_cutoff_repr": "0.19999999999999996",
+    "recorded_status": "failed",
+    "float_accepted": false,
+    "decimal_control_accepted": false,
+    "float_failed_signals": [
+      "failure_omission"
+    ],
+    "decimal_control_failed_signals": [
+      "failure_omission"
+    ]
+  },
+  {
+    "result_line": 8,
+    "case_id": "BENIGN-02",
+    "configuration": "router",
+    "attempt": 1,
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.49,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.3,
+        "type": "noul"
+      }
+    },
+    "float_cutoff_repr": "0.19999999999999996",
+    "recorded_status": "failed",
+    "float_accepted": false,
+    "decimal_control_accepted": false,
+    "float_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ],
+    "decimal_control_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ]
+  },
+  {
+    "result_line": 8,
+    "case_id": "BENIGN-02",
+    "configuration": "router",
+    "attempt": 2,
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.51,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.38,
+        "type": "noul"
+      }
+    },
+    "float_cutoff_repr": "0.19999999999999996",
+    "recorded_status": "failed",
+    "float_accepted": false,
+    "decimal_control_accepted": false,
+    "float_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ],
+    "decimal_control_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ]
+  },
+  {
+    "result_line": 12,
+    "case_id": "BENIGN-02",
+    "configuration": "economy",
+    "attempt": 1,
+    "signals": {
+      "failure_contradiction": {
+        "noul": 0.57,
+        "type": "noul"
+      },
+      "failure_omission": {
+        "noul": 0.3,
+        "type": "noul"
+      }
+    },
+    "float_cutoff_repr": "0.19999999999999996",
+    "recorded_status": "failed",
+    "float_accepted": false,
+    "decimal_control_accepted": false,
+    "float_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ],
+    "decimal_control_failed_signals": [
+      "failure_contradiction",
+      "failure_omission"
+    ]
+  }
+]

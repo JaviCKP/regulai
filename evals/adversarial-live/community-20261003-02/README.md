@@ -1,6 +1,10 @@
 # Propuesta revisable: cuatro casos nuevos, una pasada
 
-**Pendiente de aprobación explícita; no ejecutada con proveedores reales.** El permiso anterior cubría otros ocho casos.
+**Aprobada explícitamente y ejecutada el 3 de octubre de 2026.** El usuario contestó «autorizo esos 4 casos y autorizo que hagas mas»;
+el registro exacto está en [authorization.approved.json](authorization.approved.json). El máximo conjunto sigue siendo 1 USD.
+La [primera pasada](../../reports/adversarial-real-20261003-01/live-run-01/report.md) completó las 12 combinaciones, con 20 llamadas externas,
+sin llamadas inciertas nuevas y sin respuestas entregadas. Los límites de utilidad se analizan aparte de la integridad operativa.
+El permiso anterior cubría otros ocho casos.
 El [corpus completo](../../adversarial/community-20261003/README.md) ya se probó localmente con respuestas de transporte prefijadas.
 Esta propuesta permite observar respuestas de los proveedores en cuatro casos, sin convertir el resultado en garantía general.
 
@@ -63,7 +67,8 @@ Si la autorización cambia durante la espera, se rechaza íntegramente.
 3. Ejecutar el [puente versionado](run_authorized.py) primero con `--preflight` y después una sola vez con `--real`.
    Su función de lectura de credenciales es idéntica a la del ensayo anterior: conexión SQLite separada `mode=ro`,
    par de la misma empresa, secretos solo en el entorno del hijo y comparación del hash de la base original.
-   El hijo usa SQLite en memoria; jamás migra la base del usuario. Este puente nuevo solo se ha inspeccionado estáticamente.
+   El hijo usa SQLite en memoria; jamás migra la base del usuario. Su [ejecución conservada](../../reports/adversarial-real-20261003-01/live-result.json)
+   confirmó salida 0 y hash de origen sin cambios. La pasada está consumida: estos comandos documentan lo ejecutado, no deben repetirse.
 
 ```powershell
 rtk proxy .venv/Scripts/python.exe evals/adversarial-live/community-20261003-02/run_authorized.py --preflight
@@ -75,5 +80,5 @@ rtk proxy .venv/Scripts/python.exe evals/adversarial-live/community-20261003-02/
    Una llamada incierta no se repite. Ante caída: confirmar que terminó el proceso, conservar el lock y los archivos,
    inspeccionar reservas y no borrar/recrear el ledger. Retirar un lock huérfano no restituye una pasada ya consumida.
 
-El [preflight pendiente](preflight.pending.json) confirma cuatro casos, fuentes/runtime coincidentes y cero llamadas;
+El [preflight pendiente](preflight.pending.json), anterior a la aprobación, confirma cuatro casos, fuentes/runtime coincidentes y cero llamadas;
 sus bloqueos son la autorización, ventana y acuse de alias todavía ausentes. No acredita acceso a cuentas ni respuestas del modelo.

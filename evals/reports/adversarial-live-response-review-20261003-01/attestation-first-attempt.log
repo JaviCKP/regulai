@@ -1,0 +1,8 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\adversarial-live-response-review\analyze.py", line 96, in <module>
+    assert expected in {sha(raw), sha(raw.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+
+Exit code: 1. Review helper assumed uniform CRLF. Product source has mixed LF/CRLF; exact manifest hashes and normalized fixed Git content were subsequently verified.

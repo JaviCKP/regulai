@@ -1,0 +1,214 @@
+{
+  "source_commit": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "manifest_sha256": "b4730105fd1f74bfbd3baf0d6757cd9bfd6484b1170b61517944ad721e058b30",
+  "public_inputs": [
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/results.jsonl",
+      "sha256": "50c0cc9b092e79bb93326434ff8bcf222061e00993b4178328c70cd53a2f0d4e",
+      "bytes": 96094
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/completed-cases.jsonl",
+      "sha256": "50c0cc9b092e79bb93326434ff8bcf222061e00993b4178328c70cd53a2f0d4e",
+      "bytes": 96094
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/cases.executed.jsonl",
+      "sha256": "82050b7f2e5e4364e0654b36acda8db899aa1efcb5028b6657e621e131d66670",
+      "bytes": 2024
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/budget.json",
+      "sha256": "c8941b6c1fab085bf7fe3a3565811e4dea89490b6ce51f01e27de37904792965",
+      "bytes": 94763
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/manifest.json",
+      "sha256": "d5771460624509eee09d174365af1bb48a2b9bcd7c8a20340b50b4d0a6026455",
+      "bytes": 11606
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/summary.json",
+      "sha256": "d34f9d1cb016f7893da26afd143a740ceba0d3dbc641b84001ca89d52e656ee4",
+      "bytes": 10283
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/human-review.pending.json",
+      "sha256": "b9afcbba818a16ba02957930327e9c9f721380292995e932da046b368dbda0b1",
+      "bytes": 6882
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/rubric.md",
+      "sha256": "a46023cfbd3119708f0a4f98adad4c76825a7f36227be5282a6a981d9984ab34",
+      "bytes": 2132
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-result.json",
+      "sha256": "d0331247afc976fef967f48251efa71dcfb497ed33673ee21576157c2d5f03b8",
+      "bytes": 1796
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/budget.json",
+      "sha256": "5727fb697475af9696de755e66ca0c5c4bb878b6cb03c0bd06c330c4f85ed379",
+      "bytes": 51544
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/manifest.json",
+      "sha256": "b474f26dd522852148786cd35d86d8c9beae91b75b51a8d66b4bc470ed2229bd",
+      "bytes": 11352
+    },
+    {
+      "path": "evals/adversarial-live/community-additional-20261003/oracles.json",
+      "sha256": "c1a4a0fdb63b6ef450fbc9e00fa1b4765ebd296e5200c77619d3b2181ad5f8b0",
+      "bytes": 4244
+    },
+    {
+      "path": "evals/adversarial-live/community-additional-20261003/manifest.json",
+      "sha256": "b4730105fd1f74bfbd3baf0d6757cd9bfd6484b1170b61517944ad721e058b30",
+      "bytes": 7026
+    }
+  ],
+  "source_commands": [
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/classification.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "53a4aee7f3c76cfd73d6cae6dbcbe7a1fbd444e89b00e48ba3966bc69a561fe4"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/policy.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a252085c213fdf82e64967570dcdee63c1ea3499af9fb9933af288140bcfac30"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/chat_service.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96b14a5cebe2ac4598e5510e667243206248985a48357c77c072768f87358900"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/verification.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e12fce381580ea94df3634e71bda1e18183ecad61459d0fb8c8c16a79b150482"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/documents.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "cc489a756f5c2886fbe0284c802503e79d96218b85dd65ed223f853e8b3d70b5"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/evaluation_budget.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0f9df54d6c9015c481ab5c38a18bdb5254da1e3ca0de1daa0180fd62c0041e4a"
+    }
+  ],
+  "analyzer_sha256": "6abfb86f3b0ce5c51e4d04becdc084c8c5206c6bc05ac44bc99c1da73ee7b347",
+  "classification_replays": 12,
+  "verification_replays": 7,
+  "float_boundary_divergences": [
+    {
+      "result_line": 5,
+      "case_id": "DOC-01",
+      "configuration": "strong",
+      "attempt": 1,
+      "signals": {
+        "claim_1": {
+          "noul": 0.03,
+          "type": "noul"
+        },
+        "claim_2": {
+          "noul": 0.03,
+          "type": "noul"
+        },
+        "failure_contradiction": {
+          "noul": 0.13,
+          "type": "noul"
+        },
+        "failure_omission": {
+          "noul": 0.2,
+          "type": "noul"
+        }
+      },
+      "float_cutoff_repr": "0.19999999999999996",
+      "recorded_status": "failed",
+      "float_accepted": false,
+      "decimal_control_accepted": true,
+      "float_failed_signals": [
+        "failure_omission"
+      ],
+      "decimal_control_failed_signals": []
+    }
+  ],
+  "citation_replays": 1,
+  "status_counts": {
+    "completed": 1,
+    "failed": 5,
+    "blocked": 6
+  },
+  "delivered": 1,
+  "accounting": {
+    "historical_entries_unchanged": 65,
+    "new_entries": 45,
+    "external_calls": 26,
+    "local_transformations": 19,
+    "new_external_by_purpose": {
+      "classification": 12,
+      "generation": 7,
+      "verification": 7
+    },
+    "new_provider_reported_usd": "0.000640332",
+    "new_tariff_estimated_usd": "0.00378978",
+    "new_known_cost_usd": "0.004430112",
+    "new_exposure_usd": "0.015741132",
+    "before_exposure_usd": "0.022699746",
+    "after_exposure_usd": "0.038440878",
+    "remaining_usd": "0.961559122",
+    "old_uncertain_reserve_usd": "0.003",
+    "scope": "Public before/after snapshots; no persistent ledger access"
+  },
+  "guard_attempts": {
+    "network": 0,
+    "database": 0
+  },
+  "human_review_created": false,
+  "limits": [
+    "Exact post-mask judge state not retained",
+    "No full human quality adjudication",
+    "No live rerun, bridge, credentials, environment reads, database or persistent ledger access",
+    "Before/after source hash maps identical; expressions extracted from fixed Git commit"
+  ]
+}

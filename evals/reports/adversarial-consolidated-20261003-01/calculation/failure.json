@@ -1,0 +1,9 @@
+{
+  "command": "rtk proxy .venv\\Scripts\\python.exe -X utf8 -B evals\\reports\\adversarial-consolidated-20261003-01\\build_report.py --output evals\\reports\\adversarial-consolidated-20261003-01\\calculation",
+  "exit_code": 1,
+  "error": "KeyError: source_runtime_commit",
+  "cause": "The first run's manifest did not include the optional descriptive source_runtime_commit field. Both runs include exact source_sha256 maps.",
+  "repair": "Require identical complete source_sha256 maps against the second manifest, whose source_runtime_commit is explicit. No run data or assertions about behavior were changed.",
+  "results_written_before_error": false,
+  "network_calls": 0
+}

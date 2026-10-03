@@ -1,0 +1,21 @@
+{
+  "source_commit": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "manifest_sha256": "b4730105fd1f74bfbd3baf0d6757cd9bfd6484b1170b61517944ad721e058b30",
+  "command": "rtk proxy .venv\\Scripts\\python.exe -B .claude\\adversarial-second-response-review\\analyze.py",
+  "exit_code": 0,
+  "reviewer_product_calls": 0,
+  "open_findings_on_reviewed_source": [
+    {
+      "priority": "P2",
+      "path": "regulai/front/chat_service.py",
+      "line": 789,
+      "title": "Float subtraction rejects score exactly at the nominal acceptance boundary",
+      "observed_case": "DOC-01/strong",
+      "historical_result_unchanged": true
+    }
+  ],
+  "public_files": 27,
+  "evidence_sha256": "0bf93f1e9604493033490749aba718d649a1d55fd4a1e9d3d2af93cac50b099a",
+  "analysis_sha256": "ad80aabeba40ba930418dcee8612132045d946a371a5d3dba423bd66fc184495",
+  "package_files_sha256": "81e93666404316cf81743d340bc2622635b58cc5c64451dd3a73006c36004c8a"
+}

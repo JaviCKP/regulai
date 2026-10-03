@@ -1,0 +1,217 @@
+{
+  "source_commit": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "public_inputs": [
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/results.jsonl",
+      "sha256": "4fda5c24e6376739f9107dc39b3f639a69920a8af3a5f88b37c85146cc160494",
+      "bytes": 72339
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/completed-cases.jsonl",
+      "sha256": "4fda5c24e6376739f9107dc39b3f639a69920a8af3a5f88b37c85146cc160494",
+      "bytes": 72339
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/cases.executed.jsonl",
+      "sha256": "b80027b2bd99ec25be3e77b33e05dd8c00a823c17473b41b54d8c821d761f2ae",
+      "bytes": 1883
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/manifest.json",
+      "sha256": "b474f26dd522852148786cd35d86d8c9beae91b75b51a8d66b4bc470ed2229bd",
+      "bytes": 11352
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/summary.json",
+      "sha256": "78b85efa053410bb4f2c855d5538dae5440e7ce29bfa48b28810e63c4ee421be",
+      "bytes": 10279
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/budget.json",
+      "sha256": "5727fb697475af9696de755e66ca0c5c4bb878b6cb03c0bd06c330c4f85ed379",
+      "bytes": 51544
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/rubric.md",
+      "sha256": "c152b393674f6f6d89f7cf6f942dd67bde77d24e94edf0d262e0a507a50c0a04",
+      "bytes": 1505
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/human-review.pending.json",
+      "sha256": "9edffee948f42dd307d5dbba4276125bac4e2cdf5ba45374549a6df7aa0b8b30",
+      "bytes": 6882
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/report.md",
+      "sha256": "647cc0c46f8b84d58369df0438b9678a49cae367b2f8ce2b8f3da7ca85a71c77",
+      "bytes": 1626
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-result.json",
+      "sha256": "3798312fabd5fe568134a6e0ee28ab1c95e1f3563fb09207826155c51b9413cd",
+      "bytes": 1780
+    },
+    {
+      "path": "evals/adversarial-live/community-20261003-02/oracles.json",
+      "sha256": "9336ee1b8114fb63589ea8ccb0af185b18fe2b352f3f98499d77695c41653ecd",
+      "bytes": 4326
+    }
+  ],
+  "source_commands": [
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/classification.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "53a4aee7f3c76cfd73d6cae6dbcbe7a1fbd444e89b00e48ba3966bc69a561fe4"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/chat_service.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96b14a5cebe2ac4598e5510e667243206248985a48357c77c072768f87358900"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/jev.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "38e8eed3e59bc16e1d9afd5cfc3db886d2d54697b484c5c824f738a91e6d4bbf"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/policy.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a252085c213fdf82e64967570dcdee63c1ea3499af9fb9933af288140bcfac30"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/evaluation.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d3a4b1bd3bfd3fdbd907886d8f5244eae09ffd1343f9d3f9a316499539cc9b51"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/evaluation_budget.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0f9df54d6c9015c481ab5c38a18bdb5254da1e3ca0de1daa0180fd62c0041e4a"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2:regulai/front/management/commands/evaluate_ai.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "06dd5b202ec415b140ab2d198b1668d6af68ebf05264ee023067a7a9cde9598b"
+    }
+  ],
+  "analyzer_sha256": "a4363e1ffbc2820da45f0f00ded2e7d07cf53a7202de1af77c30575ea9e1dad9",
+  "source_manifest_relations": {
+    "regulai/front/classification.py": {
+      "fixed_git_sha256": "53a4aee7f3c76cfd73d6cae6dbcbe7a1fbd444e89b00e48ba3966bc69a561fe4",
+      "observed_runtime_sha256": "6167b9de82e97394b9e83095bce7fd4c5b7adb8b9028d38523ce6f6a051ea8fb",
+      "relation": "Git LF; checkout CRLF or mixed line endings; exact runtime hash verified"
+    },
+    "regulai/front/chat_service.py": {
+      "fixed_git_sha256": "96b14a5cebe2ac4598e5510e667243206248985a48357c77c072768f87358900",
+      "observed_runtime_sha256": "6da23876d4e248ec4518b4e73c994960a628c9152cf19c3b1a78dfed2019264a",
+      "relation": "Git LF; checkout CRLF or mixed line endings; exact runtime hash verified"
+    },
+    "regulai/front/jev.py": {
+      "fixed_git_sha256": "38e8eed3e59bc16e1d9afd5cfc3db886d2d54697b484c5c824f738a91e6d4bbf",
+      "observed_runtime_sha256": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
+      "relation": "Git LF; checkout CRLF or mixed line endings; exact runtime hash verified"
+    },
+    "regulai/front/policy.py": {
+      "fixed_git_sha256": "a252085c213fdf82e64967570dcdee63c1ea3499af9fb9933af288140bcfac30",
+      "observed_runtime_sha256": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
+      "relation": "Git LF; checkout CRLF or mixed line endings; exact runtime hash verified"
+    },
+    "regulai/front/evaluation.py": {
+      "fixed_git_sha256": "d3a4b1bd3bfd3fdbd907886d8f5244eae09ffd1343f9d3f9a316499539cc9b51",
+      "observed_runtime_sha256": "d3a4b1bd3bfd3fdbd907886d8f5244eae09ffd1343f9d3f9a316499539cc9b51",
+      "relation": "exact"
+    },
+    "regulai/front/evaluation_budget.py": {
+      "fixed_git_sha256": "0f9df54d6c9015c481ab5c38a18bdb5254da1e3ca0de1daa0180fd62c0041e4a",
+      "observed_runtime_sha256": "0f9df54d6c9015c481ab5c38a18bdb5254da1e3ca0de1daa0180fd62c0041e4a",
+      "relation": "exact"
+    },
+    "regulai/front/management/commands/evaluate_ai.py": {
+      "fixed_git_sha256": "06dd5b202ec415b140ab2d198b1668d6af68ebf05264ee023067a7a9cde9598b",
+      "observed_runtime_sha256": "dd8e21d2dfaa058ec17741d48aff537cda148c826c9c4f12d0541c663dc40e05",
+      "relation": "Git LF; checkout CRLF or mixed line endings; exact runtime hash verified"
+    }
+  },
+  "classification_replay_count": 12,
+  "verification_replay_count": 4,
+  "status_counts": {
+    "classification_manipulation": 9,
+    "verification_failed": 3
+  },
+  "generated_responses": 4,
+  "delivered": 0,
+  "human_reviews_created": 0,
+  "guard_attempts": {
+    "network": 0,
+    "database": 0
+  },
+  "accounting": {
+    "scope": "Read-only public budget.json snapshot, not the persistent ledger",
+    "current_external_calls": 20,
+    "current_local_transformations": 16,
+    "current_external_by_purpose": {
+      "classification": 12,
+      "generation": 4,
+      "verification": 4
+    },
+    "current_reported_usd": "0.000508284",
+    "current_tariff_estimated_usd": "0.00022056",
+    "current_exposure_usd": "0.008841684",
+    "prior_exposure_usd": "0.013858062",
+    "total_exposure_usd": "0.022699746",
+    "remaining_usd": "0.977300254",
+    "prior_unknown_reserve_usd": "0.003",
+    "prior_unknown_cause": "Indeterminate; this review does not attribute a cause"
+  },
+  "limitations": [
+    "No exact post-mask judge input retained in the reviewed artifact",
+    "Provider scores do not expose their causal reasoning",
+    "Generated answers are retained before the output masking pass",
+    "This is artifact analysis, not the independent human review protocol",
+    "Live run calls the shared service, not the three HTTP entrypoints",
+    "No live reruns, bridge, user database, credentials or persistent ledger access"
+  ],
+  "review_helper_first_attestation_failure": "Uniform CRLF reconstruction did not match mixed-line-ending chat_service.py. Corrected to require exact observed bytes matching the runtime manifest AND normalized equality to fixed Git source. No product finding or relaxed assertion."
+}
