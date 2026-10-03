@@ -326,7 +326,11 @@ class FidelityTests(SimpleTestCase):
 
     def test_textual_bm_upload_passes_shared_file_validation_but_bitmaps_do_not_extract(self):
         from front.file_security import validate_document_upload
-        content, metadata = validate_document_upload(SimpleUploadedFile("notes.txt", b"BM customer notes"))
+        from django.core.exceptions import ValidationError
+        try:
+            content, metadata = validate_document_upload(SimpleUploadedFile("notes.txt", b"BM customer notes"))
+        except ValidationError:
+            self.fail("Text beginning with BM must pass document upload validation")
         self.assertEqual(content, b"BM customer notes")
         self.assertFalse(metadata["is_image"])
         bitmap = io.BytesIO()
