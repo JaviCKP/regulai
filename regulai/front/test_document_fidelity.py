@@ -543,12 +543,13 @@ class DocumentHTTPTests(ChatFixture):
                     self.assertIn("tracked_changes_present", response.json()["receipt"]["coverage"]["warnings"])
 
     def test_inline_pdf_requires_coverage_consent_before_all_three_send_entries(self):
-        self.company.ai_config["destinations"]["internal"].append("jev")
-        self.company.jev_api_key = "synthetic-jev-key"
-        self.company.save()
+        self.configure()
+        self.provider.return_value = ChatResponse(json.dumps({"claims": [{"text": "Readable evidence",
+            "citations": [{"id": "S1", "quote": "Readable evidence"}]}]}), 30, "synthetic-v1", "stop", 20, 10)
         for path in ("/chat/", "/chat/send/", "/api/chat/send/"):
             with self.subTest(path=path):
                 response = self.send(path, "Summarize", file=SimpleUploadedFile("inline.pdf", inline_image_pdf()))
+                self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.json()["status"], "pending_consent")
                 self.assertEqual(response.json()["consent_reason"], "coverage_incomplete")
                 self.assertEqual(response.json()["receipt"]["coverage"]["disclosures"], [
