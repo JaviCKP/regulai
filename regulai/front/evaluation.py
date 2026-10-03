@@ -42,6 +42,7 @@ SOURCE_FILES = ('regulai/front/chat_service.py', 'regulai/front/policy.py', 'reg
     'regulai/front/connectors.py', 'regulai/front/views.py', 'regulai/front/models.py',
     'regulai/front/evaluation.py', 'regulai/front/evaluation_budget.py',
     'regulai/front/management/commands/evaluate_ai.py', 'regulai/front/management/commands/smoke_ai.py',
+    'regulai/front/management/commands/extend_pilot_authorization.py',
     'requirements.txt')
 
 
@@ -136,6 +137,22 @@ def preflight(manifest_path, authorization_path=None, *, now=None, check_credent
         blockers.append('authorization_manifest_mismatch')
     if approval.get('authorization_id') != manifest['authorization_id']:
         blockers.append('authorization_identity_mismatch')
+    if 'extends' in approval:
+        previous = approval['extends']
+        scope = approval.get('execution_scope')
+        expected_scope = {'case_ids': [case['id'] for case in cases],
+            'configurations': manifest['configurations'], 'max_runs': 1,
+            'max_combinations': len(cases) * 3, 'max_external_calls': len(cases) * 11,
+            'repeat_uncertain_calls': False}
+        if (approval.get('approved') is not True or approval.get('retain_existing_costs') is not True
+                or not isinstance(previous, dict) or set(previous) != {'authorization_id', 'authorization_digest'}
+                or not isinstance(previous.get('authorization_id'), str) or not previous['authorization_id']
+                or not isinstance(previous.get('authorization_digest'), str)
+                or len(previous['authorization_digest']) != 64
+                or any(char not in '0123456789abcdef' for char in previous['authorization_digest'])
+                or approval.get('manifest_sha256s') != [manifest_hash]
+                or canonical(scope) != canonical(expected_scope)):
+            blockers.append('explicit_scope_extension_required')
     try:
         start = datetime.fromisoformat(approval['valid_from'])
         end = datetime.fromisoformat(approval['valid_until'])
@@ -565,6 +582,10 @@ def run_pilot(options, stdout):
             call_command('migrate', interactive=False, verbosity=0)
         ledger = EvaluationBudget(LEDGER_PATH if real else temporary / 'offline-budget.sqlite3', manifest['maximum_usd'],
             **({'authorization_id': approval['authorization_id'], 'authorization_digest': digest(approval)} if real else {}))
+        if real and 'extends' in approval:
+            # Claim before any provider call. A crash consumes this pass; replay
+            # needs a separate explicit extension of the same shared ledger.
+            ledger.claim_extension_run(frozen['manifest_sha256'])
         output.mkdir(parents=True, exist_ok=False)
         (output / 'plan.json').write_text(json.dumps(frozen, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         (output / 'cases.executed.jsonl').write_text(''.join(canonical(case) + '\n' for case in selected), encoding='utf-8')
