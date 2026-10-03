@@ -1,0 +1,54 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 DONE 0.0s
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 460B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.8s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#4 resolve docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 16.16MB 1.8s done
+#5 DONE 1.8s
+
+#6 [3/6] COPY requirements.txt ./
+#6 CACHED
+
+#7 [4/6] COPY ops/pilot/requirements.txt ops/pilot/requirements.txt
+#7 CACHED
+
+#8 [2/6] WORKDIR /app
+#8 CACHED
+
+#9 [5/6] RUN pip install --no-cache-dir -r ops/pilot/requirements.txt
+#9 CACHED
+
+#10 [6/6] COPY . .
+#10 DONE 0.2s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.5s done
+#11 exporting manifest sha256:7e58464a8b429132b4f1199c6f00588c01fc728c439caea4f02556bc97e63a34 0.0s done
+#11 exporting config sha256:aab8390a2bfc7126fe48d863ac443c39d59054113b0e6643dd721e9db3e2d97e 0.0s done
+#11 exporting attestation manifest sha256:6ec638a62f6bae40d49ebaba257a2624481bcb1001b049d73698bc0852dc0ee2 0.0s done
+#11 exporting manifest list sha256:1a14cecce8e7fccad6b0d33b73d81fdf74587393a4696eac580590539fb60573
+#11 exporting manifest list sha256:1a14cecce8e7fccad6b0d33b73d81fdf74587393a4696eac580590539fb60573 0.0s done
+#11 naming to docker.io/library/regulai-lab-01c05871855a:local done
+#11 unpacking to docker.io/library/regulai-lab-01c05871855a:local
+#11 unpacking to docker.io/library/regulai-lab-01c05871855a:local 2.2s done
+#11 DONE 2.9s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/1uf4ae5tz462zucn3glcih7ku

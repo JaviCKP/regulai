@@ -1,0 +1,2 @@
+/regulai-lab-f17850821e05-app ["gunicorn","-c","gunicorn.conf.py","--bind","0.0.0.0:8000","regulai.wsgi:application"]
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings

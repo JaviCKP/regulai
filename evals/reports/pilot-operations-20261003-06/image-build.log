@@ -1,0 +1,54 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 460B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 ...
+
+#5 [1/6] FROM docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#5 resolve docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#5 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 16.15MB 1.8s done
+#4 DONE 1.9s
+
+#6 [2/6] WORKDIR /app
+#6 CACHED
+
+#7 [3/6] COPY requirements.txt ./
+#7 CACHED
+
+#8 [4/6] COPY ops/pilot/requirements.txt ops/pilot/requirements.txt
+#8 CACHED
+
+#9 [5/6] RUN pip install --no-cache-dir -r ops/pilot/requirements.txt
+#9 CACHED
+
+#10 [6/6] COPY . .
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.5s done
+#11 exporting manifest sha256:cc17e82324f2a532532fe3513d78f6a7388aa647293cb73b1cc37cdb28f06d9e 0.0s done
+#11 exporting config sha256:8276aeb2cda6f3e7d48c6203a5f3f7405be8c27b98bb442be45fa18966dfac18 0.0s done
+#11 exporting attestation manifest sha256:bfc006264b6d26a7267e925c7f9198b2e91bf6f1c2cd352640c1658c8b480a6d 0.0s done
+#11 exporting manifest list sha256:0f1d40fba44a44fc1adb5a8fd166e2bbc1dda7d978f0b5e0b25fd46bd48a3a30
+#11 exporting manifest list sha256:0f1d40fba44a44fc1adb5a8fd166e2bbc1dda7d978f0b5e0b25fd46bd48a3a30 0.0s done
+#11 naming to docker.io/library/regulai-lab-8d7136729f46:local done
+#11 unpacking to docker.io/library/regulai-lab-8d7136729f46:local
+#11 unpacking to docker.io/library/regulai-lab-8d7136729f46:local 2.0s done
+#11 DONE 2.7s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/hheiwyiqz55of5vfep47qwcs4

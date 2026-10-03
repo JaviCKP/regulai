@@ -1,0 +1,51 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 460B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#4 resolve docker.io/library/python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 16.13MB 2.7s done
+#5 DONE 2.7s
+
+#6 [2/6] WORKDIR /app
+#6 CACHED
+
+#7 [3/6] COPY requirements.txt ./
+#7 CACHED
+
+#8 [4/6] COPY ops/pilot/requirements.txt ops/pilot/requirements.txt
+#8 CACHED
+
+#9 [5/6] RUN pip install --no-cache-dir -r ops/pilot/requirements.txt
+#9 CACHED
+
+#10 [6/6] COPY . .
+#10 DONE 0.2s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.6s done
+#11 exporting manifest sha256:123a654c0ebf5a434afece7eb04ad8f4cf88ee2ea4fadcce33957ad623c70aae 0.0s done
+#11 exporting config sha256:6ba45d7c1593e4c1986999b1f5298339eae877ec02ee60598b7f0848caa2190c 0.0s done
+#11 exporting attestation manifest sha256:549322e18e3ee5a71a3f7477f2817d8ce2394221009db6d681bf7bfec5441cbe 0.0s done
+#11 exporting manifest list sha256:0351383fb9ec4f3a0ec52098f24441629ff1df086ee10a865414e9dca7b828e7
+#11 exporting manifest list sha256:0351383fb9ec4f3a0ec52098f24441629ff1df086ee10a865414e9dca7b828e7 0.0s done
+#11 naming to docker.io/library/regulai-lab-c9757a78c107:local done
+#11 unpacking to docker.io/library/regulai-lab-c9757a78c107:local
+#11 unpacking to docker.io/library/regulai-lab-c9757a78c107:local 2.0s done
+#11 DONE 2.8s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/y9wa2kz1ocy985a5b5x2k03m6

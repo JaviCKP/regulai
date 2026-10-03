@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\scripts\pilot_lab.py", line 385, in main
+    lab.http_checks()
+  File "C:\Users\javi\Documents\Codex\regulai-platform\scripts\pilot_lab.py", line 262, in http_checks
+    duplicate = self.send(self.session(), 'LAB_WAIT duplicate', identity).json()
+                          ^^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\scripts\pilot_lab.py", line 195, in session
+    assert page.status_code == 200
+           ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

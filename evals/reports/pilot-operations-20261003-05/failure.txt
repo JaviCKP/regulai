@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\scripts\pilot_lab.py", line 402, in main
+    lab.postgres_tests()
+  File "C:\Users\javi\Documents\Codex\regulai-platform\scripts\pilot_lab.py", line 327, in postgres_tests
+    self.app('python', 'regulai/manage.py', 'test', 'front.test_state', 'front.test_onboarding_migrations',
+  File "C:\Users\javi\Documents\Codex\regulai-platform\scripts\pilot_lab.py", line 134, in app
+    return self.run('docker', 'run', '--rm', '--network', self.identity, *self.app_args(),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\scripts\pilot_lab.py", line 64, in run
+    raise RuntimeError(f'{name} failed; inspect its preserved log.')
+RuntimeError: postgres-http-state-migration-security-tests failed; inspect its preserved log.

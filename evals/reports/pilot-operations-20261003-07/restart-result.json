@@ -1,0 +1,105 @@
+{
+  "success": false,
+  "conversation_id": 7,
+  "request_id": "2127d13e-70d2-41e5-a1ed-2cbeeb0d5390",
+  "status": "outcome_unknown",
+  "blocked": false,
+  "decision": {
+    "rules": [],
+    "status": "allow",
+    "fingerprint": "51badc9271d17a8f2dacf3cbc60d97f5663dbb8b819d84958c8e9914583b0bf0",
+    "sensitivity": "internal",
+    "reason_codes": [
+      "local_policy_allowed"
+    ],
+    "allowed_destinations": [
+      "engine:1",
+      "obfuscation:1"
+    ]
+  },
+  "blocked_rules": [],
+  "requires_consent": false,
+  "consent_rules": [],
+  "user_message": {
+    "id": 10,
+    "content": "LAB_WAIT restart",
+    "blocked": false,
+    "file_name": null,
+    "file_size": 0,
+    "file_url": null
+  },
+  "receipt": {
+    "schema_version": 1,
+    "policy": {
+      "rules": [],
+      "status": "allow",
+      "fingerprint": "51badc9271d17a8f2dacf3cbc60d97f5663dbb8b819d84958c8e9914583b0bf0",
+      "sensitivity": "internal",
+      "reason_codes": [
+        "local_policy_allowed"
+      ],
+      "allowed_destinations": [
+        "engine:1",
+        "obfuscation:1"
+      ]
+    },
+    "route": {
+      "mode": "manual",
+      "task": "general",
+      "level": "economy",
+      "model": "synthetic-v1",
+      "quality": 0.5,
+      "reason_codes": [
+        "quality_cost_route"
+      ],
+      "company_engine_id": 1,
+      "input_tokens_bound": 570
+    },
+    "calls": [
+      {
+        "cost": "0",
+        "model": null,
+        "status": "completed",
+        "purpose": "obfuscation",
+        "currency": "USD",
+        "provider": "obfuscation:1",
+        "cost_kind": "configured_zero",
+        "cost_bound": "0",
+        "duration_ms": 16,
+        "price_snapshot": {}
+      },
+      {
+        "cost": null,
+        "model": "synthetic-v1",
+        "status": "started",
+        "purpose": "generation",
+        "currency": "USD",
+        "provider": "engine:1",
+        "cost_kind": "unknown",
+        "cost_bound": "0.00082600",
+        "price_snapshot": {
+          "currency": "USD",
+          "price_date": "2026-10-03",
+          "input_price": "1.00000000",
+          "output_price": "1.00000000"
+        }
+      }
+    ],
+    "history": {
+      "sent_bytes": 0,
+      "sent_turns": 0,
+      "omitted_bytes": 0,
+      "omitted_turns": 0
+    },
+    "limits": {
+      "response_bytes": 2048,
+      "jev_state_bytes": 98304,
+      "deadline_seconds": 90,
+      "history_max_bytes": 32768,
+      "history_max_turns": 20,
+      "max_output_tokens": 256,
+      "call_timeout_seconds": 30,
+      "jev_call_timeout_seconds": 30
+    }
+  }
+}

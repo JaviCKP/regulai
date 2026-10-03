@@ -1,0 +1,119 @@
+[
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "git",
+      "ls-files",
+      "--cached",
+      "--others",
+      "--exclude-standard"
+    ],
+    "exit_code": 0,
+    "seconds": 0.062,
+    "log": "source-list.log",
+    "sha256": "0feb11ff3b85bcdd7f4180ff7205c0d4a7c7b30d869478a8a16d9035fb836f8c"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "seconds": 0.062,
+    "log": "source-head.log",
+    "sha256": "ab7d744930028aa5f39bbebecadf1f4ce4becab21e3dbfa2fbcbf11e737e0408"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "build",
+      "--file",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-43db89676931\\context\\ops\\pilot\\Dockerfile",
+      "--tag",
+      "regulai-lab-43db89676931:local",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-43db89676931\\context"
+    ],
+    "exit_code": 0,
+    "seconds": 25.906,
+    "log": "image-build.log",
+    "sha256": "4ab7cd96e74292364d8d77846d568be30572bd453072de0d6a38017b2227fa31"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "pull",
+      "postgres:17-alpine"
+    ],
+    "exit_code": 0,
+    "seconds": 10.156,
+    "log": "pull-postgres.log",
+    "sha256": "4e309fd8dae699f86d3cce0ee057385f71ee1368a1648fdabda10f77b8fdb002"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "pull",
+      "nginx:1.28-alpine"
+    ],
+    "exit_code": 0,
+    "seconds": 4.625,
+    "log": "pull-nginx.log",
+    "sha256": "0ffc52f10e2cee6ce0b4bd90e960ebd514a4799a1a1f2928b18dac825c664643"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "inspect",
+      "regulai-lab-43db89676931:local",
+      "--format",
+      "{{.Id}} {{json .RepoDigests}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.204,
+    "log": "image-regulai-lab-43db89676931.log",
+    "sha256": "71280fc1c32deb4be4ec31aa81e7fac844aee773188bc5133c0c0a78ee399151"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "inspect",
+      "python:3.12.11-slim",
+      "--format",
+      "{{.Id}} {{json .RepoDigests}}"
+    ],
+    "exit_code": 1,
+    "seconds": 0.187,
+    "log": "image-python.log",
+    "sha256": "d971b5c0f00054841f709ba8c51b983cf8dec22328c5d17924f9e5caea2ee042"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "rm",
+      "regulai-lab-43db89676931:local"
+    ],
+    "exit_code": 0,
+    "seconds": 0.422,
+    "log": "remove-owned-image.log",
+    "sha256": "36f62860f7e3bb0afdfd3d026cb0774a92004a43799f9a1c49a345764f0fac6f"
+  }
+]

@@ -1,0 +1,834 @@
+[
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "git",
+      "ls-files",
+      "--cached",
+      "--others",
+      "--exclude-standard"
+    ],
+    "exit_code": 0,
+    "seconds": 0.062,
+    "log": "source-list.log",
+    "sha256": "d588c002c56c4c071579e034f2dca6bf126320003080231f42a65b350ebe0778"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "seconds": 0.063,
+    "log": "source-head.log",
+    "sha256": "ab7d744930028aa5f39bbebecadf1f4ce4becab21e3dbfa2fbcbf11e737e0408"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "build",
+      "--file",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107\\context\\ops\\pilot\\Dockerfile",
+      "--tag",
+      "regulai-lab-c9757a78c107:local",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107\\context"
+    ],
+    "exit_code": 0,
+    "seconds": 6.546,
+    "log": "image-build.log",
+    "sha256": "8650da4eb430570bcef52daa3686c80102203fe8a5c6b1844ffe2e8dd147cf96"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "pull",
+      "python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f"
+    ],
+    "exit_code": 0,
+    "seconds": 2.031,
+    "log": "pull-python.log",
+    "sha256": "a8526fbefc9a304f802276c2f1012d3c20ff57c0944a10ff1644830ef70b8c40"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "pull",
+      "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24"
+    ],
+    "exit_code": 0,
+    "seconds": 2.0,
+    "log": "pull-postgres.log",
+    "sha256": "bd95b63374a0c49a8838524ee998d7dec2bfb595ae1a14a0d703bb80dcaa92e0"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "pull",
+      "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+    ],
+    "exit_code": 0,
+    "seconds": 2.093,
+    "log": "pull-nginx.log",
+    "sha256": "58dbc61a8f23fe054635ddfe8d035922fea22f5efc2a69930c5a00539da0f906"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "inspect",
+      "regulai-lab-c9757a78c107:local",
+      "--format",
+      "{{.Id}} {{json .RepoDigests}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.219,
+    "log": "image-app.log",
+    "sha256": "32ec1cfaa4d3b72d3c55223ea2ccc03dd42b3d90f6d991174af402abc194b0b7"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "inspect",
+      "python@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f",
+      "--format",
+      "{{.Id}} {{json .RepoDigests}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.234,
+    "log": "image-python.log",
+    "sha256": "1e15633f717d4a1817ea0e7765da4eea571d0a16f6c29de09dc3bd468c8b0208"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "inspect",
+      "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "--format",
+      "{{.Id}} {{json .RepoDigests}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.235,
+    "log": "image-postgres.log",
+    "sha256": "d7dbebb196c5e31839b47737e79f4a366dfe4a85f7664eb9336ad5e5833023fb"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "inspect",
+      "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "--format",
+      "{{.Id}} {{json .RepoDigests}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.219,
+    "log": "image-nginx.log",
+    "sha256": "f9c1a24fa55cc308fac34cdb13b55a25566f80df811a31de11e5ce99597273bd"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "network",
+      "create",
+      "--internal",
+      "--label",
+      "regulai.synthetic-lab=regulai-lab-c9757a78c107",
+      "regulai-lab-c9757a78c107"
+    ],
+    "exit_code": 0,
+    "seconds": 0.218,
+    "log": "network-create.log",
+    "sha256": "60fba7049d251c1b6fa11338ab1199d77c976fad335ddefd71f8aa7ed29e84be"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "network",
+      "create",
+      "--label",
+      "regulai.synthetic-lab=regulai-lab-c9757a78c107",
+      "regulai-lab-c9757a78c107-ingress"
+    ],
+    "exit_code": 0,
+    "seconds": 0.203,
+    "log": "ingress-network-create.log",
+    "sha256": "c51f93b1c2c3da78408a55db1103e5e72a26132c243ec0442e5f8d41a55269d8"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "volume",
+      "create",
+      "--label",
+      "regulai.synthetic-lab=regulai-lab-c9757a78c107",
+      "regulai-lab-c9757a78c107-db"
+    ],
+    "exit_code": 0,
+    "seconds": 0.203,
+    "log": "volume-create.log",
+    "sha256": "e180eff9417daef713a0655c67a4bbbcae68e8575680d4208ff865fb3caa1017"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "regulai-lab-c9757a78c107-db",
+      "--label",
+      "regulai.synthetic-lab=regulai-lab-c9757a78c107",
+      "--network",
+      "regulai-lab-c9757a78c107",
+      "--network-alias",
+      "db",
+      "--mount",
+      "type=volume,source=regulai-lab-c9757a78c107-db,target=/var/lib/postgresql/data",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107\\private\\db-password,target=/run/db-password,readonly",
+      "-e",
+      "POSTGRES_USER=lab",
+      "-e",
+      "POSTGRES_DB=regulai_lab",
+      "-e",
+      "POSTGRES_PASSWORD_FILE=/run/db-password",
+      "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24"
+    ],
+    "exit_code": 0,
+    "seconds": 4.672,
+    "log": "start-db.log",
+    "sha256": "a9c2e799ff8c19c7f5ded887528ced53e68a1bb0e95b2dc2d85cd40a244f8ade"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "inspect",
+      "regulai-lab-c9757a78c107-db",
+      "--format",
+      "{{.Name}} {{json .Config.Cmd}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.235,
+    "log": "process-db.log",
+    "sha256": "d7bf3c2b9b872f8788c8409d6c71ce83114bea78e8a210821aef608fd6f7dfe1"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "exec",
+      "regulai-lab-c9757a78c107-db",
+      "pg_isready",
+      "-U",
+      "lab",
+      "-d",
+      "regulai_lab"
+    ],
+    "exit_code": 2,
+    "seconds": 0.813,
+    "log": "db-ready-0.log",
+    "sha256": "bc6f2a17f5cb0d7613a7f65611ba4396445ff511ae142b6dca699a95934b737d"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "exec",
+      "regulai-lab-c9757a78c107-db",
+      "pg_isready",
+      "-U",
+      "lab",
+      "-d",
+      "regulai_lab"
+    ],
+    "exit_code": 2,
+    "seconds": 0.282,
+    "log": "db-ready-1.log",
+    "sha256": "bc6f2a17f5cb0d7613a7f65611ba4396445ff511ae142b6dca699a95934b737d"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "exec",
+      "regulai-lab-c9757a78c107-db",
+      "pg_isready",
+      "-U",
+      "lab",
+      "-d",
+      "regulai_lab"
+    ],
+    "exit_code": 2,
+    "seconds": 0.297,
+    "log": "db-ready-2.log",
+    "sha256": "bc6f2a17f5cb0d7613a7f65611ba4396445ff511ae142b6dca699a95934b737d"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "exec",
+      "regulai-lab-c9757a78c107-db",
+      "pg_isready",
+      "-U",
+      "lab",
+      "-d",
+      "regulai_lab"
+    ],
+    "exit_code": 2,
+    "seconds": 0.312,
+    "log": "db-ready-3.log",
+    "sha256": "bc6f2a17f5cb0d7613a7f65611ba4396445ff511ae142b6dca699a95934b737d"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "exec",
+      "regulai-lab-c9757a78c107-db",
+      "pg_isready",
+      "-U",
+      "lab",
+      "-d",
+      "regulai_lab"
+    ],
+    "exit_code": 2,
+    "seconds": 0.281,
+    "log": "db-ready-4.log",
+    "sha256": "bc6f2a17f5cb0d7613a7f65611ba4396445ff511ae142b6dca699a95934b737d"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "exec",
+      "regulai-lab-c9757a78c107-db",
+      "pg_isready",
+      "-U",
+      "lab",
+      "-d",
+      "regulai_lab"
+    ],
+    "exit_code": 0,
+    "seconds": 0.344,
+    "log": "db-ready-5.log",
+    "sha256": "441745941fb0ba061f9b65d9e68ecf3a80113f0dd05b5d04299612e54ab729bf"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "run",
+      "--rm",
+      "--network",
+      "regulai-lab-c9757a78c107",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107,target=/lab",
+      "-e",
+      "REGULAI_SYNTHETIC_LAB=1",
+      "-e",
+      "LAB_DATABASE=regulai_lab",
+      "regulai-lab-c9757a78c107:local",
+      "python",
+      "regulai/manage.py",
+      "migrate",
+      "--noinput"
+    ],
+    "exit_code": 0,
+    "seconds": 3.547,
+    "log": "migrations.log",
+    "sha256": "00ca0d367e98dd6c2fd52f51ed21788c0f834e5605fd00e39cb7788a2c21a0ce"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "run",
+      "--rm",
+      "--network",
+      "regulai-lab-c9757a78c107",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107,target=/lab",
+      "-e",
+      "REGULAI_SYNTHETIC_LAB=1",
+      "-e",
+      "LAB_DATABASE=regulai_lab",
+      "regulai-lab-c9757a78c107:local",
+      "python",
+      "ops/pilot/manage_lab.py",
+      "seed"
+    ],
+    "exit_code": 0,
+    "seconds": 2.062,
+    "log": "seed-two-companies.log",
+    "sha256": "877b3d2d7df8f4a8fe7e0ff12757cf9c7aa0c9fe79d0b459c740b0369dd87e85"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "run",
+      "--rm",
+      "--network",
+      "regulai-lab-c9757a78c107",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107,target=/lab",
+      "-e",
+      "REGULAI_SYNTHETIC_LAB=1",
+      "-e",
+      "LAB_DATABASE=regulai_lab",
+      "regulai-lab-c9757a78c107:local",
+      "python",
+      "regulai/manage.py",
+      "collectstatic",
+      "--noinput"
+    ],
+    "exit_code": 0,
+    "seconds": 30.0,
+    "log": "static-collection.log",
+    "sha256": "cf3626a2adda25f776e366b7f9e704732bf101a55b4be1160930be1cf23f12ed"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "run",
+      "--rm",
+      "--network",
+      "regulai-lab-c9757a78c107",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107,target=/lab",
+      "-e",
+      "REGULAI_SYNTHETIC_LAB=1",
+      "-e",
+      "LAB_DATABASE=regulai_lab",
+      "regulai-lab-c9757a78c107:local",
+      "python",
+      "regulai/manage.py",
+      "check",
+      "--deploy",
+      "--fail-level",
+      "WARNING"
+    ],
+    "exit_code": 0,
+    "seconds": 1.625,
+    "log": "deploy-check.log",
+    "sha256": "b8e986f110e225aab2a192d5ff8ad6665d6d78905c1cba8ed398ad0e69f099e6"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "regulai-lab-c9757a78c107-provider",
+      "--label",
+      "regulai.synthetic-lab=regulai-lab-c9757a78c107",
+      "--network",
+      "regulai-lab-c9757a78c107",
+      "--network-alias",
+      "provider",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107\\provider,target=/lab/provider",
+      "regulai-lab-c9757a78c107:local",
+      "python",
+      "ops/pilot/synthetic_provider.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5,
+    "log": "start-provider.log",
+    "sha256": "f22e4b57513670362a86ce075b5da9155217250271cdd1cdaeba84848f34ff31"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "inspect",
+      "regulai-lab-c9757a78c107-provider",
+      "--format",
+      "{{.Name}} {{json .Config.Cmd}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.188,
+    "log": "process-provider.log",
+    "sha256": "2af7bd39de11812d013a7402382b4cd27d4324681034afb22102a0952dd63e37"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "regulai-lab-c9757a78c107-app",
+      "--label",
+      "regulai.synthetic-lab=regulai-lab-c9757a78c107",
+      "--network",
+      "regulai-lab-c9757a78c107",
+      "--network-alias",
+      "app",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107,target=/lab",
+      "-e",
+      "REGULAI_SYNTHETIC_LAB=1",
+      "regulai-lab-c9757a78c107:local"
+    ],
+    "exit_code": 0,
+    "seconds": 0.516,
+    "log": "start-app.log",
+    "sha256": "a4e4b09c2452ba37d272d37be45fd4394d76924a5947b6981128ffe66c627480"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "inspect",
+      "regulai-lab-c9757a78c107-app",
+      "--format",
+      "{{.Name}} {{json .Config.Cmd}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.204,
+    "log": "process-app.log",
+    "sha256": "1b748ef0f3075545e980d003f9c50811555fadd24b7bebd12a5124c8914b2971"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "create",
+      "--name",
+      "regulai-lab-c9757a78c107-https",
+      "--label",
+      "regulai.synthetic-lab=regulai-lab-c9757a78c107",
+      "--network",
+      "regulai-lab-c9757a78c107-ingress",
+      "-p",
+      "127.0.0.1::8443",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107\\tls,target=/lab/tls,readonly",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107\\static,target=/lab/static,readonly",
+      "--mount",
+      "type=bind,source=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\regulai-lab-c9757a78c107\\context\\ops\\pilot\\nginx.conf,target=/etc/nginx/nginx.conf,readonly",
+      "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+    ],
+    "exit_code": 0,
+    "seconds": 0.296,
+    "log": "create-https.log",
+    "sha256": "c4c880131318af92d2f851aea5ac4d034ad06ceb74f1c1b2f6449dad9ab44dc4"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "network",
+      "connect",
+      "regulai-lab-c9757a78c107",
+      "regulai-lab-c9757a78c107-https"
+    ],
+    "exit_code": 0,
+    "seconds": 0.188,
+    "log": "connect-https-backend.log",
+    "sha256": "a4ed4c2c830adf807283a578ea7ee8b2f659416a86da69815d6147237e7d7f36"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "start",
+      "regulai-lab-c9757a78c107-https"
+    ],
+    "exit_code": 0,
+    "seconds": 0.484,
+    "log": "start-https.log",
+    "sha256": "0906581f9a29bb77076389b71363a5c6f510152ab3ed96475da39263b8cb9f2f"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "port",
+      "regulai-lab-c9757a78c107-https",
+      "8443"
+    ],
+    "exit_code": 0,
+    "seconds": 0.187,
+    "log": "loopback-binding.log",
+    "sha256": "80addcdfe165544b5bfd588e23ec9a50d1c944e59923299bfcb4417f6428b578"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "logs",
+      "regulai-lab-c9757a78c107-https"
+    ],
+    "exit_code": 0,
+    "seconds": 0.203,
+    "log": "logs-https.log",
+    "sha256": "86cdd6953c92e2906209299312d203841b111dc05742816936948d25810b5e4c"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "inspect",
+      "regulai-lab-c9757a78c107-https",
+      "--format",
+      "{{index .Config.Labels \"regulai.synthetic-lab\"}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.281,
+    "log": "verify-owned-https.log",
+    "sha256": "9999efa912a5d92b874906a64a2b910373ca94657c429373bd44fd13276429d8"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "rm",
+      "--force",
+      "regulai-lab-c9757a78c107-https"
+    ],
+    "exit_code": 0,
+    "seconds": 0.687,
+    "log": "remove-owned-https.log",
+    "sha256": "0906581f9a29bb77076389b71363a5c6f510152ab3ed96475da39263b8cb9f2f"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "logs",
+      "regulai-lab-c9757a78c107-app"
+    ],
+    "exit_code": 0,
+    "seconds": 0.219,
+    "log": "logs-app.log",
+    "sha256": "1bbc9ebe968d3ceef050efb270578ec9284c71bffc836322a10ce4f6ea0a87ed"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "inspect",
+      "regulai-lab-c9757a78c107-app",
+      "--format",
+      "{{index .Config.Labels \"regulai.synthetic-lab\"}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.219,
+    "log": "verify-owned-app.log",
+    "sha256": "9999efa912a5d92b874906a64a2b910373ca94657c429373bd44fd13276429d8"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "rm",
+      "--force",
+      "regulai-lab-c9757a78c107-app"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5,
+    "log": "remove-owned-app.log",
+    "sha256": "e8b6edd467e535dc67ecfedfc3da8c571af764e72109dbae5ddf4a52bf039f6e"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "logs",
+      "regulai-lab-c9757a78c107-provider"
+    ],
+    "exit_code": 0,
+    "seconds": 0.203,
+    "log": "logs-provider.log",
+    "sha256": "a4ed4c2c830adf807283a578ea7ee8b2f659416a86da69815d6147237e7d7f36"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "inspect",
+      "regulai-lab-c9757a78c107-provider",
+      "--format",
+      "{{index .Config.Labels \"regulai.synthetic-lab\"}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.203,
+    "log": "verify-owned-provider.log",
+    "sha256": "9999efa912a5d92b874906a64a2b910373ca94657c429373bd44fd13276429d8"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "rm",
+      "--force",
+      "regulai-lab-c9757a78c107-provider"
+    ],
+    "exit_code": 0,
+    "seconds": 0.469,
+    "log": "remove-owned-provider.log",
+    "sha256": "5718cfcb860877373d23fbe161fbb47b22a15d36651658e88986117bd9b437bd"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "logs",
+      "regulai-lab-c9757a78c107-db"
+    ],
+    "exit_code": 0,
+    "seconds": 0.203,
+    "log": "logs-db.log",
+    "sha256": "e8380b35be6c4d5c988d5e1c8fe1e8159a2f0dfef696acdfda4fba4a552c0ddd"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "inspect",
+      "regulai-lab-c9757a78c107-db",
+      "--format",
+      "{{index .Config.Labels \"regulai.synthetic-lab\"}}"
+    ],
+    "exit_code": 0,
+    "seconds": 0.187,
+    "log": "verify-owned-db.log",
+    "sha256": "9999efa912a5d92b874906a64a2b910373ca94657c429373bd44fd13276429d8"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "rm",
+      "--force",
+      "regulai-lab-c9757a78c107-db"
+    ],
+    "exit_code": 0,
+    "seconds": 0.453,
+    "log": "remove-owned-db.log",
+    "sha256": "e180eff9417daef713a0655c67a4bbbcae68e8575680d4208ff865fb3caa1017"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "volume",
+      "rm",
+      "regulai-lab-c9757a78c107-db"
+    ],
+    "exit_code": 0,
+    "seconds": 0.203,
+    "log": "remove-owned-volume.log",
+    "sha256": "e180eff9417daef713a0655c67a4bbbcae68e8575680d4208ff865fb3caa1017"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "network",
+      "rm",
+      "regulai-lab-c9757a78c107"
+    ],
+    "exit_code": 0,
+    "seconds": 0.344,
+    "log": "remove-owned-network.log",
+    "sha256": "9999efa912a5d92b874906a64a2b910373ca94657c429373bd44fd13276429d8"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "network",
+      "rm",
+      "regulai-lab-c9757a78c107-ingress"
+    ],
+    "exit_code": 0,
+    "seconds": 0.547,
+    "log": "remove-owned-ingress.log",
+    "sha256": "0f10c059322b0eec5b856aa4228d91cdcc276af421022de6037fa484d95a8d02"
+  },
+  {
+    "command": [
+      "rtk",
+      "proxy",
+      "docker",
+      "image",
+      "rm",
+      "regulai-lab-c9757a78c107:local"
+    ],
+    "exit_code": 0,
+    "seconds": 0.375,
+    "log": "remove-owned-image.log",
+    "sha256": "0a02ace766b9c23581fad421102bd4a44e3dfb2712d096485870a04b9eaf9b02"
+  }
+]
