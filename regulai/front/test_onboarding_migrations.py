@@ -47,3 +47,26 @@ class PriceUnitsMigrationTests(TransactionTestCase):
             self.assertEqual(old.get_model('front', 'EngineModel').objects.get(pk=model.pk).input_price, Decimal('2.5'))
         finally:
             MigrationExecutor(connection).migrate(latest)
+
+
+class ReasoningMigrationTests(TransactionTestCase):
+    def test_existing_models_default_to_no_reasoning_and_reverse_preserves_catalog(self):
+        executor = MigrationExecutor(connection)
+        latest = executor.loader.graph.leaf_nodes()
+        old_target = [('front', '0029_model_price_units')]
+        target = [('front', '0030_enginemodel_reasoning')]
+        try:
+            executor.migrate(old_target)
+            old = executor.loader.project_state(old_target).apps
+            engine = old.get_model('front', 'Engine').objects.create(name='Reasoning catalog')
+            model = old.get_model('front', 'EngineModel').objects.create(engine_id=engine.pk,
+                name='Existing', model_id='existing', input_price=Decimal('1'))
+            executor = MigrationExecutor(connection)
+            executor.migrate(target)
+            migrated = executor.loader.project_state(target).apps.get_model('front', 'EngineModel')
+            self.assertFalse(migrated.objects.get(pk=model.pk).reasoning)
+            migrated.objects.filter(pk=model.pk).update(reasoning=True)
+            MigrationExecutor(connection).migrate(old_target)
+            self.assertEqual(old.get_model('front', 'EngineModel').objects.get(pk=model.pk).input_price, Decimal('1'))
+        finally:
+            MigrationExecutor(connection).migrate(latest)

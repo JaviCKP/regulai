@@ -319,6 +319,7 @@ class EngineModel(models.Model):
     max_tokens = models.IntegerField(default=4096)
     context_window = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     supports_json = models.BooleanField(default=False)
+    reasoning = models.BooleanField(default=False)
     input_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0), validate_price_per_million], help_text='USD per million input tokens; 0 means free, blank means unknown.')
     output_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0), validate_price_per_million], help_text='USD per million output tokens; 0 means free, blank means unknown.')
     currency = models.CharField(max_length=3, default='USD')
