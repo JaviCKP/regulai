@@ -119,7 +119,6 @@ class ReviewRegressionTests(ChatFixture):
         self.assertEqual(result['evidence']['items'][0]['excerpt'], 'Code: <NUM_1>')
         self.assertEqual(result['evidence']['items'][0]['locator'], 'line:1')
 
-    @unittest.expectedFailure
     def test_b05_advisory_document_answer_is_readable_prose(self):
         self.configure(verification={'mode': 'advisory'})
         self.http.side_effect = test_pipeline.jev_http(choices={'task': 'document_question'},
@@ -184,7 +183,6 @@ class ReviewRegressionTests(ChatFixture):
         self.assertEqual(result['status'], 'completed', result)
         self.assertEqual(result['assistant_message']['content'], 'The approved period is seventeen days. [1]')
 
-    @unittest.expectedFailure
     def test_b09_expired_consent_issues_a_fresh_usable_token(self):
         self.rule.action = 'consent'
         self.rule.save()
@@ -253,7 +251,6 @@ context.submitCommand = async command => {submitted = command;};
         self.assertRegex(observed['requestId'],
                          r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$')
 
-    @unittest.expectedFailure
     def test_c01_uncertain_ordinal_category_completes_as_confidential(self):
         self.configure()
         self.company.ai_config['destinations']['confidential'] = [f'engine:{self.credential.pk}', 'jev']
@@ -264,7 +261,6 @@ context.submitCommand = async command => {submitted = command;};
         self.assertEqual((result['status'], result['decision'].get('sensitivity')),
                          ('completed', 'confidential'), result)
 
-    @unittest.expectedFailure
     def test_c02_credentials_signal_below_point_eight_still_blocks_generation(self):
         self.configure()
         self.classification_response({'public': .1, 'internal': .9, 'unknown': 0.0,

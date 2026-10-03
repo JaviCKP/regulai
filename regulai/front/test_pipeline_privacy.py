@@ -1,23 +1,26 @@
 """HTTP privacy and monetary boundaries, with synthetic transports only."""
 import json
+import uuid
+from datetime import timedelta
+from unittest.mock import patch
 from types import SimpleNamespace
 
-from django.urls import reverse
+from django.utils import timezone
 
-from front.models import Message, ObfuscationConfig, Prompt
+from front.models import Conversation, Message, ObfuscationConfig, Prompt
 from front.test_chat_flow import ChatFixture
-from front.test_pipeline import PipelineTests, jev_http
+from front import test_pipeline
 
 
 class PipelinePrivacyTests(ChatFixture):
-    configure = PipelineTests.configure
+    configure = test_pipeline.PipelineTests.configure
 
     def mask(self, *, bound='0', malformed=False):
         config = ObfuscationConfig.objects.create(company=self.company, name='Batch mask', api_url='https://mask.invalid')
         self.company.ai_config['destinations']['internal'].append(f'obfuscation:{config.pk}')
         self.company.ai_config['masking'] = {'max_call_cost': bound}
         self.company.save()
-        evaluator = jev_http()
+        evaluator = test_pipeline.jev_http()
         def post(url, **kwargs):
             if url.endswith('/api/mask'):
                 pending = Prompt.objects.get(status='processing')
@@ -61,3 +64,36 @@ class PipelinePrivacyTests(ChatFixture):
         self.assertEqual(result['error_type'], 'budget_exhausted')
         self.http.assert_not_called()
         self.provider.assert_not_called()
+
+    def test_history_window_omits_whole_old_pairs_from_every_destination(self):
+        self.configure(history={'max_turns': 1, 'max_bytes': 100})
+        first = self.send('/api/chat/send/', 'OLD_SECRETLESS_TURN').json()
+        second = self.send('/api/chat/send/', 'RECENT_TURN', conversation_id=first['conversation_id']).json()
+        self.mask()
+        result = self.send('/api/chat/send/', 'NEXT_TURN', conversation_id=first['conversation_id']).json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertEqual(result['receipt']['history'], {'sent_turns': 1, 'omitted_turns': 1,
+            'sent_bytes': 25, 'omitted_bytes': 33})
+        self.assertNotIn('OLD_SECRETLESS_TURN', str(self.provider.call_args))
+        self.assertNotIn('OLD_SECRETLESS_TURN', str(self.http.call_args_list[-3:]))
+        self.assertIn('RECENT_TURN', str(self.provider.call_args))
+
+    def test_new_cancel_is_idempotent_without_conversation_or_message(self):
+        request_id = str(uuid.uuid4())
+        for path in ('/api/chat/send/', '/chat/send/'):
+            result = self.send(path, '', action='cancel', request_id=request_id).json()
+            self.assertEqual(result['status'], 'cancelled', result)
+        self.assertEqual(Conversation.objects.count(), 0)
+        self.assertEqual(Message.objects.count(), 0)
+        self.provider.assert_not_called()
+
+    def test_processing_is_not_marked_uncertain_while_max_deadline_can_still_run(self):
+        result = self.send('/api/chat/send/').json()
+        pending = Prompt.objects.get(request_id=result['request_id'])
+        Prompt.objects.filter(pk=pending.pk).update(status='processing', updated_at=timezone.now()-timedelta(seconds=181))
+        repeated = self.send('/api/chat/send/', request_id=result['request_id']).json()
+        self.assertEqual(repeated['status'], 'processing')
+        Prompt.objects.filter(pk=pending.pk).update(updated_at=timezone.now()-timedelta(seconds=241))
+        repeated = self.send('/api/chat/send/', request_id=result['request_id']).json()
+        self.assertEqual(repeated['status'], 'outcome_unknown')
+        self.assertEqual(self.provider.call_count, 1)
