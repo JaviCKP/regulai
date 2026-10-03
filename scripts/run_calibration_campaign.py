@@ -70,9 +70,42 @@ def head_readonly():
         return EvaluationBudget.head(db)
 
 
+def reviewed_sample(path, group, release_path=None):
+    """Resolve frozen corpus IDs without copying reference fields into inputs."""
+    path = Path(path).resolve()
+    sample = read(path)
+    if 'cases' in sample:
+        return sample, [path]
+    corpus = CAMPAIGN / 'corpus'
+    split = path.parent.name
+    if path != (corpus / split / 'real_sample.json').resolve():
+        raise ValueError('A corpus sample must use the custodian frozen selection file.')
+    api_path = corpus / 'api.py'
+    api = module(api_path, 'calibration_corpus_adapter')
+    if not api.verify_integrity()['ok']:
+        raise ValueError('Frozen corpus integrity failed.')
+    rows = api.load_partition(split, release_path=release_path) if release_path else api.load_partition(split)
+    ids = sample[group + '_case_ids']
+    by_id = {case['id']: case for case in rows}
+    if not ids or len(ids) != len(set(ids)) or any(case_id not in by_id for case_id in ids):
+        raise ValueError('Frozen selection contains duplicate or missing cases.')
+    cases = []
+    for case_id in ids:
+        case = by_id[case_id]
+        content = api.provider_input(case)
+        if case.get('provider_reviewed') is not True or len(content['documents']) > 1:
+            raise ValueError('Paid case requires prior synthetic review and at most one text document.')
+        cases.append({**case, **content, 'document': content['documents'][0]['text'] if content['documents'] else ''})
+    manifest = read(corpus / 'manifest.json')
+    frozen = [path, api_path, corpus / 'manifest.json', corpus / manifest['partitions'][split]['file']]
+    if release_path:
+        frozen.append(Path(release_path).resolve())
+    return {'synthetic_reviewed': True, 'split': split, 'cases': cases}, frozen
+
+
 def prepare(options, evaluation):
     """Freeze a supplied, reviewed synthetic sample. Never choose by outcomes."""
-    sample = read(options.sample)
+    sample, sample_paths = reviewed_sample(options.sample, options.sample_group, options.holdout_release)
     cases = sample['cases']
     if (sample.get('synthetic_reviewed') is not True or not cases
             or any(c.get('history') or c.get('instructions') for c in cases)):
@@ -89,12 +122,17 @@ def prepare(options, evaluation):
             'group': case['category'], 'task': 'document_question' if case.get('document') else 'general',
             'difficulty': 'economy', 'answer': '', 'must_block': False,
             'reference_split': sample['split']})
-        oracles[case['id']] = {key: case.get(key) for key in ('oracle', 'expected_action', 'expected_redactions', 'preserve', 'family_id', 'category')}
+        oracles[case['id']] = {key: case.get(key) for key in ('oracle', 'expected_action', 'expected_redactions',
+            'preserve', 'family_id', 'category', 'expected_classification', 'expected_manipulation',
+            'difficulty', 'length', 'case_sha256', 'evidence')}
     (pack / 'cases.jsonl').write_text(''.join(evaluation.canonical(c) + '\n' for c in pilot_cases), encoding='utf-8')
     write(pack / 'oracles.json', oracles)
     (pack / 'rubric.md').write_text('Frozen synthetic calibration references. Deterministic answers where supplied; semantic disagreements unresolved. Agent review is not human review.\n', encoding='utf-8')
     manifest = read(ROOT / 'evals/adversarial-live/community-additional-20261003/manifest.json')
-    sources = {row['name']: row for row in read(CAMPAIGN / 'economics/sources.json')}
+    price_sources_path = Path(options.pricing_sources).resolve()
+    if not price_sources_path.is_relative_to(CAMPAIGN / 'economics'):
+        raise ValueError('Official pricing snapshots must remain inside campaign economics.')
+    sources = {row['name']: row for row in read(price_sources_path)}
     decision = read(CAMPAIGN / 'economics/decision.json')
     prereg = read(CAMPAIGN / 'preregistration.json')
     checked = datetime.now(timezone.utc).date().isoformat()
@@ -112,9 +150,13 @@ def prepare(options, evaluation):
     # Keep terms exactly canonical between the manifest, approval and ledger.
     from front.evaluation_budget import EvaluationBudget
     terms = EvaluationBudget.validated_campaign_terms(**terms)
-    frozen_paths = [Path(__file__), BRIDGE, Path(options.sample), CAMPAIGN / 'economics/decision.json',
-                    CAMPAIGN / 'preregistration.json']
-    frozen_paths += [CAMPAIGN / 'economics' / (name + '.snapshot') for name in ('ecb', 'deepseek', 'gateway')]
+    frozen_paths = [Path(__file__), BRIDGE, *sample_paths, price_sources_path,
+                    CAMPAIGN / 'economics/decision.json', CAMPAIGN / 'preregistration.json']
+    for name in ('ecb', 'deepseek', 'gateway'):
+        snapshot_path = price_sources_path.parent / (name + '.snapshot')
+        if sha(snapshot_path) != sources[name]['sha256']:
+            raise ValueError('Official pricing snapshot hash mismatch.')
+        frozen_paths.append(snapshot_path)
     if options.variant == 'base':
         frozen_paths.append(BASE_MASK)
     manifest.update(dataset='cases.jsonl', dataset_sha256=sha(pack / 'cases.jsonl'),
@@ -276,6 +318,9 @@ def main():
     parser.add_argument('--child', action='store_true', help=argparse.SUPPRESS)
     parser.add_argument('--pack', required=True)
     parser.add_argument('--sample')
+    parser.add_argument('--sample-group', choices=('smoke', 'stratified'), default='smoke')
+    parser.add_argument('--holdout-release', help='Custodian release tied to a fixed final selection; never used for tuning')
+    parser.add_argument('--pricing-sources', default=str(CAMPAIGN / 'economics/sources.json'))
     parser.add_argument('--output')
     parser.add_argument('--variant', choices=('base', 'candidate'), default='candidate')
     parser.add_argument('--phase', choices=('baseline', 'development', 'confirmation'), default='development')

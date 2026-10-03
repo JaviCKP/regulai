@@ -14,6 +14,32 @@ SPEC.loader.exec_module(runner)
 
 
 class CalibrationRunnerTests(SimpleTestCase):
+    def test_frozen_sample_resolves_only_reviewed_ids_and_provider_input(self):
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory() as directory, patch.object(runner, 'CAMPAIGN', Path(directory)):
+            corpus = Path(directory) / 'corpus'
+            (corpus / 'development').mkdir(parents=True)
+            selection = corpus / 'development/real_sample.json'
+            selection.write_text(json.dumps({'smoke_case_ids': ['one']}))
+            (corpus / 'manifest.json').write_text(json.dumps({'partitions': {
+                'development': {'file': 'development/cases.jsonl'}}}))
+            case = {'id': 'one', 'provider_reviewed': True, 'oracle': {'kind': 'exact', 'expected_answer': 'private-reference'}}
+            api = SimpleNamespace(verify_integrity=lambda: {'ok': True}, load_partition=lambda split: [case],
+                provider_input=lambda item: {'prompt': 'public-question', 'history': [], 'instructions': '',
+                                            'documents': [{'text': 'public-document'}]})
+            with patch.object(runner, 'module', return_value=api):
+                sample, frozen = runner.reviewed_sample(selection, 'smoke')
+                self.assertEqual(sample['cases'][0]['prompt'], 'public-question')
+                self.assertEqual(sample['cases'][0]['document'], 'public-document')
+                self.assertEqual(sample['cases'][0]['oracle'], case['oracle'])
+                self.assertEqual(len(frozen), 4)
+                case['provider_reviewed'] = False
+                with self.assertRaisesRegex(ValueError, 'review'):
+                    runner.reviewed_sample(selection, 'smoke')
+                api.verify_integrity = lambda: {'ok': False}
+                with self.assertRaisesRegex(ValueError, 'integrity'):
+                    runner.reviewed_sample(selection, 'smoke')
+
     def test_boundary_rejects_unicode_escaped_sensitive_value_and_extra_generation(self):
         manifest = {'campaign_frozen_files': {}}
         guard = runner.make_guard(manifest, ['personañ@example.invalid'])

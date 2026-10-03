@@ -18,10 +18,10 @@ Interfaz corpus acordada: JSONL v2 por development/validation/reserved; campos c
 ## Estado
 
 - Lectura inicial realizada, planes05/06/07/11/12 y tareas32–35; informes históricos son antecedentes.
-- Rondas/candidatos: ninguno medido todavía. Sin cambios de umbrales/rúbrica.
-- Nuevas llamadas: 0; coste nuevo 0; exposición y saldo actuales pendientes de lectura segura del ledger por C.
-- A investigando fuentes y corpus; B reproducciones privacidad/clasificación; C presupuesto e instrumentación.
-- Root congela base, verifica tarifas/FX y estudia verificador/ejecutor vigente.
+- Rondas medidas: R1 normalización, R2 correo en palabras, R3 unión de spans. R1/R2 descartadas por regresión; v5 provisional. Umbrales/rúbrica intactos.
+- Nuevas llamadas: 0; coste nuevo 0. Ledger leído RO: exposición histórica0.038440878 USD, incierta0.003; techo operativo conjunto1.66 USD.
+- A corrige agrupación semántica previa a selección y custodia reservado. B terminó código/probes. C termina wrapper y corrige captura. Root integra ejecutor/muestras.
+- Revisor independiente nuevo security activo sobre4fdbe1a; requiere comprobación final posterior a correcciones. Revisor utility aún pendiente de plaza.
 
 ## Actualización durante implementación
 
@@ -32,8 +32,12 @@ Interfaz corpus acordada: JSONL v2 por development/validation/reserved; campos c
 - R1 normalización/R2 correo con palabras mejoraron probes pero revisión descubrió fuga por puntuación Unicode en secreto etiquetado. Ambos candidatos no aceptables sin R3 unión de spans originales+normalizados. R3 verde focal; detectorv5. No cambian classification, umbrales, rúbrica ni Decimal.
 - Captura causal local: «Calcula»/«Resume» se sustituyen por PERSON antes de clasificación/juez. Scope requirements ya correcto; no atribuir scores históricos al efecto sin comparación viva. Falsos positivos NER/citas permanecen.
 - Root implementó `scripts/run_calibration_campaign.py`: reutiliza evaluation.run_pilot, snapshot detectorbase cargado sin sobrescribir archivos, puente credenciales RO, guard8000B/máx512, ledger único y asignación final protegida. Tres testsrunner nuevos verdes. No real hasta pruebas C y muestras A congeladas.
-- B tiene permiso commitselectivo sólo suyo; C espera ese commit antes staging. A termina oráculos/corpus, reservado aún cerrado.
+- Commits: B2732be1; núcleo C3cbbf19; ejecutor root147b86d; congelación/economics4fdbe1a. Nuevas ediciones root runner (adaptador IDs corpus/precios por snapshot) y C recorder/tests/wrapper pendientes de commit; A aún no commit corpus.
+- Primer smoke ampliado C:2397 local,0errores,30HTTP,27 controles,red0. Sólo1544casos tienen anotaciones;1369 pasan. Los853 sinanotaciones NO se cuentan como aciertos. Tres fallos son D0728 neutral en tres HTTP por quote_not_found, rechazo seguro con pérdida de utilidad. Informe preservado, NO selección final.
+- A detectó plantillas semánticas compartidas pese IDs separados: documentales locales y PII locales se agrupan y anclan a desarrollo porque ya vistos. Freeze1fb99e se preserva superseded; no se cambian oráculos ni se mueve ningún desarrollo visto al reservado. Núcleo4000 cuotas intactas; cuatro nuevos fixtures complementarios previstos. Reparto por familias cerca61/21/18; por casos será desequilibrado y se declarará. Objetivo1500familias independientes no se acredita sólo por IDs/clustering.
+- Root leyó sólo los cuatro casos desarrollo smoke L0545/P0619/D0437/I0975; reservado no abierto. Esperar nuevo freeze A para medidas válidas.
+- Revisor reprodujo secretos JSON escapados en recorder y respuestas reflejadas retenidas/ledger. C corrige cierre previo a SDK/parser, usa sólo credenciales ficticias. No activar pagos hasta probes verdes y fuentes quietas.
 
 ## Próximo paso
 
-Guardar snapshot de base y hashes; acordar las primeras hipótesis de B/C; comprobar contratos del ejecutor y fijar precio/FX con fuente oficial. Mantener confirmación final protegida. Tras candidato integrado, cinco puertas y dos revisores nuevos sobre commit fijo.
+Terminar correcciones A/C y commits serializados. Medir base y candidato desarrollo con wrapper final, ejecutar smoke pagado emparejado sólo tras preflight/activación auditada, seleccionar con validación. Fijar selección antes de que A libere reservado una sola vez. Confirmación protegida. Refrescar precios en NUEVO snapshot si cambia día UTC, sin sobrescribir evidencia anterior. Cinco puertas tras último código; dos revisores nuevos sobre commit fijo final. No push/deploy ni cambios en DB usuario.
