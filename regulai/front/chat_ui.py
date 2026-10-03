@@ -22,6 +22,10 @@ RECEIPT_KEYS = {
     'passed', 'reason', 'finish_reason', 'references', 'evidence_ids',
     'cost_bound', 'price_snapshot', 'price_date', 'provider_request_id',
     'local_status', 'level', 'quality', 'input_tokens_bound', 'attempt', 'code',
+    'notices', 'history', 'sent_turns', 'omitted_turns', 'sent_bytes', 'omitted_bytes',
+    'limits', 'jev_state_bytes', 'max_output_tokens', 'call_timeout_seconds', 'deadline_seconds',
+    'response_bytes', 'judge_input_bytes_bound', 'consent_reason', 'disclosures', 'locators',
+    'jev_call_timeout_seconds',
 }
 
 

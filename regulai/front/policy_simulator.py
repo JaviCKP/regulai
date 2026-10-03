@@ -2,6 +2,7 @@
 import json
 import copy
 import time
+import logging
 from decimal import Decimal
 from dataclasses import replace
 
@@ -20,6 +21,8 @@ from .models import AuditLog, Company, CompanyEngine, EngineModel, ObfuscationCo
 from .management.commands.bootstrap_ai_policy import initial_policy
 from .policy import AIConfig, active_rules, digest, evaluate_policy, validate_yara
 from .routing import RoutingError, actual_cost, route
+
+logger = logging.getLogger(__name__)
 
 
 def _config(source, company):
@@ -200,34 +203,102 @@ def _semantic(actor, company, sample, rules):
     state = {'request': sample, 'context': [], 'sources': []}
     questions = {**jev.classification_questions(), **jev.task_questions()}
     serialized = json.dumps({'state': state, 'questions': questions}, ensure_ascii=False)
+    masks = list(ObfuscationConfig.objects.filter(company=company, active=True).order_by('created_at', 'pk'))
+    destinations = ['jev'] + [f'obfuscation:{mask.pk}' for mask in masks]
     decision = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)],
         config=company.ai_config, destinations=['jev'], rules=rules)
     if decision.status != 'allow':
         return {'status': 'not_authorized', 'reason_codes': decision.reason_codes}, [], None
     cfg = AIConfig.model_validate(company.ai_config)
-    if ObfuscationConfig.objects.filter(company=company, active=True).exists():
-        code = ('policy_configuration_invalid' if cfg.limits.budget is not None
-            and cfg.masking.max_call_cost is None else 'masking_required')
-        # ponytail: semantic masking disabled; enable through shared mask_texts and its ledger.
-        return {'status': 'not_authorized', 'reason_codes': [code]}, [], None
+    if masks and cfg.masking.max_call_cost is None:
+        return {'status': 'not_authorized', 'reason_codes': ['policy_configuration_invalid']}, [], None
+    decision = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)],
+        config=company.ai_config, destinations=destinations, rules=rules)
+    if decision.status != 'allow':
+        return {'status': 'not_authorized', 'reason_codes': decision.reason_codes}, [], None
     if (not company.jev_api_key or cfg.limits.budget is None or cfg.jev.max_call_cost is None
             or cfg.jev.input_price is None or cfg.jev.output_price is None or cfg.jev.currency != 'USD'):
         return {'status': 'not_evaluated', 'reason_codes': ['budget_or_credentials_unconfigured']}, [], None
     bound = Decimal(cfg.jev.max_call_cost)
-    if bound > Decimal(cfg.limits.budget):
+    mask_bound = Decimal(cfg.masking.max_call_cost) if masks else Decimal(0)
+    if bound + mask_bound * len(masks) > Decimal(cfg.limits.budget):
         return {'status': 'not_evaluated', 'reason_codes': ['budget_exhausted']}, [], None
     fresh = Profile.objects.select_related('company', 'user').get(user=actor)
     actor.profile = fresh
     check = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)], destinations=['jev'])
-    if (not fresh.user.is_active or not fresh.user.is_superuser or fresh.company_id != company.pk
+    if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
             or digest(fresh.company.ai_config) != digest(company.ai_config)
             or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)
             or check.status != 'allow' or check.fingerprint != decision.fingerprint):
         return {'status': 'not_authorized', 'reason_codes': ['authorization_changed']}, [], None
+    calls = []
+    deadline = time.monotonic() + cfg.limits.deadline_seconds
+    mask_identities = {mask.pk: digest([mask.api_url, mask.detect, mask.language]) for mask in masks}
+    current_mask_call = current_mask_audit = None
+
+    def save_mask():
+        current_mask_audit.details = json.dumps({'policy_digest': digest(company.ai_config),
+            'sample_digest': digest(sample), 'call': current_mask_call})
+        current_mask_audit.save(update_fields=['details'])
+
+    def before_mask(mask, value):
+        nonlocal current_mask_call, current_mask_audit, fresh
+        fresh = Profile.objects.select_related('company', 'user').get(user=actor)
+        actor.profile = fresh
+        active = {item.pk: digest([item.api_url, item.detect, item.language]) for item in
+            ObfuscationConfig.objects.filter(company_id=company.pk, active=True)}
+        check = evaluate_policy(actor, [('prompts', sample), ('prompts', value)], destinations=[f'obfuscation:{mask.pk}'])
+        if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
+                or active != mask_identities or check.fingerprint != decision.fingerprint or check.status != 'allow'
+                or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)):
+            raise PipelineStop('authorization_changed')
+        remaining = min(cfg.limits.call_timeout_seconds, deadline - time.monotonic())
+        if remaining <= 0:
+            raise PipelineStop('deadline_exceeded')
+        spent = sum((Decimal(item['cost_bound']) for item in calls), Decimal(0))
+        if spent + mask_bound + bound > Decimal(cfg.limits.budget):
+            raise PipelineStop('budget_exhausted')
+        current_mask_call = {'purpose': 'simulation_obfuscation', 'provider': f'obfuscation:{mask.pk}',
+            'model': None, 'status': 'started', 'cost': None, 'cost_bound': str(mask_bound), 'currency': 'USD'}
+        calls.append(current_mask_call)
+        current_mask_audit = AuditLog.objects.create(user=actor, company=company, action='policy_simulate',
+            details=json.dumps({'policy_digest': digest(company.ai_config), 'sample_digest': digest(sample), 'call': current_mask_call}))
+        return remaining
+
+    def after_mask(mask):
+        current_mask_call.update(status='completed', cost='0' if mask_bound == 0 else None)
+        save_mask()
+
+    try:
+        if masks:
+            from .views import mask_texts
+            state['request'] = mask_texts([sample], masks, before_mask, after_mask)[0]
+        serialized = json.dumps({'state': state, 'questions': questions}, ensure_ascii=False)
+        if len(json.dumps(state, ensure_ascii=False).encode('utf-8')) > jev.MAX_STATE_BYTES:
+            raise PipelineStop('evaluation_input_too_large')
+        fresh = Profile.objects.select_related('company', 'user').get(user=actor)
+        actor.profile = fresh
+        check = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)], destinations=['jev'])
+        active = {item.pk: digest([item.api_url, item.detect, item.language]) for item in
+            ObfuscationConfig.objects.filter(company_id=company.pk, active=True)}
+        if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
+                or active != mask_identities or check.fingerprint != decision.fingerprint or check.status != 'allow'
+                or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)):
+            raise PipelineStop('authorization_changed')
+        if deadline <= time.monotonic():
+            raise PipelineStop('deadline_exceeded')
+    except Exception as error:
+        code = error.code if isinstance(error, PipelineStop) else 'masking_failed'
+        if current_mask_call and current_mask_call['status'] == 'started':
+            uncertain = 'timeout' in type(error).__name__.lower() or isinstance(error, TimeoutError)
+            current_mask_call.update(status='outcome_unknown' if uncertain else 'failed')
+            save_mask()
+        logger.exception('Simulation masking failed', extra={'code': code}, exc_info=(RuntimeError, RuntimeError(code), None))
+        return {'status': 'unavailable', 'reason_codes': [code]}, calls, None
     prices = {key: getattr(cfg.jev, key) for key in ('input_price', 'output_price', 'currency', 'price_date')}
     call = {'purpose': 'simulation_classification', 'provider': 'jev', 'model': cfg.jev.model,
         'status': 'started', 'cost': None, 'cost_bound': str(bound), 'currency': cfg.jev.currency,
-        'price_snapshot': prices, 'threshold': cfg.jev.threshold, 'rubric_version': cfg.jev.rubric_version,
+        'price_snapshot': prices, 'threshold': cfg.jev.threshold, 'rubric_version': jev.CLASSIFICATION_RUBRIC_VERSION,
         'task_rubric_version': jev.TASK_RUBRIC_VERSION}
     # Persist an attempt before crossing the provider boundary; a timeout is never free.
     audit = AuditLog.objects.create(user=actor, company=company, action='policy_simulate',
@@ -235,9 +306,10 @@ def _semantic(actor, company, sample, rules):
     started = time.monotonic()
     semantic, signals = {'status': 'completed', 'reason_codes': []}, None
     try:
-        seconds = cfg.limits.deadline_seconds
+        seconds = min(120, cfg.limits.call_timeout_seconds, deadline - time.monotonic())
+        connect_seconds = min(seconds / 2, max(3, seconds - 60))
         result = jev.evaluate(fresh.company.jev_api_key, cfg.jev.model, state, questions,
-            transport=cfg.jev.transport, timeout=(min(3, seconds / 2), min(15, seconds / 2)))
+            transport=cfg.jev.transport, timeout=(connect_seconds, seconds - connect_seconds))
         cost = actual_cost(prices, result.input_tokens, result.output_tokens)
         gateway_cost = result.provider_metadata.get('gateway', {}).get('cost')
         if gateway_cost is not None:
@@ -249,7 +321,7 @@ def _semantic(actor, company, sample, rules):
         signals = {'origin': 'jev', 'sensitivity': result.answers['category']['choice'],
             'task': result.answers['task']['choice'], 'level': result.answers['difficulty']['choice'],
             'answers': result.answers}
-        if time.monotonic() - started > seconds:
+        if time.monotonic() > deadline:
             raise PipelineStop('deadline_exceeded')
         if cost is not None and cost > bound:
             call['cost_bound'] = str(cost)
@@ -261,6 +333,7 @@ def _semantic(actor, company, sample, rules):
         if classification.stop_code:
             raise PipelineStop(classification.stop_code, classification.stop_status)
     except jev.JevError as error:
+        logger.exception('Simulation judge failed', extra={'code': error.code}, exc_info=(RuntimeError, RuntimeError(error.code), None))
         call.update(status='failed', reason_codes=[error.code], outcome_unknown=error.outcome_unknown)
         semantic = {'status': 'unavailable', 'reason_codes': [error.code]}
     except PipelineStop as error:
@@ -269,7 +342,7 @@ def _semantic(actor, company, sample, rules):
         call['duration_ms'] = round((time.monotonic() - started) * 1000)
         audit.details = json.dumps({'policy_digest': digest(company.ai_config), 'sample_digest': digest(sample), 'call': call})
         audit.save(update_fields=['details'])
-    return semantic, [call], signals
+    return semantic, calls + [call], signals
 
 
 @company_policy_required

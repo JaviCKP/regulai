@@ -2796,49 +2796,30 @@ def prompt_detail(request, pk):
 
 # ==================== OBFUSCATION ====================
 
-def obfuscate_text(text, company, *, configs=None, before_call=None, after_call=None, timeout=10):
-    """
-    Ofusca texto encadenando todas las configs activas de la company.
-    Retorna (texto_ofuscado, contexto_map_combinado) o (texto_original, None) si no hay configs.
-    """
-    configs = list(configs) if configs is not None else list(ObfuscationConfig.objects.filter(company=company, active=True).order_by("created_at"))
-    if not configs:
-        return text, None
-
-    current_text = text
-    combined_context = {}
-    counters = {}
-
-    for config in configs:
-        detect_param = ["pii", "secrets"] if config.detect == "both" else [config.detect]
-
-        payload = {
-            "text": current_text,
-            "detect": detect_param,
-        }
+def mask_texts(texts, masks, before_call=None, after_call=None, *, timeout=10):
+    """Mask a structured batch atomically; never guess segment boundaries."""
+    if not isinstance(texts, list) or any(not isinstance(text, str) for text in texts):
+        raise ValueError('Invalid masking input')
+    current = texts
+    for config in masks:
+        value = json.dumps(current, ensure_ascii=False)
+        payload = {'text': value, 'detect': ['pii', 'secrets'] if config.detect == 'both' else [config.detect]}
         if config.language:
-            payload["language"] = config.language
-        if counters:
-            payload["startFrom"] = counters
-
-        api_endpoint = config.api_url.rstrip('/') + '/api/mask'
-        call_timeout = before_call(config, current_text) if before_call else timeout
-        response = requests.post(api_endpoint, json=payload, timeout=call_timeout, allow_redirects=False)
+            payload['language'] = config.language
+        seconds = before_call(config, value) if before_call else timeout
+        response = requests.post(config.api_url.rstrip('/') + '/api/mask', json=payload,
+                                 timeout=seconds, allow_redirects=False)
         response.raise_for_status()
+        if after_call:
+            after_call(config)
         result = response.json()
         if not isinstance(result, dict) or not isinstance(result.get('masked'), str):
             raise ValueError('Invalid masking response')
-        if after_call:
-            after_call(config)
-
-        current_text = result.get("masked", current_text)
-        combined_context.update(result.get("context", {}))
-
-        result_counters = result.get("counters", {})
-        for entity_type, count in result_counters.items():
-            counters[entity_type] = counters.get(entity_type, 0) + count
-
-    return current_text, combined_context if combined_context else None
+        masked = json.loads(result['masked'])
+        if not isinstance(masked, list) or len(masked) != len(current) or any(not isinstance(text, str) for text in masked):
+            raise ValueError('Invalid masking segments')
+        current = masked
+    return current
 
 
 @security_required

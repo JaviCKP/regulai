@@ -60,7 +60,7 @@ def actual_cost(price_snapshot, input_tokens, output_tokens):
 def route(candidates, messages, *, allowed_destinations, min_quality=0,
           needs_vision=False, needs_json=False, max_output_tokens=1000,
           budget=None, overhead_tokens=256, budget_currency="USD",
-          manual_company_engine_id=None, min_quality_exclusive=False):
+          manual_company_engine_id=None, min_quality_exclusive=False, extra_input_bytes=None):
     """UTF-8 bytes conservatively bound text tokens plus per-message overhead.
 
     messages may be strings, ChatMessage objects, or role/content dictionaries.
@@ -87,6 +87,9 @@ def route(candidates, messages, *, allowed_destinations, min_quality=0,
             raise RoutingError("unbounded_input")
         input_bound += len(content.encode("utf-8")) + len(role.encode("utf-8")) + overhead_tokens
     input_bound = max(input_bound, overhead_tokens)
+    extra_input_bytes = {} if extra_input_bytes is None else extra_input_bytes
+    if not isinstance(extra_input_bytes, dict) or any(type(value) is not int or value < 0 for value in extra_input_bytes.values()):
+        raise RoutingError('unbounded_input')
     candidates = [candidate for candidate in candidates
                   if f"engine:{candidate.company_engine_id}" in allowed_destinations
                   and (manual_company_engine_id is None
@@ -95,6 +98,7 @@ def route(candidates, messages, *, allowed_destinations, min_quality=0,
         raise RoutingError("no_authorized_candidates")
     eligible, reasons = [], set()
     for candidate in candidates:
+        candidate_input_bound = input_bound + extra_input_bytes.get((candidate.company_engine_id, candidate.model_pk), 0)
         if ((needs_vision and not candidate.supports_vision)
                 or (needs_json and not candidate.supports_json)):
             reasons.add("capability_unavailable")
@@ -110,7 +114,7 @@ def route(candidates, messages, *, allowed_destinations, min_quality=0,
             reasons.add("unknown_capacity")
             continue
         if (max_output_tokens > candidate.max_tokens
-                or input_bound + max_output_tokens > candidate.context_window):
+                or candidate_input_bound + max_output_tokens > candidate.context_window):
             reasons.add("context_overflow")
             continue
         snapshot = {
@@ -119,7 +123,7 @@ def route(candidates, messages, *, allowed_destinations, min_quality=0,
             "currency": candidate.currency,
             "price_date": str(candidate.price_date) if candidate.price_date is not None else None,
         }
-        cost = actual_cost(snapshot, input_bound, max_output_tokens)
+        cost = actual_cost(snapshot, candidate_input_bound, max_output_tokens)
         if candidate.currency != budget_currency:
             reasons.add("currency_mismatch")
             continue
@@ -129,7 +133,7 @@ def route(candidates, messages, *, allowed_destinations, min_quality=0,
         if limit is not None and cost > limit:
             reasons.add("budget_exhausted")
             continue
-        eligible.append(RouteDecision(candidate, input_bound, max_output_tokens, cost, snapshot))
+        eligible.append(RouteDecision(candidate, candidate_input_bound, max_output_tokens, cost, snapshot))
     if not eligible:
         # Costs are checked after mandatory permission/capacity/quality filters.
         for reason in ("budget_exhausted", "unknown_price", "currency_mismatch",

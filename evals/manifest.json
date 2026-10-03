@@ -21,7 +21,7 @@
   "classification_mode": "required",
   "quality_by_task": {"economy": 0.6, "strong": 0.95},
   "minimum_quality": {"economy": 0.5, "balanced": 0.6, "strong": 0.9},
-  "rubrics": {"classification": "sensitivity-v1", "task": "task-v1", "verification": "verification-v1", "exact_labels": "human-synthetic-v1"},
+  "rubrics": {"classification": "sensitivity-v2", "task": "task-v2", "verification": "verification-v1", "exact_labels": "human-synthetic-v1"},
   "limits": {"budget": "0.50", "deadline_seconds": 90, "max_output_tokens": 1000},
   "synthetic_usage": {"generation_input_tokens": 100, "generation_output_tokens": 20, "judge_input_tokens": 50, "judge_output_tokens": 10},
   "group_counts": {"task": 12, "document": 10, "sensitivity": 10, "adversarial": 8, "state": 10},
