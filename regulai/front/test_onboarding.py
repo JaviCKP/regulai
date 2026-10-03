@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from io import StringIO
 from unittest.mock import patch
 
@@ -7,6 +8,7 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from .models import AuditLog, Company, CompanyEngine, Conversation, Engine, EngineModel, Message, Profile, Prompt, Role
 
@@ -224,4 +226,15 @@ class HistoricalVisibilityTests(TestCase):
         self.assertEqual(self.client.get(reverse('front:auditlog_detail', args=[self.captured.pk])).status_code, 404)
         # D5 deliberately infers null audits from the current profile without rewriting them.
         self.assertEqual(self.client.get(reverse('front:auditlog_detail', args=[self.legacy.pk])).status_code, 200)
+
+    def test_historical_visibility_does_not_grant_delete_or_clear_authority(self):
+        AuditLog.objects.filter(pk__in=[self.legacy.pk, self.captured.pk]).update(
+            timestamp=timezone.now() - timedelta(days=40))
+        response = self.client.post(reverse('front:auditlog_delete', args=[self.legacy.pk]))
+        self.assertEqual(response.status_code, 404)
+        self.client.post(reverse('front:auditlogs_clear'))
+        self.legacy.refresh_from_db()
+        self.assertEqual(self.legacy.details, 'Historical A details')
+        self.assertIsNone(self.legacy.company_id)
+        self.assertFalse(AuditLog.objects.filter(pk=self.captured.pk).exists())
 

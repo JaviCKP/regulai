@@ -2639,7 +2639,7 @@ def auditlogs_clear(request):
 
         cutoff_date = timezone.now() - timezone.timedelta(days=30)
         # Delete logs from user's company or system logs
-        company_or_system = company_audit_scope(user_company)
+        company_or_system = Q(company=user_company)
         count = AuditLog.objects.filter(
             company_or_system,
             timestamp__lt=cutoff_date
@@ -2656,7 +2656,7 @@ def auditlog_delete(request, pk):
     user_company = get_user_company(request.user)
 
     # Only allow access to logs from user's company or system logs
-    company_or_system = company_audit_scope(user_company)
+    company_or_system = Q(company=user_company)
     log = get_object_or_404(AuditLog.objects.filter(company_or_system), pk=pk)
 
     if request.method == 'POST':

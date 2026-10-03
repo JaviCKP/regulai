@@ -8,7 +8,7 @@ def infer_company(apps, schema_editor):
     alias = schema_editor.connection.alias
     last_pk = 0
     while True:
-        rows = list(Prompt.objects.using(alias).filter(company__isnull=True, pk__gt=last_pk)
+        rows = list(Prompt.objects.using(alias).only('pk', 'user_id').filter(company__isnull=True, pk__gt=last_pk)
             .order_by('pk')[:1000])
         if not rows:
             break
