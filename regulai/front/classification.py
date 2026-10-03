@@ -1,5 +1,6 @@
 """Conservative ordinal decisions over untrusted classifier answers."""
 from dataclasses import dataclass, field
+from decimal import Decimal
 import math
 
 from .policy import AIConfig
@@ -67,10 +68,12 @@ def decide(answers, cfg: AIConfig, local_floor):
     if present('manipulation'):
         decision.stop_code, decision.stop_status = 'classification_manipulation', 'blocked'
         return decision
-    masses = dict(answers['category']['probabilities'])
+    # Sum decimal probabilities before comparing the inclusive tail limit.
+    masses = {level: Decimal(str(mass)) for level, mass in answers['category']['probabilities'].items()}
     masses[cfg.classification_policy.unknown_level] += masses.pop('unknown')
+    tail_limit = Decimal(1) - Decimal(str(threshold))
     ordinal = next(level for index, level in enumerate(LEVELS)
-                   if math.fsum(masses[upper] for upper in LEVELS[index + 1:]) <= 1 - threshold + 1e-12)
+                   if sum(masses[upper] for upper in LEVELS[index + 1:]) <= tail_limit)
     decision.sensitivity = max((floor, ordinal), key=LEVELS.index)
     if present('personal_data') or present('business_confidential'):
         decision.sensitivity = max((decision.sensitivity, 'confidential'), key=LEVELS.index)

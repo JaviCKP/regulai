@@ -786,10 +786,11 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                         answers = evaluate('verification', {**state, **judged}, questions)
                         prompt.decision['calls'][-1].update(signals=answers, threshold=cfg.verification.threshold,
                             rubric_version=cfg.verification.rubric_version)
-                        passed = all(answer['noul'] <= 1 - cfg.verification.threshold for answer in answers.values())
-                        checks['status'] = 'passed' if passed else 'failed'
+                        # Preserve the inclusive decimal boundary without an epsilon.
+                        failure_limit = Decimal(1) - Decimal(str(cfg.verification.threshold))
                         checks['failed_signals'] = [key for key, answer in answers.items()
-                            if answer['noul'] > 1 - cfg.verification.threshold]
+                            if Decimal(str(answer['noul'])) > failure_limit]
+                        checks['status'] = 'failed' if checks['failed_signals'] else 'passed'
                     except jev.JevError as error:
                         safe_code = _safe_jev_error_code(error.code)
                         logger.exception('Chat judge failed', extra={'code': safe_code, 'request_id': str(prompt.request_id)},
