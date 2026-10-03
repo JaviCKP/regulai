@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-03T14:02:36.455096+00:00",
+  "database": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\pilot-document-browser-20261003-03\\pilot.sqlite3",
+  "listen": "127.0.0.1:8767",
+  "mode": "offline synthetic transport; outbound HTTP and sockets blocked",
+  "sources": {
+    "scripts/pilot_document_demo.py": "9fd1495ee5338b3ece75ffe8a29fedb58d3bbd6697b010e28b7af5fce0e1fb82",
+    "regulai/front/management/commands/run_demo.py": "f96e8be02f54083d5036f132462e0fd385f08116da12efd68fde14fc64e0d924",
+    "regulai/front/management/commands/evaluate_ai.py": "6a0b0f1b35487556ff99654478a0d89001e0bca4f8d50d4a5db9ccff5e046db8",
+    "regulai/front/chat_service.py": "c2707b07eaa7d4a8aeeba68a515351d0007f5c7436f4e5f5736841953bc8bc30",
+    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
+    "regulai/front/templates/chat/chat.html": "b3c40e37858ea290a649cff870ed7bc427217f520fb6d7c6572c3e14b2302c9b"
+  }
+}

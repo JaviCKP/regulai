@@ -1,0 +1,88 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - generic [ref=f2e5]:
+        - link "regulAI regulAI" [ref=f2e6] [cursor=pointer]:
+          - /url: /
+          - img "regulAI" [ref=f2e7]
+          - generic [ref=f2e8]: regulAI
+        - text: 
+      - navigation [ref=f2e9]:
+        - list [ref=f2e10]:
+          - listitem [ref=f2e11]: Home
+          - listitem [ref=f2e12]:
+            - link "Home" [ref=f2e13] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f2e19]:
+            - link "Chat" [ref=f2e20] [cursor=pointer]:
+              - /url: /chat/
+  - generic [ref=f2e26]:
+    - banner [ref=f2e27]:
+      - navigation [ref=f2e28]:
+        - list [ref=f2e29]:
+          - text: 
+          - listitem [ref=f2e30]:
+            - link "" [ref=f2e31] [cursor=pointer]:
+              - /url: /alerts/
+        - list [ref=f2e34]:
+          - listitem [ref=f2e35]:
+            - generic [ref=f2e36]:
+              - generic [ref=f2e37]: community-demo
+              - generic [ref=f2e38]: Community offline demo
+          - listitem [ref=f2e39]:
+            - link [ref=f2e40] [cursor=pointer]:
+              - /url: /profile/
+            - text:  
+          - listitem [ref=f2e41]:
+            - link "" [ref=f2e42] [cursor=pointer]:
+              - /url: /logout/
+    - generic [ref=f2e44]:
+      - status [ref=f2e45]:
+        - strong [ref=f2e46]: DEMO OFFLINE — fallo simulado.
+        - text: Datos, modelos y jueces sintéticos; sin llamadas a proveedores reales ni métricas de calidad real.
+      - generic [ref=f2e47]:
+        - generic [ref=f2e50]:
+          - generic [ref=f2e51]:
+            - heading [level=6] [ref=f2e52]
+            - link [ref=f2e56] [cursor=pointer]:
+              - /url: /chat/
+          - paragraph [ref=f2e66]: No conversations yet
+        - generic [ref=f2e69]:
+          - generic [ref=f2e70]:
+            - heading [level=5] [ref=f2e71]
+            - generic [ref=f2e75]:
+              - button [ref=f2e77] [cursor=pointer]
+              - button [ref=f2e87] [cursor=pointer]
+              - generic [ref=f2e99]:
+                - checkbox "Automatic model selection" [checked] [ref=f2e100]
+                - text: Automatic model selection
+              - generic [ref=f2e101]: Configured
+          - generic [ref=f2e105]:
+            - generic [ref=f2e142]:
+              - generic [ref=f2e143]:
+                - text: You
+                - generic [ref=f2e149]: pending_consent
+              - generic [ref=f2e150]: Cual es el precio del contrato tras caducar la confirmacion?
+              - generic [ref=f2e151]:
+                - generic [ref=f2e157]: text-and-image.docx
+                - generic [ref=f2e158]: (45.62 KB)
+              - group [ref=f2e167]:
+                - 'generic "Decision receipt: pending_consent" [ref=f2e168] [cursor=pointer]'
+              - generic [ref=f2e169]:
+                - paragraph [ref=f2e170]: "Confirmation: Review the decision before authorizing this same content and file."
+                - paragraph [ref=f2e171]: "Confirmation: Confirmation expired. Review and confirm again."
+                - paragraph [ref=f2e172]: "Document notice: Imágenes no analizadas ni enviadas (1): word/document.xml/paragraph:3"
+                - button "Confirm sending" [active] [ref=f2e173] [cursor=pointer]
+                - button "Cancel request" [ref=f2e174] [cursor=pointer]
+            - generic [ref=f2e175]:
+              - generic [ref=f2e176]: System
+              - generic [ref=f2e180]: consent_expired
+          - generic [ref=f2e115]:
+            - generic [ref=f2e116]:
+              - button "Attach document" [ref=f2e117] [cursor=pointer]
+              - textbox "Message" [ref=f2e121]:
+                - /placeholder: Type your message here... You can also attach a supported document.
+              - button "Send message" [ref=f2e122] [cursor=pointer]
+            - generic [ref=f2e126]:
+              - generic [ref=f2e127]: Press Enter to send, Shift+Enter for new line
+              - generic [ref=f2e128]: "Supported: txt, pdf with text, docx, xlsx, csv, json, py, js, md. Reattach files for later questions."

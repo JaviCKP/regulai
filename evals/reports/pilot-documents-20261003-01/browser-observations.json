@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "automation_only": true,
+  "human_rehearsals_completed": 0,
+  "browser": {
+    "engine": "Chromium headless",
+    "version_from_user_agent": "154.0.0.0",
+    "driver": "@playwright/cli 0.1.22",
+    "desktop_viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "mobile_viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "physical_mobile_device": false
+  },
+  "server": {
+    "transport": "offline DemoProviders at HTTP boundary; socket and real HTTP guarded",
+    "database_mode": "new dedicated .claude/pilot-document-browser-20261003-NN/pilot.sqlite3 for each run",
+    "real_provider_calls": 0
+  },
+  "observations": [
+    {
+      "case": "pending_consent",
+      "result": "observed",
+      "request_id": "2b83cb56-3492-4dd7-8efb-d437c4b6cfcf",
+      "calls": 0,
+      "coverage": "complete_text_only",
+      "omitted_locator": "word/document.xml/paragraph:3",
+      "evidence": [
+        "01-pending-consent.png",
+        "receipt-before-consent.json"
+      ]
+    },
+    {
+      "case": "keyboard_cancel",
+      "result": "observed",
+      "request_id": "e87c7680-5900-435d-aea9-f437c2e1dab7",
+      "action": "Tab from Confirm sending to Cancel request, then Enter",
+      "status": "cancelled",
+      "calls": 0,
+      "evidence": [
+        "02-cancelled.png",
+        "03-cancelled-receipt.png",
+        "receipt-cancelled.json"
+      ]
+    },
+    {
+      "case": "real_expiry_old_process",
+      "result": "expiry observed; later reconfirmation failed",
+      "elapsed_wall_seconds_approx": 314,
+      "status_after_expiry": "pending_consent",
+      "reason": "consent_expired",
+      "calls_before_reconfirmation": 0,
+      "user_message_id": 1,
+      "evidence": [
+        "05-consent-expired.png",
+        "state-after-real-expiry.json",
+        "receipt-stale-process-failed.json"
+      ],
+      "note": "Process02 predated concurrent demo-fixture changes. Failed subsequent classification is preserved, not counted as successful completion."
+    },
+    {
+      "case": "current_process_completion",
+      "result": "observed",
+      "request_id": "81a9c363-261c-4adb-b674-568042db64b0",
+      "answer": "10 euros [1]",
+      "citation": "word/document.xml/paragraph:2",
+      "excerpt": "cuesta 10 euros.",
+      "calls": 8,
+      "generation_attempts": 2,
+      "total_cost": "0.00102000",
+      "cost_currency": "USD",
+      "cost_semantics": "synthetic estimate",
+      "evidence": [
+        "receipt-completed.json",
+        "06-keyboard-evidence.png",
+        "07-keyboard-citation.png"
+      ]
+    },
+    {
+      "case": "keyboard_citation",
+      "result": "observed",
+      "actions": "Shift+Tab twice from Message to Document evidence, Enter; Tab to citation, Enter",
+      "evidence": [
+        "06-keyboard-evidence.png",
+        "07-keyboard-citation.png"
+      ]
+    },
+    {
+      "case": "reload_export_mobile",
+      "result": "observed",
+      "reload_preserved_answer_receipt_and_evidence": true,
+      "export": "actual JSON download through receipt link",
+      "document_scroll_width": 375,
+      "body_scroll_width": 375,
+      "viewport_width": 375,
+      "evidence": [
+        "08-mobile-reloaded-receipt.png",
+        "10-mobile-citation.png",
+        "receipt-completed.json"
+      ],
+      "limit": "Viewport emulation, not physical device. Long receipt has an internal vertical scroller; screenshot does not contain every receipt line."
+    },
+    {
+      "case": "unknown_outcome_reconstruction",
+      "result": "observed",
+      "actual_process_interruption": false,
+      "fixture_only": true,
+      "request_id": "e4f65559-158a-4d22-99f5-ed78e846d9b5",
+      "status": "outcome_unknown",
+      "generation_status": "started",
+      "call_cost": null,
+      "total_present": false,
+      "displayed_call_cost": "unknown",
+      "displayed_total": "unknown",
+      "assistant_response": false,
+      "evidence": [
+        "09-outcome-unknown-synthetic-reconstruction.png",
+        "receipt-outcome-unknown-reconstruction.json",
+        "tests-documents-ui-final.log"
+      ]
+    },
+    {
+      "case": "contrast_regression",
+      "result": "reproduced and fixed visually",
+      "before": {
+        "button_unfocused_foreground": "#635bff",
+        "bubble_background": "#5d87ff",
+        "contrast_ratio": 1.4258715640978112
+      },
+      "after": {
+        "button_foreground": "#3154b7",
+        "button_background": "#ffffff",
+        "bubble_background": "#3154b7",
+        "text_foreground": "#ffffff",
+        "contrast_ratio": 6.81264643363781,
+        "keyboard_focus_outline": "solid white, 2px offset"
+      },
+      "mobile_document_width": 375,
+      "mobile_viewport_width": 375,
+      "evidence": [
+        "11-before-contrast-fix.png",
+        "12-after-contrast-fix.png",
+        "14-mobile-consent-controls-fixed.png"
+      ],
+      "limit": "This is a scoped contrast correction, not full accessibility certification."
+    },
+    {
+      "case": "final_real_expiry_then_completion",
+      "result": "observed and completed",
+      "request_id": "e7c85964-6e98-4fcd-86dc-daa86d669dc0",
+      "created_at_utc": "2026-10-03T14:12:14.895617Z",
+      "file_sha256": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+      "evidence": [
+        "state-postfix-pending.json",
+        "state-postfix-expired.json",
+        "state-postfix-completed.json",
+        "15-final-real-expiry.png",
+        "16-completed-after-renewal.png",
+        "receipt-postfix-completed.json",
+        "17-citation-after-renewal.png",
+        "snapshot-final-expired.yml",
+        "snapshot-final-completed.yml"
+      ],
+      "elapsed_wall_seconds": 316.599294,
+      "calls_after_expiry": 0,
+      "calls_after_reconfirmation": 8,
+      "answer": "10 euros [1]",
+      "same_request_file_and_user_message": true
+    }
+  ],
+  "limits": [
+    "No real Office application available or claimed.",
+    "No real scanner, OCR, formula recalculation, provider quality, human understanding or physical mobile measured.",
+    "Masking transport fixture is identity over synthetic data."
+  ],
+  "failed_or_incomplete_attempts": [
+    "First runner: wrong template hash path; corrected in runner before browser testing.",
+    "Initial corpus regeneration changed XLSX modified timestamp; generator metadata normalized and subsequent 12+manifest byte comparison passed; expectations unchanged.",
+    "New HTTP test initially used responses instead of actual response relation; fixed test typo without product edits.",
+    "Process03 intended expiry was confirmed around 298 seconds and completed normally; not counted as expired.",
+    "Exploratory DOM/SQL/CLI-signature reads that errored were corrected and are not test results."
+  ],
+  "followup": {
+    "owner": "root",
+    "observed": "Completed receipt preserves historical consent_expired but renders imperative review/confirm text. No extra buttons or duplicate send observed.",
+    "scope": "Root accepted separate followup; this original evidence is unchanged."
+  }
+}

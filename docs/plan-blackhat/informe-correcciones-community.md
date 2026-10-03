@@ -2,6 +2,8 @@
 
 Revisión documental: 3 de octubre de 2026. Base original `6a0f667`; inicio de correcciones `4400f0b` (mismo código que `4b10778`); código técnico recibido `51f4ee5`. El [informe técnico](informe-tecnico-cambios.md) describe la evolución original. Esta actualización documenta las correcciones integradas, sin nuevas llamadas a proveedores/Jev, cambios en bases del usuario, push ni despliegue.
 
+Los commits y resultados B1–B10/C1–C2 de este informe se conservan como históricos. La integración posterior a `6c78cd3`, incluyendo obligación D2 y preparación operativa, está en el [informe del piloto](informe-piloto-community-20261003.md).
+
 ## Problemas conocidos y corregidos
 
 Las doce regresiones de [ReviewRegressionTests](../../regulai/front/test_review_regressions.py) se ejecutaron contra `4400f0b`: doce `AssertionError`, cero errores de preparación y cero omisiones. Tras la integración pasan como pruebas normales, sin `expectedFailure`. La columna prueba da el sufijo exacto de los métodos `test_` de esa clase; los resultados de suite se registran en el [estado observado](estado-ejecucion.md).
@@ -91,7 +93,7 @@ Jev/juez reciben contexto y fuentes completos, sin muestreo. Antes de generar se
 
 ## Enmascarado y presupuesto
 
-**Condición operativa:** se utilizan únicamente las ObfuscationConfig activas de la empresa. La transformación de entrada y respuesta requiere al menos una configuración activa. Si no hay ninguna, su ausencia no bloquea por sí sola: una política que permita el destino puede enviar el contenido autorizado sin transformar. La decisión D2 aprobada necesita [servicio configurado y activado](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa) para ser una protección efectiva; no existe una obligación global de activar enmascarado impuesta por el código.
+**Cambio posterior de compatibilidad:** la entrega comparada `5a8579c` permitía contenido autorizado sin transformar cuando faltaban máscaras. La [tarea21](tareas/21-privacidad-obligatoria.md) cierra esa diferencia: la máscara propia, activa, autorizada y `detect=both` es obligatoria en servidor para chat y simulador semántico. Sin ella o si cambia/falla, no continúa la salida. No hay migración de datos; las políticas antiguas deben completar [la configuración](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa). Se conserva la evidencia histórica de aquella condición, sin atribuirla al comportamiento actual.
 
 YARA examina primero el original, incluidas fórmulas. Con enmascarado activo, decisión y consentimiento preceden a su llamada. El servicio recibe un array JSON serializado **dentro de su campo `text: str`**. Debe devolver `masked` como string de un array JSON de strings de igual longitud y orden; debe preservar estructura y coherencia dentro del lote. Una respuesta incompatible falla cerrada.
 

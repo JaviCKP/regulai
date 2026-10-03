@@ -2,6 +2,8 @@
 
 Desde la raíz de tu checkout. Python probado: 3.12.11. Conservar entornos, bases y configuración existentes. [Resultados observados](estado-ejecucion.md), [guion técnico de demo](../../evals/DEMO.md) y [evaluación offline](../../evals/README.md).
 
+Preparación nueva del piloto: [documentos y navegador](documentos-y-ensayos-piloto.md), [ejecutor y aprobación real pendiente](ejecucion-real-y-calibracion-piloto.md), [laboratorio Linux/PostgreSQL/HTTPS y recuperación](operacion-y-recuperacion-piloto.md). Los recuentos de la demo antigua que aparecen abajo son históricos; la máscara obligatoria añade sus llamadas a las fichas actuales.
+
 ## Instalación y comprobación
 
 Solo si no existe `.venv`, crearla. La lista raíz es la única fuente; no instalar la interior por separado:
@@ -58,7 +60,7 @@ Un administrador de empresa trabaja sobre su empresa. El catálogo global y Djan
 
 [ai-config-example.json](ai-config-example.json) valida con `AIConfig` y **mantiene cerrada la salida**: sin destinos, sin candidatos, presupuesto cero. Es una base segura para editar en el simulador, no una política que produzca respuestas.
 
-Para una política autorizada, configurar destinos por sensibilidad (`engine:<CompanyEngine.id>`, `jev` y, si procede, `obfuscation:<id>`). La credencial de Jev va en el campo cifrado `Company.jev_api_key`; las de generación en `CompanyEngine.api_key`. Ninguna pertenece al JSON. Los modelos activos necesitan contexto, salida máxima, supports_json/reasoning, moneda USD, fecha y tarifas vigentes **por millón de tokens**, calidad por tarea sustentada en evidencia y reglas YARA válidas. Un presupuesto acotado rechaza precios desconocidos.
+Para una política autorizada, configurar destinos por sensibilidad: `obfuscation:<id>` es obligatorio para las máscaras activas y compatibles; añadir `engine:<CompanyEngine.id>` y `jev` según el recorrido. La credencial de Jev va en el campo cifrado `Company.jev_api_key`; las de generación en `CompanyEngine.api_key`. Ninguna pertenece al JSON. Los modelos activos necesitan contexto, salida máxima, supports_json/reasoning, moneda USD, fecha y tarifas vigentes **por millón de tokens**, calidad por tarea sustentada en evidencia y reglas YARA válidas. Un presupuesto acotado rechaza precios desconocidos.
 
 Ejemplo de **un candidato**, con IDs de muestra que deben sustituirse por filas activas de la propia empresa:
 
@@ -70,12 +72,14 @@ El ID 101 sería de `CompanyEngine`; 201 sería de `EngineModel` del mismo motor
 
 ### Activar el enmascarado de la empresa
 
-La aplicación procesa entrada, contexto, historial elegido, fragmentos/localizadores y respuesta mediante los servicios de enmascarado **activos de la empresa**. Si no hay ninguno activo, una política válida puede permitir enviar contenido autorizado sin transformar. Activar la política de IA o generar su borrador no crea ni activa esos servicios: D2 solo ofrece esa protección cuando están configurados y activos.
+La aplicación exige un servicio de enmascarado propio, activo, autorizado y con `detect=both` para datos personales y secretos. Entrada, instrucciones, historial elegible, fragmentos/localizadores y respuesta pasan por las máscaras activas antes de salir a otros destinos. Sin máscara válida se devuelve `masking_required` y no hay salida externa; desactivación, sustitución incompatible, timeout o lote inválido también detienen el recorrido. Chat y simulador semántico revalidan empresa, política, permisos e identidad de los destinos antes de llamar. Activar la política de IA o generar un borrador no crea ni activa esos servicios.
 
-1. Preparar un servicio propio o autorizado por la empresa compatible con el contrato. La aplicación llama a `POST <api_url>/api/mask`, con `text` como **string de un array JSON de strings**, `detect` como lista (`pii`, `secrets` o ambas) y `language` opcional. La respuesta debe incluir `masked` como string de un array JSON de strings con igual longitud y orden; preservar estructura y sustituciones coherentes dentro del lote. Una devolución incompatible falla cerrada. No basta un servicio que solo admita/devuelva una cadena sin conservar el array.
-2. Con un usuario autorizado para la sección de seguridad (staff o superuser), abrir `/obfuscation/` y crear/configurar una ObfuscationConfig de **su propia empresa**. Indicar nombre, URL base sin credenciales, detección PII/secrets y lengua opcional; comprobar que figure activa. La creación/edición permiten marcar Active y el botón de activación usa POST con CSRF. Esta configuración está limitada a la empresa; administrar su política de IA no concede por sí solo acceso a esta sección de seguridad.
+1. Preparar un servicio propio o autorizado por la empresa compatible con el contrato. La aplicación llama a `POST <api_url>/api/mask`, con `text` como **string de un array JSON de strings**, `detect` como lista con **ambas** categorías (`pii` y `secrets`) y `language` opcional. La respuesta debe incluir `masked` como string de un array JSON de strings con igual longitud y orden; preservar estructura y sustituciones coherentes dentro del lote. Una devolución incompatible falla cerrada. No basta un servicio que solo admita/devuelva una cadena sin conservar el array.
+2. Con un usuario autorizado para la sección de seguridad (staff o superuser), abrir `/obfuscation/` y crear/configurar una ObfuscationConfig de **su propia empresa**. Indicar nombre, URL base sin credenciales, detección **PII y secretos (`both`)** y lengua opcional; comprobar que figure activa. La creación/edición permiten marcar Active y el botón de activación usa POST con CSRF. Esta configuración está limitada a la empresa; administrar su política de IA no concede por sí solo acceso a esta sección de seguridad.
 3. Incluir `obfuscation:<id>` en los destinos permitidos para las sensibilidades que se pretende procesar, además del motor y Jev cuando corresponda. El contenido original se envía al enmascarador autorizado; no conceder ese permiso solo porque el servicio sea propio. Restricted sigue bloqueado. Si hay presupuesto, configurar `masking.max_call_cost` explícito: `"0"` para un servicio propio de coste conocido cero o una cota contractual decimal. Una máscara activa sin cota bajo presupuesto detiene la salida antes de red.
 4. Comparar localmente el borrador y revisar/activar la política mediante el POST auditado separado. Comprobar las configuraciones activas y los destinos antes de presentar el enmascarado como protección efectiva. La comparación local no prueba el servicio de máscara: su contrato y sustituciones deben validarse con contenido sintético en un entorno aislado y bajo la autorización correspondiente.
+
+Compatibilidad: se conserva el esquema y los históricos. Las políticas previas sin máscara, con detección de una sola categoría o sin autorización/cota suficiente fallan cerradas; un administrador debe completar su configuración antes de reanudar envíos. No se activa un servicio ni se concede un destino automáticamente. D2 garantiza este recorrido obligatorio en los casos probados, no detección perfecta de todo secreto por un proveedor.
 
 ### Política inicial y cambio incompatible
 

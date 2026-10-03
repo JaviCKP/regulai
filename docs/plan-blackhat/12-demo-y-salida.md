@@ -64,9 +64,11 @@ No prometer ahorro porcentual sin medición ni “respuestas siempre correctas�
 - [x] Los fallos de proveedor/validación se prueban con estado explícito y sin envío prohibido.
 - [x] La cuenta de demo usa base, medios y cookies propios, con identidad y credenciales sintéticas.
 - [x] Coste de demo simulado y registro de pruebas reales separados; las pruebas reales requieren autorización explícita y respetan el presupuesto conjunto.
-- [ ] Apertura de citas con teclado: herramienta de navegador bloqueada.
+- [x] Apertura de citas con teclado comprobada en Chromium real; [evidencia del piloto](../../evals/reports/pilot-documents-20261003-01/README.md).
 - [ ] Dos ensayos completos cronometrados con otra persona; incluida su comprensión de las etiquetas.
 
 Publicar o comprobar una revisión desplegada no forma parte del alcance autorizado.
 
 Recuperación: volver a la última revisión segura ensayada o usar la reproducción identificada. Mantener cerrada la salida de datos si no se puede validar. Después, revocar las credenciales temporales y retirar el entorno de demo que ya no se use, conservando únicamente los artefactos aprobados para compartir.
+
+Preparación posterior: [operación y recuperación comprobadas](operacion-y-recuperacion-piloto.md) y [piloto local propuesto](piloto-controlado.md). No hubo participantes ni invitaciones. La sesión humana se autoriza y registra por separado de las pruebas automatizadas.

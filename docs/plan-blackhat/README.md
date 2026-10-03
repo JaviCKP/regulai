@@ -5,7 +5,7 @@
 ## Resumen ejecutivo
 
 1. Las tres entradas HTTP comparten controles de empresa, política, consentimiento y registro previo de cada salida.
-2. Con servicios de enmascarado activos de la empresa, historial, documentos, contexto y respuesta se enmascaran; citas y omisiones se resuelven sobre lo realmente enviado.
+2. D2 exige una máscara propia, activa, autorizada y configurada para PII y secretos antes de enviar historial, documentos, contexto o respuesta a otros destinos. Ausencia, incompatibilidad o fallo cierran la salida; citas y omisiones se resuelven sobre lo realmente enviado.
 3. Documentos tienen cuatro estados de cobertura y límites efectivos; la ficha conserva destino real, costes y verificación.
 4. Arranque exige una política revisada: configuración vacía devuelve 503; borrador, simulación y activación son pasos distintos.
 5. Las pruebas locales y el navegador offline están registrados; calibración humana, Office real y proveedores vivos siguen pendientes.
@@ -16,9 +16,9 @@ Para explicar la entrega a un equipo de ingeniería: [informe técnico](informe-
 
 Para una explicación consolidada, con una sección general y otra técnica: [todos los cambios respecto al repositorio original](comparativa-repositorio-original.md), desde `6a0f667` hasta `5a8579c`.
 
-La [verificación final](../../evals/reports/community-fixes-verification-20261003/README.md) sobre `12ca58d` (mismo comportamiento que `51f4ee5`) pasó cinco puertas: 302 tests OK en 66,767 s, check sin incidencias, migraciones sin cambios, 150 ejecuciones offline sin controles fallidos ni llamadas reales y auditoría sin vulnerabilidades conocidas. [Banco final](../../evals/reports/offline-community-fixes-final-20261003/report.md). Las 129 pruebas y llamadas reales acotadas del 2 de octubre son evidencia histórica bajo otra autorización, no la suite actual ni llamadas de esta tarea. El banco utiliza respuestas y juicios prefijados: **no mide calidad semántica ni ahorro real**. El [navegador offline](../../evals/reports/ui-community-fixes-20261003/README.md) confirmó citas con teclado, consentimiento y ficha persistida. Véanse [resultados, histórico y pendientes](estado-ejecucion.md).
+La [verificación histórica](../../evals/reports/community-fixes-verification-20261003/README.md) sobre `12ca58d` (mismo comportamiento que `51f4ee5`) pasó cinco puertas: 302 tests OK en 66,767 s, check sin incidencias, migraciones sin cambios, 150 ejecuciones offline sin controles fallidos ni llamadas reales y auditoría sin vulnerabilidades conocidas. Es evidencia anterior al cierre obligatorio de D2. Las llamadas acotadas del 2 de octubre pertenecen a otra autorización. El banco utiliza respuestas y juicios prefijados: **no mide calidad semántica ni ahorro real**. El trabajo posterior está en el [informe de preparación del piloto](informe-piloto-community-20261003.md), con corpus, ensayos, revisión independiente, laboratorio PostgreSQL y nuevos resultados diferenciados del histórico.
 
-Sin servicios de enmascarado activos, una política válida puede permitir enviar contenido sin transformar. Esta protección requiere [configurar y activar el servicio y autorizar su destino](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa).
+Sin un servicio de enmascarado compatible y autorizado, el servidor bloquea el chat y la simulación semántica. Las políticas existentes deben [configurar y activar el servicio y autorizar su destino](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa); no hay migración de datos ni una opción de omitir D2. La eficacia de detección del servicio real requiere validación propia.
 
 ## Problemas conocidos y corregidos
 

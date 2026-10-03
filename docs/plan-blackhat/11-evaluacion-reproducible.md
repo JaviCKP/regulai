@@ -70,3 +70,5 @@ Cincuenta casos son un punto de partida y una prueba de concepto medible, no una
 - [x] El informe permite localizar los casos que originan cada métrica.
 
 Documentar un comando reproducible, etiquetas, límites y resultados reales. No es necesario migrar producción ni desplegar servicios. Si no hay acceso o presupuesto para APIs, entregar regresiones y marcar la comparación real pendiente; nunca rellenar ahorros supuestos.
+
+Actualización del piloto: [tareas23–24 y propuesta exacta](ejecucion-real-y-calibracion-piloto.md). El modo real comparte servicio y ledger, con reserva previa y controles de autorización probados mediante transporte HTTP simulado. Hay8 casos iniciales y24 propuestas para revisión humana (12desarrollo/12reservadas). Ejecución con proveedores vivos, etiquetado humano y comparación de calidad siguen pendientes; sus métricas no se sustituyen por los resultados offline.

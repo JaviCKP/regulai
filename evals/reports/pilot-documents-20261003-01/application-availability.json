@@ -1,0 +1,74 @@
+﻿{
+    "schema_version":  1,
+    "observed_at_utc":  "2026-10-03T13:52:04.6490233Z",
+    "purpose":  "Read-only availability check for synthetic document pilot; no applications launched",
+    "path_commands":  [
+                          {
+                              "name":  "WINWORD",
+                              "found":  false,
+                              "paths":  [
+
+                                        ]
+                          },
+                          {
+                              "name":  "EXCEL",
+                              "found":  false,
+                              "paths":  [
+
+                                        ]
+                          },
+                          {
+                              "name":  "soffice",
+                              "found":  false,
+                              "paths":  [
+
+                                        ]
+                          },
+                          {
+                              "name":  "libreoffice",
+                              "found":  false,
+                              "paths":  [
+
+                                        ]
+                          }
+                      ],
+    "com_registrations":  [
+                              {
+                                  "prog_id":  "Word.Application",
+                                  "found":  false
+                              },
+                              {
+                                  "prog_id":  "Excel.Application",
+                                  "found":  false
+                              },
+                              {
+                                  "prog_id":  "com.sun.star.ServiceManager",
+                                  "found":  false
+                              }
+                          ],
+    "install_directories":  [
+                                {
+                                    "path":  "C:\\Program Files\\Microsoft Office",
+                                    "found":  false
+                                },
+                                {
+                                    "path":  "C:\\Program Files (x86)\\Microsoft Office",
+                                    "found":  false
+                                },
+                                {
+                                    "path":  "C:\\Program Files\\LibreOffice",
+                                    "found":  false
+                                },
+                                {
+                                    "path":  "C:\\Program Files (x86)\\LibreOffice",
+                                    "found":  false
+                                }
+                            ],
+    "uninstall_matches":  [
+                              {
+                                  "DisplayName":  "Microsoft Teams Meeting Add-in for Microsoft Office",
+                                  "DisplayVersion":  "1.26.25904",
+                                  "InstallLocation":  ""
+                              }
+                          ]
+}
