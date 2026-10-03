@@ -14,6 +14,10 @@ Seguridad integrada (`48fdba9`): 214 tests OK (8 expected failures) en 32.148 s;
 
 Migraciones 0029–0031 integradas y probadas una por una, incluida reversión. Última puerta (`f677d54`): 218 tests OK (8 expected failures) en 32.687 s y check/migraciones/offline150/pip-audit correctos. Ninguna base de datos del usuario se modificó. [Histórico y política inicial](tareas/15-onboarding-historico.md).
 
+Frontend integrado tras reproducir y revertir un fallo de bytes CRLF en vendor. La corrección conserva hashes originales y añade una prueba de checkout con autocrlf. Puertas `10-frontend-fixed`: 233 tests OK en 35.501 s (siete expected failures de P), check/migraciones/offline150/pip-audit correctos. [Interfaz](tareas/16-interfaz-recursos.md).
+
+Onboarding integrado en `2cea782`: 246 tests OK en 35.521 s (siete expected failures de P), check sin incidencias, migraciones sin cambios, 150 controles offline correctos y cero llamadas reales, pip-audit sin vulnerabilidades conocidas. Administrador por empresa, borrador conservador sin activación automática y auditoría histórica visible de solo lectura. P y Q siguen en implementación; aún falta la revisión adversarial final.
+
 El registro histórico que sigue corresponde a la implementación anterior; no acredita cambios de esta rama.
 
 2 de octubre de 2026. Rama local `codex/community-blackhat`, base `6a0f667`. Sin push, despliegue ni publicación. Los planes conservan la especificación original y anotan su implementación. [Arranque y guion](arranque-y-demo.md); [tracker local](tareas/00-base.md).
