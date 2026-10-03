@@ -99,3 +99,76 @@ class CompanyPolicyPermissionTests(TestCase):
         Profile.objects.filter(user=self.admin).update(role=None)
         with override_settings(PLATFORM_ADMIN_USER_IDS=[self.admin.pk]):
             self.assertEqual(self.client.get(self.url).status_code, 200)
+
+
+class BootstrapPolicyTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.company = Company.objects.create(name='Bootstrap company')
+        self.admin = User.objects.create_user('bootstrap-admin')
+        Profile.objects.create(user=self.admin, company=self.company, role=Role.objects.create(name='Admin'))
+        engine = Engine.objects.create(name='Bootstrap engine')
+        self.linked = CompanyEngine.objects.create(company=self.company, engine=engine, api_key='synthetic-key')
+        self.model = EngineModel.objects.create(engine=engine, name='Bootstrap model', model_id='bootstrap-model',
+            context_window=8192, max_tokens=2048)
+        inactive = Engine.objects.create(name='Inactive bootstrap engine')
+        CompanyEngine.objects.create(company=self.company, engine=inactive, active=False, api_key='synthetic')
+        foreign = Company.objects.create(name='Foreign bootstrap')
+        CompanyEngine.objects.create(company=foreign, engine=engine, api_key='synthetic')
+        self.client.force_login(self.admin)
+
+    def test_bootstrap_post_generates_company_draft_without_activation_or_network(self):
+        with patch('requests.sessions.Session.request') as network:
+            response = self.client.post(reverse('front:policy_simulator'), {'action': 'bootstrap', 'mode': 'semantic'})
+        self.assertEqual(response.status_code, 200)
+        draft = json.loads(response.context['proposed_config'])
+        self.assertEqual(draft['local_sensitivity'], 'internal')
+        self.assertEqual(draft['destinations']['internal'], [f'engine:{self.linked.pk}'])
+        self.assertEqual(draft['destinations']['public'], [f'engine:{self.linked.pk}'])
+        self.assertEqual(draft['destinations']['restricted'], [])
+        self.assertEqual(draft['destinations']['confidential'], [])
+        self.assertTrue(response.context['bootstrap_warnings'])
+        self.assertNotIn('activation_token', response.context)
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.ai_config, {})
+        self.assertEqual(AuditLog.objects.count(), 0)
+        network.assert_not_called()
+
+    def test_command_outputs_draft_and_dry_run_does_not_write(self):
+        for dry_run in (False, True):
+            output = StringIO()
+            with patch('requests.sessions.Session.request') as network:
+                call_command('bootstrap_ai_policy', company=self.company.pk, dry_run=dry_run, stdout=output)
+            generated = json.loads(output.getvalue())
+            self.assertEqual(generated['proposed_config']['local_sensitivity'], 'internal')
+            self.assertTrue(generated['bootstrap_warnings'])
+            self.assertEqual(generated['proposed_config']['routing']['candidates'][0]['quality'], {})
+            self.company.refresh_from_db()
+            self.assertEqual(self.company.ai_config, {})
+            self.assertFalse(AuditLog.objects.exists())
+            network.assert_not_called()
+
+    def test_bootstrap_draft_requires_comparison_before_audited_activation(self):
+        generated = self.client.post(reverse('front:policy_simulator'), {'action': 'bootstrap'})
+        command = {'proposed_config': generated.context['proposed_config'], 'sample': 'Synthetic sample'}
+        self.assertEqual(self.client.post(reverse('front:policy_simulator_activate'), command).status_code, 409)
+        comparison = self.client.post(reverse('front:policy_simulator'), command)
+        self.assertEqual(comparison.status_code, 200)
+        command['activation_token'] = comparison.context['activation_token']
+        self.assertEqual(self.client.post(reverse('front:policy_simulator_activate'), command).status_code, 200)
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.ai_config['local_sensitivity'], 'internal')
+        self.assertEqual(AuditLog.objects.get(action='policy_activate').company_id, self.company.pk)
+
+    def test_missing_prices_with_budget_block_simulation_without_external_calls(self):
+        generated = self.client.post(reverse('front:policy_simulator'), {'action': 'bootstrap'})
+        draft = json.loads(generated.context['proposed_config'])
+        draft['allow_empty_rules'] = True
+        draft['routing']['candidates'][0]['quality'] = {'general': 0.8}
+        draft['limits']['budget'] = '1'
+        with patch('requests.sessions.Session.request') as network:
+            response = self.client.post(reverse('front:policy_simulator'), {
+                'proposed_config': json.dumps(draft), 'sample': 'Synthetic sample'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['comparison']['proposed']['route']['reason_codes'], ['unknown_price'])
+        network.assert_not_called()

@@ -17,6 +17,7 @@ from .chat_service import PipelineStop, candidates_for
 from .classification import decide
 from . import jev
 from .models import AuditLog, Company, CompanyEngine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
+from .management.commands.bootstrap_ai_policy import initial_policy
 from .policy import AIConfig, active_rules, digest, evaluate_policy, validate_yara
 from .routing import RoutingError, actual_cost, route
 
@@ -284,6 +285,10 @@ def policy_simulator(request):
         'rule_active': request.POST.get('rule_active', 'on' if request.method == 'GET' else ''),
         'mode': request.POST.get('mode', 'local'), 'signals': _signals({})}
     status = 200
+    if request.method == 'POST' and request.POST.get('action') == 'bootstrap':
+        proposed, warnings = initial_policy(company)
+        context.update(proposed_config=json.dumps(proposed, indent=2), bootstrap_warnings=warnings, mode='local')
+        return render(request, 'policy_simulator.html', context)
     if request.method == 'POST':
         try:
             proposed = _config(context['proposed_config'], company)
