@@ -786,6 +786,7 @@
     });
     if (receipt.route) {
       receiptLine(parent, 'Route', receipt.route.mode);
+      if (receipt.route.company_engine_id != null) receiptLine(parent, 'Destination', 'engine:' + receipt.route.company_engine_id);
       receiptLine(parent, 'Model', receipt.route.model_effective || receipt.route.model || receipt.route.model_requested || receipt.route.model_id);
       if (receipt.route.task) receiptLine(parent, 'Task', receipt.route.task);
       if (receipt.route.level || receipt.route.tier) receiptLine(parent, 'Route tier', receipt.route.level || receipt.route.tier);
@@ -796,12 +797,12 @@
     const calls = Array.isArray(receipt.calls) ? receipt.calls : [];
     receiptLine(parent, 'Calls', calls.length);
     calls.forEach((call, index) => {
-      receiptLine(parent, 'Call ' + (index + 1), [call.purpose, call.status, call.model_effective || call.model].filter(Boolean).join(' / '));
+      receiptLine(parent, 'Call ' + (index + 1), [call.purpose, call.status, call.provider, call.model_effective || call.model].filter(Boolean).join(' / '));
       receiptLine(parent, 'Call cost', call.cost == null ? 'unknown' : String(call.cost) + ' ' + (call.currency || ''));
       if (call.duration_ms != null) receiptLine(parent, 'Duration (ms)', call.duration_ms);
     });
     const generation = calls.filter(call => call.purpose === 'generation').slice(-1)[0];
-    if (generation) receiptLine(parent, 'Effective route', generation.model_effective || generation.model);
+    if (generation) receiptLine(parent, 'Effective route', [generation.provider, generation.model_effective || generation.model].filter(Boolean).join(' / '));
     const total = receipt.total;
     receiptLine(parent, 'Total cost', total?.cost ?? (calls.length ? 'unknown' : '0 (no calls)'));
     if (total?.cost == null && total?.known_cost != null) receiptLine(parent, 'Known subtotal (incomplete)', total.known_cost);

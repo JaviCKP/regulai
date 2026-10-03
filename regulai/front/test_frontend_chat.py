@@ -5,11 +5,13 @@ import shutil
 import subprocess
 
 from front.test_chat_flow import ChatFixture
+from front import test_pipeline, test_pipeline_privacy
+from front.models import EngineModel
 
 
 class ChatUiTests(ChatFixture):
-    def browser(self, checks):
-        response = self.client.get('/chat/')
+    def browser(self, checks, path='/chat/'):
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
         source = next(script for script in re.findall(r'<script\b[^>]*>(.*?)</script>',
             response.content.decode(), re.S) if 'async function sendMessage' in script)
@@ -38,6 +40,64 @@ vm.runInContext('createAssistantBubble = () => new Element(); createSystemBubble
 
     def test_html_quotes_cannot_escape_download_attributes(self):
         self.browser("assert.equal(escapeHtml(`<&>\"'`), '&lt;&amp;&gt;&quot;&#39;');")
+
+    def test_escalated_destination_survives_send_export_and_history_restore(self):
+        test_pipeline.PipelineTests.configure(self)
+        first = self.send('/api/chat/send/', 'Previous synthetic turn').json()
+        self.assertEqual(first['status'], 'completed')
+        other = test_pipeline_privacy.PipelinePrivacyTests.fallback(self, cross_engine=True, allow=True)
+        EngineModel.objects.filter(engine=other.engine).update(model_id=self.model.model_id)
+        self.http.side_effect = test_pipeline.jev_http(failures={'failure_contradiction': 1})
+        history_path = '/chat/' + str(first['conversation_id']) + '/'
+        for path in (history_path + 'send/', '/api/chat/send/', history_path):
+            with self.subTest(path=path):
+                self.provider.reset_mock()
+                result = self.send(path, 'Next synthetic turn', conversation_id=first['conversation_id']).json()
+                self.assertEqual(result['status'], 'failed')
+                self.assertEqual(self.provider.call_count, 2)
+                self.assertEqual(result['receipt']['route']['company_engine_id'], other.pk)
+                self.assertEqual(result['receipt']['history']['sent_turns'], 1)
+                generations = [call for call in result['receipt']['calls'] if call['purpose'] == 'generation']
+                self.assertEqual([call['provider'] for call in generations],
+                                 [f'engine:{self.credential.pk}', f'engine:{other.pk}'])
+                receipt_url = '/chat/requests/' + result['request_id'] + '/receipt/'
+                exported = self.client.get(receipt_url)
+                self.assertEqual(exported.status_code, 200)
+                self.assertIn('attachment;', exported['Content-Disposition'])
+                saved = exported.json()
+                self.assertContains(self.client.get(history_path), 'data-receipt-url="' + receipt_url + '"')
+                self.browser("""
+const result = """ + json.dumps(result) + "; const saved = " + json.dumps(saved) + "; const receiptUrl = " + json.dumps(receipt_url) + ";" + """
+currentConversationId = result.conversation_id;
+const command = {requestId: result.request_id, userBubble: new Element()};
+renderResult(result, command);
+const expectedDestination = """ + json.dumps(f'engine:{other.pk}') + "; const originalDestination = " + json.dumps(f'engine:{self.credential.pk}') + ";" + r"""
+function checkDestination(receipt) {
+  assert.ok(receipt.children.some(line => line.text === 'Destination: ' + expectedDestination));
+  assert.ok(receipt.children.some(line => line.text === 'Effective route: ' + expectedDestination + ' / synthetic-v1'));
+  const generationLines = receipt.children.filter(line => /^Call \d+: generation/.test(line.text));
+  assert.equal(generationLines.length, 2);
+  assert.ok(generationLines[0].text.includes(originalDestination + ' / synthetic-v1'));
+  assert.ok(generationLines[1].text.includes(expectedDestination + ' / synthetic-v1'));
+  assert.match(receipt.text, /History turns sent \/ omitted: 1 \/ 0/);
+  assert.doesNotMatch(receipt.text, /Second engine|synthetic-key|synthetic-other|https?:\/\//);
+}
+checkDestination(command.receipt.children[1]);
+assert.equal(command.receipt.children.find(child => child.tag === 'a').href, receiptUrl);
+const exportedReceipt = new Element(); renderReceipt(exportedReceipt, saved.receipt, saved.status);
+checkDestination(exportedReceipt);
+(async () => {
+  const details = new Element('details'), restored = new Element();
+  details.open = true; details.dataset = {receiptUrl}; details.querySelector = () => restored;
+  document.querySelectorAll = () => [details];
+  let requested;
+  fetch = async url => {requested = url; return {ok: true, json: async () => saved};};
+  loadSavedDetails('.request-receipt', 'receiptUrl', (body, data) => renderReceipt(body, data.receipt, data.status));
+  await details.toggle();
+  assert.equal(requested, receiptUrl); assert.equal(details.dataset.loaded, 'true');
+  checkDestination(restored);
+})();
+""", path=history_path)
 
     def test_pending_consent_shows_omissions_and_preserves_request_and_file(self):
         self.browser(r"""
