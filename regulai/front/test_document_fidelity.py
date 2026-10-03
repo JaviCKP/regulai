@@ -16,7 +16,8 @@ from docx.oxml.ns import qn
 from PIL import Image
 
 from front.documents import extract_document
-from front.test_documents import DocumentTests
+from front import test_documents
+from front.test_chat_flow import ChatFixture
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import ArrayObject, DictionaryObject, NameObject, TextStringObject
 
@@ -221,7 +222,7 @@ class FidelityTests(SimpleTestCase):
         self.assertNotIn("Private comment", document.text)
 
     def test_pdf_blank_pages_are_not_scans_and_link_annotations_are_text_complete(self):
-        fixture = DocumentTests()
+        fixture = test_documents.DocumentTests()
         blank = self.extract("blank.pdf", fixture.pdf(["Readable", None]))
         self.assertEqual(blank.status, "complete")
         self.assertEqual(blank.units_read, 2)
@@ -238,7 +239,7 @@ class FidelityTests(SimpleTestCase):
         self.assertIn("Linked text", linked.text)
 
     def test_pdf_declares_images_forms_attachments_and_detects_scan_pages(self):
-        fixture = DocumentTests()
+        fixture = test_documents.DocumentTests()
         visible = self.extract("logo.pdf", fixture.pdf(["Readable"], image=True))
         self.assertEqual(visible.status, "complete_text_only")
         self.assertEqual(visible.disclosures, [{"code": "images_unread", "count": 1, "locators": ["page:1"]}])
@@ -265,3 +266,56 @@ class FidelityTests(SimpleTestCase):
             self.assertEqual(notice["count"], 1)
         self.assertNotIn("private attachment", attached.text)
         self.assertNotIn("private field", attached.text)
+
+    def test_pdf_with_only_blank_pages_has_no_readable_evidence(self):
+        document = self.extract("empty.pdf", test_documents.DocumentTests().pdf([None, None]))
+        self.assertEqual(document.status, "unreadable")
+        self.assertIn("empty_document", document.warnings)
+        self.assertEqual(document.disclosures[0]["count"], 2)
+
+    def test_word_numbering_missing_format_is_an_explicit_omission(self):
+        word = WordDocument()
+        paragraph = word.add_paragraph("Text")
+        properties = paragraph._p.get_or_add_pPr().get_or_add_numPr()
+        properties.get_or_add_numId().val = 1
+        with zipfile.ZipFile(io.BytesIO(self.word_bytes(word))) as source:
+            files = {name: source.read(name) for name in source.namelist()}
+        namespace = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(files["word/numbering.xml"])
+        for level in root.iter(namespace + "lvl"):
+            fmt = level.find(namespace + "numFmt")
+            if fmt is not None:
+                level.remove(fmt)
+        files["word/numbering.xml"] = ET.tostring(root)
+        document = self.extract("missing-format.docx", self.archive(files))
+        self.assertEqual(document.status, "complete_text_only")
+        self.assertIn("numbering_unsupported", document.warnings)
+        self.assertNotIn("corrupt_document", document.warnings)
+
+    def test_document_character_and_row_limits_remain_declared_after_grouping(self):
+        text = self.extract("blocks.txt", ("x" * 1000 + "\n").encode() * 201)
+        self.assertEqual(text.status, "partial")
+        self.assertIn("text_limit", text.warnings)
+        self.assertLess(text.units_read, text.units_total)
+        workbook = Workbook()
+        workbook.calculation = CalcProperties(fullCalcOnLoad=False)
+        workbook.active["A1"] = "=1+1"
+        workbook.active["A10001"] = "late evidence"
+        rows = self.extract("rows.xlsx", self.xlsx_bytes(workbook, cache=2))
+        self.assertEqual(rows.status, "partial")
+        self.assertIn("unit_limit", rows.warnings)
+        self.assertEqual(rows.units_read, 10000)
+        self.assertIn("=1+1", rows.text)
+        self.assertNotIn("late evidence", rows.text)
+
+
+class DocumentHTTPTests(ChatFixture):
+    def test_partial_document_blocks_all_three_send_entries_without_network(self):
+        for path in ("/chat/", "/chat/send/", "/api/chat/send/"):
+            with self.subTest(path=path):
+                response = self.send(path, "Summarize", file=SimpleUploadedFile("large.txt", b"a" * 200001))
+                self.assertEqual(response.json()["error_type"], "input_unreadable")
+                self.assertEqual(response.json()["receipt"]["coverage"]["status"], "partial")
+                self.provider.assert_not_called()
+                self.http.assert_not_called()

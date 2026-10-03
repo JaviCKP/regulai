@@ -1,6 +1,7 @@
 """Bounded textual extraction. Coverage describes admitted units, never visual fidelity."""
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, time
+from itertools import zip_longest
 import hashlib
 import csv
 import io
@@ -263,22 +264,28 @@ def _parse_xlsx(document, content):
     workbook = load_workbook(io.BytesIO(content), read_only=True, data_only=False, keep_links=False)
     cached_workbook = load_workbook(io.BytesIO(content), read_only=True, data_only=True, keep_links=False)
     try:
-        for sheet, cached_sheet in zip(workbook.worksheets, cached_workbook.worksheets):
+        for sheet, cached_sheet in zip_longest(workbook.worksheets, cached_workbook.worksheets):
+            if sheet is None or cached_sheet is None or sheet.title != cached_sheet.title:
+                raise _Rejected("worksheet_cache_mismatch")
             # Ignore producer-supplied dimensions: they can hide later cells.
             sheet.reset_dimensions()
             cached_sheet.reset_dimensions()
-            for row_number, (row, cached_row) in enumerate(zip(sheet.iter_rows(), cached_sheet.iter_rows()), 1):
+            for row_number, (row, cached_row) in enumerate(zip_longest(sheet.iter_rows(), cached_sheet.iter_rows()), 1):
                 if document.units_read >= MAX_UNITS:
                     document.warnings.append("unit_limit")
                     return
                 values, coordinates = [], []
-                for cell, cached_cell in zip(row, cached_row):
+                if row is None or cached_row is None:
+                    raise _Rejected("worksheet_cache_mismatch")
+                for cell, cached_cell in zip_longest(row, cached_row):
+                    if cell is None or cached_cell is None or getattr(cell, "coordinate", None) != getattr(cached_cell, "coordinate", None):
+                        raise _Rejected("worksheet_cache_mismatch")
                     if cell.value is None:
                         continue
                     locator = f"sheet:{sheet.title}/cell:{cell.coordinate}"
                     value = cell.value
                     if cell.data_type == "f":
-                        formula = str(cell.value)
+                        formula = cell.value if isinstance(cell.value, str) else getattr(cell.value, "text", str(cell.value))
                         if document._characters + len(formula) + 1 > MAX_TEXT_CHARS:
                             document.warnings.append("text_limit")
                             return
@@ -423,7 +430,8 @@ def _parse_docx(document, content):
                                 pattern = level.find(namespace + "lvlText")
                                 pattern = pattern.get(namespace + "val") if pattern is not None else f"%{level_id + 1}."
                                 indices = [int(index) - 1 for index in re.findall(r"%([1-9])", pattern)]
-                                if any(index not in levels or levels[index].find(namespace + "numFmt").get(namespace + "val") != "decimal" for index in indices):
+                                if any(index not in levels or levels[index].find(namespace + "numFmt") is None
+                                       or levels[index].find(namespace + "numFmt").get(namespace + "val") != "decimal" for index in indices):
                                     _disclose(document, "numbering_unsupported", locator)
                                 else:
                                     prefix = re.sub(r"%([1-9])", lambda match: str(values.get(int(match[1]) - 1,
@@ -545,7 +553,7 @@ def _worker(format, content):
         document.warnings.append("corrupt_document")
         document.status = "partial" if document.units_read else "unreadable"
     document.text = "\n".join(fragment["text"] for fragment in document.fragments) + document.text
-    if not document.warnings and not document.text.strip():
+    if document.status in {"complete", "complete_text_only"} and not document.text.strip():
         document.warnings.append("empty_document")
         document.status = "unreadable"
     document.warnings = list(dict.fromkeys(document.warnings))

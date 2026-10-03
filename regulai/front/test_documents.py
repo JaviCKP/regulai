@@ -24,7 +24,7 @@ class DocumentTests(SimpleTestCase):
         other = self.extract("notes.txt", b"Different content")
         self.assertEqual(first.status, "complete")
         self.assertIn("RESTRICTED late evidence", first.text)
-        self.assertEqual(first.fragments[-1]["locator"], "line:901")
+        self.assertEqual(first.fragments[-1]["locator"], "lines:881-901")
         self.assertEqual(first.fragments, second.fragments)
         self.assertNotEqual(first.fragments[0]["id"], other.fragments[0]["id"])
         self.assertEqual(first.units_read, 901)
