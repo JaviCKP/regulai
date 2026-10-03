@@ -22,7 +22,7 @@ from .evaluation_budget import EvaluationBudget
 from .models import Company
 
 
-class SmokeIsolationTests(TestCase):
+class SmokeHarness:
     def setUp(self):
         directory = TemporaryDirectory()
         self.addCleanup(directory.cleanup)
@@ -137,6 +137,8 @@ class SmokeIsolationTests(TestCase):
         self.approval['masking'] = self.manifest['masking']
         self.save_approval()
 
+
+class SmokeIsolationTests(SmokeHarness, TestCase):
     def test_local_detector_hides_original_at_both_http_boundaries_and_reserves_zero_api_cost(self):
         self.use_local_mask()
         original_email = 'evaluation.person@example.net'

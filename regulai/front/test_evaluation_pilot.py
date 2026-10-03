@@ -1,16 +1,127 @@
 from copy import deepcopy
+from decimal import Decimal
 from io import StringIO
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+import requests
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.db import connection
 from django.test import SimpleTestCase, TestCase
 
+from . import evaluation, jev
 from .evaluation import PILOT_MANIFEST, REVIEW_FIELDS, attach_reviews, digest, load_pilot, summarize_pilot
+from .models import Company
+from .test_smoke import SmokeHarness
+
+
+class VercelPilotTests(SmokeHarness, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.use_local_mask()
+        self.manifest['destinations']['judge'] = jev.VERCEL_ENDPOINT
+        self.manifest['judge_transport'] = 'vercel'
+        self.manifest['model_versions']['judge'] = jev.VERCEL_MODEL
+        self.manifest['published_versions']['judge'] = None
+        self.manifest['mutable_model_aliases'].append(jev.VERCEL_MODEL)
+        self.manifest['allowed_effective_models'].pop('jev-1.13.0')
+        self.manifest['allowed_effective_models'][jev.VERCEL_MODEL] = [jev.VERCEL_MODEL]
+        self.save_approval()
+
+    def requests_transport(self, method, url, **kwargs):
+        self.assertEqual((method, url), ('post', jev.VERCEL_ENDPOINT))
+        self.assertFalse(kwargs['allow_redirects'])
+        body = json.loads(kwargs['data'])
+        self.assertEqual(body['model'], jev.VERCEL_MODEL)
+        self.assertEqual(body['providerOptions'], {'gateway': {'only': ['typesafe-ai']}})
+        self.judge_payloads.append(body)
+        self.assert_reserved('classification' if 'category' in body['questions'] else 'verification')
+        answers = {}
+        for key, question in body['questions'].items():
+            if question['type'] == 'choice':
+                chosen = {'category': 'public', 'task': 'general', 'difficulty': 'economy'}[key]
+                answers[key] = {'type': 'choice', 'choice': chosen, 'confidence': 1.0,
+                    'probabilities': {value: float(value == chosen) for value in question['criteria']}}
+            else:
+                answers[key] = {'type': 'noul', 'noul': 0.0}
+        payload = {'model': jev.VERCEL_MODEL, 'answers': answers,
+            'usage': {'input_tokens': 275, 'output_tokens': 20},
+            'providerMetadata': {'gateway': {'cost': '0.00001155', 'marketCost': '0.00001155',
+                'gatewayCost': '0.00001155', 'surchargeCost': '0', 'generationId': 'synthetic-gateway',
+                'routing': {'originalModelId': jev.VERCEL_MODEL, 'canonicalSlug': jev.VERCEL_MODEL,
+                    'resolvedProvider': 'typesafe-ai', 'finalProvider': 'typesafe-ai'}}}}
+        response = requests.Response()
+        response.status_code = 200
+        response._content = json.dumps(payload).encode()
+        response._content_consumed = True
+        return response
+
+    def test_authorized_gateway_route_preserves_provider_cost_and_zero_local_api_cost(self):
+        report, _ = evaluation.preflight(self.manifest_path, self.approval_path)
+        self.assertTrue(report['ready_for_real'], report['blockers'])
+        self.run_smoke('vercel')
+        snapshot = self.ledger()
+        judges = [call for call in snapshot['calls'] if call['purpose'] in ('classification', 'verification')]
+        self.assertEqual(len(judges), 6)
+        for call in judges:
+            self.assertEqual(call['metadata']['model'], jev.VERCEL_MODEL)
+            self.assertEqual(call['metadata']['model_effective'], jev.VERCEL_MODEL)
+            self.assertEqual(call['metadata']['cost_kind'], 'provider_reported')
+            self.assertEqual(Decimal(call['cost']), Decimal('0.00001155'))
+        self.assertEqual(sum(Decimal(call['cost']) for call in judges), Decimal('0.00006930'))
+        local = [call for call in snapshot['calls'] if call['metadata']['transport'] == 'local']
+        self.assertEqual(len(local), 6)
+        self.assertTrue(all(call['reserved'] == call['cost'] == '0' for call in local))
+        self.assertEqual((len(self.judge_payloads), len(self.generation_payloads)), (6, 3))
+        self.assertEqual(snapshot['uncertain_reservations_usd'], '0')
+        self.socket.assert_not_called()
+
+    def test_mixed_or_unapproved_judge_tuples_fail_before_database_or_network(self):
+        before = Company.objects.count()
+        invalid = [
+            (jev.VERCEL_ENDPOINT, 'typesafe', jev.VERCEL_MODEL),
+            (jev.ENDPOINT, 'vercel', jev.VERCEL_MODEL),
+            (jev.VERCEL_ENDPOINT, 'vercel', 'jev-1.13.0'),
+            ('https://unapproved.example/v1/systemone', 'vercel', jev.VERCEL_MODEL),
+            (jev.ENDPOINT, 'typesafe', 'jev-1.14.0'),
+        ]
+        for endpoint, transport, model in invalid:
+            with self.subTest(endpoint=endpoint, transport=transport, model=model):
+                self.manifest['destinations']['judge'] = endpoint
+                self.manifest['judge_transport'] = transport
+                self.manifest['model_versions']['judge'] = model
+                self.save_approval()
+                report, _ = evaluation.preflight(self.manifest_path, self.approval_path)
+                self.assertIn('pinned_judge_destination_required', report['blockers'])
+                with self.assertRaises(CommandError):
+                    self.run_smoke('invalid-route')
+        self.assertEqual(Company.objects.count(), before)
+        self.assertFalse(self.ledger_path.exists())
+        self.http.assert_not_called()
+        self.sdk.assert_not_called()
+        self.socket.assert_not_called()
+
+
+class PilotReportModeTests(SimpleTestCase):
+    def test_real_report_names_provider_outputs_and_keeps_human_review_pending(self):
+        with TemporaryDirectory() as directory:
+            output = Path(directory)
+            evaluation.write_reports(output, {'execution_mode': 'real'}, [], {})
+            report = (output / 'report.md').read_text(encoding='utf-8')
+        self.assertIn('configured live providers', report)
+        self.assertNotIn('Simulator answers and judges are fixtures', report)
+        self.assertIn('no quality or savings claim', report)
+
+    def test_simulated_report_retains_fixture_warning(self):
+        with TemporaryDirectory() as directory:
+            output = Path(directory)
+            evaluation.write_reports(output, {'execution_mode': 'simulated'}, [], {})
+            report = (output / 'report.md').read_text(encoding='utf-8')
+        self.assertIn('Simulator answers and judges are fixtures', report)
+        self.assertNotIn('configured live providers', report)
 
 
 class PilotOfflineTests(TestCase):

@@ -28,7 +28,7 @@ from django.core.management.base import CommandError
 from django.db import connection
 from django.test import override_settings
 
-from . import chat_service
+from . import chat_service, jev
 from .connectors import get_connector
 from .evaluation_budget import BudgetExceeded, EvaluationBudget, money
 from .models import Company, CompanyEngine, Engine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
@@ -196,8 +196,9 @@ def preflight(manifest_path, authorization_path=None, *, now=None, check_credent
     # No arbitrary new endpoint is inferred from a file or an environment variable.
     if manifest['destinations']['generation'] != 'https://api.deepseek.com':
         blockers.append('unsupported_generator_destination')
-    if (manifest['destinations']['judge'] != 'https://api.typesafe.ai/v1/systemone'
-            or manifest['judge_transport'] != 'typesafe' or manifest['model_versions']['judge'] != 'jev-1.13.0'):
+    judge_destination = (manifest['destinations']['judge'], manifest['judge_transport'], manifest['model_versions']['judge'])
+    if judge_destination not in ((jev.ENDPOINT, 'typesafe', 'jev-1.13.0'),
+                                 (jev.VERCEL_ENDPOINT, 'vercel', jev.VERCEL_MODEL)):
         blockers.append('pinned_judge_destination_required')
     if manifest.get('generation_options') != {'thinking': {'type': 'disabled'},
             'temperature': 0.6, 'document_temperature': 0.1}:
@@ -510,8 +511,11 @@ def write_reports(output, manifest, rows, budget):
     for item in summaries:
         lines.append('| ' + ' | '.join(str(item[key]) for key in ('configuration', 'split', 'n', 'delivered', 'human_reviewed_n',
             'provider_calls', 'local_transformations', 'tariff_estimated_usd', 'provider_reported_usd', 'uncertain_reserved_usd', 'p50_latency_ms', 'p95_latency_ms')) + ' |')
+    provenance = ('Answers and judge results come from the configured live providers. Their outputs do not establish provider quality.'
+                  if manifest['execution_mode'] == 'real' else
+                  'Simulator answers and judges are fixtures. Their labels do not establish provider quality.')
     lines += ['', 'Per-case answers, citations, sensitivity, coverage, attempts and all calls are in results.jsonl. These are synthetic data.',
-        'Simulator answers and judges are fixtures. Their labels do not establish provider quality. Cost per correct answer stays null until complete independent human review and complete cost information.',
+        provenance + ' Cost per correct answer stays null until complete independent human review and complete cost information.',
         'When masking_backend is local, masking uses the real CPU detector. Its API cost is zero; CPU, memory and operational costs are not measured. Local transformations are excluded from external call counts.',
         'An estimated price is not an invoice; unknown expenses retain their full reservation. p50/p95 are observations of this sample, not an SLA.',
         f"Stop reason: {manifest.get('stop_reason') or 'none'}."]
