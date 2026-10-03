@@ -1,0 +1,16 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+{"timestamp": "2026-10-03T17:44:04.916277+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) ... {"timestamp": "2026-10-03T17:44:08.465925+00:00", "level": "ERROR", "logger": "django.request", "request_id": "39c106b1-2102-4b16-afa3-b2a36a665a3d", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:44:08.863025+00:00", "level": "ERROR", "logger": "django.request", "request_id": "40ec6cc8-e315-47b7-9b40-7686a95ce1ae", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:44:09.280628+00:00", "level": "ERROR", "logger": "django.request", "request_id": "17c80bcc-8e67-4d83-91d0-19c082cbcd01", "code": "unclassified_event", "exception_type": null}
+ok
+test_retry_instructions_only_name_scores_strictly_above_limit (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_retry_instructions_only_name_scores_strictly_above_limit) ... {"timestamp": "2026-10-03T17:44:10.089793+00:00", "level": "ERROR", "logger": "django.request", "request_id": "cc30a9b0-5374-47a9-9172-c03af5bd3e7d", "code": "unclassified_event", "exception_type": null}
+ok
+test_direct_signal_and_confidence_comparisons_keep_their_boundaries (front.test_semantic_threshold_boundary.ClassificationThresholdBoundaryTests.test_direct_signal_and_confidence_comparisons_keep_their_boundaries) ... ok
+test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit (front.test_semantic_threshold_boundary.ClassificationThresholdBoundaryTests.test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 4.539s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

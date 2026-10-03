@@ -1,5 +1,27 @@
 # Estado observado de la implementación
 
+## Banco adversarial nuevo — 3 de octubre de 2026
+
+[Dataset de 44 casos y 17 documentos](../../evals/adversarial/community-20261003/README.md), con cinco niveles de sensibilidad,
+DNI/PII ficticia y diez inyecciones con procedencia, congelado antes de ejecutar. Detector real: 37/44 casos cumplen anotaciones,
+27/32 valores sensibles eliminados y 61/66 cadenas preservadas. Tres HTTP y dos perfiles de proveedor simulado: 258/264 controles.
+Cuatro casos dejan pasar valores a los transportes simulados; dos documentos se rechazan porque la máscara altera citas válidas.
+[Interpretación y ejemplos](../../evals/reports/adversarial-community-20261003-03/README.md); [seguimiento de límites](tareas/33-limites-del-detector-adversarial.md).
+Esa batería local no hizo llamadas pagadas: clasificación, generación y juez son fixtures, sin medida de resistencia semántica real.
+
+La integración `128d66a` añade extensión explícita del ledger y pasada única, conservando gasto y reservas anteriores.
+[Cinco puertas nuevas](../../evals/reports/adversarial-gates-20261003-01/manifest.json): **400 tests**, 150 controles offline,
+check, migraciones y auditorías de dependencias correctos; fuentes estables, sin CI remoto.
+[Dos pasadas reales autorizadas](informe-adversarial-community-20261003.md): ocho casos distintos en economy/strong/router,
+24 combinaciones, 46 llamadas externas y 35 transformaciones locales. Una respuesta entregada con citas, 15 bloqueos y ocho rechazos del verificador.
+Exposición acumulada **0,038440878 USD** del máximo conjunto de 1 USD, incluida reserva incierta histórica 0,003 USD sin repetir.
+El manifiesto del ensayo anterior permanece detenido. Las dos extensiones preservan gasto y datos anteriores.
+`1af809f` corrige después la frontera decimal de un rechazo observado; los resultados reales de `128d66a` permanecen intactos.
+[Cinco puertas finales](../../evals/reports/adversarial-gates-20261003-02/README.md): **404 tests OK**, check/migraciones,
+150 simulaciones offline sin fallos ni llamadas reales y auditorías de dependencias correctas. Sin CI remoto.
+[Tarea 32](tareas/32-banco-adversarial-y-datos-personales.md), [fallo numérico](tareas/35-frontera-numerica-del-umbral.md)
+y [calibración pendiente](tareas/34-bloqueos-semanticos-en-casos-benignos.md).
+
 ## Preparación nueva del piloto — 3 de octubre de 2026
 
 El [informe del piloto](informe-piloto-community-20261003.md) y [checkpoint](piloto-checkpoint.md) recogen el candidato `972edb8`: 387 tests y cinco puertas con código 05 correctas, 117 pruebas PostgreSQL y recuperación sintética. D2 local obligatoria, corpus de 12 archivos y navegador verificados; detector 16/18 con omisiones/falsos positivos. Ensayo vivo Vercel autorizado:8/24 combinaciones y 17 llamadas, detenido ante clasificación incierta; ledger conservado. Diagnóstico seguro corregido después, sin repetir llamadas. Dos perfiles simulados por petición del usuario, separados de participación humana. Office nativo, revisión humana y cierre del recorrido real siguen pendientes. No hubo despliegue ni CI remoto.

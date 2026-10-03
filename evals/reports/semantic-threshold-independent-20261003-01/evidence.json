@@ -1,0 +1,189 @@
+{
+  "base_commit": "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db",
+  "reviewed_commit": "1af809fd209c4260d5314ff55fa090147515b8d0",
+  "comparison": "git diff 9e1ae5e58981c6ce0d45c236032a17ad6dcd60db...1af809fd209c4260d5314ff55fa090147515b8d0",
+  "open_spec_findings": 0,
+  "open_standards_findings": 0,
+  "recommendation": "Accept scoped numeric boundary fix",
+  "commands": [
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "diff",
+        "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db...1af809fd209c4260d5314ff55fa090147515b8d0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "59edd20494222721c3993eab98173fa0d68dbe119bed817a02a89146ebf510e4"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "diff",
+        "--name-only",
+        "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db...1af809fd209c4260d5314ff55fa090147515b8d0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e885879f0189d530ac9decfec94abe9c5e2b3c4c4520c5f0b5a6ff647578098a"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "log",
+        "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db..1af809fd209c4260d5314ff55fa090147515b8d0",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "9f85d14d910b45ef6168927221e84a7032ab709fc85864d4a6a0fbce051f3add"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "1af809fd209c4260d5314ff55fa090147515b8d0",
+        "regulai/front",
+        "regulai/api",
+        "regulai/regulai"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "b418ad6c47019b1e306253e7bd061976dafd29d0b6d675ee3ce1eed401f399c8"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "archive",
+        "--format=zip",
+        "--output=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\semantic-threshold-independent\\source.zip",
+        "1af809fd209c4260d5314ff55fa090147515b8d0",
+        "regulai/front",
+        "regulai/api",
+        "regulai/regulai"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db:regulai/front/chat_service.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96b14a5cebe2ac4598e5510e667243206248985a48357c77c072768f87358900"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "1af809fd209c4260d5314ff55fa090147515b8d0:regulai/front/chat_service.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "234056ffe262cfee2446c535e719ac3385ca6d4608d74b0e2dffa975c596aecf"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db:regulai/front/classification.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "53a4aee7f3c76cfd73d6cae6dbcbe7a1fbd444e89b00e48ba3966bc69a561fe4"
+    },
+    {
+      "argv": [
+        "rtk",
+        "proxy",
+        "git",
+        "show",
+        "1af809fd209c4260d5314ff55fa090147515b8d0:regulai/front/classification.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "31aa7d93fe1d039834e0e9fe07150f71e6292d7d70a918c7ead593b00112cd42"
+    }
+  ],
+  "independent_run": {
+    "command": "rtk proxy .venv\\Scripts\\python.exe -B evals\\reports\\semantic-threshold-independent-20261003-01\\run.py",
+    "child_command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "-B",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\semantic-threshold-independent-20261003-01\\driver.py"
+    ],
+    "exit_code": 0,
+    "seconds": 7.0,
+    "log_sha256": "01986c006f07eaf28780ad2a0b88d4e52fba3ae08b07fa2ea08acb6ba380b9f0",
+    "constructed_environment_no_caller_read": true,
+    "database": "memory only"
+  },
+  "independent_tests": 3,
+  "independent_coverage": {
+    "http_requests": 6,
+    "http_entries": 3,
+    "adjacent_semantic_comparisons": 9,
+    "historical_classifications_unchanged": 24,
+    "historical_verifications": 11,
+    "sole_changed_verification": "DOC-01/strong: false to true, replay only"
+  },
+  "isolation": {
+    "network_attempts": 0,
+    "database_connections": [],
+    "local_settings_empty_before_django": true,
+    "product_calls": 0,
+    "historical_artifacts_modified": false
+  },
+  "snapshot_zip_sha256": "9918dacb722d7abf2b3bf2cf3ea661d4695d2d9e13a52a00195eb711755aa843",
+  "historical_inputs": [
+    {
+      "path": "evals/reports/adversarial-real-20261003-01/live-run-01/results.jsonl",
+      "sha256": "4fda5c24e6376739f9107dc39b3f639a69920a8af3a5f88b37c85146cc160494"
+    },
+    {
+      "path": "evals/reports/adversarial-real-20261003-02/live-run-01/results.jsonl",
+      "sha256": "50c0cc9b092e79bb93326434ff8bcf222061e00993b4178328c70cd53a2f0d4e"
+    }
+  ],
+  "author_evidence_not_fresh_independent_tests": {
+    "red": {
+      "exit_code": 1,
+      "tests": 4,
+      "failures": 8,
+      "stderr_sha256": "5a2d9ae88a1c3bcd5a878b7c776fc939c1b11cffae12deef553ca4ec553ed6a0"
+    },
+    "green": {
+      "exit_code": 0,
+      "tests": 4,
+      "failures": 0,
+      "stderr_sha256": "b4e584ede64aad07caa54a17a27951736f9861cf3664f7f07b215abff64fe119"
+    },
+    "focused": {
+      "exit_code": 0,
+      "tests": 94,
+      "failures": 0,
+      "stderr_sha256": "db84da6db8cdc69564632deb45d29f2888b10efd973ac71b8939a8c463dbc4a7"
+    }
+  },
+  "limits": [
+    "No new live runs or human adjudication",
+    "Historical results remain unchanged",
+    "No original post-mask judge state recovered",
+    "General gates run separately by orchestrator"
+  ]
+}

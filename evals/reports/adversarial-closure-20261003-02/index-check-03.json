@@ -1,0 +1,23 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "git",
+    "ls-files",
+    "--stage",
+    "--",
+    "evals/reports/adversarial-real-20261003-01",
+    "evals/reports/adversarial-real-20261003-02",
+    "evals/reports/adversarial-live-response-review-20261003-01",
+    "evals/reports/adversarial-second-response-review-20261003-01",
+    "evals/reports/adversarial-consolidated-20261003-01",
+    "evals/reports/adversarial-gates-20261003-02",
+    "evals/reports/semantic-threshold-boundary-20261003-01",
+    "evals/reports/semantic-threshold-independent-20261003-01",
+    "evals/reports/adversarial-closure-20261003-02"
+  ],
+  "tracked_evidence_files": 184,
+  "index_bytes_equal_working_tree": true,
+  "mismatches": [],
+  "new_calls": 0
+}

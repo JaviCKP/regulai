@@ -1,0 +1,156 @@
+{
+  "http": [
+    {
+      "path": "/chat/send/",
+      "retry": false,
+      "status": "completed",
+      "generations": 1,
+      "judge_signals": [
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.2
+        }
+      ],
+      "threshold": 0.8
+    },
+    {
+      "path": "/chat/send/",
+      "retry": true,
+      "status": "completed",
+      "generations": 2,
+      "judge_signals": [
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.20000000000000004
+        },
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.2
+        }
+      ],
+      "threshold": 0.8
+    },
+    {
+      "path": "/api/chat/send/",
+      "retry": false,
+      "status": "completed",
+      "generations": 1,
+      "judge_signals": [
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.2
+        }
+      ],
+      "threshold": 0.8
+    },
+    {
+      "path": "/api/chat/send/",
+      "retry": true,
+      "status": "completed",
+      "generations": 2,
+      "judge_signals": [
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.20000000000000004
+        },
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.2
+        }
+      ],
+      "threshold": 0.8
+    },
+    {
+      "path": "/chat/",
+      "retry": false,
+      "status": "completed",
+      "generations": 1,
+      "judge_signals": [
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.2
+        }
+      ],
+      "threshold": 0.8
+    },
+    {
+      "path": "/chat/",
+      "retry": true,
+      "status": "completed",
+      "generations": 2,
+      "judge_signals": [
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.20000000000000004
+        },
+        {
+          "failure_omission": 0.2,
+          "failure_contradiction": 0.2
+        }
+      ],
+      "threshold": 0.8
+    }
+  ],
+  "history": {
+    "classifications_unchanged": 24,
+    "verification_decisions": 11,
+    "differences": [
+      [
+        2,
+        "DOC-01",
+        "strong",
+        false,
+        true
+      ]
+    ],
+    "historical_records_rewritten": false,
+    "no_new_live_delivery_claim": true
+  },
+  "adjacent": [
+    {
+      "threshold": 0.8,
+      "score": 0.19999999999999998,
+      "accepted": true
+    },
+    {
+      "threshold": 0.8,
+      "score": 0.2,
+      "accepted": true
+    },
+    {
+      "threshold": 0.8,
+      "score": 0.20000000000000004,
+      "accepted": false
+    },
+    {
+      "threshold": 0.7,
+      "score": 0.29999999999999993,
+      "accepted": true
+    },
+    {
+      "threshold": 0.7,
+      "score": 0.3,
+      "accepted": true
+    },
+    {
+      "threshold": 0.7,
+      "score": 0.30000000000000004,
+      "accepted": false
+    },
+    {
+      "threshold": 0.9,
+      "score": 0.09999999999999999,
+      "accepted": true
+    },
+    {
+      "threshold": 0.9,
+      "score": 0.1,
+      "accepted": true
+    },
+    {
+      "threshold": 0.9,
+      "score": 0.10000000000000002,
+      "accepted": false
+    }
+  ]
+}

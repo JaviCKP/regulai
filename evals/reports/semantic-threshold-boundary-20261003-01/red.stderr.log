@@ -1,0 +1,114 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+{"timestamp": "2026-10-03T17:43:19.348104+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) ... {"timestamp": "2026-10-03T17:43:21.551929+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2d647343-2372-4255-a1ae-b63b930d2df8", "code": "unclassified_event", "exception_type": null}
+
+  test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.19999999999999998, path='/chat/send/') ... FAIL
+{"timestamp": "2026-10-03T17:43:21.980893+00:00", "level": "ERROR", "logger": "django.request", "request_id": "0ada687a-2076-41d6-a555-95be5a1722f4", "code": "unclassified_event", "exception_type": null}
+  test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.19999999999999998, path='/api/chat/send/') ... FAIL
+{"timestamp": "2026-10-03T17:43:22.399039+00:00", "level": "ERROR", "logger": "django.request", "request_id": "5a16aeae-1e5d-4847-8808-a9a72a636289", "code": "unclassified_event", "exception_type": null}
+  test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.19999999999999998, path='/chat/') ... FAIL
+{"timestamp": "2026-10-03T17:43:22.819146+00:00", "level": "ERROR", "logger": "django.request", "request_id": "2bbc8ae9-5ca4-4902-99fd-754e5bca7070", "code": "unclassified_event", "exception_type": null}
+  test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.2, path='/chat/send/') ... FAIL
+{"timestamp": "2026-10-03T17:43:23.243270+00:00", "level": "ERROR", "logger": "django.request", "request_id": "3961b1e4-304b-4ff0-b73a-f7decdeae7c7", "code": "unclassified_event", "exception_type": null}
+  test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.2, path='/api/chat/send/') ... FAIL
+{"timestamp": "2026-10-03T17:43:23.700494+00:00", "level": "ERROR", "logger": "django.request", "request_id": "b4a4cd5c-c5e0-4f4e-ad30-60b4f9e1c6f9", "code": "unclassified_event", "exception_type": null}
+  test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.2, path='/chat/') ... FAIL
+{"timestamp": "2026-10-03T17:43:24.150399+00:00", "level": "ERROR", "logger": "django.request", "request_id": "7c99ce7b-9b03-41ab-90bc-d4e8a50a0b64", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:43:24.577381+00:00", "level": "ERROR", "logger": "django.request", "request_id": "426516e4-c4b6-4bc0-b84d-a2e6a312a8ea", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T17:43:25.000492+00:00", "level": "ERROR", "logger": "django.request", "request_id": "d9ec0ad6-e6e6-42cd-97a6-e88a96c3807a", "code": "unclassified_event", "exception_type": null}
+test_retry_instructions_only_name_scores_strictly_above_limit (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_retry_instructions_only_name_scores_strictly_above_limit) ... {"timestamp": "2026-10-03T17:43:25.839403+00:00", "level": "ERROR", "logger": "django.request", "request_id": "8ed647c2-af98-4ad5-8d5e-2aec03377c7d", "code": "unclassified_event", "exception_type": null}
+FAIL
+test_direct_signal_and_confidence_comparisons_keep_their_boundaries (front.test_semantic_threshold_boundary.ClassificationThresholdBoundaryTests.test_direct_signal_and_confidence_comparisons_keep_their_boundaries) ... ok
+test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit (front.test_semantic_threshold_boundary.ClassificationThresholdBoundaryTests.test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit) ... 
+  test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit (front.test_semantic_threshold_boundary.ClassificationThresholdBoundaryTests.test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit) (mass=0.20000000000000004) ... FAIL
+
+======================================================================
+FAIL: test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.19999999999999998, path='/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 49, in test_document_scores_below_at_and_above_limit_on_all_three_entries
+    self.assertEqual(prompt.status, expected)
+AssertionError: 'failed' != 'completed'
+- failed
++ completed
+
+
+======================================================================
+FAIL: test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.19999999999999998, path='/api/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 49, in test_document_scores_below_at_and_above_limit_on_all_three_entries
+    self.assertEqual(prompt.status, expected)
+AssertionError: 'failed' != 'completed'
+- failed
++ completed
+
+
+======================================================================
+FAIL: test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.19999999999999998, path='/chat/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 49, in test_document_scores_below_at_and_above_limit_on_all_three_entries
+    self.assertEqual(prompt.status, expected)
+AssertionError: 'failed' != 'completed'
+- failed
++ completed
+
+
+======================================================================
+FAIL: test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.2, path='/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 49, in test_document_scores_below_at_and_above_limit_on_all_three_entries
+    self.assertEqual(prompt.status, expected)
+AssertionError: 'failed' != 'completed'
+- failed
++ completed
+
+
+======================================================================
+FAIL: test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.2, path='/api/chat/send/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 49, in test_document_scores_below_at_and_above_limit_on_all_three_entries
+    self.assertEqual(prompt.status, expected)
+AssertionError: 'failed' != 'completed'
+- failed
++ completed
+
+
+======================================================================
+FAIL: test_document_scores_below_at_and_above_limit_on_all_three_entries (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_document_scores_below_at_and_above_limit_on_all_three_entries) (omission=0.2, path='/chat/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 49, in test_document_scores_below_at_and_above_limit_on_all_three_entries
+    self.assertEqual(prompt.status, expected)
+AssertionError: 'failed' != 'completed'
+- failed
++ completed
+
+
+======================================================================
+FAIL: test_retry_instructions_only_name_scores_strictly_above_limit (front.test_semantic_threshold_boundary.SemanticThresholdBoundaryTests.test_retry_instructions_only_name_scores_strictly_above_limit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 78, in test_retry_instructions_only_name_scores_strictly_above_limit
+    self.assertNotIn('failure_omission', correction)
+AssertionError: 'failure_omission' unexpectedly found in 'Correct the failed checks: failure_omission, failure_contradiction'
+
+======================================================================
+FAIL: test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit (front.test_semantic_threshold_boundary.ClassificationThresholdBoundaryTests.test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit) (mass=0.20000000000000004)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_semantic_threshold_boundary.py", line 92, in test_ordinal_tail_does_not_accept_any_mass_above_inclusive_limit
+    self.assertEqual(decision.sensitivity, expected)
+AssertionError: 'public' != 'confidential'
+- public
++ confidential
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 5.095s
+
+FAILED (failures=8)
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

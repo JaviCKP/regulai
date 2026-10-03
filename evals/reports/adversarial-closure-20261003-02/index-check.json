@@ -1,0 +1,34 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "git",
+    "ls-files",
+    "--stage",
+    "--",
+    "evals/reports/adversarial-real-20261003-01",
+    "evals/reports/adversarial-real-20261003-02",
+    "evals/reports/adversarial-live-response-review-20261003-01",
+    "evals/reports/adversarial-second-response-review-20261003-01",
+    "evals/reports/adversarial-consolidated-20261003-01",
+    "evals/reports/adversarial-gates-20261003-02",
+    "evals/reports/semantic-threshold-boundary-20261003-01",
+    "evals/reports/semantic-threshold-independent-20261003-01",
+    "evals/reports/adversarial-closure-20261003-02"
+  ],
+  "tracked_evidence_files": 182,
+  "index_bytes_equal_working_tree": false,
+  "mismatches": [
+    "evals/reports/semantic-threshold-independent-20261003-01/evidence.json",
+    "evals/reports/semantic-threshold-independent-20261003-01/historical-run-1.jsonl",
+    "evals/reports/semantic-threshold-independent-20261003-01/historical-run-2.jsonl",
+    "evals/reports/semantic-threshold-independent-20261003-01/independent.log",
+    "evals/reports/semantic-threshold-independent-20261003-01/isolation.json",
+    "evals/reports/semantic-threshold-independent-20261003-01/observations.json",
+    "evals/reports/semantic-threshold-independent-20261003-01/package-files.json",
+    "evals/reports/semantic-threshold-independent-20261003-01/preparation.json",
+    "evals/reports/semantic-threshold-independent-20261003-01/run-result.json",
+    "evals/reports/semantic-threshold-independent-20261003-01/seal.json"
+  ],
+  "new_calls": 0
+}

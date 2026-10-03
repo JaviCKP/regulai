@@ -1,0 +1,47 @@
+{
+  "base_revision": "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db",
+  "prior_runtime": "128d66a4f7b0cb8d4edc6fe2c36cdf94c458afe2",
+  "outcomes": {
+    "red": {
+      "exit_code": 1,
+      "tests": 4,
+      "failures": 8,
+      "seconds": "5.095",
+      "real_api_calls": 0
+    },
+    "green": {
+      "exit_code": 0,
+      "tests": 4,
+      "failures": 0,
+      "seconds": "4.539",
+      "real_api_calls": 0
+    },
+    "focused": {
+      "exit_code": 0,
+      "tests": 94,
+      "failures": 0,
+      "seconds": "37.248",
+      "real_api_calls": 0
+    }
+  },
+  "unchanged_test_red_green": true,
+  "existing_protected_corpus_packs_live_reports_unchanged_across_all_runs": true,
+  "coordinator_artifacts_added_before_focused": {
+    "evals\\adversarial-live\\community-additional-20261003\\STATUS.md": "661e1f5d70615e66c0c7f6b749ad740e8503fab3d593ada64875175a15be1fe9"
+  },
+  "current_sources_match_green_and_focused": true,
+  "diff_command": [
+    "rtk",
+    "proxy",
+    "git",
+    "diff",
+    "9e1ae5e58981c6ce0d45c236032a17ad6dcd60db",
+    "--",
+    "regulai/front/chat_service.py",
+    "regulai/front/classification.py"
+  ],
+  "verification_py_changed": false,
+  "threshold_changed": false,
+  "new_live_calls": 0,
+  "commits_by_subagent": 0
+}
