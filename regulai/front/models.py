@@ -3,7 +3,14 @@ from django.contrib.auth.models import User
 from .encrypted_fields import EncryptedCharField
 from .policy import validate_ai_config, validate_yara
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
+from decimal import Decimal
 import uuid
+
+
+def validate_price_per_million(value):
+    if 0 < value < Decimal('0.0001'):
+        raise ValidationError('Configure USD prices per million tokens, not per token.')
 
 
 class Company(models.Model):
@@ -312,8 +319,8 @@ class EngineModel(models.Model):
     max_tokens = models.IntegerField(default=4096)
     context_window = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     supports_json = models.BooleanField(default=False)
-    input_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0)])
-    output_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0)])
+    input_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0), validate_price_per_million], help_text='USD per million input tokens; 0 means free, blank means unknown.')
+    output_price = models.DecimalField(max_digits=18, decimal_places=8, null=True, blank=True, validators=[MinValueValidator(0), validate_price_per_million], help_text='USD per million output tokens; 0 means free, blank means unknown.')
     currency = models.CharField(max_length=3, default='USD')
     price_date = models.DateField(null=True, blank=True)
     order = models.IntegerField(default=0)  # For ordering in UI
