@@ -14,6 +14,8 @@
 
 Para explicar la entrega a un equipo de ingeniería: [informe técnico](informe-tecnico-cambios.md), [tabla de correcciones y límites actuales](informe-correcciones-community.md) y [rotación de claves](rotacion-claves.md).
 
+Para una explicación consolidada, con una sección general y otra técnica: [todos los cambios respecto al repositorio original](comparativa-repositorio-original.md), desde `6a0f667` hasta `5a8579c`.
+
 La [verificación final](../../evals/reports/community-fixes-verification-20261003/README.md) sobre `12ca58d` (mismo comportamiento que `51f4ee5`) pasó cinco puertas: 302 tests OK en 66,767 s, check sin incidencias, migraciones sin cambios, 150 ejecuciones offline sin controles fallidos ni llamadas reales y auditoría sin vulnerabilidades conocidas. [Banco final](../../evals/reports/offline-community-fixes-final-20261003/report.md). Las 129 pruebas y llamadas reales acotadas del 2 de octubre son evidencia histórica bajo otra autorización, no la suite actual ni llamadas de esta tarea. El banco utiliza respuestas y juicios prefijados: **no mide calidad semántica ni ahorro real**. El [navegador offline](../../evals/reports/ui-community-fixes-20261003/README.md) confirmó citas con teclado, consentimiento y ficha persistida. Véanse [resultados, histórico y pendientes](estado-ejecucion.md).
 
 Sin servicios de enmascarado activos, una política válida puede permitir enviar contenido sin transformar. Esta protección requiere [configurar y activar el servicio y autorizar su destino](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa).
