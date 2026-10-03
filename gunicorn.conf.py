@@ -7,5 +7,5 @@ graceful_timeout = 240
 accesslog = None
 # Gunicorn merges this with its default handlers before Django configures logging.
 logconfig_dict = {
-    'formatters': {'generic': {'()': 'front.logging.SafeJSONFormatter'}},
+    'formatters': {'generic': {'()': 'front.safe_logging.SafeJSONFormatter'}},
 }

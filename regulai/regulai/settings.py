@@ -217,7 +217,7 @@ except ImportError:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {'safe_json': {'()': 'front.logging.SafeJSONFormatter'}},
+    'formatters': {'safe_json': {'()': 'front.safe_logging.SafeJSONFormatter'}},
     'handlers': {'safe_console': {
         'class': 'logging.StreamHandler', 'formatter': 'safe_json',
     }},
