@@ -47,7 +47,7 @@ class ChatUITests(TestCase):
         exported = self.client.get(self.receipt_url)
         self.assertEqual(exported.status_code, 200)
         self.assertEqual(exported.json()['receipt']['policy']['status'], 'allow')
-        self.assertEqual(exported.json()['receipt']['limits'], {'history_max_bytes': 32768, 'history_max_turns': 20})
+        self.assertEqual(exported.json()['receipt'].get('limits'), {'history_max_bytes': 32768, 'history_max_turns': 20})
         self.assertNotIn('private', exported.content.decode())
         self.assertIn('attachment;', exported['Content-Disposition'])
         Profile.objects.filter(user=self.owner).update(company=self.other.profile.company)
@@ -78,7 +78,7 @@ class ChatUITests(TestCase):
         self.assertContains(page, '&lt;img src=x onerror=alert(1)&gt;')
         self.assertContains(page, self.receipt_url)
         restored = self.client.get(self.receipt_url).json()['receipt']
-        self.assertEqual(restored['limits'], {'history_max_bytes': 32768, 'history_max_turns': 20})
+        self.assertEqual(restored.get('limits'), {'history_max_bytes': 32768, 'history_max_turns': 20})
         self.assertContains(page, self.evidence_url)
         self.assertContains(page, reverse('front:chat_download_file', args=[assistant.pk]))
         self.assertContains(page, 'Excluded from future context')
