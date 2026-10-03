@@ -357,6 +357,8 @@ def _parse_docx(document, content):
         count = 0
         for part in parts:
             paragraph = 0
+            row = 0
+            ancestors = []
             root_seen = False
             with archive.open(part) as source:
                 for event, element in ET.iterparse(source, events=("start", "end")):
@@ -366,6 +368,15 @@ def _parse_docx(document, content):
                             raise _Rejected("signature_mismatch")
                     if event == "start" and element.tag == namespace + "altChunk":
                         _disclose(document, "attachments_unread", f"{part}/element:altChunk")
+                    if event == "start":
+                        if element.tag == namespace + "tr":
+                            row += 1
+                        if (element.tag in {namespace + "del", namespace + "ins"}
+                                and ancestors and ancestors[-1].tag == namespace + "trPr"):
+                            _disclose(document, "tracked_changes_present", f"{part}/row:{row}")
+                        ancestors.append(element)
+                        continue
+                    ancestors.pop()
                     if event != "end" or element.tag != namespace + "p":
                         continue
                     paragraph += 1
@@ -373,6 +384,11 @@ def _parse_docx(document, content):
                     if count > MAX_UNITS:
                         document.warnings.append("unit_limit")
                         return
+                    if any(parent.tag == namespace + "tr" and parent.find(
+                            f"{namespace}trPr/{namespace}del") is not None for parent in ancestors):
+                        document.units_read += 1
+                        element.clear()
+                        continue
                     chunks = []
                     locator = f"{part}/paragraph:{paragraph}"
                     for node in element.iter():

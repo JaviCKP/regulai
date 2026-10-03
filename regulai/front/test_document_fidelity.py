@@ -1,5 +1,6 @@
 """Public extraction regressions; fixtures contain synthetic content only."""
 import io
+import json
 import zipfile
 import zlib
 from datetime import datetime
@@ -18,6 +19,8 @@ from PIL import Image
 
 from front.documents import extract_document
 from front import test_documents
+from front import test_pipeline
+from front.connectors import ChatResponse
 from front.test_chat_flow import ChatFixture
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import ArrayObject, DictionaryObject, NameObject, TextStringObject
@@ -136,6 +139,23 @@ class FidelityTests(SimpleTestCase):
         self.assertEqual(document.text, "17 days Contact")
         self.assertEqual(document.disclosures, [{"code": "tracked_changes_present", "count": 2,
             "locators": ["word/document.xml/paragraph:1"]}])
+
+    def test_word_accepted_view_excludes_deleted_rows_and_declares_row_revisions(self):
+        word = WordDocument()
+        word.add_paragraph("Current body")
+        table = word.add_table(rows=2, cols=1)
+        table.cell(0, 0).text = "Deleted row: 30 days"
+        table.cell(1, 0).text = "Accepted row: 17 days"
+        for index, revision in ((0, "del"), (1, "ins")):
+            marker = OxmlElement("w:" + revision)
+            marker.set(qn("w:id"), str(index))
+            table.rows[index]._tr.get_or_add_trPr().append(marker)
+        document = self.extract("rows.docx", self.word_bytes(word))
+        self.assertEqual(document.text, "Current body\nAccepted row: 17 days")
+        self.assertEqual(document.status, "complete")
+        self.assertNotIn("Deleted row", str(document.fragments))
+        self.assertEqual(document.disclosures, [{"code": "tracked_changes_present", "count": 2,
+            "locators": ["word/document.xml/row:1", "word/document.xml/row:2"]}])
 
     def test_word_discloses_header_images_attachments_equations_and_symbols(self):
         word = WordDocument()
@@ -388,6 +408,32 @@ class FidelityTests(SimpleTestCase):
 
 
 class DocumentHTTPTests(ChatFixture):
+    configure = test_pipeline.PipelineTests.configure
+
+    def test_deleted_word_row_is_absent_from_every_external_document_payload(self):
+        self.configure()
+        word = WordDocument()
+        table = word.add_table(rows=2, cols=1)
+        table.cell(0, 0).text = "Deleted row: 30 days"
+        table.cell(1, 0).text = "Accepted row: 17 days"
+        table.rows[0]._tr.get_or_add_trPr().append(OxmlElement("w:del"))
+        output = io.BytesIO()
+        word.save(output)
+        self.provider.return_value = ChatResponse(json.dumps({"claims": [{"text": "Accepted row: 17 days",
+            "citations": [{"id": "S1", "quote": "Accepted row: 17 days"}]}]}), 30, "synthetic-v1", "stop", 20, 10)
+        for path in ("/chat/", "/chat/send/", "/api/chat/send/"):
+            with self.subTest(path=path):
+                self.http.reset_mock()
+                self.provider.reset_mock()
+                response = self.send(path, "What is the period?", file=SimpleUploadedFile("rows.docx", output.getvalue()))
+                self.assertIn("Accepted row: 17 days", str(self.provider.call_args))
+                self.assertNotIn("Deleted row: 30 days", str(self.provider.call_args))
+                self.assertNotIn("Deleted row: 30 days", str(self.http.call_args_list))
+                self.assertEqual(response.status_code, 302 if path == "/chat/" else 200)
+                if path != "/chat/":
+                    self.assertEqual(response.json()["status"], "completed", response.json())
+                    self.assertIn("tracked_changes_present", response.json()["receipt"]["coverage"]["warnings"])
+
     def test_inline_pdf_requires_coverage_consent_before_all_three_send_entries(self):
         self.company.ai_config["destinations"]["internal"].append("jev")
         self.company.jev_api_key = "synthetic-jev-key"
