@@ -71,7 +71,6 @@ class ReviewRegressionTests(ChatFixture):
             return response
         self.http.side_effect = post
 
-    @unittest.expectedFailure
     def test_b01_every_turn_and_jev_receive_masked_content(self):
         self.configure(limits={'budget': None})
         self.enable_mask({'12345678Z': '<DNI_1>'})
@@ -109,7 +108,6 @@ class ReviewRegressionTests(ChatFixture):
         self.assertEqual((result.get('error_type'), self.http.call_count, self.provider.call_count),
                          ('policy_configuration_invalid', 0, 0), result)
 
-    @unittest.expectedFailure
     def test_b04_document_citations_resolve_the_masked_source(self):
         self.configure(limits={'budget': None})
         self.http.side_effect = test_pipeline.jev_http(choices={'task': 'document_question'})

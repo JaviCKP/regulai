@@ -218,7 +218,7 @@ class PipelineTests(test_chat_flow.ChatFixture):
         mask = ObfuscationConfig.objects.create(company=self.company, name='Mask', api_url='https://mask.invalid')
         self.company.ai_config['destinations']['internal'][-1] = f'obfuscation:{mask.pk}'
         self.company.save()
-        self.http.return_value.json.return_value = {'masked': 'Masked text', 'context': {}, 'counters': {}}
+        self.http.return_value.json.return_value = {'masked': '["Masked text"]', 'context': {}, 'counters': {}}
         result = self.send('/api/chat/send/').json()
         self.assertEqual(result['status'], 'completed', result)
         self.assertEqual([call['purpose'] for call in result['receipt']['calls']], ['obfuscation', 'generation'])

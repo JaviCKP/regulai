@@ -2809,6 +2809,33 @@ def prompt_detail(request, pk):
 
 # ==================== OBFUSCATION ====================
 
+def mask_texts(texts, masks, before_call=None, after_call=None, *, timeout=10):
+    """Mask a structured batch atomically; never guess segment boundaries."""
+    if not isinstance(texts, list) or any(not isinstance(text, str) for text in texts):
+        raise ValueError('Invalid masking input')
+    current = texts
+    for config in masks:
+        value = json.dumps(current, ensure_ascii=False)
+        payload = {'text': value, 'detect': ['pii', 'secrets'] if config.detect == 'both' else [config.detect]}
+        if config.language:
+            payload['language'] = config.language
+        seconds = before_call(config, value) if before_call else timeout
+        response = requests.post(config.api_url.rstrip('/') + '/api/mask', json=payload,
+                                 timeout=seconds, allow_redirects=False)
+        response.raise_for_status()
+        result = response.json()
+        if not isinstance(result, dict) or not isinstance(result.get('masked'), str):
+            raise ValueError('Invalid masking response')
+        # The external effect completed even when its returned structure is invalid.
+        if after_call:
+            after_call(config)
+        masked = json.loads(result['masked'])
+        if not isinstance(masked, list) or len(masked) != len(current) or any(not isinstance(text, str) for text in masked):
+            raise ValueError('Invalid masking segments')
+        current = masked
+    return current
+
+
 def obfuscate_text(text, company, *, configs=None, before_call=None, after_call=None, timeout=10):
     """
     Ofusca texto encadenando todas las configs activas de la company.
