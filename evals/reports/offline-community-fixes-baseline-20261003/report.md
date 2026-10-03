@@ -21,4 +21,3 @@ Provider/judge answers and token usage are preprogrammed. Exact-answer counts ex
 Unknown billed calls stay unknown and are excluded from any complete total or cost-per-correct calculation. Latencies are local observations, with the sample size shown; outcome hashes exclude clocks and run identities.
 
 Failed controls (case ID / configuration / observed / expected):
-

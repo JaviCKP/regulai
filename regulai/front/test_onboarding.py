@@ -237,4 +237,3 @@ class HistoricalVisibilityTests(TestCase):
         self.assertEqual(self.legacy.details, 'Historical A details')
         self.assertIsNone(self.legacy.company_id)
         self.assertFalse(AuditLog.objects.filter(pk=self.captured.pk).exists())
-
