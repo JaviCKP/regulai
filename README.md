@@ -34,16 +34,14 @@ Organizations face critical risks when employees use AI tools — confidential d
 ## How It Works
 
 ```
-User sends prompt ──▶ YARA Validation ──▶ Approved? ──▶ AI Provider
-                                              │
-                                              ▼ Blocked
-                                        Alert + Audit Log
+User input → YARA on original → Policy / consent → Required masking → Authorized provider
+                     Any mandatory denial or failed check → Stop + decision record
 ```
 
 1. User sends a prompt via the chat interface or API
 2. YARA rules engine analyzes the content against all active security rules
-3. Approved prompts are sent to the AI provider — blocked prompts generate alerts
-4. All interactions are logged for compliance and analysis
+3. Authorized content passes through mandatory masking before classification, generation or judging; failures stop the request
+4. Decision records preserve destinations, status, verification and known or uncertain costs; operational logs omit message bodies and credentials
 
 ## Features
 
@@ -119,7 +117,7 @@ rule CreditCardNumber {
   <img src="https://regulai.a0.digital/img/screenshot-alerts.PNG" width="700" alt="Security Alerts Dashboard">
 </p>
 
-**Existing masking integration** — Configured masking hooks are subject to the same explicit destination checks and request limits. New reversible intelligent obfuscation is outside this implementation.
+**Integrated local masking** — CPU detection and irreversible replacement run inside Django, with no masking API call. HTTP masking remains available for existing configurations. Every backend requires company authorization and fails closed on errors. Detection is fallible; see [scope, configuration and observed omissions](docs/plan-blackhat/enmascarado-local.md). Reversible obfuscation is outside this implementation.
 
 **File Scanning** — Extracted text from supported PDF, DOCX, XLSX, CSV and text files is checked by the shared policy engine, with explicit extraction coverage.
 
@@ -184,7 +182,7 @@ Chat requests include a stable UUID `request_id` and `content`, with owned `engi
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [the project workflow](AGENTS.md) and [local tasks](docs/agents/issue-tracker.md) for contribution guidance.
 
 ## License
 

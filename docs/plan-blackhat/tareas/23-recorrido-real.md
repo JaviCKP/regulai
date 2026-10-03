@@ -1,18 +1,17 @@
-# 23: Preparar y autorizar un recorrido real acotado
+# 23: Ejecutar y conservar el recorrido real acotado
 
-**Status:** pending external validation — preparación técnica local implementada
-**Blocked by:** revisión humana de límites del detector local, acceso TypeSafe directo, revisión vigente de tarifas/versiones y autorización nueva explícita
+**Status:** incomplete — ensayo autorizado ejecutado parcialmente y detenido.
+**Blocked by:** conciliación de una llamada incierta y revisión de rechazos semánticos; no falta una clave TypeSafe directa para el destino elegido.
 **Specification:** [05](../05-clasificacion-documental.md), [06](../06-enrutamiento-modelos.md), [07](../07-verificacion-y-escalado.md), [11](../11-evaluacion-reproducible.md), [12](../12-demo-y-salida.md).
 
-- [x] Ocho casos sintéticos versionados; éxito, bloqueo, consentimiento, evidencia ausente, fallo de verificación y segundo intento cuando proceda.
-- [x] Smoke y evaluación utilizan el servicio real, observer previo al transporte y ledger común persistente; offline por defecto.
-- [x] Preservar llamadas fallidas/descartadas, costes estimados/comunicados/reservas inciertas y saldo después de reiniciar.
-- [x] Autorización histórica sustituida por plantilla nueva **pendiente** ligada a datos/destinos/acciones/hashes/ventana/techo; ninguna aprobación creada.
-- [x] Manifiesto con orden/semilla, configuraciones, rúbricas, fuentes y versiones; preflight de cambios sin red.
-- [x] Propuesta con detector local real en CPU, backend/modelo/versiones/hash fijados, sin endpoint ni coste de API; HTTP previo conservado como compatibilidad.
-- [x] Gate focal final 40 tests OK y ensayo local 24 recorridos/24 controles; 38 transformaciones locales y 54 llamadas simuladas, cero llamadas reales. SEC-1 y costes externos inciertos conservados.
-- [ ] Revisar los errores/omisiones del detector en datos representativos; las pruebas sintéticas no establecen anonimización completa.
-- [ ] Acceso y cota actualizados en los destinos exactos; el Gateway histórico no demuestra TypeSafe directo.
-- [ ] Ejecutar el piloto vivo bajo autorización explícita y preservar resultados, incluso fracaso o parada.
+- [x] Ocho casos y tres configuraciones versionados, seed y límites; offline predeterminado.
+- [x] Servicio compartido, ledger persistente y reserva/revalidación antes de transportar; incertidumbre conservada.
+- [x] Aprobación explícita del usuario para 1 USD y sustitución de TypeSafe directo por Vercel, ligada a versión/datos/destinos/ventana.
+- [x] Preparación y revisiones sin red; cinco puertas sobre `698e8f0` antes de gastar.
+- [x] Una ejecución real y todos sus resultados conservados, incluida parada y ausencia de factura completa.
+- [ ] Completar 24 combinaciones sin ocultar fallos ni repetir automáticamente inciertas.
+- [ ] Obtener revisión humana antes de atribuir corrección semántica o calidad comparativa.
 
-[Propuesta exacta, dependencias y recuperación](../ejecucion-real-y-calibracion-piloto.md). [Evidencia del detector local](../../../evals/reports/pilot-evaluation-local-20261003-01/README.md), [histórico con máscara simulada](../../../evals/reports/pilot-evaluation-20261003-01/README.md). No se ha gastado en APIs, recargado crédito, tocado una base del usuario, publicado ni desplegado. Las expectativas de fallo/escalado se fuerzan solo en los fixtures offline; no se presentan como conducta viva del proveedor. Las transformaciones locales se trazan aparte y no inflan llamadas externas; techo compartido 1 USD sin ampliación.
+La [tarea29](29-ensayo-autorizado-vercel.md) y [evidencia viva](../../../evals/reports/pilot-real-vercel-20261003-01/README.md) conservan 8/24 combinaciones, 17 llamadas externas, 12 transformaciones locales y dos respuestas entregadas. Costes comunicados 0,000312522 USD, estimados 0,00074496 USD, reserva incierta 0,003 USD. No se ha reiniciado ni liberado el ledger para renovar presupuesto.
+
+La [tarea30](30-diagnostico-clasificacion-incierta.md) corrige localmente la pérdida del código de error de Jev; no recupera retroactivamente la causa. Siguiente acción: contrastar el evento Gateway de 15:43:21 UTC, revisar los rechazos y congelar una propuesta de continuación con autorización aplicable. No se cambian los umbrales para conseguir una demo favorable.

@@ -1,8 +1,12 @@
 # 24: Preparar referencias humanas independientes y calibración
 
+Seguimiento final: [72 recorridos con detectorv2](../../../evals/reports/pilot-local-final-20261003-01/README.md), cero fallos de controles y cero revisiones humanas. Referencias, etiquetas y umbrales permanecen sin cambios.
+
 **Status:** pending human validation — banco y agregación local implementados
 **Blocked by:** dos personas, validación de representatividad/referencias y adjudicación; comparación viva además depende de 23
 **Specification:** [05](../05-clasificacion-documental.md), [07](../07-verificacion-y-escalado.md), [11](../11-evaluacion-reproducible.md).
+
+El usuario pidió simular los participantes: [tarea 31](31-simulacion-de-participantes.md) completada. Sus formularios artificiales no se incorporan como revisiones humanas ni etiquetas del conjunto reservado.
 
 - [x] Banco sintético propuesto de 24 casos con 12 de desarrollo y 12 reservados; referencias en archivos separados.
 - [x] Rúbrica fija, hashes, guía para revisión independiente y plantilla vacía con trazabilidad al resultado.

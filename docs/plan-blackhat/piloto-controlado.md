@@ -1,6 +1,6 @@
 # Piloto controlado: propuesta preparada, ejecución pendiente
 
-**Estado:** preparación local. No hay participantes, invitaciones, sesiones humanas ni despliegue realizados.
+**Estado:** preparación local y [simulación de dos perfiles completada](../../evals/reports/pilot-personas-20261003-01/README.md) por petición expresa del usuario. No hay participantes, invitaciones, sesiones humanas ni despliegue realizados. Las observaciones artificiales no acreditan comprensión humana.
 Especificaciones: [12](12-demo-y-salida.md), [11](11-evaluacion-reproducible.md) y [decisiones compartidas](README.md).
 
 ## Entorno y alcance propuestos
@@ -9,7 +9,9 @@ Primera sesión presencial supervisada en esta estación, accesible solo por loo
 
 Propuesta de participación: dos personas designadas por el usuario, una con cada empresa, más el operador responsable. Una persona no representa una empresa real. No se reutilizan contraseñas, documentos, conversaciones ni claves del usuario. El conjunto de datos admitido es exclusivamente el [corpus sintético](../../evals/documents/pilot-20261003/). Cualquier inclusión posterior de datos reales exige definir previamente categoría, destino, conservación y autorización.
 
-La revisión candidata se fijará en el informe final y en el manifiesto de código; cambiar código, política, modelos o corpus exige registrar una nueva versión y repetir las comprobaciones afectadas. La instalación local del laboratorio no acredita CI remoto ni una infraestructura publicada.
+La revisión candidata final es `972edb88c82a5220a43ffcc89316a9f9033e82f7`; el ensayo vivo previo pertenece a `698e8f0` y permanece detenido. Las evidencias de operación y navegador indican sus propios snapshots, sin atribuirles reejecuciones posteriores. El [informe final](informe-piloto-community-20261003.md) identifica pruebas y hashes. Cambiar código, política, modelos o corpus exige registrar una nueva versión y repetir las comprobaciones afectadas. La instalación local del laboratorio no acredita CI remoto ni una infraestructura publicada.
+
+El enmascarado se ejecuta realmente en CPU dentro de Django; respuestas y jueces permanecen simulados en esta sesión de 0 USD. El detector es falible: el corpus de 18 casos cumple 16 expectativas, con dos omisiones, y se han observado falsos positivos. El operador explica esta limitación antes de empezar. Esa evidencia no permite ampliar el conjunto admitido a documentos reales sensibles.
 
 ## Recorrido y recogida de resultados
 
@@ -22,7 +24,7 @@ Antes de iniciar se asignan IDs P01/P02, fecha, revisión, empresa ficticia, rol
 ## Límites, soporte y parada
 
 - Gasto de producto de la sesión offline: **0 USD**, sin credenciales reales y sin salida a proveedores. No se contrata infraestructura.
-- Sesión con proveedores vivos: requiere aprobación separada del manifiesto y presupuesto conjunto del [ensayo real](ejecucion-real-y-calibracion-piloto.md). La autorización del 2 de octubre no sirve.
+- Sesión con proveedores vivos: requiere aprobación separada del manifiesto y presupuesto conjunto del [ensayo real](ejecucion-real-y-calibracion-piloto.md). El permiso del 3 de octubre cubrió solamente el smoke acotado y no habilita una sesión humana viva; el del 2 de octubre no se reutiliza.
 - El operador conserva el control del arranque/parada y un canal local de incidencias; no se contacta a nadie automáticamente.
 - P0: salida prohibida, cruce entre empresas, secreto en logs, cita inválida marcada verificada, llamada sin reserva o pérdida de datos. Detener envíos, conservar evidencia mínima, suspender la sesión y recuperar la última copia coherente.
 - P1: bloqueo del recorrido, duplicación de generación, estado o coste incierto presentado como éxito. Detener el caso, comprobar estado por request_id; nunca repetir una llamada incierta para obtener una captura favorable.

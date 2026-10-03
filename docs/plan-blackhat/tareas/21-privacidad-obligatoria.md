@@ -15,6 +15,8 @@ Spec: [clasificación](../05-clasificacion-documental.md), [enrutamiento](../06-
 
 ## Verificación observada
 
+Ampliación posterior solicitada: [tarea 28](28-enmascarado-local-integrado.md), detector CPU real y migración 0032. El [cierre final](../informe-piloto-community-20261003.md) incluye revisiones independientes, 387 tests y 117 PostgreSQL. La evidencia inicial de abajo acredita su snapshot HTTP; no se atribuye eficacia NER a esas 134 pruebas.
+
 [Evidencia propia](../../../evals/reports/pilot-privacy-20261003-01/README.md): rojo inicial de ausencia/inactividad en chat y simulación (3 tests, 5 fallos, exit 1) y rojo adicional de revocación de privilegios durante la máscara semántica (1 test, 1 fallo, exit 1). Después de los cambios finales: **134 tests OK en 40,985 s**, incluidos 13 tests nuevos; check sin incidencias, migraciones sin cambios y diff sin errores, todos exit 0. Proveedores sintéticos; SDK OpenAI real sobre `httpx.MockTransport` en las tres entradas. PostgreSQL y el ensayo operativo se verifican en la tarea del coordinador.
 
 La máscara es obligatoria, propia, activa, autorizada y configurada para datos personales y secretos; no existe opción de omitirla. El conjunto completo de máscaras se revalida antes de cada destino. Lotes inválidos no se marcan completados. La caché inversa usuario/perfil no puede conservar permisos revocados en la simulación semántica.

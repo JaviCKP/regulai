@@ -2,18 +2,18 @@
 
 ## Preparación nueva del piloto — 3 de octubre de 2026
 
-El [informe del piloto](informe-piloto-community-20261003.md) y [checkpoint](piloto-checkpoint.md) separan la integración posterior a `6c78cd3` del histórico de abajo. D2 ahora exige máscara compatible y autorizada; sin ella no hay salida. Corpus12 documentos, navegador con renovación real, evaluador/ledger y banco humano preparados. Operación Linux/PostgreSQL/HTTPS y recuperación comprobadas en bases sintéticas; no equivalen a despliegue ni CI remoto. Continúan pendientes Office real, proveedores vivos, aprobación vigente y participantes humanos.
+El [informe del piloto](informe-piloto-community-20261003.md) y [checkpoint](piloto-checkpoint.md) recogen el candidato `972edb8`: 387 tests y cinco puertas con código 05 correctas, 117 pruebas PostgreSQL y recuperación sintética. D2 local obligatoria, corpus de 12 archivos y navegador verificados; detector 16/18 con omisiones/falsos positivos. Ensayo vivo Vercel autorizado:8/24 combinaciones y 17 llamadas, detenido ante clasificación incierta; ledger conservado. Diagnóstico seguro corregido después, sin repetir llamadas. Dos perfiles simulados por petición del usuario, separados de participación humana. Office nativo, revisión humana y cierre del recorrido real siguen pendientes. No hubo despliegue ni CI remoto.
 
 ## Histórico de las correcciones anteriores — 3 de octubre de 2026
 
-Código técnico recibido: `51f4ee5`; original `6a0f667`; inicio `4400f0b` (mismo código que `4b10778`). D1–D7 aprobadas. B1–B10/C1–C2 y hallazgos adversariales resueltos; tareas 09–19 done con pendientes externos explícitos. [Tabla de pruebas y commits](informe-correcciones-community.md); [revisiones originales Standards y Spec](revisiones-correcciones/README.md). R cerrada: Spec sin hallazgos y condición de máscara activa corregida en `52bdc8d`, con verificación independiente. Las [cinco puertas posteriores a la documentación](../../evals/reports/community-fixes-docs-verification-20261003/README.md) terminaron con exit0: **302 tests OK en 62,428 s**, check sin incidencias, migraciones sin cambios, 150 offline/0 fallos/0 llamadas reales y pip-audit sin vulnerabilidades conocidas.
+Código técnico recibido: `51f4ee5`; original `6a0f667`; inicio `4400f0b` (mismo código que `4b10778`). D1–D7 aprobadas. B1–B10/C1–C2 y hallazgos adversariales resueltos; tareas 09–19 done con pendientes externos explícitos. [Tabla de pruebas y commits](informe-correcciones-community.md); [revisiones originales Standards y Spec](revisiones-correcciones/README.md). R cerrada: Spec sin hallazgos y condición de máscara activa corregida en `52bdc8d`, con verificación independiente. Las [cinco puertas posteriores a la documentación](../../evals/reports/community-fixes-docs-verification-20261003/README.md) terminaron con exit 0: **302 tests OK en 62,428 s**, check sin incidencias, migraciones sin cambios, 150 offline/0 fallos/0 llamadas reales y pip-audit sin vulnerabilidades conocidas.
 
 | Integración observada | Suite front/api | Otras cuatro puertas |
 | --- | --- | --- |
 | D, `90000c6` | 295 OK en 58,250 s | check sin incidencias; migraciones sin cambios; 150 offline, 0 fallos/llamadas reales; pip-audit sin vulnerabilidades conocidas |
-| F, `c373c87` | 296 OK en 60,252 s | Mismos cuatro resultados; exit0 |
-| Q, `21c291e` | 297 OK en 71,258 s | Mismos cuatro resultados; exit0 |
-| O, `51f4ee5` | **302 OK en 65,158 s**, sin expected failures ni omitidas | check sin incidencias; No changes detected; 150 offline, 0 controles fallidos/llamadas reales; No known vulnerabilities found; cinco puertas exit0 |
+| F, `c373c87` | 296 OK en 60,252 s | Mismos cuatro resultados; exit 0 |
+| Q, `21c291e` | 297 OK en 71,258 s | Mismos cuatro resultados; exit 0 |
+| O, `51f4ee5` | **302 OK en 65,158 s**, sin expected failures ni omitidas | check sin incidencias; No changes detected; 150 offline, 0 controles fallidos/llamadas reales; No known vulnerabilities found; cinco puertas exit 0 |
 
 Las doce regresiones finales fallaron como doce AssertionError en `4400f0b`, sin errores de preparación ni skips. Los recuentos parciales de distintas revisiones no se suman. El banco Q negativo usa una copia development: 90 ejecuciones, 52 fallos, cero reserved y exit1 tras guardar sus cinco informes; no son fallos del banco normal ni etiquetas ajustadas.
 
@@ -23,7 +23,7 @@ No hubo llamadas reales/pagadas durante estas correcciones, push, despliegue, pu
 
 ## Verificación final conservada
 
-La ejecución final de ASTRA sobre `12ca58d3a2b5a6570840ca80676a1799f6eac097` (mismo comportamiento técnico que `51f4ee5`, solo ajuste de EOF) pasó las cinco puertas con exit0: **302 tests en 66,767 s**, check sin incidencias, migraciones sin cambios, 150 simulaciones/0 controles fallidos/0 llamadas reales y pip-audit sin vulnerabilidades conocidas. [Registro de cinco gates y logs](../../evals/reports/community-fixes-verification-20261003/README.md), [JSON exacto](../../evals/reports/community-fixes-verification-20261003/gates.json), [22 etapas históricas](../../evals/reports/community-fixes-verification-20261003/integration-gates.json), [regresiones y rojo base](../../evals/reports/community-fixes-verification-20261003/regressions.json) y [banco final/manifiesto](../../evals/reports/offline-community-fixes-final-20261003/report.md).
+La ejecución final de ASTRA sobre `12ca58d3a2b5a6570840ca80676a1799f6eac097` (mismo comportamiento técnico que `51f4ee5`, solo ajuste de EOF) pasó las cinco puertas con exit 0: **302 tests en 66,767 s**, check sin incidencias, migraciones sin cambios, 150 simulaciones/0 controles fallidos/0 llamadas reales y pip-audit sin vulnerabilidades conocidas. [Registro de cinco gates y logs](../../evals/reports/community-fixes-verification-20261003/README.md), [JSON exacto](../../evals/reports/community-fixes-verification-20261003/gates.json), [22 etapas históricas](../../evals/reports/community-fixes-verification-20261003/integration-gates.json), [regresiones y rojo base](../../evals/reports/community-fixes-verification-20261003/regressions.json) y [banco final/manifiesto](../../evals/reports/offline-community-fixes-final-20261003/report.md).
 
 Solo tres etiquetas development cambiaron por D3 con [justificación por caso](cambios-banco-correcciones.md); no se tocó reserved ni umbrales para aprobar. La prueba negativa de la suite fuerza seis controles fallidos y la prueba CLI 52, por diseño; ninguna representa un fallo del banco final.
 

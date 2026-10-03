@@ -1,18 +1,24 @@
 # Ensayo real y calibración humana del piloto
 
-Preparación local a 3 de octubre de 2026. **No se han ejecutado llamadas nuevas de producto ni se ha concedido una nueva autorización de gasto.** La autorización histórica del 2 de octubre no activa ningún comando. Los nuevos ensayos usan el detector de máscara local real, generación/jueces simulados y bases en memoria; no acreditan calidad, calibración ni ahorro reales. Los informes anteriores de máscara HTTP simulada se conservan como históricos.
+Estado a 3 de octubre de 2026: **el usuario autorizó hasta 1 USD para los ocho casos iniciales y después indicó usar Jev a través de Vercel**. El registro se vincula al manifiesto exacto del commit `698e8f0`; la ventana termina a las 23:59:59 UTC de ese día, dentro de las 24 horas aprobadas. [Evidencia de la ejecución autorizada](../../evals/reports/pilot-real-vercel-20261003-01/) conserva la comprobación previa y los resultados observados. El banco humano no está autorizado. La autorización del 2 de octubre no se reutiliza.
+
+Los informes offline anteriores conservan sus propios snapshots y resultados: detector local real, generación/jueces simulados y bases en memoria. No acreditan calidad, calibración ni ahorro reales. El ensayo vivo tampoco sustituye una revisión humana.
+
+**Resultado observado:** 8 de 24 combinaciones ejecutadas, correspondientes a cinco IDs, con 17 llamadas externas y 12 transformaciones locales. Se detuvo ante una clasificación incierta, después de dos respuestas entregadas, tres bloqueos y dos rechazos documentales. Costes comunicados: 0,000312522 USD; estimados: 0,00074496 USD; reserva incierta: 0,003 USD; exposición conservadora: 0,013858062 USD. No se repitió la llamada ni se liberó la reserva. El [corrector posterior](tareas/30-diagnostico-clasificacion-incierta.md), commit `972edb8`, conserva diagnósticos seguros para fallos futuros; no recupera la causa histórica. El manifiesto vivo sigue congelado en el código realmente ejecutado: no ignorar su `source_changed` para reanudar.
+
+Los [dos perfiles simulados](../../evals/reports/pilot-personas-20261003-01/README.md) se completaron por petición posterior del usuario. Sus formularios no rellenan referencias humanas ni permiten anunciar calidad comparativa.
 
 ## Qué queda preparado
 
-`smoke_ai` y `evaluate_ai` llaman al mismo `send_chat_message`, con máscara obligatoria, política, consentimiento, clasificación, generación, verificación y como máximo un segundo intento. Los dos comandos comparten `EvaluationBudget` y, en modo real, el archivo fijo `.claude/pilot-real-budget.sqlite3` y su lock. No hay selector de otro ledger para eludir el límite. El límite conjunto propuesto es **1,00 USD**, incluyendo todos los intentos de ambos comandos y bancos. El uso posterior exige revisar el saldo y las reservas; no empieza desde cero.
+`smoke_ai` y `evaluate_ai` llaman al mismo `send_chat_message`, con máscara obligatoria, política, consentimiento, clasificación, generación, verificación y como máximo un segundo intento. Los dos comandos comparten `EvaluationBudget` y, en modo real, el archivo fijo `.claude/pilot-real-budget.sqlite3` y su lock. No hay selector de otro ledger para eludir el límite. El límite conjunto aprobado para el ensayo inicial es **1,00 USD**, incluidos fallos y reservas inciertas. No autoriza ejecutar el banco humano; cualquier uso posterior requiere aprobación explícita, revisar el saldo y conservar las reservas existentes.
 
 El estado normal es offline. El modo real exige `--real`, `--max-usd 1.00`, autorización explícita con identidad/referencia humana, lista de hashes exactos de manifiestos y una ventana de hasta 24 horas. Antes de reservar y otra vez tras la reserva, antes de iniciar transporte o cómputo, se comprueban autorización, fuentes, dataset, rúbrica, runtime, identidad/hash del detector, destinos y fecha de revisión de tarifas. Una edición intermedia detiene las llamadas siguientes. Si se revoca durante la espera por la reserva, la operación no iniciada queda registrada a coste cero; esta es la protección SEC-1. El fichero de aprobación es un registro operativo de la aprobación del usuario, no un mecanismo criptográfico de firma ni permiso para que el agente se autorice a sí mismo.
 
-La ejecución acepta únicamente SQLite en memoria. Crea empresas/usuarios/credenciales temporales y medios en un directorio temporal; no cambia empresas ni bases existentes. Las credenciales reales, cuando exista autorización, se inyectarán mediante `REGULAI_EVAL_GENERATOR_KEY` y `REGULAI_EVAL_JEV_KEY` en el entorno del proceso, nunca en manifiestos, argumentos, informes o conversaciones. No se han leído ni preparado aquí esos secretos.
+La ejecución acepta únicamente SQLite en memoria. Crea empresas/usuarios/credenciales temporales y medios en un directorio temporal; no cambia empresas ni bases existentes. El puente autorizado lee un único par de credenciales DeepSeek/Gateway perteneciente a la misma empresa mediante una conexión separada SQLite `mode=ro`. Las inyecta en `REGULAI_EVAL_GENERATOR_KEY` y `REGULAI_EVAL_JEV_KEY` del proceso hijo, nunca en manifiestos, argumentos, informes o conversaciones. Compara el hash de la base original antes y después y registra solo el resultado de conservación.
 
 ## Ensayo inicial exacto: ocho casos sintéticos
 
-[Entradas completas](../../evals/pilot-real/cases.jsonl), [manifiesto](../../evals/pilot-real/manifest.json) y [autorización pendiente](../../evals/pilot-real/authorization.pending.json).
+[Entradas completas](../../evals/pilot-real/cases.jsonl), [manifiesto Vercel aprobado](../../evals/pilot-real/manifest-vercel.json) y [registro de autorización](../../evals/reports/pilot-real-vercel-20261003-01/authorization.json). SHA256 del manifiesto: `ff5a3056a6d13d7bc8a9c8baae559b002e201cc235be1a3aaa3cc4cd9e6e5b9d`. Los archivos `manifest.json` y `authorization.pending.json` conservan la propuesta directa anterior; no son el alcance aprobado activo.
 
 | ID | Comprobación | Alcance de la expectativa |
 | --- | --- | --- |
@@ -27,18 +33,20 @@ La ejecución acepta únicamente SQLite en memoria. Crea empresas/usuarios/crede
 
 Cada caso se ensaya en economy, strong y router: 24 recorridos con idénticos datos y restricciones. Se fija semilla `20261003`, orden mezclado reproducible, límite de 512 tokens de salida, 16.000 bytes de datos de entrada por caso, plazo de 90 segundos y presupuesto de 0,15 USD por petición. Economy/strong permiten una generación; router permite dos. Las calidades configuradas 0,6/0,95 y los umbrales 0,8 son valores provisionales, **no resultados de calibración**.
 
-## Destinos y modelos propuestos, todavía sin autorización
+## Destinos y modelos del ensayo autorizado
 
-| Función | Destino exacto propuesto | Modelo / versión | Tarifa de referencia USD por millón |
+| Función | Destino exacto | Modelo / versión | Tarifa de referencia USD por millón |
 | --- | --- | --- | --- |
 | Generación económica | `https://api.deepseek.com` | API `deepseek-flash`; versión publicada DeepSeek-V4.1-Flash | Entrada sin caché pico 0,30; salida pico 1,20. |
 | Generación fuerte | mismo destino | API `deepseek-v4-pro`; versión publicada DeepSeek-V4-Pro-0813 | Entrada sin caché pico 1,32; salida pico 3,96. |
-| Clasificación y juez | `https://api.typesafe.ai/v1/systemone` | `jev-1.13.0`, versión explícita | Entrada 0,042; salida 0. |
-| Enmascarado | Proceso local en CPU, sin endpoint HTTP | `regulai-local-v1`, spaCy 3.8.16, `xx_ent_wiki_sm` 3.8.0 y patrones | Coste de API 0 USD; cómputo/operación sin valorar. |
+| Clasificación y juez | `https://ai-gateway.vercel.sh/typesafe/v1/systemone` | Alias `typesafe-ai/jev`, limitado al proveedor `typesafe-ai` | Entrada 0,042; salida 0. |
+| Enmascarado | Proceso local en CPU, sin endpoint HTTP | `regulai-local-v2`, spaCy 3.8.16, `xx_ent_wiki_sm` 3.8.0 y patrones | Coste de API 0 USD; cómputo/operación sin valorar. |
 
-Referencias oficiales consultadas el 3 de octubre: [DeepSeek, modelos y tarifas](https://api-docs.deepseek.com/quick_start/pricing/) y [TypeSafe, modelos y versionado](https://docs.typesafe.ai/models). Se utiliza la tarifa pico sin caché como estimación conservadora. La generación conserva las temperaturas del servicio compartido: 0,6 para entrada general y 0,1 cuando hay documento; ambos valores y `thinking: disabled` están registrados en el manifiesto y contrastados con el cuerpo HTTP del SDK. El [Gateway de Vercel](https://vercel.com/ai-gateway/models/jev) anuncia `typesafe-ai/jev`, pero la propuesta nueva usa el modelo explícito directo para evitar ese alias adicional. El acceso histórico por Gateway **no prueba** acceso a TypeSafe directo con esta cuenta.
+Referencias oficiales consultadas el 3 de octubre: [DeepSeek, modelos y tarifas](https://api-docs.deepseek.com/quick_start/pricing/), [catálogo exacto del Gateway](https://ai-gateway.vercel.sh/v1/models), [API compatible TypeSafe](https://vercel.com/docs/ai-gateway/sdks-and-apis/typesafe) y [restricción de proveedores](https://vercel.com/docs/ai-gateway/models-and-providers/provider-options). Se usa `providerOptions.gateway.only=[typesafe-ai]`, sin fallback de modelo. La tarifa del catálogo es 0,000000042 USD por token de entrada; la página comercial la redondea. Sus declaraciones no constituyen garantía de retención cero.
 
-DeepSeek publica versiones, pero sus identificadores de API son alias móviles. Se conserva esa limitación y el modelo comunicado; un identificador efectivo inesperado o ausente detiene la evaluación. Si el proveedor mantiene el alias mientras cambia los pesos, ese cambio no se detecta solo con la respuesta. La revisión oficial el mismo día y la aceptación explícita de esa limitación son obligatorias; no se presenta como versión inmutable ni comparación plenamente reproducible de pesos.
+Se utiliza la tarifa pico sin caché de DeepSeek como estimación conservadora. La generación conserva las temperaturas del servicio compartido: 0,6 para entrada general y 0,1 cuando hay documento; ambos valores y `thinking: disabled` están fijados y contrastados con el cuerpo HTTP del SDK. El transporte directo TypeSafe continúa disponible como una combinación exacta alternativa, pero este ensayo no lo autoriza ni lo utiliza.
+
+DeepSeek publica versiones, pero sus identificadores de API son alias móviles. El Gateway también expone un alias Jev sin versión inmutable subyacente. Se conservan esa limitación y el modelo comunicado; un identificador efectivo inesperado o ausente detiene la evaluación. Si el proveedor mantiene el alias mientras cambia los pesos, ese cambio no se detecta solo con la respuesta. Las tarifas se revisaron el mismo día; no se presenta como una comparación plenamente reproducible de pesos.
 
 ## Detector local y límites de su validación
 
@@ -88,7 +96,7 @@ Tras revisar cualquier cambio de código/datos/tarifas, preparar un manifiesto *
 rtk proxy .venv/Scripts/python.exe scripts/prepare_pilot_manifest.py --manifest evals/pilot-real/manifest.json --output evals/pilot-real/manifest-revisado.json
 ```
 
-Solo después de revisar la configuración y limitaciones del detector local, credenciales/acceso, versiones/tarifas y aprobación explícita se podrá preparar un fichero aprobado y ejecutar el modo real. Se deben aprobar los hashes exactos de ambos manifiestos si comparten la misma autorización. El acceso directo a TypeSafe continúa sin comprobar y no se suple con el acceso histórico por Gateway. No se propone ejecutar ese comando como parte del arranque.
+El ensayo concreto usa el puente versionado `evals/reports/pilot-real-vercel-20261003-01/run_authorized.py`, primero con `--preflight` y después una vez con `--real`. Rechaza sobrescribir resultados o cambiar manifiesto/aprobación tras el preflight. La disponibilidad de credenciales no demuestra éxito de integración: el resultado vivo queda en su informe. El registro aprobado cubre solamente el hash Vercel citado; no habilita el banco humano ni una repetición automática. No ejecutar el modo real como parte del arranque ordinario.
 
 Cuando personas reales completen una copia de la plantilla de resultados:
 
@@ -97,5 +105,9 @@ rtk proxy .venv/Scripts/python.exe scripts/pilot_human_report.py --results RUTA/
 ```
 
 ## Estado de aceptación
+
+Lote offline conservado: [24+72 recorridos con detector v2](../../evals/reports/pilot-local-final-20261003-01/README.md), con fuentes/runtime del candidato `d63731a`. Manifiestos SHA256 `12aecafee1351be7584791db4f4e0d22d9f522abb7552bdce7af804e2525c1ed` (inicial) y `82e94e25bbf0ea512e82c925884e57ca85a8cd6b693be86907ecd9c31f349665` (humano). Se conservan como snapshots y no se reescriben al añadir la ruta Vercel. Para otro entorno o para el banco humano futuro se prepara/revisa otro manifiesto; no ignorar `source_changed`.
+
+El seguimiento vigente del ensayo autorizado está en la [tarea 29](tareas/29-ensayo-autorizado-vercel.md) y su [carpeta de evidencias](../../evals/reports/pilot-real-vercel-20261003-01/). Las dos comprobaciones previas se distinguen: la directa quedó bloqueada por falta de credencial, sin ledger ni llamadas; la de Vercel es satisfactoria y conserva el hash de la base del usuario.
 
 Las [tareas 23](tareas/23-recorrido-real.md) y [24](tareas/24-calibracion-humana.md) distinguen preparación comprobada de validación viva/humana pendiente. Los resultados del detector están en [evidencia local nueva](../../evals/reports/pilot-evaluation-local-20261003-01/README.md); el [ensayo anterior](../../evals/reports/pilot-evaluation-20261003-01/README.md) conserva su máscara simulada. Las cifras y la autorización histórica permanecen en la tarea 08 y no se contabilizan como ejecución de este piloto.

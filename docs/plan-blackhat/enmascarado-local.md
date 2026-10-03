@@ -12,11 +12,11 @@ Referencias verificadas: [spaCy, paquetes de modelos](https://spacy.io/usage/mod
 
 ## Contrato y límites
 
-- Solo idiomas declarados español/inglés o selección automática del modelo multilingüe. Un idioma distinto se rechaza; no hay fallback silencioso.
+- Solo idiomas declarados español/inglés o campo vacío con el mismo modelo multilingüe; no se realiza detección automática del idioma. Un idioma distinto se rechaza; no hay fallback silencioso.
 - Lote completo de hasta512000 bytes y4096 segmentos. El exceso se rechaza, sin cortar contenido. El plazo incluye espera por el detector; si se excede no se devuelve un lote parcial ni se permite continuar al transporte. La llamada CPU en curso termina antes de comprobar su plazo, no se mata un hilo a mitad de inferencia.
 - Modelo ausente, incompatible, cambiado o error de detección: fallo cerrado. `detector_metadata()` conserva versión, hash del wheel y hash observado de todos los archivos de datos instalados. Los manifiestos de evaluación vinculan esa identidad.
 - Un candado serializa el uso del modelo cargado. No se guardan diccionarios reversibles de personas o secretos ni se restauran datos al generar la respuesta. Los marcadores fijos se mantienen entre las sucesivas transformaciones.
-- JSON válido conserva estructura, tipos, precisión de números y claves duplicadas. Se protegen las claves del protocolo documental y la gramática corta de aliases; datos arbitrarios bajo esos campos se siguen detectando. La verificación normal de citas permanece obligatoria.
+- JSON válido conserva estructura, claves duplicadas y precisión de números no sensibles. Los números detectados como sensibles se sustituyen por una cadena marcador, también si usan notación exponencial; mantener su tipo numérico impediría ocultarlos correctamente. Se protegen las claves del protocolo documental y la gramática corta de aliases; datos arbitrarios bajo esos campos se siguen detectando. La verificación normal de citas permanece obligatoria.
 - La transformación local tiene **coste incremental de API0**, registrado como `configured_zero` y `transport=local`. Esto no significa que CPU, memoria o alojamiento sean gratuitos. Las salidas HTTP conservan su propio presupuesto e incertidumbre.
 
 La migración0032 conserva los registros existentes como HTTP, sus URLs y actividad; no habilita enmascarado local automáticamente en empresas existentes. Las altas por la interfaz proponen local, requieren `both` y una cota explícita0 cuando la cadena sea solo local. Administradores de empresa controlan la activación. Se conserva YARA sobre el original, el bloqueo restricted y la revalidación de empresa, política, consentimiento y backend antes de cada salida.
@@ -29,7 +29,13 @@ Las dos omisiones permanecen: un secreto arbitrario sin prefijo/etiqueta y un co
 
 La preparación inicial mantiene documentos sintéticos. El usuario puede revisar el contenido y las reglas antes de autorizar proveedores. La existencia del detector resuelve la dependencia de un endpoint de máscara; no concede presupuesto para DeepSeek/Jev ni valida su calidad semántica.
 
+Además de las dos omisiones, se han observado falsos positivos contextuales sobre «Único» y la clave JSON inglesa `card`. Se conservan en los informes de evaluación y [seguridad independiente](revisiones-piloto/security-local-0957df4.md). No se añadieron excepciones basadas en esas palabras para favorecer las pruebas.
+
+La revisión independiente reprodujo una omisión de teléfonos y tarjetas escritos como números JSON en las tres entradas HTTP. La versión `regulai-local-v2` la corrige en `be29b6f`, con [rojo](../../evals/reports/pilot-local-detector-20261003-01/numeric-red.json) y [32 pruebas locales/de integración correctas](../../evals/reports/pilot-local-detector-20261003-01/numeric-green.json). La [medición posterior](../../evals/reports/pilot-local-detector-benchmark-20261003-03/results.json) conserva los mismos 18 casos: 16 expectativas cumplidas y las dos omisiones declaradas, sin cambiar etiquetas. No se suman las suites parciales ni se transforma esta medición en una garantía.
+
 ## Reproducción aislada
+
+El [replay del ensayo vivo](../../evals/reports/pilot-real-diagnosis-20261003-01/README.md) reprodujo además falsos positivos sobre «Cuál», «Cita» y «Contrato» en entradas de desarrollo. Esas palabras comunes recibieron marcadores; no se demuestra que causaran el rechazo semántico del juez ni el error externo. Se conservan las transformaciones exactas y no se ajustó el detector para hacer pasar la demo.
 
 ```text
 rtk proxy uv pip install --python .venv/Scripts/python.exe -r requirements.txt

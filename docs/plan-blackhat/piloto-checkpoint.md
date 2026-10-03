@@ -1,66 +1,32 @@
-# Checkpoint de preparación y validación del piloto
+# Checkpoint final del piloto Community
 
-Encargo del 3 de octubre de 2026. Base fija: `6c78cd396eb72713e85b72d8592970e4b6b66585`.
-Las 302 pruebas y 150 ejecuciones anteriores son evidencia histórica.
+Rama `codex/community-pilot-20261003`; candidato `972edb88c82a5220a43ffcc89316a9f9033e82f7`. Base del encargo `6c78cd3`. Las 302 pruebas históricas no se presentan como ejecución nueva.
 
-## Aceptación y límites
+| Área | Propietario | Estado |
+| --- | --- | --- |
+| D2, política y estado | A, Astra Max | Integrado, revisado y comprobado en tres HTTP/simulador, dinero, empresa, consentimiento y migraciones. |
+| Documentos y UX | B, Astra Max | Corpus de 12 archivos, 65 pruebas, navegador/export; Office nativo pendiente. |
+| Evaluación y diagnóstico | C, Astra Max | Ledger/reproducibilidad/Vercel `698e8f0`; diagnóstico seguro `972edb8`. Ensayo vivo incompleto, sin más gasto. |
+| Operación/detector/integración | Root | Detector 16/18 con límites; laboratorio PostgreSQL/HTTPS/recuperación y gates 05. |
+| Revisiones | Security/Spec/Standards, Astra Max | Informes separados sobre commits fijos; implementadores no cuentan como revisores independientes. |
+| Perfiles artificiales | Nuevos P01/P02, Astra Max | Simulación solicitada por el usuario, separada de participación humana real. |
 
-Cerrar D2 mediante controles de servidor y transporte, preservar D1–D7 y probar la integración.
-Preparar corpus, ensayo real con ledger, evaluación humana, operación y piloto reproducibles.
-Los resultados humanos, APIs pagadas, despliegue y CI remoto solo se cierran con ejecución observada y autorización vigente.
-No hay permiso para nuevos gastos de producto, push, publicación, bases de usuario ni contacto con participantes.
+Los agentes usaron `gpt-6-astra`, `max`, contexto nuevo; cuatro slots contando root como máximo. Solo root integra y hace commits. El modelo del orquestador no es cambiable/certificable por las herramientas.
 
-## Propietarios y dependencias
+## Estado observado
 
-| Trabajo | Propietario | Depende de | Archivos o contrato |
-| --- | --- | --- | --- |
-| D2 y privacidad | A, Astra max | Base | chat_service, policy, simulator, masking; bloque mask_texts/import de views; fixtures generales |
-| Documentos y navegador | B, Astra max | Contrato D2 | documents/file_security, corpus, UI y pruebas documentales; runner nuevo aislado |
-| Ejecutores y calibración | C, Astra max | Contrato D2 y hook ledger acordado con A | evaluate_ai, smoke_ai, evaluation_budget, run_demo, bancos y pruebas propias |
-| Operación y recuperación | Orquestador | Docker disponible; D2 para recorrido completo | settings de laboratorio, scripts operativos, tests propios, dos empresas |
-| Piloto e integración | Orquestador | A–C y operación | documentación principal, tareas 20/25/26/27, cinco puertas |
-| Revisión independiente | Nuevos Astra max | Commit integrado fijo | Solo revisión; seguridad y requisitos separados |
+- [Gates 05](../../evals/reports/pilot-integrated-gates-20261003-05/README.md): 387 tests en 110,764 s, otras puertas con código 0, fuentes intactas, 150 controles offline; no CI remoto.
+- [Operación 10](../../evals/reports/pilot-operations-20261003-summary-local/README.md): 117 PostgreSQL/una omisión SQLite, HTTPS, restauración de 27 tablas, 2 archivos y claves, recifrado/reversión y estados inciertos. Recursos retirados.
+- [Ensayo real](../../evals/reports/pilot-real-vercel-20261003-01/README.md): usuario autorizó 1 USD/8×3 y ordenó Vercel. Ejecutado una vez en `698e8f0`, 8/24 combinaciones, 17 llamadas externas, 12 transformaciones locales. Dos entregas, tres bloqueos, dos rechazos y una clasificación incierta. Sin reintentos.
+- Costes: comunicados 0,000312522 USD; estimados 0,00074496 USD; reserva incierta 0,003 USD; exposición 0,013858062 USD. Ledger persistente intacto. Archivo de base del usuario leído en modo RO, hash sin cambios.
+- [Diagnóstico](../../evals/reports/pilot-real-diagnosis-20261003-01/README.md): causas seguras preservadas en ficha/log/ledger, tres HTTP comprobados. No recupera la causa del fallo anterior. Detector también produce falsos positivos sobre palabras comunes; no se ajustó para favorecer resultados.
+- [Perfiles simulados](../../evals/reports/pilot-personas-20261003-01/README.md): petición expresa «simúlalos», inferencias y acciones técnicas separadas. Cero revisiones humanas.
 
-Máximo cuatro agentes simultáneos. Lanzamientos A/B/C aceptaron explícitamente `gpt-6-astra`, `reasoning_effort=max`, `fork_turns=none`. El modelo del orquestador no se puede cambiar ni certificar con las herramientas disponibles.
-Índice Git compartido: los agentes no hacen add/commit hasta coordinación. Rama `codex/community-pilot-20261003`.
+## Próximos pasos
 
-## Secuencia
+1. Fase 3: contrastar el evento Gateway de 2026-10-03 15:43:21 UTC; mantener reserva hasta conciliación fiable. Revisar rechazos y preparar cualquier continuación sin borrar/recrear ledger ni reintentar automáticamente.
+2. Fase 4: validar referencias humanas y representatividad, sin usar reservados para ajustar. Las simulaciones no sustituyen esa evidencia.
+3. Fases 2 y 6: Office nativo y participación real pendientes; la simulación solicitada está entregada. No contactar ni desplegar sin autorización.
+4. [Informe por fases](informe-piloto-community-20261003.md) y tareas 20–31 mantienen aceptación observada; [cierre documental](../../evals/reports/pilot-closure-20261003-02/README.md) comprueba fuentes, enlaces, evidencias y recursos.
 
-1. [x] Inspección Git, instrucciones, planes y contratos existentes; reparto sin propietarios solapados.
-2. [x] Cerrar D2 y probar regresiones/fixtures; preparar corpus y ejecutor en paralelo.
-3. [ ] Validar instalación Linux/PostgreSQL/HTTPS, estados y recuperación con datos sintéticos.
-4. [ ] Integrar commits pequeños, fijar revisión y encargar revisiones independientes.
-5. [ ] Reproducir/corregir hallazgos y ejecutar cinco puertas sobre integración final.
-6. [ ] Publicar informe local por fase y propuestas concretas para autorizaciones externas.
-
-## Evidencia y estado observado
-
-- Git inicial sin cambios tracked; cinco untracked ajenos preservados: tres PDF raíz, brainstorming Vigía13 y prompt del piloto.
-- A confirmó brecha de ausencia de máscara en código; prepara obligación sin toggle desactivable y sin migración prevista.
-- Docker Desktop 4.88.1, motor Linux 29.7.2 disponible. WSL tiene Ubuntu y otras distribuciones; no se modifican.
-- No existe directorio estándar `C:\Program Files\PostgreSQL`; se usará PostgreSQL efímero Docker para la validación.
-- Directorios reservados: `evals/reports/pilot-privacy-20261003-01`, `pilot-documents-20261003-01`, `pilot-evaluation-20261003-01`; operación y gates crearán directorios nuevos.
-
-## Actualización de integración local
-
-- A: finalizado. D2 obligatoria implementada; rojo inicial 3 pruebas/5 fallos. Nuevo fallo de revocación de rol durante máscara en simulador reproducido (1/1 rojo) y corregido; 13 pruebas D2 verdes y gate final de área134 pruebas correcto. Sin migración; políticas sin máscara `both` autorizada fallan cerradas. Commits `d56eca4` (implementación) y `208d9ef` (regresiones/evidencia).
-- B: 12 documentos con expectativas congeladas, 12/12 extracción pública y suite documental/UI de65 pruebas verde. No Word/Excel/LibreOffice disponibles (PATH, COM, directorios e inventario). Navegador comprobó caducidad real >300s, renovación409, cancelación sin llamadas, cita con teclado, recarga y móvil375px. Regresión/captura de recibo incierto reconstruido sin coste0; contraste de botones corregido. Cierra último recorrido sobre CSS final y documentación.
-- C: ejecutor smoke/evaluación con8 casos×3 configuraciones, observer/ledger compartido. Banco humano24 casos (12desarrollo/12reservado) y preparación offline72 ejecuciones, sin valoraciones humanas. Suite ampliada29 pruebas correcta; repetir20 focalizadas tras último ajuste de reservas no iniciadas. Destino de máscara real y acceso Jev directo siguen pendientes. Propuesta de gasto máximo1USD compartido entre manifiestos, sin autorización reutilizada.
-- Root: `scripts/pilot_lab.py`, `ops/pilot/` y settings aislados. Driver opcional psycopg[binary] 3.3.6, imágenes fijadas por digest, build excluye settings/bases/medios locales. Entorno interno PostgreSQL 17, Gunicorn, Nginx HTTPS loopback. Solo proxy en red de entrada; aplicación/DB/proveedor quedan en red Docker interna.
-- Operación intentos 01–04 conservados. 01 falla al inspeccionar imagen base no retenida por BuildKit; 02 muestra que red `--internal` no publica el puerto; se separa proxy. 03 detecta estáticos 600 no legibles por Nginx; storage estático ahora644 y medios600. 04 valida HTTPS/cookies/hosts/static/privatefiles/tenants y transportes sintéticos D2; harness repetía login y alcanzó throttle, corregido reutilizando sesión sin bajar límites. Recursos propios retirados en cada intento.
-- Operación05: concurrencia/desconexión/reinicio correctos; PostgreSQL82 pruebas con un error por test que asumía `csrftoken` y una omisión SQLite. Se corrigió el test para usar `settings.CSRF_COOKIE_NAME`, conservando comprobaciones de CSRF. Operación06 completa:82 pruebas PostgreSQL correctas (1omisión SQLite), backup/restauración de todas las tablas/medios/claves, recifrado con clave nueva sola, reversión y escritor concurrente real. Código de salida0, recursos propios retirados.
-- Ejecución activa: operación07, sesión exec4597; valida el arranque opcional supervisado `--serve-seconds 1`, manifiesto de endpoint y ruta autenticada de avatares de Nginx. No hay participantes ni proveedores vivos. Runner de verificación de logs/hashes preparado en `evals/reports/pilot-operations-20261003-summary/`.
-- Preparación del piloto en `piloto-controlado.md`: dos personas por designar, sesión inicial local/offline 0 USD. Tareas20/25/26 creadas; A21, B22, C23/24 reservadas. `scripts/verify_community.py` listo para cinco puertas finales más auditoría opcional PostgreSQL, todavía no ejecutado.
-
-## Segundo checkpoint: integración y correctores
-
-- Implementación integrada: `d56eca4`, `208d9ef`, `4538120` (operación), `63db91d` (evaluador), `aab85a8` (B), `64dfc62` (manifiestos/evidenciaC), `7644da7` (corpus/operación/preparación), `c1e3a36` (bytes de artefactos). Código actual `febc8aa9b303070e82e3f27626371d5b67cb73f7`.
-- Operación07 terminó0:82 tests PostgreSQL/1omisión SQLite, recuperación íntegra y endpoint supervisado1s. Verificador de7 ejecuciones: hashes correctos,0 claves/marcadores en logs; Docker sin contenedores etiquetados propios. Workspaces privados sintéticos conservados, no secretos publicados.
-- C terminó:20tests focales,24smoke+72humano offline. B terminó:65tests,12/12corpus,renovación316,599s, contraste6,81:1. Informes completos propios pendientes de add/commit; no código B/C pendiente.
-- Primeras cinco puertas `pilot-integrated-gates-20261003-01` NO aprobadas:332tests/39fallos+1error por fixtures que no modelaban máscara obligatoria; check/migrations/offline150/auditorías sí0. Corrección de fixtures conserva umbrales y refuerza propósitos de llamada:44 tests verdes. No atribuir esta suite como éxito.
-- Nuevo UI reproducido por B: completed conservaba frase de consentimiento vencido «confirma de nuevo». Root rojo1/verde7, corregido `5fa840c` junto a fixtures. B seguimiento visual activo en `pilot-ui-followup-20261003-01/browser-*`, no necesita esperar caducidad otra vez.
-- Revisor nuevo Standards sobrec1: S1 revocación generación durante reserva. A reprodujo10subcasos rojos y corrigió en`a3bc67b`;19tests verdes. Standards confirmó independientemente3 variantes cero transportes,60pruebas y ledger real liquidación not_started. Addendum pendiente de cierre por agente.
-- Revisor nuevo Spec sobrec1: S2temperatura manifiesto0,6/payloaddocumento0,1; root reprodujo rojo y corrigió manifiestos/preflight en`febc8aa`,21tests verdes. S3documentación máscara opcional: README/arranque/informe/estado actualizados, todavía sincommit. RevisorSpec libre, requerirá addendum sobrecommitcorrector.
-- Revisor nuevo Security activo sobre`febc8aa`, escribe solo `revisiones-piloto/security-febc8aa.md` y scratchpropio. No tocar fuente del producto sin comunicar.
-- Root debe: recoger/cerrar revisiones independientes; verificar UI; refrescar hashes de fuentes en manifiestos tras correctores sin tocar etiquetas; copiar evidencias de revisión de scratch a reports; commit docs/evidencias; ejecutar cinco puertas finales sobre código fijo (posiblemente PostgreSQL focal tras cambio preflight); comprobar links/hashes/untracked/limpieza; cerrar informe por fase y solicitar solo pendientes externos concretos.
-- Estado final es BORRADOR en `informe-piloto-community-20261003.md`. Mantener logs anteriores. Shellsiemprertk, no push/producto real/contactos/basesusuario. Cinco archivos ajenos iniciales intactos. `.playwright-cli` actual pertenece a Bseguimiento, no borrar mientras trabaje.
+Cinco archivos ajenos preservados sin incorporar: MESAS_RETIRO.pdf, plantilla.pdf, plantillaInformeTecnica.pdf, docs/brainstorming-regulae-vigia13-2026-10-02.md, docs/plan-blackhat/prompt-validacion-piloto-astra-max.md. No se publicaron servicios ni se migró/recifró la base del usuario. Todos los intentos anteriores mantienen sus evidencias originales.

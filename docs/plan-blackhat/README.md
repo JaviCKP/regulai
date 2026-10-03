@@ -18,7 +18,7 @@ Para una explicación consolidada, con una sección general y otra técnica: [to
 
 La [verificación histórica](../../evals/reports/community-fixes-verification-20261003/README.md) sobre `12ca58d` (mismo comportamiento que `51f4ee5`) pasó cinco puertas: 302 tests OK en 66,767 s, check sin incidencias, migraciones sin cambios, 150 ejecuciones offline sin controles fallidos ni llamadas reales y auditoría sin vulnerabilidades conocidas. Es evidencia anterior al cierre obligatorio de D2. Las llamadas acotadas del 2 de octubre pertenecen a otra autorización. El banco utiliza respuestas y juicios prefijados: **no mide calidad semántica ni ahorro real**. El trabajo posterior está en el [informe de preparación del piloto](informe-piloto-community-20261003.md), con corpus, ensayos, revisión independiente, laboratorio PostgreSQL y nuevos resultados diferenciados del histórico.
 
-Sin un servicio de enmascarado compatible y autorizado, el servidor bloquea el chat y la simulación semántica. Las políticas existentes deben [configurar y activar el servicio y autorizar su destino](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa); no hay migración de datos ni una opción de omitir D2. La eficacia de detección del servicio real requiere validación propia.
+Sin un backend de enmascarado compatible y autorizado, el servidor bloquea el chat y la simulación semántica. Se incluye un [detector local en CPU](enmascarado-local.md), sin API de enmascarado; HTTP se conserva para las configuraciones anteriores. Las políticas existentes deben [configurar y activar el backend y autorizar su destino](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa). La migración0032 añade el selector y conserva los registros existentes como HTTP; no activa ni autoriza el local automáticamente. No hay opción de omitir D2. La detección tiene omisiones y falsos positivos documentados.
 
 ## Problemas conocidos y corregidos
 
@@ -75,7 +75,7 @@ Esta tabla describe la base original, no el comportamiento actual. Los hallazgos
 
 1. **Django sigue siendo la aplicación.** Un módulo de envío compartido, funciones concretas para decisiones y los conectores actuales. Sin microservicios, colas, nueva interfaz React, base vectorial ni motor de workflows para esta edición.
 2. **Las normas obligatorias las aplica Python.** Jev aporta señales; no puede desactivar un bloqueo, inventar un proveedor o concederse acceso a datos. `confidence` no es un porcentaje de verdad de la respuesta.
-3. **Control de salida antes de cada destino externo.** Incluye generador, Jev, juez y la integración de ofuscación ya presente si está habilitada. La ausencia de coincidencias YARA no equivale a permiso para enviar información a cualquiera.
+3. **Control de salida antes de cada destino externo.** Incluye generador, Jev, juez y cualquier máscara HTTP autorizada. El enmascarado es obligatorio; puede ejecutarse localmente sin red. La ausencia de coincidencias YARA no equivale a permiso para enviar información a cualquiera.
 4. **Una petición, un registro principal.** Ampliar `Prompt` con identificador de petición, empresa de origen, estado, enlace al mensaje de usuario y metadatos de decisión versionados. `Response` se enlaza a su mensaje de asistente. El plan 02 introduce estos campos; 08 amplía su contenido sin crear otro sistema de trazas.
 5. **Un contrato común.** `PolicyDecision` distingue `allow`, `block`, `consent_required` y `unavailable`, con códigos de motivo y destinos permitidos. `ChatResult` separa estado de ejecución, decisión de seguridad y resultado de calidad. Usar tipos pequeños, no una jerarquía de clases.
 6. **Configuración concreta por empresa.** Ampliar `Company` con una configuración de IA versionada y validada en servidor; reutilizar el campo cifrado existente para la credencial de Jev. No guardar claves en JSON ni incorporar un lenguaje de reglas nuevo. Los modelos siguen en `EngineModel` y las credenciales de generación en `CompanyEngine`.
@@ -103,7 +103,7 @@ Las llamadas de red se hacen fuera de transacciones largas. Para evitar dobles e
 
 **Candidatos para Vigía13:** optimización adaptativa con histórico amplio, presupuestos organizativos avanzados, aprobaciones entre responsables, integración corporativa y gobierno centralizado. Esta división es una propuesta de producto, pendiente de decisión comercial; no describe capacidades verificadas de Vigía13.
 
-Queda excluida la nueva ofuscación inteligente reversible solicitada por el usuario. No se ampliará ni eliminará gratuitamente la integración de enmascarado que ya aparece en el código. La seguridad fundamental no se reserva para una edición superior.
+La ofuscación reversible sigue excluida. La ampliación autorizada durante el piloto integra detección local y sustitución irreversible, conservando el conector HTTP anterior. La seguridad fundamental no se reserva para una edición superior.
 
 ## Condición de terminado de cada entrega
 
