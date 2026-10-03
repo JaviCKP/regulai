@@ -5,6 +5,7 @@ from decimal import Decimal
 import json
 from pathlib import Path
 import sqlite3
+from urllib.parse import urlsplit
 import uuid
 
 
@@ -25,14 +26,17 @@ class EvaluationBudget:
         self.path, self.cap = str(path), money(cap)
         self.authorization = (authorization_id, authorization_digest) if authorization_id is not None else None
         self.run_id = None
-        if not 0 < self.cap <= 1:
-            raise ValueError('The pilot is capped at 1 USD in total.')
+        if self.cap <= 0:
+            raise ValueError('A positive total ceiling is required.')
         with self.transaction() as db:
             db.execute('CREATE TABLE IF NOT EXISTS authorization (cap TEXT NOT NULL)')
-            previous = db.execute('SELECT cap FROM authorization').fetchone()
-            if previous and money(previous[0]) != self.cap:
-                raise ValueError('Existing authorization limit cannot be changed.')
+            caps = db.execute('SELECT cap FROM authorization').fetchall()
+            if len(caps) > 1:
+                raise ValueError('The ledger has an ambiguous budget anchor.')
+            previous = caps[0] if caps else None
             if not previous:
+                if self.cap > 1:
+                    raise ValueError('A new pilot is capped at 1 USD; extend its authorization explicitly.')
                 db.execute('INSERT INTO authorization VALUES (?)', (str(self.cap),))
             db.execute('CREATE TABLE IF NOT EXISTS calls (id TEXT PRIMARY KEY, at TEXT, purpose TEXT, '
                        'reserved TEXT, status TEXT, cost TEXT, metadata TEXT)')
@@ -49,6 +53,98 @@ class EvaluationBudget:
                     db.execute('INSERT INTO approval VALUES (?,?)', (authorization_id, authorization_digest))
             elif approval:
                 raise ValueError('This ledger requires its explicit authorization.')
+            terms = self.campaign_terms(db, approval)
+            effective_cap = money(terms['approved_ceiling_usd']) if terms else money(previous[0]) if previous else self.cap
+            if self.cap != effective_cap:
+                raise ValueError('Existing authorization limit cannot be changed implicitly.')
+
+    @staticmethod
+    def campaign_terms(db, authorization):
+        if authorization and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='campaign_terms'").fetchone():
+            row = db.execute('SELECT terms FROM campaign_terms WHERE authorization_id=? AND authorization_digest=?',
+                             authorization).fetchone()
+            if row:
+                return json.loads(row[0])
+        return None
+
+    @staticmethod
+    def utc_time(value):
+        parsed = datetime.fromisoformat(value) if isinstance(value, str) else value
+        if not isinstance(parsed, datetime) or parsed.tzinfo is None:
+            raise ValueError('Authorization times must include a timezone.')
+        return parsed.astimezone(timezone.utc)
+
+    @staticmethod
+    def validate_provenance(value):
+        if not isinstance(value, dict):
+            raise ValueError('Dated source provenance is required.')
+        url = urlsplit(value.get('source_url', ''))
+        digest = value.get('sha256', '')
+        if (url.scheme != 'https' or not url.hostname or url.username or url.password or url.query or url.fragment
+                or len(digest) != 64 or any(char not in '0123456789abcdef' for char in digest)):
+            raise ValueError('Provenance requires an HTTPS source and SHA-256 digest.')
+        from datetime import date
+        date.fromisoformat(value.get('date', ''))
+
+    @classmethod
+    def validated_campaign_terms(cls, *, approved_ceiling_usd, approved_ceiling_eur,
+            starts_at, expires_at, fx_provenance, price_provenance, margin):
+        """Validate serialized terms without reading or writing any ledger."""
+        cap, euros, margin = money(approved_ceiling_usd), money(approved_ceiling_eur), money(margin)
+        cls.validate_provenance(fx_provenance)
+        rate = money(fx_provenance.get('rate_usd_per_eur'))
+        if not isinstance(price_provenance, list) or not price_provenance:
+            raise ValueError('Official price provenance is required.')
+        for source in price_provenance:
+            cls.validate_provenance(source)
+        start, end = cls.utc_time(starts_at), cls.utc_time(expires_at)
+        if (not 0 < euros <= 2 or cap <= 0 or rate <= 0 or cap > euros * rate / (1 + margin)
+                or not 0 < (end - start).total_seconds() <= 86400):
+            raise ValueError('The approved aggregate ceiling, conversion or 24-hour window is invalid.')
+        return {'approved_ceiling_usd': str(cap), 'approved_ceiling_eur': str(euros),
+            'starts_at': start.isoformat(), 'expires_at': end.isoformat(), 'margin': str(margin),
+            'fx_provenance': fx_provenance, 'price_provenance': price_provenance}
+
+    @classmethod
+    def extend_campaign_authorization(cls, path, *, previous_id, previous_digest, authorization_id,
+            authorization_digest, manifest_sha256, approval_reference, max_external_calls,
+            approved_ceiling_usd, approved_ceiling_eur, starts_at, expires_at, fx_provenance,
+            price_provenance, margin):
+        """Append explicit terms; never rewrite historical balances or reservations."""
+        terms = cls.validated_campaign_terms(approved_ceiling_usd=approved_ceiling_usd,
+            approved_ceiling_eur=approved_ceiling_eur, starts_at=starts_at, expires_at=expires_at,
+            fx_provenance=fx_provenance, price_provenance=price_provenance, margin=margin)
+        cap = money(terms['approved_ceiling_usd'])
+        ledger = cls.__new__(cls)
+        ledger.path = str(path)
+        with ledger.transaction(existing_only=True) as db:
+            caps = db.execute('SELECT cap FROM authorization').fetchall()
+            if len(caps) != 1:
+                raise ValueError('An immutable existing budget anchor is required.')
+            head = cls.head(db)
+            existing = cls.campaign_terms(db, (authorization_id, authorization_digest))
+            if existing is not None and existing != terms:
+                raise ValueError('Approved campaign terms cannot be replaced.')
+            if existing is None and head == (authorization_id, authorization_digest):
+                raise ValueError('A historical scope cannot acquire a larger ceiling retroactively.')
+            previous_terms = cls.campaign_terms(db, head)
+            old_cap = money(previous_terms['approved_ceiling_usd']) if previous_terms else money(caps[0][0])
+            if cap < old_cap:
+                raise ValueError('A ceiling extension cannot reduce the existing approved ceiling.')
+            used = sum((cls.exposure(bound, cost, json.loads(meta)) for bound, cost, meta
+                        in db.execute('SELECT reserved,cost,metadata FROM calls')), Decimal(0))
+            if used > cap:
+                raise BudgetExceeded('Historical exposure exceeds the proposed aggregate ceiling.')
+            added = cls.append_extension(db, previous_id=previous_id, previous_digest=previous_digest,
+                authorization_id=authorization_id, authorization_digest=authorization_digest,
+                manifest_sha256=manifest_sha256, approval_reference=approval_reference,
+                max_external_calls=max_external_calls)
+            db.execute('CREATE TABLE IF NOT EXISTS campaign_terms (authorization_id TEXT PRIMARY KEY, '
+                       'authorization_digest TEXT NOT NULL UNIQUE, terms TEXT NOT NULL)')
+            if existing is None:
+                db.execute('INSERT INTO campaign_terms VALUES (?,?,?)',
+                    (authorization_id, authorization_digest, json.dumps(terms, sort_keys=True)))
+        return added
 
     @staticmethod
     def head(db):
@@ -62,13 +158,8 @@ class EvaluationBudget:
         return anchors[0] if anchors else None
 
     @classmethod
-    def extend_authorization(cls, path, cap, *, previous_id, previous_digest, authorization_id,
-                             authorization_digest, manifest_sha256, approval_reference, max_external_calls):
-        """Append an explicitly validated scope. Never create/reset a missing ledger.
-
-        The management command validates the human approval and frozen manifest;
-        this transaction enforces the immutable chain, cap and existing history.
-        """
+    def append_extension(cls, db, *, previous_id, previous_digest, authorization_id,
+                         authorization_digest, manifest_sha256, approval_reference, max_external_calls):
         values = (previous_id, previous_digest, authorization_id, authorization_digest,
                   manifest_sha256, approval_reference)
         if (any(not isinstance(value, str) or not value for value in values)
@@ -76,6 +167,39 @@ class EvaluationBudget:
                 or previous_id == authorization_id or previous_digest == authorization_digest
                 or type(max_external_calls) is not int or max_external_calls < 1):
             raise ValueError('Invalid explicit scope extension.')
+        head = cls.head(db)
+        if not head:
+            raise ValueError('An explicit existing approval is required.')
+        db.execute('CREATE TABLE IF NOT EXISTS approval_extensions ('
+            'sequence INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, digest TEXT NOT NULL UNIQUE, '
+            'previous_id TEXT NOT NULL, previous_digest TEXT NOT NULL, at TEXT NOT NULL, '
+            'manifest_sha256 TEXT NOT NULL, approval_reference TEXT NOT NULL, max_external_calls INTEGER NOT NULL, '
+            'UNIQUE(previous_id, previous_digest))')
+        expected = (authorization_id, authorization_digest, previous_id, previous_digest,
+                    manifest_sha256, approval_reference, max_external_calls)
+        duplicate = db.execute('SELECT id,digest,previous_id,previous_digest,manifest_sha256,'
+            'approval_reference,max_external_calls FROM approval_extensions WHERE id=? OR digest=?',
+            (authorization_id, authorization_digest)).fetchone()
+        if duplicate:
+            if duplicate == expected and head == (authorization_id, authorization_digest):
+                return False
+            raise ValueError('A scope identity cannot be reused or replaced.')
+        if head != (previous_id, previous_digest):
+            raise ValueError('The previous approval is not the current ledger head.')
+        anchors = db.execute('SELECT id,digest FROM approval').fetchall()
+        if any(authorization_id == pair[0] or authorization_digest == pair[1] for pair in anchors):
+            raise ValueError('The original approval cannot be reused.')
+        db.execute('INSERT INTO approval_extensions (id,digest,previous_id,previous_digest,manifest_sha256,'
+            'approval_reference,max_external_calls,at) VALUES (?,?,?,?,?,?,?,?)',
+            (*expected, datetime.now(timezone.utc).isoformat()))
+        db.execute('CREATE TABLE IF NOT EXISTS extension_runs (authorization_id TEXT PRIMARY KEY, '
+            'run_id TEXT NOT NULL UNIQUE, manifest_sha256 TEXT NOT NULL, at TEXT NOT NULL)')
+        return True
+
+    @classmethod
+    def extend_authorization(cls, path, cap, *, previous_id, previous_digest, authorization_id,
+                             authorization_digest, manifest_sha256, approval_reference, max_external_calls):
+        """Append an explicitly validated legacy scope, retaining its original cap."""
         ledger = cls.__new__(cls)
         ledger.path, ledger.cap = str(path), money(cap)
         try:
@@ -83,42 +207,29 @@ class EvaluationBudget:
                 caps = db.execute('SELECT cap FROM authorization').fetchall()
                 if len(caps) != 1 or money(caps[0][0]) != ledger.cap or not 0 < ledger.cap <= 1:
                     raise ValueError('The shared authorization cap cannot change.')
-                head = cls.head(db)
-                if not head:
-                    raise ValueError('An explicit existing approval is required.')
-                db.execute('CREATE TABLE IF NOT EXISTS approval_extensions ('
-                    'sequence INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, digest TEXT NOT NULL UNIQUE, '
-                    'previous_id TEXT NOT NULL, previous_digest TEXT NOT NULL, at TEXT NOT NULL, '
-                    'manifest_sha256 TEXT NOT NULL, approval_reference TEXT NOT NULL, max_external_calls INTEGER NOT NULL, '
-                    'UNIQUE(previous_id, previous_digest))')
-                expected = (authorization_id, authorization_digest, previous_id, previous_digest,
-                            manifest_sha256, approval_reference, max_external_calls)
-                duplicate = db.execute('SELECT id,digest,previous_id,previous_digest,manifest_sha256,'
-                    'approval_reference,max_external_calls FROM approval_extensions WHERE id=? OR digest=?',
-                    (authorization_id, authorization_digest)).fetchone()
-                if duplicate:
-                    if duplicate == expected and head == (authorization_id, authorization_digest):
-                        return False
-                    raise ValueError('A scope identity cannot be reused or replaced.')
-                if head != (previous_id, previous_digest):
-                    raise ValueError('The previous approval is not the current ledger head.')
-                anchors = db.execute('SELECT id,digest FROM approval').fetchall()
-                if any(authorization_id == pair[0] or authorization_digest == pair[1] for pair in anchors):
-                    raise ValueError('The original approval cannot be reused.')
-                db.execute('INSERT INTO approval_extensions (id,digest,previous_id,previous_digest,manifest_sha256,'
-                    'approval_reference,max_external_calls,at) VALUES (?,?,?,?,?,?,?,?)',
-                    (*expected, datetime.now(timezone.utc).isoformat()))
-                db.execute('CREATE TABLE IF NOT EXISTS extension_runs (authorization_id TEXT PRIMARY KEY, '
-                    'run_id TEXT NOT NULL UNIQUE, manifest_sha256 TEXT NOT NULL, at TEXT NOT NULL)')
+                if cls.campaign_terms(db, cls.head(db)):
+                    raise ValueError('A campaign scope requires explicit campaign terms, including its window.')
+                return cls.append_extension(db, previous_id=previous_id, previous_digest=previous_digest,
+                    authorization_id=authorization_id, authorization_digest=authorization_digest,
+                    manifest_sha256=manifest_sha256, approval_reference=approval_reference,
+                    max_external_calls=max_external_calls)
         except sqlite3.Error as error:
             raise ValueError('The existing ledger cannot accept this scope extension.') from error
-        return True
+
+    def check_active(self, db):
+        if self.head(db) != self.authorization:
+            raise ValueError('The approval is no longer the current ledger head.')
+        terms = self.campaign_terms(db, self.authorization)
+        if terms:
+            if money(terms['approved_ceiling_usd']) != self.cap:
+                raise ValueError('The active approved ceiling changed.')
+            if not self.utc_time(terms['starts_at']) <= datetime.now(timezone.utc) < self.utc_time(terms['expires_at']):
+                raise BudgetExceeded('The approved campaign window is not active.')
 
     def claim_extension_run(self, manifest_sha256):
         """A claimed extension cannot resume/replay, even after a crash or new output directory."""
         with self.transaction() as db:
-            if self.head(db) != self.authorization:
-                raise ValueError('The approval is no longer the current ledger head.')
+            self.check_active(db)
             extension = db.execute('SELECT manifest_sha256 FROM approval_extensions WHERE id=? AND digest=?',
                                    self.authorization).fetchone()
             if not extension or extension[0] != manifest_sha256:
@@ -145,13 +256,16 @@ class EvaluationBudget:
         finally:
             db.close()
 
-    def reserve(self, purpose, maximum, *, metadata=None, zero_cost=False):
+    def reserve(self, purpose, maximum, *, metadata=None, zero_cost=False, authorize=None):
         maximum = money(maximum)
         if maximum == 0 and not zero_cost:
             raise ValueError('A positive reservation is required.')
         with self.transaction() as db:
-            if self.head(db) != self.authorization:
-                raise ValueError('The approval is no longer the current ledger head.')
+            # Re-read approval only after the writer lock has been acquired.
+            # No network or nested ledger transaction belongs in this callback.
+            if authorize:
+                authorize()
+            self.check_active(db)
             metadata = dict(metadata or {})
             if self.authorization:
                 metadata.update(authorization_id=self.authorization[0], authorization_digest=self.authorization[1])
