@@ -398,7 +398,7 @@ class Command(BaseCommand):
                 rows.append(run_case(case, configuration, manifest, dataset.parent, engine, models, run_id))
         summaries = summarize(rows)
         try:
-            commit = subprocess.run(['rtk', 'proxy', 'git', 'rev-parse', 'HEAD'], cwd=ROOT,
+            commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT,
                                     capture_output=True, text=True, check=True).stdout.strip()
         except (OSError, subprocess.CalledProcessError):
             commit = 'unavailable'
