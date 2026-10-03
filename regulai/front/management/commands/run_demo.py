@@ -15,7 +15,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
 
-from front.models import Company, CompanyEngine, Engine, EngineModel, Profile, Rule, RulesGroup
+from front.models import Company, CompanyEngine, Engine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
 from .evaluate_ai import OfflineProviders, ROOT, load_bank, policy_config
 
 
@@ -76,7 +76,13 @@ def seed_demo():
             raise CommandError('Existing demo credential differs from the synthetic fixture; it was not changed.')
         if CompanyEngine.objects.filter(company=company).exclude(pk=credential.pk).exists():
             raise CommandError('Unexpected demo credentials exist; no records were changed.')
-        policy = policy_config({}, 'router', manifest, credential, models)
+        mask, _ = ObfuscationConfig.objects.get_or_create(company=company, name='Synthetic offline mask',
+            defaults={'api_url': 'https://mask.offline.invalid', 'active': True})
+        if not mask.active or mask.api_url != 'https://mask.offline.invalid' or mask.detect != 'both' or mask.language:
+            raise CommandError('Existing demo mask differs from the frozen fixture; it was not changed.')
+        if ObfuscationConfig.objects.filter(company=company).count() != 1:
+            raise CommandError('Unexpected demo masks exist; no records were changed.')
+        policy = policy_config({}, 'router', manifest, credential, models, mask)
         if created:
             company.ai_config = policy
             company.save(update_fields=['ai_config'])
@@ -109,7 +115,13 @@ class DemoProviders:
         self.state = local()
         self.events = []
 
-    def post(self, url, *, data, **kwargs):
+    def post(self, url, *, data=None, **kwargs):
+        mask_payload = kwargs.pop('json', None)
+        if mask_payload is not None:
+            provider = OfflineProviders({}, self.manifest)
+            response = provider.post(url, json=mask_payload, **kwargs)
+            self.events.append(provider.events[-1])
+            return response
         payload = json.loads(data)
         if 'category' in payload['questions']:
             sources = payload['state'].get('sources', [])

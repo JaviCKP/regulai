@@ -1,113 +1,214 @@
-"""Synthetic command tests: no credential or provider network is used."""
-from datetime import date
+"""Exercise the real-mode harness through actual service/connectors and fake HTTP only."""
+from contextlib import closing
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from io import StringIO
 import json
+import os
 from pathlib import Path
+import shutil
+import sqlite3
 from tempfile import TemporaryDirectory
-from types import SimpleNamespace
 from unittest.mock import patch
 
-from django.contrib.auth.models import User
+import httpx
+import requests
+from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 
-from .chat_service import ChatResult
-from .management.commands import smoke_ai
-from .models import Company, CompanyEngine, Engine, Profile
+from . import evaluation
+from .evaluation_budget import EvaluationBudget
+from .models import Company
 
 
 class SmokeIsolationTests(TestCase):
     def setUp(self):
-        self.directory = TemporaryDirectory()
-        self.addCleanup(self.directory.cleanup)
-        self.root = Path(self.directory.name)
-        self.lock = self.root / '.claude' / 'real-provider-smoke.lock'
-        self.company = Company.objects.create(name='Community Local Synthetic Demo', jev_api_key='synthetic-key')
-        actor = User.objects.create_user('community-local-demo')
-        Profile.objects.create(user=actor, company=self.company)
-        engine = Engine.objects.create(name='DeepSeek authorized test', connector_type='openai_compatible',
-            base_url='https://api.deepseek.com')
-        CompanyEngine.objects.create(company=self.company, engine=engine, api_key='synthetic-key')
-        settings = SimpleNamespace(DEBUG=True, BASE_DIR=self.root / 'regulai',
-            DATABASES={'default': {'NAME': 'community-local.sqlite3'}})
-        self.enterContext(patch.object(smoke_ai, 'settings', settings))
-        today = self.enterContext(patch.object(smoke_ai, 'date', wraps=date))
-        today.today.return_value = date(2026, 10, 2)
-        self.network = self.enterContext(patch('requests.sessions.Session.request', side_effect=AssertionError('No network')))
-        self.send = self.enterContext(patch.object(smoke_ai.chat_service, 'send_chat_message',
-            return_value=ChatResult({'status': 'blocked', 'receipt': {'calls': []}})))
-        self.command = smoke_ai.Command(stdout=StringIO(), stderr=StringIO())
+        directory = TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.manifest_path = self.root / 'manifest.json'
+        self.approval_path = self.root / 'approval.json'
+        self.ledger_path = self.root / 'budget.sqlite3'
+        self.enterContext(patch.object(evaluation, 'LEDGER_PATH', self.ledger_path))
+        self.enterContext(patch.dict(os.environ, {'REGULAI_EVAL_GENERATOR_KEY': 'synthetic-key', 'REGULAI_EVAL_JEV_KEY': 'synthetic-key'}))
+        source = evaluation.PILOT_MANIFEST.parent
+        shutil.copyfile(source / 'rubric.md', self.root / 'rubric.md')
+        self.manifest = evaluation.read_json(evaluation.PILOT_MANIFEST)
+        self.manifest.update(destinations={**self.manifest['destinations'], 'mask': 'https://mask.testing.example'},
+            mask_contract_review='Synthetic test transport only; no live approval', price_date=datetime.now(timezone.utc).date().isoformat(),
+            source_sha256=evaluation.source_hashes(), runtime_versions=evaluation.runtime_versions())
+        self.case = next(json.loads(line) for line in (source / 'cases.jsonl').read_text(encoding='utf-8').splitlines()
+                         if json.loads(line)['id'] == 'arithmetic')
+        (self.root / 'cases.jsonl').write_text(json.dumps(self.case) + '\n', encoding='utf-8')
+        self.manifest['dataset_sha256'] = evaluation.digest((self.root / 'cases.jsonl').read_bytes())
+        self.manifest['human_rubric_sha256'] = evaluation.digest((self.root / 'rubric.md').read_bytes())
+        self.approval = {'status': 'approved', 'approved_by': 'synthetic test fixture',
+            'approval_reference': 'TEST ONLY; never a product authorization', 'authorization_id': self.manifest['authorization_id'],
+            'valid_from': (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat(),
+            'valid_until': (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat(),
+            'maximum_usd': '1.00', 'data_scope': 'versioned_synthetic_cases_only',
+            'destinations': self.manifest['destinations'], 'pricing_reviewed_on': self.manifest['price_date'],
+            'mask_contract_reviewed': True, 'mutable_alias_acknowledged': True, 'reserved_evaluation': True}
+        self.approval['actions'] = self.manifest['actions']
+        self.save_approval()
+        self.events = []
+        self.fault = None
+        self.after_transport = None
+        self.http = self.enterContext(patch('requests.sessions.Session.request', side_effect=self.requests_transport))
+        self.sdk = self.enterContext(patch('httpx.Client.send', side_effect=self.sdk_transport))
+        self.socket = self.enterContext(patch('socket.socket.connect', side_effect=AssertionError('Tests forbid network')))
 
-    def run_smoke(self, cases=None):
-        self.command.handle(real=True, max_usd='1', output=str(self.root / 'report'), case=cases or ['blocked'])
+    def save_approval(self):
+        self.manifest_path.write_text(json.dumps(self.manifest), encoding='utf-8')
+        self.approval['manifest_sha256s'] = [evaluation.digest(self.manifest_path.read_bytes())]
+        self.approval_path.write_text(json.dumps(self.approval), encoding='utf-8')
 
-    def test_existing_lock_is_retained_and_prevents_all_effects(self):
-        self.lock.parent.mkdir()
-        self.lock.write_text('another execution', encoding='utf-8')
-        with self.assertRaises(CommandError):
-            self.run_smoke()
-        self.assertEqual(self.lock.read_text(encoding='utf-8'), 'another execution')
-        self.send.assert_not_called()
-        self.assertFalse((self.root / 'report').exists())
+    def assert_reserved(self, purpose):
+        with closing(sqlite3.connect(self.ledger_path)) as db:
+            row = db.execute('SELECT purpose,status FROM calls ORDER BY rowid DESC LIMIT 1').fetchone()
+        self.assertEqual(row, (purpose, 'started'))
+        self.events.append(purpose)
 
-    def test_owned_lock_and_configuration_are_cleaned_after_failure(self):
-        def fail(*args):
-            self.assertTrue(self.lock.exists())
-            raise RuntimeError('synthetic failure')
-        self.send.side_effect = fail
-        with self.assertRaisesRegex(RuntimeError, 'synthetic failure'):
-            self.run_smoke()
-        self.company.refresh_from_db()
-        self.assertEqual(self.company.ai_config, {})
-        self.assertFalse(self.lock.exists())
-        self.network.assert_not_called()
+    def requests_transport(self, method, url, **kwargs):
+        if url == 'https://mask.testing.example/api/mask':
+            self.assert_reserved('obfuscation')
+            payload = {'masked': kwargs['json']['text']}
+        else:
+            self.assertEqual(url, 'https://api.typesafe.ai/v1/systemone')
+            body = json.loads(kwargs['data'])
+            purpose = 'classification' if 'category' in body['questions'] else 'verification'
+            self.assert_reserved(purpose)
+            answers = {}
+            for key, question in body['questions'].items():
+                if question['type'] == 'choice':
+                    chosen = {'category': 'public', 'task': 'general', 'difficulty': 'economy'}[key]
+                    answers[key] = {'type': 'choice', 'choice': chosen, 'confidence': 1.0,
+                                    'probabilities': {value: float(value == chosen) for value in question['criteria']}}
+                else:
+                    answers[key] = {'type': 'noul', 'noul': 0.0}
+            payload = {'model': body['model'], 'answers': answers, 'usage': {'input_tokens': 50, 'output_tokens': 10}}
+        response = requests.Response()
+        response.status_code = 200
+        response._content = json.dumps(payload).encode()
+        response._content_consumed = True
+        if self.fault == 'mask-http-error' and self.events[-1] == 'obfuscation':
+            response.status_code = 503
+        if self.fault == 'malformed-judge' and self.events[-1] == 'classification':
+            response._content = b'{invalid-json'
+        if self.after_transport:
+            self.after_transport()
+        return response
 
-    def test_change_before_installation_is_preserved_without_sending(self):
-        changed = {'revision': 99}
-        with patch.object(Company, 'full_clean', side_effect=lambda: Company.objects.filter(
-                pk=self.company.pk).update(ai_config=changed)):
+    def sdk_transport(self, request, **kwargs):
+        self.assertEqual(str(request.url), 'https://api.deepseek.com/chat/completions')
+        self.assert_reserved('generation')
+        body = json.loads(request.content)
+        self.assertEqual(body['thinking'], {'type': 'disabled'})
+        self.assertEqual(body['max_tokens'], 512)
+        if self.fault == 'generation-timeout':
+            raise httpx.ReadTimeout('Synthetic timeout', request=request)
+        model = 'unapproved-new-model' if self.fault == 'model-drift' else body['model']
+        return httpx.Response(200, request=request, json={'id': 'synthetic-response', 'object': 'chat.completion',
+            'created': 1, 'model': model, 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '4'}, 'finish_reason': 'stop'}],
+            'usage': {'prompt_tokens': 100, 'completion_tokens': 1, 'total_tokens': 101}})
+
+    def run_smoke(self, name='run', command='smoke_ai', **changes):
+        options = {'manifest': str(self.manifest_path), 'authorization': str(self.approval_path),
+                   'real': True, 'max_usd': '1.00', 'output': str(self.root / name), 'stdout': StringIO()}
+        call_command(command, **{**options, **changes})
+
+    def ledger(self):
+        return EvaluationBudget(self.ledger_path, '1.00', authorization_id=self.approval['authorization_id'],
+                                authorization_digest=evaluation.digest(self.approval)).snapshot()
+
+    def test_real_commands_share_ledger_and_reserve_all_transports(self):
+        self.run_smoke()
+        first = self.ledger()
+        self.assertEqual(len(first['calls']), 15)
+        self.assertEqual(set(self.events), {'obfuscation', 'classification', 'generation', 'verification'})
+        self.run_smoke('evaluate', command='evaluate_ai')
+        self.assertEqual(len(self.ledger()['calls']), 30)
+        self.assertGreater(Decimal(self.ledger()['budget_exposure_usd']), Decimal(first['budget_exposure_usd']))
+        self.assertFalse(self.ledger_path.with_suffix('.lock').exists())
+        self.socket.assert_not_called()
+        row = json.loads((self.root / 'run' / 'results.jsonl').read_text(encoding='utf-8').splitlines()[0])
+        self.assertIsNone(row['human_review'])
+        self.assertEqual(row['generation_responses'][0]['content'], '4')
+
+    def test_pending_or_expired_permission_has_no_database_or_network_effect(self):
+        before = Company.objects.count()
+        for status, until in [('pending', self.approval['valid_until']),
+                              ('approved', (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat())]:
+            self.approval.update(status=status, valid_until=until)
+            self.save_approval()
             with self.assertRaises(CommandError):
                 self.run_smoke()
-        self.company.refresh_from_db()
-        self.assertEqual(self.company.ai_config, changed)
-        self.send.assert_not_called()
-        self.assertFalse(self.lock.exists())
+        self.assertEqual(Company.objects.count(), before)
+        self.assertFalse(self.ledger_path.exists())
+        self.assertFalse((self.root / 'run').exists())
+        self.http.assert_not_called()
+        self.sdk.assert_not_called()
 
-    def test_change_between_scenarios_stops_run_and_is_not_restored_over(self):
-        changed = {'revision': 99}
-        def edit(*args):
-            Company.objects.filter(pk=self.company.pk).update(ai_config=changed)
-            return ChatResult({'status': 'blocked', 'receipt': {'calls': []}})
-        self.send.side_effect = edit
-        with self.assertRaises(CommandError):
-            self.run_smoke(['blocked', 'arithmetic'])
-        self.company.refresh_from_db()
-        self.assertEqual(self.company.ai_config, changed)
-        self.assertEqual(self.send.call_count, 1)
-        self.assertFalse(self.lock.exists())
-        report = json.loads((self.root / 'report' / 'report.json').read_text(encoding='utf-8'))
-        self.assertEqual(report['configuration_restore'], 'external_change_preserved')
-        self.network.assert_not_called()
-
-    def test_success_restores_configuration_and_releases_lock(self):
-        self.run_smoke(['blocked', 'document'])
-        self.company.refresh_from_db()
-        self.assertEqual(self.company.ai_config, {})
-        self.assertFalse(self.lock.exists())
-        report = json.loads((self.root / 'report' / 'report.json').read_text(encoding='utf-8'))
-        self.assertEqual(report['configuration_restore'], 'restored')
-        self.network.assert_not_called()
-
-    def test_change_during_last_scenario_is_preserved_and_reported_as_error(self):
-        changed = {'revision': 99}
-        def edit(*args):
-            Company.objects.filter(pk=self.company.pk).update(ai_config=changed)
-            return ChatResult({'status': 'blocked', 'receipt': {'calls': []}})
-        self.send.side_effect = edit
+    def test_existing_lock_is_preserved_before_any_database_write(self):
+        lock = self.ledger_path.with_suffix('.lock')
+        lock.write_text('Prior interrupted run', encoding='utf-8')
+        before = Company.objects.count()
         with self.assertRaises(CommandError):
             self.run_smoke()
-        self.company.refresh_from_db()
-        self.assertEqual(self.company.ai_config, changed)
-        self.assertFalse(self.lock.exists())
-        report = json.loads((self.root / 'report' / 'report.json').read_text(encoding='utf-8'))
-        self.assertEqual(report['configuration_restore'], 'external_change_preserved')
+        self.assertEqual(Company.objects.count(), before)
+        self.assertEqual(lock.read_text(encoding='utf-8'), 'Prior interrupted run')
+        self.http.assert_not_called()
+        self.assertFalse((self.root / 'run').exists())
+
+    def test_authorization_revoked_during_mask_prevents_classifier(self):
+        def revoke():
+            changed = {**self.approval, 'status': 'revoked'}
+            self.approval_path.write_text(json.dumps(changed), encoding='utf-8')
+        self.after_transport = revoke
+        with self.assertRaises(CommandError):
+            self.run_smoke()
+        self.assertEqual(self.events, ['obfuscation'])
+        self.assertEqual(len(self.ledger()['calls']), 1)
+        self.assertFalse(self.ledger_path.with_suffix('.lock').exists())
+        self.assertTrue((self.root / 'run' / 'report.md').exists())
+
+    def test_timeout_or_invalid_judge_retains_reservation_and_stops_without_retry(self):
+        for fault, purposes in [('generation-timeout', ['obfuscation', 'classification', 'generation']),
+                                 ('malformed-judge', ['obfuscation', 'classification'])]:
+            with self.subTest(fault=fault):
+                self.fault = fault
+                self.events = []
+                before = len(self.ledger()['calls']) if self.ledger_path.exists() else 0
+                with self.assertRaises(CommandError):
+                    self.run_smoke(fault)
+                self.assertEqual(self.events, purposes)
+                snapshot = self.ledger()
+                self.assertEqual(len(snapshot['calls']) - before, len(purposes))
+                self.assertIsNone(snapshot['calls'][-1]['cost'])
+                self.assertNotEqual(snapshot['calls'][-1]['status'], 'started')
+                self.assertGreater(Decimal(snapshot['uncertain_reservations_usd']), 0)
+
+    def test_mask_http_error_stops_before_jev_and_keeps_unknown_cost(self):
+        self.fault = 'mask-http-error'
+        with self.assertRaises(CommandError):
+            self.run_smoke()
+        self.assertEqual(self.events, ['obfuscation'])
+        self.assertEqual(self.ledger()['uncertain_reservations_usd'], '0.01')
+
+    def test_effective_model_drift_stops_before_further_egress(self):
+        self.fault = 'model-drift'
+        with self.assertRaises(CommandError):
+            self.run_smoke()
+        self.assertEqual(self.events, ['obfuscation', 'classification', 'generation'])
+        self.assertEqual(self.ledger()['calls'][-1]['metadata']['model_effective'], 'unapproved-new-model')
+
+    def test_restart_cannot_spend_unknown_previous_reservations(self):
+        ledger = EvaluationBudget(self.ledger_path, '1.00', authorization_id=self.approval['authorization_id'],
+                                  authorization_digest=evaluation.digest(self.approval))
+        ledger.reserve('previous_interrupted_call', '.99')
+        with self.assertRaises(CommandError):
+            self.run_smoke()
+        self.assertEqual(self.events, ['obfuscation'])
+        self.assertEqual(self.ledger()['budget_exposure_usd'], '1.00')
+        self.sdk.assert_not_called()

@@ -25,7 +25,7 @@ import requests
 from front.chat_service import send_chat_message
 from front.connectors import ChatResponse
 from front.documents import extract_document
-from front.models import Company, CompanyEngine, Engine, EngineModel, Profile, RulesGroup, Rule
+from front.models import Company, CompanyEngine, Engine, EngineModel, ObfuscationConfig, Profile, RulesGroup, Rule
 
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -178,7 +178,22 @@ class OfflineProviders:
                             tokens_used=usage['generation_input_tokens'] + usage['generation_output_tokens'],
                             provider_request_id=f"synthetic-{self.case['id']}", usage={})
 
-    def post(self, url, *, data, **kwargs):
+    def post(self, url, *, data=None, **kwargs):
+        mask_payload = kwargs.pop('json', None)
+        if mask_payload is not None:
+            if url != 'https://mask.offline.invalid/api/mask':
+                raise AssertionError('Unexpected synthetic masking destination')
+            texts = json.loads(mask_payload['text'])
+            if not isinstance(texts, list) or any(not isinstance(text, str) for text in texts):
+                raise AssertionError('Mask contract requires a structured string batch')
+            self.events.append({'purpose': 'obfuscation', 'content_hash': sha256(texts),
+                                'forbidden': any('SYNTHETIC_SECRET' in text for text in texts)})
+            response = requests.Response()
+            response.status_code, response._content, response._content_consumed = 200, canonical({'masked': mask_payload['text']}).encode(), True
+            return response
+        return self.judge_response(data)
+
+    def judge_response(self, data):
         payload = json.loads(data)
         questions = payload['questions']
         purpose = 'classification' if 'category' in questions else 'verification'
@@ -207,13 +222,15 @@ class OfflineProviders:
         return response
 
 
-def policy_config(case, configuration, manifest, credential, models):
+def policy_config(case, configuration, manifest, credential, models, mask=None):
     """Shared synthetic policy for regression runs and the isolated demo."""
     levels = ['economy', 'strong'] if configuration == 'router' else [configuration]
     generator_destinations = [] if case.get('deny_generation') else [f'engine:{credential.pk}']
     return {
         'version': 1, 'classification': manifest['classification_mode'], 'local_sensitivity': 'public', 'allow_empty_rules': False,
-        'destinations': {level: generator_destinations + ['jev'] for level in ('public', 'internal', 'confidential')},
+        'destinations': {level: generator_destinations + ['jev'] + ([f'obfuscation:{mask.pk}'] if mask else [])
+                         for level in ('public', 'internal', 'confidential')},
+        'masking': {'max_call_cost': '0'},
         'jev': {'transport': 'typesafe', 'model': manifest['model_versions']['judge'],
                 'input_price': manifest['prices_per_million']['judge']['input'],
                 'output_price': manifest['prices_per_million']['judge']['output'],
@@ -239,7 +256,9 @@ def run_case(case, configuration, manifest, root, engine, models, run_id):
     credential = CompanyEngine.objects.create(company=company, engine=engine, api_key='synthetic-offline-credential')
     selected = models['economy' if configuration == 'router' else configuration]
     Profile.objects.create(user=actor, company=company, default_engine=credential, default_model=selected)
-    company.ai_config = policy_config(case, configuration, manifest, credential, models)
+    mask = ObfuscationConfig.objects.create(company=company, name='Synthetic offline mask',
+                                            api_url='https://mask.offline.invalid', active=True)
+    company.ai_config = policy_config(case, configuration, manifest, credential, models, mask)
     company.save(update_fields=['ai_config'])
     group = RulesGroup.objects.create(company=company, name='Synthetic evaluation policy')
     Rule.objects.create(rules_group=group, name='Synthetic secret',
@@ -357,17 +376,25 @@ def run_case(case, configuration, manifest, root, engine, models, run_id):
 
 
 class Command(BaseCommand):
-    help = 'Run 50 synthetic cases through the actual chat use case; real calls are disabled.'
+    help = 'Offline controls by default; real pilot runs require an explicit frozen authorization.'
 
     def add_arguments(self, parser):
         parser.add_argument('--output', required=True, help='New output directory; existing paths are never replaced.')
         parser.add_argument('--manifest', default=str(ROOT / 'evals' / 'manifest.json'))
         parser.add_argument('--split', choices=['all', 'development', 'reserved'], default='all')
-        parser.add_argument('--real', action='store_true', help='Currently disabled until durable budget accounting exists.')
+        parser.add_argument('--real', action='store_true', help='Explicit opt-in; requires the pilot manifest and authorization.')
+        parser.add_argument('--authorization', help='New explicit approval bound to the pilot manifest; never inferred from historical permission.')
+        parser.add_argument('--max-usd', help='Must exactly match the new approved total ceiling.')
+        parser.add_argument('--preflight', action='store_true', help='Read-only pilot checks; zero provider calls.')
 
     def handle(self, *args, **options):
+        from front.evaluation import read_json, run_pilot
+        if read_json(options['manifest']).get('bank_kind') == 'pilot':
+            return run_pilot(options, self.stdout)
         if options['real']:
-            raise CommandError('Real evaluation is disabled until durable budget accounting is wired.')
+            raise CommandError('Real evaluation requires a pilot manifest and new explicit authorization.')
+        if options.get('preflight'):
+            raise CommandError('Preflight requires a pilot manifest.')
         database = connection.settings_dict
         name = str(database['NAME'])
         memory = name == ':memory:' or (name.startswith('file:') and parse_qs(urlsplit(name).query).get('mode') == ['memory'])
