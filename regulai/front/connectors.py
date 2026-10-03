@@ -10,6 +10,21 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
 
+DOCUMENT_RESPONSE_SCHEMA = {
+    'type': 'object', 'required': ['claims'], 'additionalProperties': False,
+    'properties': {'claims': {'type': 'array', 'items': {
+        'type': 'object', 'required': ['text', 'citations'], 'additionalProperties': False,
+        'properties': {
+            'text': {'type': 'string'},
+            'citations': {'type': 'array', 'items': {
+                'type': 'object', 'required': ['id', 'quote'], 'additionalProperties': False,
+                'properties': {'id': {'type': 'string'}, 'quote': {'type': 'string'}},
+            }},
+        },
+    }}},
+}
+
+
 @dataclass
 class ChatMessage:
     """Represents a chat message."""
@@ -132,6 +147,7 @@ class AnthropicConnector(BaseConnector):
         model: str,
         max_tokens: int = 1000,
         temperature: float = 0.6,
+        *, supports_json: bool = False, reasoning: bool = False,
         **kwargs
     ) -> ChatResponse:
         """Send a chat request using Anthropic API."""
@@ -205,9 +221,13 @@ class AnthropicConnector(BaseConnector):
             "model": model,
             "messages": api_messages,
             "max_tokens": max_tokens,
-            "temperature": temperature,
             "timeout": kwargs.get('timeout', 30),
         }
+        if not reasoning:
+            request_kwargs['temperature'] = temperature
+        if supports_json:
+            request_kwargs['output_config'] = {'format': {
+                'type': 'json_schema', 'schema': DOCUMENT_RESPONSE_SCHEMA}}
 
         # Add system message if present
         if system_messages:

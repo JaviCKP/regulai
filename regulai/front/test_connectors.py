@@ -73,3 +73,29 @@ class ConnectorTests(SimpleTestCase):
         self.assertIsNone(response.finish_reason)
         checks = verify_response(response.content, response.finish_reason, require_semantic=False)
         self.assertEqual((checks['local_status'], checks['finish_reason']), ('failed', 'unknown'))
+
+    def test_anthropic_json_capability_requests_the_document_schema(self):
+        with patch('anthropic.Anthropic') as sdk:
+            sdk.return_value.messages.create.return_value = SimpleNamespace(
+                content=[SimpleNamespace(text='{"claims":[]}')], usage=None,
+                model='custom-name', id='synthetic-id', stop_reason='end_turn')
+            connector = get_connector('anthropic', 'synthetic-key')
+            connector.chat([ChatMessage('system', 'Return JSON claims.'), ChatMessage('user', 'Question')],
+                           'custom-name', max_tokens=77, temperature=0.1, supports_json=True, reasoning=True)
+            payload = sdk.return_value.messages.create.call_args.kwargs
+            self.assertIn('output_config', payload)
+            self.assertEqual(payload['output_config']['format']['type'], 'json_schema')
+            schema = payload['output_config']['format']['schema']
+            self.assertEqual(schema['required'], ['claims'])
+            self.assertFalse(schema['additionalProperties'])
+            claim_schema = schema['properties']['claims']['items']
+            self.assertEqual(claim_schema['required'], ['text', 'citations'])
+            self.assertEqual(claim_schema['properties']['citations']['items']['required'], ['id', 'quote'])
+            self.assertNotIn('temperature', payload)
+            self.assertEqual(payload['max_tokens'], 77)
+            self.assertNotIn('max_completion_tokens', payload)
+            self.assertEqual(sdk.call_args.kwargs['max_retries'], 0)
+            connector.chat([ChatMessage('user', 'Hello')], 'custom-name', temperature=0.1)
+            payload = sdk.return_value.messages.create.call_args.kwargs
+            self.assertNotIn('output_config', payload)
+            self.assertEqual(payload['temperature'], 0.1)
