@@ -637,6 +637,15 @@
   });
 
 
+  function requestUUID() {
+    if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 15) | 64;
+    bytes[8] = (bytes[8] & 63) | 128;
+    const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+
   async function sendMessage() {
     if (isLoading) return;
     const input = document.getElementById('prompt');
@@ -644,7 +653,7 @@
     const prompt = input.value.trim();
     if (!prompt && !file) return;
     const command = {
-      requestId: crypto.randomUUID(), prompt, file, conversationId: currentConversationId,
+      requestId: requestUUID(), prompt, file, conversationId: currentConversationId,
       autoRoute: document.getElementById('automaticRouting')?.checked || false,
       engineId: document.querySelector('#engineDropdownMenu .active')?.dataset.engineId,
       modelId: document.querySelector('#modelDropdownMenu .active')?.dataset.modelId,
@@ -1004,122 +1013,6 @@
     }
   }
 
-  function showObfuscationModal(rules) {
-    if (typeof bootstrap === 'undefined') {
-      console.error('Bootstrap not loaded, showing alert instead');
-      alert('Sensitive content detected. Rules: ' + rules.map(r => r.name).join(', '));
-      return;
-    }
-
-    let modal = document.getElementById('obfuscationRulesModal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.className = 'modal fade';
-      modal.id = 'obfuscationRulesModal';
-      modal.tabIndex = -1;
-      modal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header bg-warning text-dark">
-              <h5 class="modal-title">
-                <iconify-icon icon="solar:shield-warning-bold" class="me-2"></iconify-icon>
-                Sensitive Content Detected
-              </h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="obfuscationRulesContent"></div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-    }
-
-    const rulesContent = document.getElementById('obfuscationRulesContent');
-    rulesContent.innerHTML = rules.map(rule => `
-      <div class="card mb-3 border-${getSeverityClass(rule.severity)}">
-        <div class="card-header d-flex align-items-center justify-content-between bg-${getSeverityClass(rule.severity)}-subtle">
-          <div class="d-flex align-items-center">
-            <iconify-icon icon="solar:shield-check-bold" class="me-2 fs-5"></iconify-icon>
-            <strong>${escapeHtml(rule.name)}</strong>
-          </div>
-          <span class="badge bg-${getSeverityClass(rule.severity)}">${rule.severity}</span>
-        </div>
-        <div class="card-body">
-          <p class="mb-0">${rule.description ? escapeHtml(rule.description) : '<em class="text-muted">Sin descripción.</em>'}</p>
-        </div>
-      </div>
-    `).join('');
-
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-  }
-
-  function showBlockedModal(rules) {
-    // Check if Bootstrap is available
-    if (typeof bootstrap === 'undefined') {
-      console.error('Bootstrap not loaded, showing alert instead');
-      alert('Your prompt was blocked by security rules: ' + rules.map(r => r.name).join(', '));
-      return;
-    }
-
-    // Create modal dynamically if it doesn't exist
-    let modal = document.getElementById('blockedRulesModal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.className = 'modal fade';
-      modal.id = 'blockedRulesModal';
-      modal.tabIndex = -1;
-      modal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-              <h5 class="modal-title">
-                <iconify-icon icon="solar:shield-warning-bold" class="me-2"></iconify-icon>
-                Prompt Blocked by Security Rules
-              </h5>
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              <div class="alert alert-warning mb-4">
-                <iconify-icon icon="solar:danger-triangle-bold" class="me-2"></iconify-icon>
-                <strong>Attention:</strong> Your prompt was blocked because it matched security rules.
-              </div>
-              <div id="blockedRulesContent"></div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-    }
-
-    // Populate rules
-    const rulesContent = document.getElementById('blockedRulesContent');
-    rulesContent.innerHTML = rules.map(rule => `
-      <div class="card mb-3 border-${getSeverityClass(rule.severity)}">
-        <div class="card-header d-flex align-items-center justify-content-between bg-${getSeverityClass(rule.severity)}-subtle">
-          <div class="d-flex align-items-center">
-            <iconify-icon icon="solar:shield-check-bold" class="me-2 fs-5"></iconify-icon>
-            <strong>${escapeHtml(rule.name)}</strong>
-          </div>
-          <span class="badge bg-${getSeverityClass(rule.severity)}">${rule.severity}</span>
-        </div>
-        <div class="card-body">
-          <p class="mb-0">${rule.description ? escapeHtml(rule.description) : '<em class="text-muted">No description available.</em>'}</p>
-        </div>
-      </div>
-    `).join('');
-
-    // Show modal
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-  }
-
   function getSeverityClass(severity) {
     const classes = {
       'critical': 'danger',
@@ -1208,10 +1101,9 @@
   }
 
   function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    return String(text ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[char]));
   }
 
   // File handling functions
