@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "checks": [
+    "four case ids and order",
+    "exact input and document UTF-8 bytes",
+    "separate unchanged oracles",
+    "preparer/dataset/manifest hashes",
+    "inherited model/price/source/runtime/masking fields",
+    "bridge only evidence path changed",
+    "pending approval and canonical predecessor digest",
+    "budget Decimal arithmetic",
+    "repeat refuses without modifying any artifact"
+  ],
+  "manifest_sha256": "b4730105fd1f74bfbd3baf0d6757cd9bfd6484b1170b61517944ad721e058b30",
+  "dataset_sha256": "03a6caf09daed2cf52805874fb4d34dfe5b0843e645ebcc9b1e5c0bf47558088",
+  "repeat_command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\adversarial-real-20261003-02\\prepare_scope.py"
+  ],
+  "repeat_exit_code": 1,
+  "repeat_refused_with": "FileExistsError",
+  "all_artifacts_unchanged_after_repeat": true,
+  "network_calls_during_preparation": 0,
+  "database_connections_during_preparation": 0,
+  "credential_bridge_executed": false
+}

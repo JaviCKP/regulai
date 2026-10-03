@@ -1,0 +1,35 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "smoke_ai",
+    "--settings=regulai.test_settings",
+    "--manifest",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\adversarial-live\\community-additional-20261003\\manifest.json",
+    "--authorization",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\adversarial-live\\community-additional-20261003\\authorization.approved.json",
+    "--output",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\adversarial-real-20261003-02\\must-not-exist",
+    "--preflight"
+  ],
+  "exit_code": 0,
+  "started_utc": "2026-10-03T17:28:22.348071+00:00",
+  "finished_utc": "2026-10-03T17:28:23.855263+00:00",
+  "ready_for_real": true,
+  "manifest_sha256": "b4730105fd1f74bfbd3baf0d6757cd9bfd6484b1170b61517944ad721e058b30",
+  "authorization_sha256": "7a8369e07917ba2a6bcedfd359c66ff62aaec53ad6476aeccf6fccfcd0d056f5",
+  "script_sha256": "9858135bf6a0306e84a66a80a33b801cb0646ae7ceaef8dc5b4f67c14a8f723c",
+  "logs": {
+    "preflight.stdout.log": "b2edc094963ea9467cff25f0a176e66d33abac8ba69aaa02bf7b6d9fd1538d59",
+    "preflight.stderr.log": "a4ed4c2c830adf807283a578ea7ee8b2f659416a86da69815d6147237e7d7f36"
+  },
+  "credential_values_redacted_from_unexpected_logs": false,
+  "source_database_open_mode": "ro",
+  "source_database_unchanged": true,
+  "source_database_sha256_before": "652076bf4f3bb4bd6a93dde9ae8fc0eac4f8b34ade26ddf9619ec294760229bd",
+  "source_database_sha256_after": "652076bf4f3bb4bd6a93dde9ae8fc0eac4f8b34ade26ddf9619ec294760229bd",
+  "user_database_migrated": false,
+  "execution_database": "isolated memory in child process"
+}
