@@ -442,16 +442,11 @@
                   </div>
                   <div class="message-content">{{ msg.content }}</div>
                   {% if msg.response_record %}
-                  {% if msg.response_record.prompt.decision.verification.status != 'passed' %}
-                  <p role="status" class="badge bg-warning text-dark">No verificado</p>
-                  <a href="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">Retained evidence JSON (not verified)</a>
-                  {% else %}
                   <details class="request-evidence mt-2" data-evidence-url="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">
                     <summary>Document evidence</summary>
                     <div class="evidence-content">Open to load retained evidence. Reattach the original to check it again.</div>
                     <a href="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">Evidence JSON</a>
                   </details>
-                  {% endif %}
                   {% else %}
                   <p class="small">Excluded from future context: this legacy response has no validated request record.</p>
                   {% endif %}
@@ -642,15 +637,6 @@
   });
 
 
-  function requestUUID() {
-    if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
-    const bytes = crypto.getRandomValues(new Uint8Array(16));
-    bytes[6] = (bytes[6] & 15) | 64;
-    bytes[8] = (bytes[8] & 63) | 128;
-    const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-  }
-
   async function sendMessage() {
     if (isLoading) return;
     const input = document.getElementById('prompt');
@@ -658,7 +644,7 @@
     const prompt = input.value.trim();
     if (!prompt && !file) return;
     const command = {
-      requestId: requestUUID(), prompt, file, conversationId: currentConversationId,
+      requestId: crypto.randomUUID(), prompt, file, conversationId: currentConversationId,
       autoRoute: document.getElementById('automaticRouting')?.checked || false,
       engineId: document.querySelector('#engineDropdownMenu .active')?.dataset.engineId,
       modelId: document.querySelector('#modelDropdownMenu .active')?.dataset.modelId,
@@ -730,34 +716,6 @@
     parent.appendChild(line);
   }
 
-  function renderDisclosures(parent, coverage) {
-    const messages = {
-      images_unread: 'Imágenes no analizadas ni enviadas', images_omitted: 'Imágenes no analizadas ni enviadas',
-      attachments_unread: 'Adjuntos no analizados ni enviados', charts_unread: 'Gráficos no analizados ni enviados',
-      comments_unread: 'Comentarios no analizados ni enviados', equations_unread: 'Ecuaciones no analizadas ni enviadas',
-      symbols_unread: 'Símbolos no analizados ni enviados', form_fields_unread: 'Campos de formulario no analizados ni enviados',
-      annotations_unread: 'Anotaciones no analizadas ni enviadas', external_content_unread: 'Contenido externo no analizado ni enviado',
-      page_without_text: 'Página sin texto extraíble; su contenido visual no se ha analizado ni enviado',
-      tracked_changes_present: 'Se ha usado la vista con los cambios aceptados',
-      encoding_assumed: 'Se ha interpretado la codificación como Windows-1252', blank_page: 'Página en blanco',
-      formula_expression_security_only: 'La fórmula se comprueba para seguridad; se envía su valor en caché',
-      formula_coverage_unknown: 'El valor actual de la fórmula no se ha podido comprobar',
-      numbering_unsupported: 'No se ha podido representar esta numeración'
-    };
-    const disclosures = Array.isArray(coverage?.disclosures) ? coverage.disclosures : [];
-    disclosures.forEach(item => {
-      if (!item || typeof item.code !== 'string') return;
-      const locators = Array.isArray(item.locators) ? item.locators.join(', ') : '';
-      receiptLine(parent, 'Document notice', (messages[item.code] || item.code) + ' (' + (item.count ?? 'unknown') + ')' + (locators ? ': ' + locators : ''));
-    });
-  }
-
-  function consentReason(reason) {
-    return ({consent_expired: 'Confirmation expired. Review and confirm again.',
-      consent_context_changed: 'Policy or context changed. Review and confirm again.',
-      coverage_incomplete: 'Some document content was not analyzed and will not be sent.'})[reason] || reason;
-  }
-
   function renderReceipt(parent, receipt, status) {
     parent.replaceChildren();
     receiptLine(parent, 'Request', status);
@@ -769,23 +727,10 @@
       receiptLine(parent, 'Document coverage', coverage.status);
       receiptLine(parent, 'Units read / total', String(coverage.units_read ?? 'unknown') + ' / ' + String(coverage.units_total ?? 'unknown'));
       if (coverage.warnings?.length) receiptLine(parent, 'Coverage warnings', coverage.warnings.join(', '));
-      renderDisclosures(parent, coverage);
     }
-    if (Array.isArray(receipt.notices)) receipt.notices.forEach(notice => receiptLine(parent, 'Notice', notice));
-    if (receipt.consent_reason) receiptLine(parent, 'Confirmation', consentReason(receipt.consent_reason));
-    if (receipt.history) {
-      receiptLine(parent, 'History turns sent / omitted', `${receipt.history.sent_turns ?? 'unknown'} / ${receipt.history.omitted_turns ?? 'unknown'}`);
-      receiptLine(parent, 'History bytes sent / omitted', `${receipt.history.sent_bytes ?? 'unknown'} / ${receipt.history.omitted_bytes ?? 'unknown'}`);
-    }
-    const limitLabels = {jev_state_bytes: 'Evaluator input limit (bytes)', response_bytes: 'Response limit (bytes)', max_output_tokens: 'Output limit (tokens)',
-      call_timeout_seconds: 'Call timeout (seconds)', deadline_seconds: 'Request deadline (seconds)',
-      judge_input_bytes_bound: 'Maximum judge input (bytes)'};
-    Object.entries(limitLabels).forEach(([key, label]) => {
-      if (receipt.limits?.[key] != null) receiptLine(parent, label, receipt.limits[key]);
-    });
     if (receipt.route) {
       receiptLine(parent, 'Route', receipt.route.mode);
-      receiptLine(parent, 'Model', receipt.route.model_effective || receipt.route.model || receipt.route.model_requested || receipt.route.model_id);
+      receiptLine(parent, 'Model', receipt.route.model || receipt.route.model_requested || receipt.route.model_id);
       if (receipt.route.task) receiptLine(parent, 'Task', receipt.route.task);
       if (receipt.route.level || receipt.route.tier) receiptLine(parent, 'Route tier', receipt.route.level || receipt.route.tier);
       if (receipt.route.reason_codes?.length) receiptLine(parent, 'Route reasons', receipt.route.reason_codes.join(', '));
@@ -799,8 +744,6 @@
       receiptLine(parent, 'Call cost', call.cost == null ? 'unknown' : String(call.cost) + ' ' + (call.currency || ''));
       if (call.duration_ms != null) receiptLine(parent, 'Duration (ms)', call.duration_ms);
     });
-    const generation = calls.filter(call => call.purpose === 'generation').slice(-1)[0];
-    if (generation) receiptLine(parent, 'Effective route', generation.model_effective || generation.model);
     const total = receipt.total;
     receiptLine(parent, 'Total cost', total?.cost ?? (calls.length ? 'unknown' : '0 (no calls)'));
     if (total?.cost == null && total?.known_cost != null) receiptLine(parent, 'Known subtotal (incomplete)', total.known_cost);
@@ -822,7 +765,7 @@
     valid.forEach(item => {
       const details = document.createElement('details');
       const summary = document.createElement('summary');
-      summary.textContent = (item.claim_index != null ? '[' + item.claim_index + '] ' : '') + item.locator;
+      summary.textContent = item.locator;
       details.appendChild(summary);
       const excerpt = document.createElement('p');
       excerpt.className = 'message-content';
@@ -878,9 +821,6 @@
     command.userBubble.appendChild(command.controls);
     if (command.status === 'pending_consent') {
       receiptLine(command.controls, 'Confirmation', 'Review the decision before authorizing this same content and file.');
-      const reason = data.consent_reason || data.receipt?.consent_reason;
-      if (reason) receiptLine(command.controls, 'Confirmation', consentReason(reason));
-      renderDisclosures(command.controls, data.receipt?.coverage);
       commandButton(command.controls, 'Confirm sending', () => submitCommand(command));
       commandButton(command.controls, 'Cancel request', () => submitCommand(command, 'cancel'));
     } else if (['processing', 'received'].includes(command.status)) {
@@ -890,15 +830,7 @@
       command.assistantBubble?.remove();
       const message = data.assistant_message;
       command.assistantBubble = createAssistantBubble(message.content, message.file_name, message.file_size, message.file_url);
-      const verified = data.receipt?.verification?.status === 'passed';
-      if (!verified) {
-        const label = document.createElement('p');
-        label.className = 'badge bg-warning text-dark';
-        label.textContent = 'No verificado';
-        label.setAttribute?.('role', 'status');
-        command.assistantBubble.appendChild(label);
-      }
-      if (verified && data.evidence) {
+      if (data.evidence) {
         const evidence = document.createElement('details');
         const heading = document.createElement('summary');
         heading.textContent = 'Document evidence';
@@ -1072,6 +1004,122 @@
     }
   }
 
+  function showObfuscationModal(rules) {
+    if (typeof bootstrap === 'undefined') {
+      console.error('Bootstrap not loaded, showing alert instead');
+      alert('Sensitive content detected. Rules: ' + rules.map(r => r.name).join(', '));
+      return;
+    }
+
+    let modal = document.getElementById('obfuscationRulesModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal fade';
+      modal.id = 'obfuscationRulesModal';
+      modal.tabIndex = -1;
+      modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+              <h5 class="modal-title">
+                <iconify-icon icon="solar:shield-warning-bold" class="me-2"></iconify-icon>
+                Sensitive Content Detected
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="obfuscationRulesContent"></div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const rulesContent = document.getElementById('obfuscationRulesContent');
+    rulesContent.innerHTML = rules.map(rule => `
+      <div class="card mb-3 border-${getSeverityClass(rule.severity)}">
+        <div class="card-header d-flex align-items-center justify-content-between bg-${getSeverityClass(rule.severity)}-subtle">
+          <div class="d-flex align-items-center">
+            <iconify-icon icon="solar:shield-check-bold" class="me-2 fs-5"></iconify-icon>
+            <strong>${escapeHtml(rule.name)}</strong>
+          </div>
+          <span class="badge bg-${getSeverityClass(rule.severity)}">${rule.severity}</span>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">${rule.description ? escapeHtml(rule.description) : '<em class="text-muted">Sin descripción.</em>'}</p>
+        </div>
+      </div>
+    `).join('');
+
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+  }
+
+  function showBlockedModal(rules) {
+    // Check if Bootstrap is available
+    if (typeof bootstrap === 'undefined') {
+      console.error('Bootstrap not loaded, showing alert instead');
+      alert('Your prompt was blocked by security rules: ' + rules.map(r => r.name).join(', '));
+      return;
+    }
+
+    // Create modal dynamically if it doesn't exist
+    let modal = document.getElementById('blockedRulesModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal fade';
+      modal.id = 'blockedRulesModal';
+      modal.tabIndex = -1;
+      modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+              <h5 class="modal-title">
+                <iconify-icon icon="solar:shield-warning-bold" class="me-2"></iconify-icon>
+                Prompt Blocked by Security Rules
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="alert alert-warning mb-4">
+                <iconify-icon icon="solar:danger-triangle-bold" class="me-2"></iconify-icon>
+                <strong>Attention:</strong> Your prompt was blocked because it matched security rules.
+              </div>
+              <div id="blockedRulesContent"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    // Populate rules
+    const rulesContent = document.getElementById('blockedRulesContent');
+    rulesContent.innerHTML = rules.map(rule => `
+      <div class="card mb-3 border-${getSeverityClass(rule.severity)}">
+        <div class="card-header d-flex align-items-center justify-content-between bg-${getSeverityClass(rule.severity)}-subtle">
+          <div class="d-flex align-items-center">
+            <iconify-icon icon="solar:shield-check-bold" class="me-2 fs-5"></iconify-icon>
+            <strong>${escapeHtml(rule.name)}</strong>
+          </div>
+          <span class="badge bg-${getSeverityClass(rule.severity)}">${rule.severity}</span>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">${rule.description ? escapeHtml(rule.description) : '<em class="text-muted">No description available.</em>'}</p>
+        </div>
+      </div>
+    `).join('');
+
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+  }
+
   function getSeverityClass(severity) {
     const classes = {
       'critical': 'danger',
@@ -1160,9 +1208,10 @@
   }
 
   function escapeHtml(text) {
-    return String(text ?? '').replace(/[&<>"']/g, char => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[char]));
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   // File handling functions

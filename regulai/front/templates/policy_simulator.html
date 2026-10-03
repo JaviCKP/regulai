@@ -10,15 +10,6 @@
   <p><a href="{% url 'front:policy_simulator' %}">Compare another draft</a></p>
   {% endif %}
   <details><summary>Current policy</summary><pre>{{ current_config }}</pre></details>
-  {% if can_manage_company_policy and not activated %}
-  <form method="post" class="mt-3">
-    {% csrf_token %}
-    <input type="hidden" name="action" value="bootstrap">
-    <button type="submit" class="btn btn-outline-primary">Generar política inicial</button>
-    <p class="form-text">Genera un borrador conservador sin activar la política ni enviar datos. Revísalo y compáralo antes de activarlo.</p>
-  </form>
-  {% endif %}
-  {% for warning in bootstrap_warnings %}<p role="status" class="alert alert-warning">{{ warning }}</p>{% endfor %}
   {% if not activated %}
   <form method="post" class="mt-3">
     {% csrf_token %}
