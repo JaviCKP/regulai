@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from functools import wraps
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from front.models import *
 from front.access import actor_company, authorized_conversations, platform_required, protect_operator
@@ -1114,6 +1115,7 @@ def model_edit(request, pk):
 
 @admin_required
 @platform_required
+@require_POST
 def model_toggle(request, pk):
     """Toggle model active status."""
     model = get_object_or_404(EngineModel, pk=pk)
@@ -1134,6 +1136,7 @@ def model_toggle(request, pk):
 
 @admin_required
 @platform_required
+@require_POST
 def model_delete(request, pk):
     """Delete a model."""
     model = get_object_or_404(EngineModel, pk=pk)
@@ -2196,6 +2199,8 @@ def rule_community_activate(request, pk):
 
 
 @admin_required
+@platform_required
+@require_POST
 def rules_community_sync(request):
     """
     Syncs community rules from the GitHub repository.
