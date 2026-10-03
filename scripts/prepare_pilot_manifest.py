@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / 'regulai'))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'regulai.test_settings')
 import django
 django.setup()
-from front.evaluation import runtime_versions, source_hashes
+from front.evaluation import local_masking_manifest, runtime_versions, source_hashes
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--manifest', type=Path, required=True)
@@ -22,6 +22,8 @@ if args.output.resolve().parent != args.manifest.resolve().parent:
 manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
 manifest['source_sha256'] = source_hashes()
 manifest['runtime_versions'] = runtime_versions()
+if manifest.get('masking', {}).get('backend') == 'local':
+    manifest['masking'] = local_masking_manifest()
 for key, source in [('dataset_sha256', 'dataset'), ('human_rubric_sha256', 'human_rubric')]:
     manifest[key] = hashlib.sha256((args.manifest.parent / manifest[source]).read_bytes()).hexdigest()
 with args.output.open('x', encoding='utf-8') as output:

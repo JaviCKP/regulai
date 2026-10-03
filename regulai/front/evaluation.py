@@ -38,7 +38,7 @@ LEDGER_PATH = ROOT / '.claude' / 'pilot-real-budget.sqlite3'
 PILOT_MANIFEST = ROOT / 'evals' / 'pilot-real' / 'manifest.json'
 SOURCE_FILES = ('regulai/front/chat_service.py', 'regulai/front/policy.py', 'regulai/front/routing.py',
     'regulai/front/verification.py', 'regulai/front/jev.py', 'regulai/front/documents.py',
-    'regulai/front/masking.py', 'regulai/front/classification.py', 'regulai/front/sources.py',
+    'regulai/front/masking.py', 'regulai/front/local_masking.py', 'regulai/front/classification.py', 'regulai/front/sources.py',
     'regulai/front/connectors.py', 'regulai/front/views.py', 'regulai/front/models.py',
     'regulai/front/evaluation.py', 'regulai/front/evaluation_budget.py',
     'regulai/front/management/commands/evaluate_ai.py', 'regulai/front/management/commands/smoke_ai.py',
@@ -103,8 +103,20 @@ def source_hashes():
 
 
 def runtime_versions():
-    return {'python': sys.version.split()[0], **{name: metadata.version(name)
-        for name in ('Django', 'djangorestframework', 'openai', 'pydantic', 'requests', 'pypdf', 'python-docx')}}
+    versions = {'python': sys.version.split()[0]}
+    for name in ('Django', 'djangorestframework', 'openai', 'pydantic', 'requests', 'pypdf', 'python-docx',
+                 'spacy', 'xx-ent-wiki-sm'):
+        try:
+            versions[name] = metadata.version(name)
+        except metadata.PackageNotFoundError:
+            versions[name] = None
+    return versions
+
+
+def local_masking_manifest():
+    """Read the installed detector identity without loading NLP or accessing a network."""
+    from .local_masking import detector_metadata
+    return {**detector_metadata(), 'detect': 'both', 'language': ''}
 
 
 def preflight(manifest_path, authorization_path=None, *, now=None, check_credentials=True):
@@ -158,13 +170,29 @@ def preflight(manifest_path, authorization_path=None, *, now=None, check_credent
             blockers.append('same_day_official_pricing_review_required')
     except (KeyError, TypeError, ValueError):
         blockers.append('same_day_official_pricing_review_required')
-    mask = manifest['destinations']['mask']
-    parsed = urlsplit(mask or '')
-    if (parsed.scheme != 'https' or not parsed.hostname or parsed.hostname.endswith('.invalid')
-            or parsed.username or parsed.password or parsed.query or parsed.fragment):
-        blockers.append('authorized_mask_destination_required')
-    if not manifest.get('mask_contract_review') or approval.get('mask_contract_reviewed') is not True:
-        blockers.append('mask_contract_and_price_review_required')
+    masking = manifest.get('masking', {'backend': 'http'})
+    masking_observed = None
+    if masking.get('backend') == 'local':
+        if 'mask' in manifest['destinations'] or money(manifest['call_caps_usd']['obfuscation']) != 0:
+            blockers.append('local_mask_must_have_no_endpoint_and_zero_api_bound')
+        if approval.get('masking') != masking:
+            blockers.append('authorization_local_mask_mismatch')
+        try:
+            masking_observed = local_masking_manifest()
+        except (ImportError, RuntimeError, OSError):
+            blockers.append('local_mask_runtime_unavailable')
+        else:
+            if masking != masking_observed:
+                blockers.append('local_mask_detector_changed')
+    elif masking.get('backend') == 'http':
+        parsed = urlsplit(manifest['destinations'].get('mask') or '')
+        if (parsed.scheme != 'https' or not parsed.hostname or parsed.hostname.endswith('.invalid')
+                or parsed.username or parsed.password or parsed.query or parsed.fragment):
+            blockers.append('authorized_mask_destination_required')
+        if not manifest.get('mask_contract_review') or approval.get('mask_contract_reviewed') is not True:
+            blockers.append('mask_contract_and_price_review_required')
+    else:
+        blockers.append('unsupported_mask_backend')
     # No arbitrary new endpoint is inferred from a file or an environment variable.
     if manifest['destinations']['generation'] != 'https://api.deepseek.com':
         blockers.append('unsupported_generator_destination')
@@ -178,11 +206,11 @@ def preflight(manifest_path, authorization_path=None, *, now=None, check_credent
         blockers.append('isolated_credentials_required')
     return {'ready_for_real': not blockers, 'blockers': blockers, 'manifest_sha256': manifest_hash,
             'source_sha256': source_hashes(), 'cases': len(cases), 'maximum_usd': manifest['maximum_usd'],
-            'ledger': str(LEDGER_PATH), 'network_calls': 0}, approval
+            'masking_observed': masking_observed, 'ledger': str(LEDGER_PATH), 'network_calls': 0}, approval
 
 
 class LedgerObserver:
-    """Call-only metadata. Every service boundary reserves, including masks and failed judges."""
+    """Every service boundary reserves; local transformations reserve zero API cost."""
     def __init__(self, ledger, manifest, destinations, *, case_id, configuration, authorize=None):
         self.ledger, self.manifest, self.destinations = ledger, manifest, destinations
         self.case_id, self.configuration, self.authorize = case_id, configuration, authorize
@@ -203,9 +231,14 @@ class LedgerObserver:
         bound = money(call['cost_bound'])
         if bound > money(self.manifest['call_caps_usd'][purpose]):
             raise BudgetExceeded('The application call exceeds the approved per-call bound.')
+        transport = call.get('transport', 'http')
+        expected_transport = self.manifest.get('masking', {}).get('backend', 'http') if purpose == 'obfuscation' else 'http'
+        if transport != expected_transport or transport == 'local' and bound != 0:
+            raise BudgetExceeded('Unexpected pilot transport or nonzero local API bound.')
         token = self.ledger.reserve(purpose, bound, zero_cost=purpose == 'obfuscation' and bound == 0,
             metadata={'case_id': self.case_id, 'configuration': self.configuration,
-                      'provider': call['provider'], 'model': call['model']})
+                      'provider': call['provider'], 'model': call['model'], 'transport': transport,
+                      'cost_scope': call.get('cost_scope', 'api')})
         self.tokens.append(token)
         try:
             if self.authorize:
@@ -236,7 +269,9 @@ class LedgerObserver:
     def finish(self):
         for call in self.ledger.snapshot()['calls']:
             if call['id'] in self.tokens and call['status'] == 'started':
-                self.ledger.complete(call['id'], status='outcome_unknown', cost_kind='unknown')
+                local = call['metadata'].get('transport') == 'local'
+                self.ledger.complete(call['id'], status='outcome_unknown',
+                    cost='0' if local else None, cost_kind='configured_zero' if local else 'unknown')
                 self.stop_reason = 'unsettled_provider_call'
 
 
@@ -288,8 +323,10 @@ def exercise_case(case, configuration, manifest, engine, models, ledger, *, real
     actor.save(update_fields=['password'])
     credential = CompanyEngine.objects.create(company=company, engine=engine,
         api_key=os.environ['REGULAI_EVAL_GENERATOR_KEY'] if real else 'synthetic-offline-credential')
-    mask = ObfuscationConfig.objects.create(company=company, name='Pilot authorized mask',
-        api_url=manifest['destinations']['mask'] if real else 'https://mask.offline.invalid', active=True)
+    mask_backend = manifest.get('masking', {}).get('backend', 'http')
+    mask = ObfuscationConfig.objects.create(company=company, name='Pilot authorized mask', backend=mask_backend,
+        api_url='' if mask_backend == 'local' else manifest['destinations']['mask'] if real else 'https://mask.offline.invalid',
+        active=True)
     Profile.objects.create(user=actor, company=company, default_engine=credential,
                            default_model=models['economy' if configuration == 'router' else configuration])
     config = policy_config(case, configuration, manifest, credential, models, mask)
@@ -350,7 +387,9 @@ def exercise_case(case, configuration, manifest, engine, models, ledger, *, real
         from .management.commands.evaluate_ai import observed_outcome
         control = control and observed_outcome(data, receipt.get('calls', [])) == expected
     return {'case_id': case['id'], 'configuration': configuration, 'split': case['split'],
-        'mode': 'real' if real else 'simulated', 'group': case['group'], 'execution_state': data['status'],
+        'mode': 'real' if real else 'simulated', 'masking_backend': mask_backend,
+        'masking_execution': 'local_detector' if mask_backend == 'local' else 'remote' if real else 'fixture',
+        'group': case['group'], 'execution_state': data['status'],
         'error_type': data.get('error_type'), 'delivered': delivered, 'control_pass': bool(control),
         'answer': data.get('assistant_message', {}).get('content'), 'evidence': data.get('evidence', {}).get('items', []),
         'coverage': receipt.get('coverage'), 'sensitivity': receipt.get('policy', {}).get('sensitivity'),
@@ -399,6 +438,11 @@ def attach_reviews(rows, review_path):
     return rows
 
 
+def is_external_call(call):
+    # Historical records did not carry transport; do not silently recast them as local.
+    return call.get('status') != 'not_started' and call.get('metadata', {}).get('transport') != 'local'
+
+
 def summarize_pilot(rows):
     summaries = []
     for configuration in ('economy', 'strong', 'router'):
@@ -428,8 +472,11 @@ def summarize_pilot(rows):
                 **{field: labeled(field) for field in REVIEW_FIELDS if field != 'correct'},
                 'second_attempts': sum(row['second_attempt'] for row in selected),
                 'accounting_entries': len(calls),
-                'provider_calls': sum(call.get('status') != 'not_started' for call in calls),
-                'calls_by_purpose': {purpose: sum(call['purpose'] == purpose and call.get('status') != 'not_started' for call in calls)
+                'provider_calls': sum(is_external_call(call) for call in calls),
+                'local_transformations': sum(call.get('status') != 'not_started' and call['metadata'].get('transport') == 'local' for call in calls),
+                'local_api_cost_usd': str(sum((money(call['cost']) for call in calls
+                    if call['metadata'].get('transport') == 'local' and call['cost'] is not None), Decimal(0))),
+                'calls_by_purpose': {purpose: sum(call['purpose'] == purpose and is_external_call(call) for call in calls)
                     for purpose in ('obfuscation', 'classification', 'generation', 'verification')},
                 'provider_reported_usd': str(reported), 'tariff_estimated_usd': str(estimated),
                 'uncertain_reserved_usd': str(uncertain), 'unknown_cost_calls': unknown,
@@ -458,13 +505,14 @@ def write_reports(output, manifest, rows, budget):
         **{field: None for field in REVIEW_FIELDS}} for row in rows]
     (output / 'human-review.pending.json').write_text(json.dumps(reviews, indent=2) + '\n', encoding='utf-8')
     lines = ['# Pilot evaluation', '', f"Mode: **{manifest['execution_mode']}**. Runs: {len(rows)}. Human review is separate; no quality or savings claim.", '',
-        '| Configuration | Split | n | Delivered | Human reviewed | Calls | Estimated USD | Reported USD | Uncertain reserve USD | p50 ms | p95 ms |',
-        '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+        '| Configuration | Split | n | Delivered | Human reviewed | External calls | Local transformations | Estimated USD | Reported USD | Uncertain reserve USD | p50 ms | p95 ms |',
+        '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
     for item in summaries:
         lines.append('| ' + ' | '.join(str(item[key]) for key in ('configuration', 'split', 'n', 'delivered', 'human_reviewed_n',
-            'provider_calls', 'tariff_estimated_usd', 'provider_reported_usd', 'uncertain_reserved_usd', 'p50_latency_ms', 'p95_latency_ms')) + ' |')
+            'provider_calls', 'local_transformations', 'tariff_estimated_usd', 'provider_reported_usd', 'uncertain_reserved_usd', 'p50_latency_ms', 'p95_latency_ms')) + ' |')
     lines += ['', 'Per-case answers, citations, sensitivity, coverage, attempts and all calls are in results.jsonl. These are synthetic data.',
         'Simulator answers and judges are fixtures. Their labels do not establish provider quality. Cost per correct answer stays null until complete independent human review and complete cost information.',
+        'When masking_backend is local, masking uses the real CPU detector. Its API cost is zero; CPU, memory and operational costs are not measured. Local transformations are excluded from external call counts.',
         'An estimated price is not an invoice; unknown expenses retain their full reservation. p50/p95 are observations of this sample, not an SLA.',
         f"Stop reason: {manifest.get('stop_reason') or 'none'}."]
     (output / 'report.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
@@ -501,6 +549,7 @@ def run_pilot(options, stdout):
         commit = 'unavailable'
     frozen = {**manifest, 'source_sha256_observed': source_hashes(), 'manifest_sha256': digest(Path(manifest_path).read_bytes()),
         'runtime_versions_observed': runtime_versions(), 'commit': commit,
+        'masking_observed': local_masking_manifest() if manifest.get('masking', {}).get('backend') == 'local' else None,
         'execution_mode': 'real' if real else 'simulated', 'started_at': datetime.now(timezone.utc).isoformat(),
         'selected_split': options.get('split', 'all'), 'execution_order': [[case['id'], configuration] for case, configuration in sequence]}
     with ExitStack() as stack:
@@ -544,7 +593,7 @@ def run_pilot(options, stdout):
         finally:
             frozen.update(stop_reason=stop, completed_order=order, finished_at=datetime.now(timezone.utc).isoformat())
             write_reports(output, frozen, rows, ledger.snapshot())
-    actual_calls = sum(call['status'] != 'not_started' for row in rows for call in row['calls']) if real else 0
+    actual_calls = sum(is_external_call(call) for row in rows for call in row['calls']) if real else 0
     stdout.write(f'{len(rows)} pilot runs; real calls {actual_calls}; human review pending. Reports: {output}')
     if stop:
         raise CommandError('Pilot stopped: ' + stop + '. Retain the report and ledger; do not automatically retry.')

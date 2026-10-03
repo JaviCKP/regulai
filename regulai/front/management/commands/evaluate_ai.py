@@ -102,6 +102,10 @@ def summarize(rows):
                 'forbidden_egress': sum(row['forbidden_egress'] for row in selected),
                 'invalid_displayed_citations': sum(row['invalid_displayed_citations'] for row in selected),
                 'calls': sum(len(row['calls']) for row in selected),
+                'provider_calls': sum(call.get('transport') != 'local' and call.get('status') != 'not_started'
+                                      for row in selected for call in row['calls']),
+                'local_transformations': sum(call.get('transport') == 'local' and call.get('status') != 'not_started'
+                                             for row in selected for call in row['calls']),
                 'generation_calls': sum(row['generation_calls'] for row in selected),
                 'escalations': sum(row['generation_calls'] > 1 for row in selected),
                 'errors_corrected': sum(row['errors_corrected'] for row in selected),
@@ -124,7 +128,7 @@ def summarize(rows):
 
 
 class OfflineProviders:
-    """Fixtures at generation and HTTP seams; socket access is separately denied."""
+    """Generation/judge fixtures; identity HTTP mask retained for remote compatibility tests."""
     def __init__(self, case, manifest):
         self.case, self.manifest, self.events = case, manifest, []
         self.last_correct = True
@@ -256,8 +260,10 @@ def run_case(case, configuration, manifest, root, engine, models, run_id):
     credential = CompanyEngine.objects.create(company=company, engine=engine, api_key='synthetic-offline-credential')
     selected = models['economy' if configuration == 'router' else configuration]
     Profile.objects.create(user=actor, company=company, default_engine=credential, default_model=selected)
+    # Preserve the legacy bank's literal-output contract. The separate pilot path
+    # exercises the real local detector, whose transformations can change labels.
     mask = ObfuscationConfig.objects.create(company=company, name='Synthetic offline mask',
-                                            api_url='https://mask.offline.invalid', active=True)
+                                            backend='http', api_url='https://mask.offline.invalid', active=True)
     company.ai_config = policy_config(case, configuration, manifest, credential, models, mask)
     company.save(update_fields=['ai_config'])
     group = RulesGroup.objects.create(company=company, name='Synthetic evaluation policy')
@@ -291,6 +297,7 @@ def run_case(case, configuration, manifest, root, engine, models, run_id):
     try:
         with patch('front.chat_service.get_connector', return_value=SimpleNamespace(chat=providers.generate)), \
                 patch('front.jev.requests.post', side_effect=providers.post), \
+                patch('requests.sessions.Session.request', side_effect=AssertionError('Offline evaluation forbids HTTP')), \
                 patch('socket.socket.connect', side_effect=AssertionError('Offline evaluation forbids network access')):
             scenario = case.get('scenario')
             conversation_id = None
@@ -354,7 +361,8 @@ def run_case(case, configuration, manifest, root, engine, models, run_id):
         passed = passed and sensitivity == case['expected_sensitivity']
     known = sum((Decimal(call['cost']) for call in calls if call.get('cost') is not None), Decimal(0))
     row = {'case_id': case['id'], 'configuration': configuration, 'group': case['group'], 'split': case['split'],
-           'mode': 'simulated', 'execution_state': data['status'], 'error_type': data.get('error_type'),
+           'mode': 'simulated', 'masking_backend': 'http', 'masking_execution': 'fixture',
+           'execution_state': data['status'], 'error_type': data.get('error_type'),
            'observed_outcome': state, 'expected_outcome': expected, 'control_pass': bool(passed),
            'notices': notices, 'sensitivity': sensitivity,
            'delivered': delivered, 'exact_answer': delivered and content == case.get('expected'),
@@ -367,7 +375,8 @@ def run_case(case, configuration, manifest, root, engine, models, run_id):
            'unknown_cost_calls': sum(call.get('cost') is None for call in calls),
            'input_tokens': sum(call.get('input_tokens') or 0 for call in calls),
            'output_tokens': sum(call.get('output_tokens') or 0 for call in calls),
-           'unknown_usage_calls': sum(call.get('input_tokens') is None or call.get('output_tokens') is None for call in calls),
+           'unknown_usage_calls': sum(call.get('transport') != 'local' and call.get('status') != 'not_started'
+               and (call.get('input_tokens') is None or call.get('output_tokens') is None) for call in calls),
            'answer_hash': sha256(content), 'evidence_ids': [item['id'] for item in evidence],
            'quality_status': data.get('receipt', {}).get('verification', {}).get('status', 'not_verified')}
     row['result_hash'] = sha256(row)
@@ -425,17 +434,20 @@ class Command(BaseCommand):
                 rows.append(run_case(case, configuration, manifest, dataset.parent, engine, models, run_id))
         summaries = summarize(rows)
         try:
-            commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT,
+            commit = subprocess.run(['rtk', 'git', 'rev-parse', 'HEAD'], cwd=ROOT,
                                     capture_output=True, text=True, check=True).stdout.strip()
         except (OSError, subprocess.CalledProcessError):
             commit = 'unavailable'
+        from front.evaluation import runtime_versions
         frozen = {**manifest, 'dataset_hash': sha256(dataset.read_bytes()), 'document_hashes': documents,
+                  'masking_observed': {'backend': 'http', 'execution': 'fixture', 'api_url': 'https://mask.offline.invalid'},
+                  'runtime_versions_observed': runtime_versions(),
                   'manifest_template_hash': sha256(Path(options['manifest']).read_bytes()),
                   'evaluator_source_hash': sha256(Path(__file__).read_bytes()),
                   'commit': commit, 'run_id': run_id, 'created_at': datetime.now(timezone.utc).isoformat(),
                   'selected_split': options['split'], 'execution_order': order,
                   'source_hashes': {name: sha256((ROOT / 'regulai' / 'front' / name).read_bytes())
-                                    for name in ('chat_service.py', 'policy.py', 'routing.py', 'verification.py', 'jev.py', 'documents.py')},
+                                    for name in ('chat_service.py', 'policy.py', 'routing.py', 'verification.py', 'jev.py', 'documents.py', 'masking.py', 'local_masking.py')},
                   'outcomes_hash': sha256([row['result_hash'] for row in rows]),
                   'label_normalization': 'Execution state is retained. Clarification error=>clarification; unavailable authorized routes=>blocked; rejected local/semantic checks and failed judge=>not_verified. Fixed economy below the shared strong floor correctly abstains.'}
         (output / 'manifest.json').write_text(json.dumps(frozen, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
@@ -452,6 +464,7 @@ class Command(BaseCommand):
         for summary in summaries:
             lines.append(f"| {summary['configuration']} | {summary['split']} | {summary['control_passes']}/{summary['cases']} | {summary['delivered']} | {summary['exact_answers']} | {summary['known_cost']} | {summary['unknown_cost_calls']} | {summary['p95_latency_ms']} |")
         lines.extend(['', 'Provider/judge answers and token usage are preprogrammed. Exact-answer counts exercise reference-label comparisons, not provider precision. Real quality and savings remain unmeasured.', '',
+                      'This legacy regression bank uses an identity HTTP masking fixture to preserve its original literal-output contract. New pilot-real and pilot-human manifests use the real local CPU detector and report its transformations separately.', '',
                       'Unknown billed calls stay unknown and are excluded from any complete total or cost-per-correct calculation. Latencies are local observations, with the sample size shown; outcome hashes exclude clocks and run identities.', '',
                       'Failed controls (case ID / configuration / observed / expected):', ''])
         lines.extend(f"- {row['case_id']} / {row['configuration']} / {row['observed_outcome']} / {row['expected_outcome']}" for row in rows if not row['control_pass'])

@@ -10,12 +10,15 @@ from django.conf import settings
 
 from front.chat_service import send_chat_message
 from front.management.commands.run_demo import offline_demo, seed_demo
+from front.models import ObfuscationConfig
 
 
 @override_settings(DEMO_MODE=True)
 class DemoTests(TestCase):
     def test_demo_runs_simple_blocked_and_corrected_document_through_actual_pipeline(self):
         actor = seed_demo()
+        mask = ObfuscationConfig.objects.get(company=actor.profile.company)
+        self.assertEqual((mask.backend, mask.api_url), ('local', ''))
         with offline_demo() as providers:
             simple = send_chat_message(actor, {'content': 'Devuelve el saludo Hola.'})
             self.assertEqual(simple.data['assistant_message']['content'], 'Hola')
@@ -29,6 +32,10 @@ class DemoTests(TestCase):
             self.assertEqual(document.data['receipt']['total']['attempts'], 2)
             self.assertIn('10 euros', document.data['assistant_message']['content'])
             self.assertTrue(document.data['evidence']['items'])
+            self.assertNotIn('obfuscation', [event['purpose'] for event in providers.events])
+            local_calls = [call for call in document.data['receipt']['calls'] if call['purpose'] == 'obfuscation']
+            self.assertTrue(local_calls)
+            self.assertTrue(all(call['transport'] == 'local' and call['cost'] == '0' for call in local_calls))
 
     @override_settings(DEMO_MODE=False)
     def test_normal_settings_cannot_start_demo(self):
@@ -58,6 +65,17 @@ class DemoTests(TestCase):
                 stream.connect(('127.0.0.1', 9))
         self.assertIs(requests.post, before_post)
         self.assertIs(socket.socket.connect, before_connect)
+
+    def test_older_http_demo_mask_is_preserved_and_requires_a_new_demo_database(self):
+        actor = seed_demo()
+        mask = ObfuscationConfig.objects.get(company=actor.profile.company)
+        mask.backend, mask.api_url = 'http', 'https://mask.offline.invalid'
+        mask.save(update_fields=['backend', 'api_url'])
+        with self.assertRaises(CommandError):
+            seed_demo()
+        mask.refresh_from_db()
+        self.assertEqual((mask.backend, mask.api_url), ('http', 'https://mask.offline.invalid'))
+        self.assertEqual(ObfuscationConfig.objects.filter(company=actor.profile.company).count(), 1)
 
     def test_demo_banner_is_explicit_and_settings_import_does_not_mutate_normal_templates(self):
         before = list(settings.TEMPLATES[0]['OPTIONS']['context_processors'])

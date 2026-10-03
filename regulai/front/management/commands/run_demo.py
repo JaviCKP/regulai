@@ -76,9 +76,9 @@ def seed_demo():
             raise CommandError('Existing demo credential differs from the synthetic fixture; it was not changed.')
         if CompanyEngine.objects.filter(company=company).exclude(pk=credential.pk).exists():
             raise CommandError('Unexpected demo credentials exist; no records were changed.')
-        mask, _ = ObfuscationConfig.objects.get_or_create(company=company, name='Synthetic offline mask',
-            defaults={'api_url': 'https://mask.offline.invalid', 'active': True})
-        if not mask.active or mask.api_url != 'https://mask.offline.invalid' or mask.detect != 'both' or mask.language:
+        mask, _ = ObfuscationConfig.objects.get_or_create(company=company, name='Local CPU mask',
+            defaults={'backend': 'local', 'api_url': '', 'active': True})
+        if not mask.active or mask.backend != 'local' or mask.api_url or mask.detect != 'both' or mask.language:
             raise CommandError('Existing demo mask differs from the frozen fixture; it was not changed.')
         if ObfuscationConfig.objects.filter(company=company).count() != 1:
             raise CommandError('Unexpected demo masks exist; no records were changed.')

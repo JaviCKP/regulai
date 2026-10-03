@@ -21,6 +21,7 @@ class PilotOfflineTests(TestCase):
             rows = [json.loads(line) for line in (output / 'results.jsonl').read_text(encoding='utf-8').splitlines()]
             self.assertEqual(len(rows), 24)
             self.assertTrue(all(row['control_pass'] and row['mode'] == 'simulated' for row in rows))
+            self.assertTrue(all(row['masking_backend'] == 'local' and row['masking_execution'] == 'local_detector' for row in rows))
             self.assertEqual({row['configuration'] for row in rows}, {'economy', 'strong', 'router'})
             blocked = [row for row in rows if row['case_id'] in ('blocked', 'consent-pending')]
             self.assertEqual(len(blocked), 6)
@@ -40,6 +41,8 @@ class PilotOfflineTests(TestCase):
                 self.assertIsNone(summary['quality_claim'])
                 self.assertIsNone(summary['savings_claim'])
                 self.assertEqual(summary['real_provider_cases'], 0)
+                self.assertEqual(summary['calls_by_purpose']['obfuscation'], 0)
+                self.assertEqual(summary['local_api_cost_usd'], '0')
             self.assertTrue((output / 'summary.csv').exists())
             self.assertEqual(len((output / 'completed-cases.jsonl').read_text(encoding='utf-8').splitlines()), 24)
             with self.assertRaises(CommandError):
@@ -55,7 +58,8 @@ class PilotOfflineTests(TestCase):
             report = json.loads(console.getvalue())
             self.assertFalse(report['ready_for_real'])
             self.assertIn('new_explicit_authorization_required', report['blockers'])
-            self.assertIn('authorized_mask_destination_required', report['blockers'])
+            self.assertNotIn('authorized_mask_destination_required', report['blockers'])
+            self.assertEqual(report['masking_observed']['backend'], 'local')
             self.assertEqual(report['network_calls'], 0)
             self.assertFalse(output.exists())
 
@@ -75,6 +79,19 @@ class PilotOfflineTests(TestCase):
 
 
 class HumanMetricsTests(SimpleTestCase):
+    def test_local_transformations_are_accounted_but_never_external_calls(self):
+        rows = self.rows()
+        rows[0]['calls'].append({'purpose': 'obfuscation', 'status': 'completed', 'cost': '0', 'reserved': '0',
+            'metadata': {'transport': 'local', 'cost_kind': 'configured_zero'}})
+        rows[0]['calls'].append({'purpose': 'obfuscation', 'status': 'not_started', 'cost': '0', 'reserved': '0',
+            'metadata': {'transport': 'local', 'cost_kind': 'not_incurred'}})
+        summary = summarize_pilot(rows)[0]
+        self.assertEqual(summary['accounting_entries'], 5)
+        self.assertEqual(summary['provider_calls'], 3)
+        self.assertEqual(summary['local_transformations'], 1)
+        self.assertEqual(summary['calls_by_purpose']['obfuscation'], 0)
+        self.assertEqual(summary['local_api_cost_usd'], '0')
+
     def test_proven_nonstarted_reservation_does_not_count_as_provider_execution(self):
         rows = self.rows()
         rows[0]['calls'][0].update(status='not_started', cost='0', metadata={'cost_kind': 'not_incurred'})

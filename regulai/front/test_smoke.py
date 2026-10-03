@@ -35,9 +35,11 @@ class SmokeIsolationTests(TestCase):
         source = evaluation.PILOT_MANIFEST.parent
         shutil.copyfile(source / 'rubric.md', self.root / 'rubric.md')
         self.manifest = evaluation.read_json(evaluation.PILOT_MANIFEST)
-        self.manifest.update(destinations={**self.manifest['destinations'], 'mask': 'https://mask.testing.example'},
+        self.manifest.update(masking={'backend': 'http'},
+            destinations={**self.manifest['destinations'], 'mask': 'https://mask.testing.example'},
             mask_contract_review='Synthetic test transport only; no live approval', price_date=datetime.now(timezone.utc).date().isoformat(),
             source_sha256=evaluation.source_hashes(), runtime_versions=evaluation.runtime_versions())
+        self.manifest['call_caps_usd']['obfuscation'] = '.01'
         self.case = next(json.loads(line) for line in (source / 'cases.jsonl').read_text(encoding='utf-8').splitlines()
                          if json.loads(line)['id'] == 'arithmetic')
         (self.root / 'cases.jsonl').write_text(json.dumps(self.case) + '\n', encoding='utf-8')
@@ -54,6 +56,7 @@ class SmokeIsolationTests(TestCase):
         self.save_approval()
         self.events = []
         self.generation_payloads = []
+        self.judge_payloads = []
         self.fault = None
         self.after_transport = None
         self.http = self.enterContext(patch('requests.sessions.Session.request', side_effect=self.requests_transport))
@@ -78,6 +81,7 @@ class SmokeIsolationTests(TestCase):
         else:
             self.assertEqual(url, 'https://api.typesafe.ai/v1/systemone')
             body = json.loads(kwargs['data'])
+            self.judge_payloads.append(body)
             purpose = 'classification' if 'category' in body['questions'] else 'verification'
             self.assert_reserved(purpose)
             answers = {}
@@ -123,6 +127,106 @@ class SmokeIsolationTests(TestCase):
     def ledger(self):
         return EvaluationBudget(self.ledger_path, '1.00', authorization_id=self.approval['authorization_id'],
                                 authorization_digest=evaluation.digest(self.approval)).snapshot()
+
+    def use_local_mask(self):
+        self.manifest['masking'] = evaluation.local_masking_manifest()
+        self.manifest['destinations'].pop('mask')
+        self.manifest.pop('mask_contract_review', None)
+        self.manifest['call_caps_usd']['obfuscation'] = '0'
+        self.approval['destinations'] = self.manifest['destinations']
+        self.approval['masking'] = self.manifest['masking']
+        self.save_approval()
+
+    def test_local_detector_hides_original_at_both_http_boundaries_and_reserves_zero_api_cost(self):
+        self.use_local_mask()
+        original_email = 'evaluation.person@example.net'
+        self.case['input'] = 'Devuelve 4. Correo de contacto: ' + original_email
+        (self.root / 'cases.jsonl').write_text(json.dumps(self.case) + '\n', encoding='utf-8')
+        self.manifest['dataset_sha256'] = evaluation.digest((self.root / 'cases.jsonl').read_bytes())
+        self.save_approval()
+        self.run_smoke('local')
+        self.assertEqual(self.events.count('generation'), 3)
+        self.assertEqual(self.events.count('classification'), 3)
+        self.assertEqual(self.events.count('verification'), 3)
+        self.assertNotIn('obfuscation', self.events)
+        self.assertTrue(self.generation_payloads and self.judge_payloads)
+        for payload in self.generation_payloads + self.judge_payloads:
+            self.assertNotIn(original_email, json.dumps(payload))
+        snapshot = self.ledger()
+        local = [call for call in snapshot['calls'] if call['metadata']['transport'] == 'local']
+        self.assertEqual(len(local), 6)
+        for call in local:
+            self.assertEqual((call['purpose'], call['reserved'], call['cost'], call['status']),
+                             ('obfuscation', '0', '0', 'completed'))
+            self.assertEqual(call['metadata']['cost_kind'], 'configured_zero')
+            self.assertEqual(call['metadata']['cost_scope'], 'api')
+        summaries = json.loads((self.root / 'local' / 'summary.json').read_text(encoding='utf-8'))
+        aggregate = [row for row in summaries if row['split'] == 'all']
+        self.assertEqual(sum(row['provider_calls'] for row in aggregate), 9)
+        self.assertEqual(sum(row['local_transformations'] for row in aggregate), 6)
+        self.assertTrue(all(row['calls_by_purpose']['obfuscation'] == 0 and row['local_api_cost_usd'] == '0' for row in aggregate))
+        self.socket.assert_not_called()
+
+    def test_failed_local_detector_has_zero_api_cost_and_no_external_fallback(self):
+        self.use_local_mask()
+        with patch('front.masking.mask_local_texts', side_effect=RuntimeError('Synthetic unavailable local model')):
+            with self.assertRaises(CommandError):
+                self.run_smoke('local-failed')
+        snapshot = self.ledger()
+        self.assertEqual(len(snapshot['calls']), 1)
+        call = snapshot['calls'][0]
+        self.assertEqual((call['reserved'], call['cost'], call['metadata']['transport'], call['metadata']['cost_kind']),
+                         ('0', '0', 'local', 'configured_zero'))
+        self.assertEqual(snapshot['budget_exposure_usd'], '0')
+        self.http.assert_not_called()
+        self.sdk.assert_not_called()
+        self.socket.assert_not_called()
+
+    def test_local_model_drift_or_missing_runtime_blocks_before_database_or_transport(self):
+        self.use_local_mask()
+        before = Company.objects.count()
+        for result in ({**self.manifest['masking'], 'model_files_sha256': 'changed'}, RuntimeError('missing model')):
+            with self.subTest(result=result), patch.object(evaluation, 'local_masking_manifest',
+                    **({'side_effect': result} if isinstance(result, Exception) else {'return_value': result})):
+                with self.assertRaises(CommandError):
+                    self.run_smoke('local-drift')
+        self.assertEqual(Company.objects.count(), before)
+        self.assertFalse(self.ledger_path.exists())
+        self.http.assert_not_called()
+        self.sdk.assert_not_called()
+
+    def test_unsettled_local_computation_keeps_unknown_outcome_but_known_zero_api_cost(self):
+        self.use_local_mask()
+        ledger = EvaluationBudget(self.ledger_path, '1.00')
+        observer = evaluation.LedgerObserver(ledger, self.manifest, {'obfuscation': 'obfuscation:1'},
+            case_id='synthetic-interruption', configuration='router')
+        observer.before_call({'purpose': 'obfuscation', 'provider': 'obfuscation:1', 'model': None,
+                              'transport': 'local', 'cost_bound': '0', 'cost_scope': 'api'})
+        observer.finish()
+        snapshot = ledger.snapshot()
+        call = snapshot['calls'][0]
+        self.assertEqual((call['status'], call['cost'], call['metadata']['cost_kind']),
+                         ('outcome_unknown', '0', 'configured_zero'))
+        self.assertEqual(snapshot['budget_exposure_usd'], '0')
+        self.assertEqual(observer.stop_reason, 'unsettled_provider_call')
+        self.http.assert_not_called()
+        self.sdk.assert_not_called()
+
+    def test_local_approval_revoked_during_reservation_preserves_sec1_before_detector(self):
+        self.use_local_mask()
+        reserve = EvaluationBudget.reserve
+        def revoke_after_reserve(ledger, purpose, maximum, **kwargs):
+            token = reserve(ledger, purpose, maximum, **kwargs)
+            self.approval_path.write_text(json.dumps({**self.approval, 'status': 'revoked'}), encoding='utf-8')
+            return token
+        with patch.object(EvaluationBudget, 'reserve', revoke_after_reserve), patch('front.masking.mask_local_texts') as detector:
+            with self.assertRaises(CommandError):
+                self.run_smoke('local-revoked')
+        call = self.ledger()['calls'][0]
+        self.assertEqual((call['status'], call['cost'], call['metadata']['cost_kind']), ('not_started', '0', 'not_incurred'))
+        detector.assert_not_called()
+        self.http.assert_not_called()
+        self.sdk.assert_not_called()
 
     def test_real_commands_share_ledger_and_reserve_all_transports(self):
         self.run_smoke()
