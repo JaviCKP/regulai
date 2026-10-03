@@ -588,7 +588,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             destinations = sorted(set(destinations) & set(classified.allowed_destinations))
         allowed = destinations
         candidates = [_candidate(*row, task) for row in rows.values()]
-        if len(plausible_tasks) > 1:
+        if plausible_tasks:
             candidates = [replace(item, quality=min(rows[(item.company_engine_id, item.model_pk)][2].quality.get(name, -1)
                 for name in plausible_tasks)) if rows[(item.company_engine_id, item.model_pk)][2] else item for item in candidates]
         if manual:

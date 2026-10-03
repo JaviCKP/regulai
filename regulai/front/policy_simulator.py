@@ -165,7 +165,7 @@ def _outcome(actor, config, sample, rules, signals):
     try:
         cfg = AIConfig.model_validate(config)
         candidates = candidates_for(actor, cfg, task)
-        if len(plausible_tasks) > 1:
+        if plausible_tasks:
             qualities = {(item.company_engine_id, item.model_id): item.quality for item in cfg.routing.candidates}
             candidates = [replace(item, quality=min(qualities.get((item.company_engine_id, item.model_pk), {}).get(name, -1)
                 for name in plausible_tasks)) for item in candidates]

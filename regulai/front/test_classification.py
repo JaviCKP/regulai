@@ -11,6 +11,8 @@ from front import test_policy_simulator
 from front.policy import AIConfig
 from front.classification import decide
 from front.models import CompanyEngine, Engine, EngineModel, ObfuscationConfig
+from front.test_chat_flow import ChatFixture
+from front.test_pipeline import PipelineTests
 
 
 def provider_response(payload):
@@ -280,6 +282,22 @@ class ClassificationSimulatorTests(TestCase):
         self.assertEqual(outcome['plausible_tasks'], ['summary', 'document_question'])
         self.assertEqual(outcome['route']['model'], strong.model_id)
 
+    def test_single_plausible_task_retains_its_quality_requirement(self):
+        _, _, strong = self.route_catalogue()
+        payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+        payload['answers']['task'].update(confidence=0.4, choice='summary',
+            probabilities={'summary': 1.0, 'document_question': 0.0, 'general': 0.0, 'extraction': 0.0})
+        with patch('requests.sessions.Session.request', return_value=provider_response(payload)) as network:
+            result = self.client.post(self.url, self.command(mode='semantic'))
+        comparison = result.context['comparison']
+        self.assertEqual(comparison['semantic']['status'], 'completed')
+        for name in ('current', 'proposed'):
+            outcome = comparison[name]
+            self.assertEqual(outcome['task'], 'general')
+            self.assertEqual(outcome['plausible_tasks'], ['summary'])
+            self.assertEqual(outcome['route']['model'], strong.model_id)
+        self.assertEqual(network.call_count, 1)
+
     def test_unmeasured_plausible_task_quality_cannot_route_even_at_zero_minimum(self):
         self.route_catalogue()
         self.company.ai_config['routing']['min_quality'] = {'economy': 0.0, 'balanced': 0.0, 'strong': 0.0}
@@ -325,3 +343,29 @@ class ClassificationSimulatorTests(TestCase):
         self.assertEqual(outcome['policy']['allowed_destinations'], ['jev'])
         self.assertEqual(outcome['route']['status'], 'unavailable')
         self.assertEqual(outcome['route']['reason_codes'], ['no_authorized_candidates'])
+
+
+class ClassificationChatTests(ChatFixture):
+    configure = PipelineTests.configure
+
+    def test_single_plausible_task_cannot_borrow_general_quality(self):
+        payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+        payload['answers']['task'].update(confidence=0.4, choice='summary',
+            probabilities={'summary': 1.0, 'document_question': 0.0, 'general': 0.0, 'extraction': 0.0})
+        for quality, minimum in (({'general': 0.9, 'summary': 0.1}, 0.8), ({'general': 0.9}, 0.0)):
+            self.configure(verification={'mode': 'local'}, routing={'mode': 'auto', 'candidates': [{
+                'company_engine_id': self.credential.pk, 'model_id': self.model.pk,
+                'level': 'economy', 'quality': quality}],
+                'min_quality': {'economy': minimum, 'balanced': minimum, 'strong': minimum}})
+            self.http.side_effect = lambda *args, **kwargs: provider_response(payload)
+            for path in ('/chat/send/', '/api/chat/send/', '/chat/'):
+                with self.subTest(path=path, quality=quality):
+                    self.provider.reset_mock()
+                    self.http.reset_mock()
+                    response = self.send(path, 'Summarize the synthetic sentence.', auto_route='true')
+                    self.provider.assert_not_called()
+                    result = response.json()
+                    self.assertEqual(result['error_type'], 'quality_unavailable')
+                    self.assertEqual(self.http.call_count, 1)
+                    self.assertEqual([call['purpose'] for call in result['receipt']['calls']], ['classification'])
+                    self.assertEqual(result['receipt']['total']['attempts'], 0)
