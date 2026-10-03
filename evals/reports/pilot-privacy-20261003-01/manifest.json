@@ -1,0 +1,41 @@
+{
+  "base_commit": "6c78cd396eb72713e85b72d8592970e4b6b66585",
+  "source_sha256": {
+    "regulai/front/chat_service.py": "c2707b07eaa7d4a8aeeba68a515351d0007f5c7436f4e5f5736841953bc8bc30",
+    "regulai/front/policy.py": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
+    "regulai/front/policy_simulator.py": "2f57b57ffe80cd34e611345dbb5cd9a3b23d2b41f722fdbf8a07d82ef62cf49a",
+    "regulai/front/masking.py": "2508742be605a0c6f74d5c4a5a4fca7860667b9bbdc139ca3b16bb502835f697",
+    "regulai/front/views.py": "363ead5a0c4168d78693a57892b408a1cd270a8c5d0cdf27f468268e80ed33b6",
+    "regulai/front/management/commands/bootstrap_ai_policy.py": "1a746910ac7dc93a7ce166f2ae916ae960c69bb3dd45654e2f3d99f80dbb35c2",
+    "regulai/front/test_chat_flow.py": "6ec5b3da6242492da09cadc959fbb499837d9bc4d13e05442d1d0565ef48a1e3",
+    "regulai/front/test_required_masking.py": "06485b22cd622ceae0ac8a3b7ca0d8f56630c8c467b9fbe3d8385b773b27a780",
+    "regulai/front/test_pipeline.py": "f415f68df7a422e8efcf56131f09956358ab17f58164f069ae669a0a8c983a32",
+    "regulai/front/test_pipeline_privacy.py": "e09e6d601efbd80734b4a0cdb6c2c95b18f7aa5707249d4352f5d9a7a7754a58",
+    "regulai/front/test_policy_simulator.py": "46b5c551cc870b2cf03182435a069101a0260b5fd09d58bd9e0fe158a9b455db",
+    "regulai/front/test_state.py": "4302a6c152f235464b29392758e871ad31acde1a9f19a4056da8c4464b6254c3",
+    "regulai/front/test_onboarding.py": "58f5b4e0a3767101491f1633af5147fbffb85a0c0f2e88846a54d86214d8d7e9",
+    "regulai/front/test_review_regressions.py": "0883578c1c4ddee54ece621aa0ac358269eea33ba398cc4cc2adf57a792ea0b8",
+    "docs/plan-blackhat/tareas/21-privacidad-obligatoria.md": "b1c9155a0dc5efc4dd8e219a857ef8f1736dedd8c57743d28ce9094fe60539ba"
+  },
+  "evidence_sha256": {
+    "evals/reports/pilot-privacy-20261003-01/check-final.txt": "569740892270a412c02f5021e0703ecaafdc8a409e03320c9bdac90bb6558f0b",
+    "evals/reports/pilot-privacy-20261003-01/check.txt": "569740892270a412c02f5021e0703ecaafdc8a409e03320c9bdac90bb6558f0b",
+    "evals/reports/pilot-privacy-20261003-01/checkpoint.md": "0c0f94ab16fdc808ecfa719b8e024567677ddb6d690f1f810e79f164bfc809ba",
+    "evals/reports/pilot-privacy-20261003-01/green-required-masking.txt": "7856cd4a8854eac61353f4a13569b6cc738c05862faecd3873fdb45d760b56a7",
+    "evals/reports/pilot-privacy-20261003-01/migrations-final.txt": "b2b37bbb238bc60f5fc324fb0a247db27a287df18cdec79272aa733487aa5fd7",
+    "evals/reports/pilot-privacy-20261003-01/migrations.txt": "b2b37bbb238bc60f5fc324fb0a247db27a287df18cdec79272aa733487aa5fd7",
+    "evals/reports/pilot-privacy-20261003-01/privacy-final-pass.txt": "4c11d078d9a91636b1c1fa38db3ca724575f5c40f2098507ff8dbbb2ac2cebf1",
+    "evals/reports/pilot-privacy-20261003-01/privacy-final-verified.txt": "00b48628e51c9cf3472a23b2389bacd8e977032b445a76a257e690628d98dbab",
+    "evals/reports/pilot-privacy-20261003-01/privacy-first-pass.txt": "64a8e416c00b836eac1d10f32fb1589fd6869f6137691b36ce45947ea27d091b",
+    "evals/reports/pilot-privacy-20261003-01/privacy-second-pass.txt": "d8d57b81c555d4a8e5df29de3494c319d36b78cb573514041a13bd32cc2d5d80",
+    "evals/reports/pilot-privacy-20261003-01/privacy-third-pass.txt": "073f24fd44cfc51c73f5f5966cdbe1159ef2f5514edcae55bc59d6d674283fb7",
+    "evals/reports/pilot-privacy-20261003-01/README.md": "b25cd359b6c9468e5558a1dcc52ebb2d616756c9f0d5686ae577aa6d1bc23c4a",
+    "evals/reports/pilot-privacy-20261003-01/red-required-masking-exit.txt": "f073acecf630ea02d1fefed6257ae7be3081c5273f8196cb18d18880c28fd671",
+    "evals/reports/pilot-privacy-20261003-01/red-required-masking.txt": "91ec2415f9ec8de403284b57802a7689ddff263b6d4c48085e9defb8da60ddcc",
+    "evals/reports/pilot-privacy-20261003-01/red-semantic-role-revocation.txt": "b37260731daae313427f1f3a45f3758a6d8b10571e71c0e4512db74f9e74801d"
+  },
+  "final_test_count": 134,
+  "final_test_exit": 0,
+  "new_test_count": 13,
+  "paid_network_calls": 0
+}
