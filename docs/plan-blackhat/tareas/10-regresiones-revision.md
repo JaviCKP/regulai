@@ -16,3 +16,6 @@ REG creó las doce regresiones B1–B10/C1–C2; ASTRA repitió el harness sobre
 Integración: check sin incidencias; 141 tests en 22.900 s, OK (expected failures=12); migraciones sin cambios; 150 ejecuciones offline, 0 controles fallidos, 0 llamadas reales; pip-audit sin vulnerabilidades conocidas. Todos los gates salida 0. Los decoradores se retirarán al integrar cada corrección.
 
 Pruebas: `front.test_review_regressions.ReviewRegressionTests.test_b01`…`test_b10`, `test_c01` y `test_c02` (nombres completos en el módulo). B3 observa unknown_price después de una llamada Jev; B6 rechaza tamaño después de una generación; B10 ejecuta el JavaScript con Node sin randomUUID y falla en el envío. Los restantes fallan en privacidad, aislamiento, citas, presentación, texto aceptado, renovación o decisión conservadora conforme al encargo.
+
+
+Seguimiento actual: [correcciones integradas](../informe-correcciones-community.md). Las doce regresiones pasan sin expectedFailure tras P/D/V/C/S/F; los resultados anteriores se conservan como evidencia de la base.

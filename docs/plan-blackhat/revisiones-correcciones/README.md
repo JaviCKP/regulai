@@ -12,11 +12,11 @@ Los informes se conservan íntegros, sin fusionar ni reordenar los hallazgos ent
 | --- | --- | --- |
 | P | [Pipeline](spec-P.md) | `a02f483`, `f8b5ba3`, `95dfb77`: destinos obligatorios e identidad de máscaras antes de generar; suelo unknown compartido con simulador. Cuatro regresiones, diez aserciones rojas y cero errores en la revisión anterior; integradas en verde. |
 | D | [Documentos](spec-D.md) | `f92d5a1`, `520fa3a`, `5701a10`, `4cd129f`, `90000c6`: imágenes PDF inline, filas Word borradas, CSV irregular y reinicio decimal. Doce regresiones, veintidós aserciones rojas y cero errores; integradas en verde. |
-| V | [Verificación y conectores](spec-V.md) | Sin defecto técnico nuevo. Corregir unidades de precio en documentación, carril R. |
+| V | [Verificación y conectores](spec-V.md) | Sin defecto técnico nuevo. Unidades de precio en [snapshot Jev](../jev-gateway.md), corregidas en `111c2aa`, con revisión R independiente pendiente. |
 | C | [Clasificación](spec-C.md) | `d4e1313`, `9840bd6`: calidad mínima también para una única tarea plausible e instrucción de aclaración para todos los avisos de ambigüedad. Tres probes independientes rojos, después verdes. |
-| S | [Seguridad](spec-S.md) | `e7311bf`: alternar enmascarado exige POST/CSRF, probado con GET405, POST sin token403, POST válido302 y empresa ajena404. Procedimiento de rotación documental pendiente R. |
-| F | [Interfaz](spec-F.md) | Pérdida de límites duplicada con Standards, resuelta en `f778336`. Identificación del motor real en la ficha en corrección. |
-| O | [Onboarding y datos](spec-O.md) | Reproducida exposición del departamento de otra empresa en listados y filtros Prompt/Alert tras traslado del usuario; en corrección. Los controles adicionales de 2.005 filas y política inicial pasan. |
-| Q | [Operación y CI](spec-Q.md) | Reproducido código de salida 0 con 52 controles fallidos de una copia development del banco, cero casos reserved; en corrección. |
+| S | [Seguridad](spec-S.md) | `e7311bf`: alternar enmascarado exige POST/CSRF, probado con GET405, POST sin token403, POST válido302 y empresa ajena404. [Procedimiento de rotación](../rotacion-claves.md) añadido en `111c2aa`; revisión documental independiente pendiente. |
+| F | [Interfaz](spec-F.md) | Pérdida de límites duplicada con Standards, resuelta en `f778336`. Identificación del motor real en ficha, exportación y restauración corregida en `c373c87`; tres entradas HTTP/JavaScript Node y captura adicional. |
+| O | [Onboarding y datos](spec-O.md) | Exposición del departamento de otra empresa reproducida y corregida en `51f4ee5`: cinco pruebas sobre ambos listados, filtros, datos legítimos y relaciones inconsistentes. Los controles adicionales de 2.005 filas y política inicial pasan. |
+| Q | [Operación y CI](spec-Q.md) | Código de salida corregido en `21c291e`: copia development90/52 fallos, cero reserved, exit1 y cinco informes preservados; banco normal150/0 fallos exit0. |
 
 Las pruebas usaron bases aisladas y transportes sintéticos. No hubo llamadas reales a proveedores/Jev, publicación ni ejecución de CI remoto. La revisión R se añadirá después de actualizar la documentación.

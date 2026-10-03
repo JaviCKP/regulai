@@ -1,5 +1,32 @@
 # Estado observado de la implementación
 
+## Estado de las correcciones — 3 de octubre de 2026
+
+Código técnico recibido: `51f4ee5`; original `6a0f667`; inicio `4400f0b` (mismo código que `4b10778`). D1–D7 aprobadas. B1–B10/C1–C2 y hallazgos técnicos adversariales resueltos; tareas 11–18 done con pendientes externos explícitos. [Tabla de pruebas y commits](informe-correcciones-community.md); [revisiones originales Standards y Spec](revisiones-correcciones/README.md). Tarea 19 in-review hasta revisión R y gates finales de ASTRA.
+
+| Integración observada | Suite front/api | Otras cuatro puertas |
+| --- | --- | --- |
+| D, `90000c6` | 295 OK en 58,250 s | check sin incidencias; migraciones sin cambios; 150 offline, 0 fallos/llamadas reales; pip-audit sin vulnerabilidades conocidas |
+| F, `c373c87` | 296 OK en 60,252 s | Mismos cuatro resultados; exit0 |
+| Q, `21c291e` | 297 OK en 71,258 s | Mismos cuatro resultados; exit0 |
+| O, `51f4ee5` | **302 OK en 65,158 s**, sin expected failures ni omitidas | check sin incidencias; No changes detected; 150 offline, 0 controles fallidos/llamadas reales; No known vulnerabilities found; cinco puertas exit0 |
+
+Las doce regresiones finales fallaron como doce AssertionError en `4400f0b`, sin errores de preparación ni skips. Los recuentos parciales de distintas revisiones no se suman. El banco Q negativo usa una copia development: 90 ejecuciones, 52 fallos, cero reserved y exit1 tras guardar sus cinco informes; no son fallos del banco normal ni etiquetas ajustadas.
+
+[Recorrido visual actual: siete imágenes](../../evals/reports/ui-community-fixes-20261003/README.md): consentimiento complete_text_only por una imagen con cero llamadas antes de confirmar, 10 euros y extracto en párrafo 2, dos generaciones/cinco llamadas sintéticas, evidencia con Enter, ficha/límites tras recarga, cliente móvil 375/scroll375, bloqueo local cero llamadas, motor/destino real y formulario POST/CSRF de máscara. DOCX generado con Python; maqueta advisory/renewal auxiliar sin prueba backend, distinta de regresiones HTTP.
+
+No hubo llamadas reales/pagadas durante estas correcciones, push, despliegue, publicación ni operaciones sobre bases del usuario. Pendientes: Office/LibreOffice real, ensayos humanos, calibración y E2E vivo con autorización/presupuesto/tarifas revisadas; PostgreSQL sin driver/servidor, CI remoto no ejecutado, Gunicorn no arrancado en Windows. Migraciones y recifrado solo en bases aisladas. [Arranque](arranque-y-demo.md) y [rotación](rotacion-claves.md).
+
+## Verificación final conservada
+
+La ejecución final de ASTRA sobre `12ca58d3a2b5a6570840ca80676a1799f6eac097` (mismo comportamiento técnico que `51f4ee5`, solo ajuste de EOF) pasó las cinco puertas con exit0: **302 tests en 66,767 s**, check sin incidencias, migraciones sin cambios, 150 simulaciones/0 controles fallidos/0 llamadas reales y pip-audit sin vulnerabilidades conocidas. [Registro de cinco gates y logs](../../evals/reports/community-fixes-verification-20261003/README.md), [JSON exacto](../../evals/reports/community-fixes-verification-20261003/gates.json), [22 etapas históricas](../../evals/reports/community-fixes-verification-20261003/integration-gates.json), [regresiones y rojo base](../../evals/reports/community-fixes-verification-20261003/regressions.json) y [banco final/manifiesto](../../evals/reports/offline-community-fixes-final-20261003/report.md).
+
+Solo tres etiquetas development cambiaron por D3 con [justificación por caso](cambios-banco-correcciones.md); no se tocó reserved ni umbrales para aprobar. La prueba negativa de la suite fuerza seis controles fallidos y la prueba CLI 52, por diseño; ninguna representa un fallo del banco final.
+
+## Registro histórico — 2 de octubre de 2026
+
+Lo siguiente conserva resultados de la entrega original, antes de las correcciones. Sus 129 tests, conducta de clasificación ambigua, limitaciones de recursos/teclado y hashes pertenecen a esa revisión; el estado actual está arriba. Las llamadas reales se hicieron bajo otra autorización puntual y no forman parte de este encargo. El script de `jev_verification_component` no está versionado: sus resultados no acreditan reproducibilidad E2E.
+
 ## Correcciones iniciadas el 3 de octubre de 2026
 
 Rama `codex/community-fixes` desde `4400f0b`; [contratos, propiedad y decisiones D1–D7 aprobadas](correcciones-community.md). La base se volvió a ejecutar: check sin incidencias; 129 tests OK en 21.060 s; migraciones sin cambios; 150 controles offline correctos y cero llamadas reales; pip-audit sin vulnerabilidades conocidas.

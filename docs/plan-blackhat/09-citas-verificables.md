@@ -4,7 +4,7 @@
 
 ## Evidencia de implementación — 2 de octubre de 2026
 
-`front.test_verification`; `front.test_chat_ui`; `front.test_pipeline`. IDs vinculados al documento, citas literales y localización validadas, evidencias solo del propietario y empresa actual. En navegador se abrió con clic la cita de la línea 2 que respalda los 10 euros del contrato y se comprobó persistencia al recargar; [captura](../../evals/reports/ui-2026-10-02/document-evidence.jpg). Confirmar el multipart conservó el archivo original y devolvió la misma evidencia, con un turno de usuario y uno de asistente. Una cita literal no demuestra por sí sola respaldo semántico. El acceso Jev ya funciona y el [ensayo real del juez](../../evals/reports/real-jev-verification-2026-10-02-01/report.json) aceptó una afirmación de 17 días y rechazó otra de 30 días contra la misma fuente de 17 días. Es una prueba de componente con respuestas redactadas previamente; el flujo completo en vivo quedó detenido por clasificación ambigua. Abrir citas con teclado sigue sin comprobar porque la herramienta rechazó reabrir la URL local. La ficha sí se abrió con Enter.
+`front.test_verification`; `front.test_chat_ui`; `front.test_pipeline`. IDs vinculados al documento, citas literales y localización validadas, evidencias solo del propietario y empresa actual. En navegador se abrió con clic la cita de la línea 2 que respalda los 10 euros del contrato y se comprobó persistencia al recargar; [captura](../../evals/reports/ui-2026-10-02/document-evidence.jpg). Confirmar el multipart conservó el archivo original y devolvió la misma evidencia, con un turno de usuario y uno de asistente. Una cita literal no demuestra por sí sola respaldo semántico. El acceso Jev ya funciona y el [ensayo real del juez](../../evals/reports/real-jev-verification-2026-10-02-01/report.json) aceptó una afirmación de 17 días y rechazó otra de 30 días contra la misma fuente de 17 días. Es una prueba de componente con respuestas redactadas previamente; el flujo completo en vivo quedó detenido por clasificación ambigua. Ese día quedó pendiente teclado por la herramienta; el 3 de octubre citas y evidencia se abrieron con Enter en Django offline, con [capturas](../../evals/reports/ui-community-fixes-20261003/README.md).
 
 Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
@@ -34,7 +34,7 @@ Si se necesita comprobar de nuevo una cita tras borrar el original, pedir que se
 - [x] Referencias con instrucciones, rutas externas o HTML se rechazan o muestran como texto inocuo.
 - [x] Citas de otra empresa o conversación no pueden resolverse.
 - [x] API y web devuelven las mismas referencias; la evidencia se abrió con clic y persistió tras recargar.
-- [ ] El usuario puede abrir las evidencias con teclado: comprobación bloqueada por la herramienta de navegador.
+- [x] Evidencias y citas abiertas con Enter en navegador Django offline el 3 de octubre; no acredita ensayo humano.
 
 Tests deterministas para resolución, permisos y formato; conjunto humano de afirmación/fuente para medir la verificación semántica. No usar exclusivamente el mismo juez como referencia de su propia calidad.
 

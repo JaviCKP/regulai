@@ -1,16 +1,16 @@
 # 07: Demo aislada y ensayo final
 
 **Status:** verification
-**Blocked by:** apertura de citas con teclado (herramienta) y dos ensayos humanos externos
+**Blocked by:** dos ensayos humanos externos
 **Specification:** [plan 12](../12-demo-y-salida.md).
 
 - [x] Base/medios/cookies propios, siembra idempotente no destructiva y servidor loopback.
-- [x] Respuestas/jueces simulados solo en run_demo, banner explícito y salida HTTP/socket del servidor bloqueada; el navegador puede consultar glifos Iconify.
+- [x] Respuestas/jueces simulados solo en run_demo, banner explícito y salida HTTP/socket del servidor bloqueada; recursos/iconos locales y fetch Iconify deshabilitado desde correcciones.
 - [x] Guion de cinco minutos, configuración sin claves y recuperación documentados.
 - [x] Documento y evidencia abiertos, dos generaciones/cinco llamadas simuladas, persistencia al recargar y bloqueo con cero llamadas en navegador offline.
 - [x] Tres escenas, ficha/evidencia con clic, confirmación/cancelación y simulador recorridos en navegador.
-- [x] Instalación reproducida con uv/Python 3.12.11 y 45 paquetes fijados: 129 tests correctos y siembra de demo correcta.
-- [ ] Apertura de citas con teclado, sin comprobar por rechazo de la herramienta.
+- [x] Instalación reproducida con uv/Python 3.12.11 y 45 paquetes fijados: 129 tests correctos históricos del 2 de octubre y siembra de demo correcta.
+- [x] Apertura de citas y evidencia con Enter comprobada el 3 de octubre en navegador Django offline; [capturas](../../../evals/reports/ui-community-fixes-20261003/README.md).
 - [ ] Dos ensayos completos cronometrados con otra persona.
 
 `rtk proxy .venv/Scripts/python.exe regulai/manage.py run_demo --settings=regulai.demo_settings --seed-only` ejecutado dos veces correctamente. Tests demo/evaluación/API/runtime: 21 correctas. [Arranque, login público sintético, escenas y rollback](../arranque-y-demo.md).

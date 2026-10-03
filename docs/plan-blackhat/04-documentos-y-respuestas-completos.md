@@ -8,6 +8,10 @@ front.test_documents; front.test_pipeline. TXT/MD/JSON/PY/JS, CSV, PDF textual, 
 
 Las casillas siguientes describen controles automatizados cuando se marcan; no certifican calidad de proveedores reales ni un ensayo humano. Comandos, artefactos y pendientes: [estado observado](estado-ejecucion.md) y [arranque y demo](arranque-y-demo.md). La especificación original se conserva debajo.
 
+## Actualización de cobertura — 3 de octubre de 2026
+
+Cuatro estados y consentimiento complete_text_only, codificaciones adicionales, cachés de fórmulas, cambios aceptados y límites del juez integrados: [contrato y límites actuales](informe-correcciones-community.md#cobertura-y-límites-efectivos). Los controles sintéticos no cierran el requisito de ejemplos guardados con Word, Excel y LibreOffice reales: todavía no aportados. La especificación histórica siguiente no equivale a validación con esas aplicaciones.
+
 ## Problema concreto
 
 El envío web incluye `file_content_text[:10000]` en el contexto del generador, aunque YARA recibe el texto extraído completo. Algunos errores de extracción se convierten en texto y la conversación puede continuar. Los conectores devuelven `finish_reason`, pero las vistas usan un límite fijo de 1.000 tokens sin interpretar ese final.
@@ -16,7 +20,7 @@ El envío web incluye `file_content_text[:10000]` en el contexto del generador, 
 
 ## Implementación
 
-1. **Unificar validación y extracción.** Reutilizar [file_security.py](../../regulai/front/file_security.py) para límites de subida, tipo y nombre; integrarlo expresamente en cada entrada. Extraer la lectura de archivos de las vistas a `front/documents.py`. Resultado concreto: texto, fragmentos con localización, hash, formato, estado `complete/partial/unreadable/unsupported`, unidades leídas y avisos.
+1. **Unificar validación y extracción.** Reutilizar [file_security.py](../../regulai/front/file_security.py) para límites de subida, tipo y nombre; integrarlo expresamente en cada entrada. Extraer la lectura de archivos de las vistas a `front/documents.py`. Resultado concreto: texto, fragmentos con localización, hash, formato, estado actual `complete/complete_text_only/partial/unreadable`, unidades leídas y avisos.
 2. **Definir formatos honestamente.** Empezar por texto, PDF con texto extraíble, DOCX, CSV y XLSX con pruebas reales. `.xls` no es equivalente a `.xlsx`: rechazarlo mientras no exista lector compatible. Un PDF escaneado, una página sin texto o OCR no disponible produce cobertura desconocida/parcial; no un documento vacío aprobado. Jev no recibirá imágenes directamente.
 3. **Acotar trabajo y recursos.** Límites de bytes, páginas, filas, expansión de archivos comprimidos y longitud extraída antes de generar grandes estructuras. Los parsers que necesiten un límite duro de tiempo se ejecutan en un proceso local terminable; un timeout de un hilo no detiene su trabajo. No ejecutar macros, fórmulas ni referencias externas. Mantener fuera del alcance los formatos que no puedan procesarse con esos límites.
 4. **Preparar contexto sin recortes invisibles.** Evaluar seguridad sobre todo el contenido procesable. Para la primera edición, si no cabe el documento completo en el modelo admitido, pedir uno menor o una selección explícita. No enviar el primer tramo bajo la etiqueta de documento completo. Una selección para responder no reduce automáticamente el material que debe comprobarse para autorizar una salida.

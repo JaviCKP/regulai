@@ -1,6 +1,6 @@
 # 15: Política inicial e histórico reversible
 
-**Status:** in-review
+**Status:** done
 **Blocked by:** none
 
 ## Entrega y aceptación
@@ -9,7 +9,7 @@ Admin por empresa, registro desactivado, bootstrap auditado, migraciones de prec
 
 Especificación y propiedad: [contratos de correcciones](../correcciones-community.md) y encargo humano allí referenciado. Decisiones D1–D7 aprobadas el 3 de octubre de 2026. Sin operaciones irreversibles ni llamadas pagadas.
 
-## Verificación observada
+## Verificación observada en la integración inicial (histórico)
 
 Migraciones integradas individualmente y probadas en bases aisladas con ida/vuelta:
 
@@ -21,4 +21,14 @@ Cada integración pasó también check, migraciones sin cambios, 150 controles o
 
 Permisos, registro, borrador inicial y consultas históricas integrados en `72c7659`, `515f714`, `4f615ee` y `2cea782`. El bootstrap propone una configuración sin activarla ni inventar calidades; el administrador de empresa compara y activa con auditoría. Los registros históricos siguen siendo de solo lectura. ASTRA ejecutó nueve pruebas en la base: seis AssertionError por los defectos esperados, tres comportamientos existentes correctos y cero errores de preparación.
 
-Puertas de `11-onboarding`: check sin incidencias; 246 tests OK en 35.521 s (siete expected failures todavía asignados a P); migraciones sin cambios; 150 controles offline correctos y cero llamadas reales; pip-audit sin vulnerabilidades conocidas. Pendiente revisión adversarial final.
+Puertas de `11-onboarding`: check sin incidencias; 246 tests OK en 35.521 s (siete expected failures todavía asignados a P); migraciones sin cambios; 150 controles offline correctos y cero llamadas reales; pip-audit sin vulnerabilidades conocidas. Revisión adversarial completada; véase actualización final abajo.
+
+
+## Actualización — 3 de octubre de 2026
+
+Revisión O cerrada en `51f4ee5`: departamentos históricos limitados a empresa de registro/lector; cinco pruebas preservan histórico y departamentos legítimos sin exposición cruzada. Gate O: 302 OK en 65,158 s y cinco puertas exit0. Migraciones solo sobre bases aisladas; PostgreSQL pendiente.
+
+[Resultado técnico actual y pendientes](../informe-correcciones-community.md); [registro consolidado](../estado-ejecucion.md).
+
+
+Verificación final ASTRA `12ca58d`: **302 tests OK en 66,767 s**; cinco gates exit0, 150 offline/0 fallos/0 llamadas reales. [Logs y manifiesto](../../../evals/reports/community-fixes-verification-20261003/README.md).
