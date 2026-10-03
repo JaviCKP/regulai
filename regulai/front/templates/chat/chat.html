@@ -779,6 +779,7 @@
     }
     const limitLabels = {jev_state_bytes: 'Evaluator input limit (bytes)', response_bytes: 'Response limit (bytes)', max_output_tokens: 'Output limit (tokens)',
       call_timeout_seconds: 'Call timeout (seconds)', deadline_seconds: 'Request deadline (seconds)',
+      history_max_bytes: 'History limit (bytes)', history_max_turns: 'History limit (turns)',
       judge_input_bytes_bound: 'Maximum judge input (bytes)'};
     Object.entries(limitLabels).forEach(([key, label]) => {
       if (receipt.limits?.[key] != null) receiptLine(parent, label, receipt.limits[key]);

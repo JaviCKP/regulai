@@ -80,6 +80,11 @@ renderDisclosures(output, {disclosures: [{code: 'tracked_changes_present', count
   {code: 'encoding_assumed', count: 1, locators: ['document']}, {code: 'blank_page', count: 1, locators: ['page:2']}]});
 assert.match(output.text, /cambios aceptados/); assert.match(output.text, /Windows-1252/);
 assert.match(output.text, /Página en blanco/); assert.doesNotMatch(output.text, /no analizada|no enviada/i);
-const receipt = new Element(); renderReceipt(receipt, {limits: {response_bytes: 12345}}, 'completed');
+const receipt = new Element(); renderReceipt(receipt,
+  {limits: {response_bytes: 12345, history_max_bytes: 32768, history_max_turns: 20}}, 'completed');
 assert.match(receipt.text, /Response limit \(bytes\): 12345/);
+assert.match(receipt.text, /History limit \(bytes\): 32768/);
+assert.match(receipt.text, /History limit \(turns\): 20/);
+const withoutLimits = new Element(); renderReceipt(withoutLimits, {}, 'completed');
+assert.doesNotMatch(withoutLimits.text, /History limit/);
 """)
