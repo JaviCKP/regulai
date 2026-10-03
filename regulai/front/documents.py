@@ -364,6 +364,8 @@ def _parse_docx(document, content):
                         root_seen = True
                         if part == "word/document.xml" and element.tag != namespace + "document":
                             raise _Rejected("signature_mismatch")
+                    if event == "start" and element.tag == namespace + "altChunk":
+                        _disclose(document, "attachments_unread", f"{part}/element:altChunk")
                     if event != "end" or element.tag != namespace + "p":
                         continue
                     paragraph += 1
@@ -375,7 +377,7 @@ def _parse_docx(document, content):
                     locator = f"{part}/paragraph:{paragraph}"
                     for node in element.iter():
                         omission = {namespace + "drawing": "images_unread", namespace + "pict": "images_unread",
-                                    namespace + "altChunk": "attachments_unread", namespace + "sym": "symbols_unread",
+                                    namespace + "sym": "symbols_unread",
                                     "{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath": "equations_unread"}.get(node.tag)
                         if omission:
                             _disclose(document, omission, locator)

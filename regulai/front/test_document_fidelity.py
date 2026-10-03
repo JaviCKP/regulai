@@ -309,6 +309,32 @@ class FidelityTests(SimpleTestCase):
         self.assertIn("=1+1", rows.text)
         self.assertNotIn("late evidence", rows.text)
 
+    def test_word_declares_alternate_chunks_outside_paragraphs(self):
+        word = WordDocument()
+        word.add_paragraph("Readable text")
+        chunk = OxmlElement("w:altChunk")
+        chunk.set(qn("r:id"), "synthetic-chunk")
+        word._element.body.insert(1, chunk)
+        with zipfile.ZipFile(io.BytesIO(self.word_bytes(word))) as source:
+            files = {name: source.read(name) for name in source.namelist()}
+        files["word/afchunk.html"] = b"<p>private omitted content</p>"
+        document = self.extract("chunk.docx", self.archive(files))
+        self.assertEqual(document.status, "complete_text_only")
+        self.assertEqual(document.disclosures, [{"code": "attachments_unread", "count": 1,
+            "locators": ["word/document.xml/element:altChunk"]}])
+        self.assertNotIn("private omitted content", document.text)
+
+    def test_textual_bm_upload_passes_shared_file_validation_but_bitmaps_do_not_extract(self):
+        from front.file_security import validate_document_upload
+        content, metadata = validate_document_upload(SimpleUploadedFile("notes.txt", b"BM customer notes"))
+        self.assertEqual(content, b"BM customer notes")
+        self.assertFalse(metadata["is_image"])
+        bitmap = io.BytesIO()
+        Image.new("RGB", (2, 2), "white").save(bitmap, "BMP")
+        document = self.extract("renamed.txt", bitmap.getvalue())
+        self.assertEqual(document.status, "unreadable")
+        self.assertIn("signature_mismatch", document.warnings)
+
 
 class DocumentHTTPTests(ChatFixture):
     def test_partial_document_blocks_all_three_send_entries_without_network(self):
