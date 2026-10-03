@@ -1,0 +1,130 @@
+[
+  {
+    "tuple": [
+      "https://api.typesafe.ai/v1/systemone",
+      "typesafe",
+      "jev-1.13.0"
+    ],
+    "ready": true,
+    "blockers": []
+  },
+  {
+    "tuple": [
+      "https://api.typesafe.ai/v1/systemone",
+      "typesafe",
+      "typesafe-ai/jev"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://api.typesafe.ai/v1/systemone",
+      "vercel",
+      "jev-1.13.0"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://api.typesafe.ai/v1/systemone",
+      "vercel",
+      "typesafe-ai/jev"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://ai-gateway.vercel.sh/typesafe/v1/systemone",
+      "typesafe",
+      "jev-1.13.0"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://ai-gateway.vercel.sh/typesafe/v1/systemone",
+      "typesafe",
+      "typesafe-ai/jev"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://ai-gateway.vercel.sh/typesafe/v1/systemone",
+      "vercel",
+      "jev-1.13.0"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://ai-gateway.vercel.sh/typesafe/v1/systemone",
+      "vercel",
+      "typesafe-ai/jev"
+    ],
+    "ready": true,
+    "blockers": []
+  },
+  {
+    "tuple": [
+      "https://ai-gateway.vercel.sh/typesafe/v1/systemone/",
+      "vercel",
+      "typesafe-ai/jev"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://ai-gateway.vercel.sh/typesafe/v1/systemone?x=1",
+      "vercel",
+      "typesafe-ai/jev"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "http://ai-gateway.vercel.sh/typesafe/v1/systemone",
+      "vercel",
+      "typesafe-ai/jev"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "tuple": [
+      "https://ai-gateway.vercel.sh.attacker.invalid/typesafe/v1/systemone",
+      "vercel",
+      "typesafe-ai/jev"
+    ],
+    "ready": false,
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  }
+]

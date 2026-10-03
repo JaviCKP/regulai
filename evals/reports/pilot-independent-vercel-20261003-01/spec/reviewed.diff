@@ -1,0 +1,1067 @@
+diff --git a/docs/plan-blackhat/tareas/29-ensayo-autorizado-vercel.md b/docs/plan-blackhat/tareas/29-ensayo-autorizado-vercel.md
+new file mode 100644
+index 0000000..955f808
+--- /dev/null
++++ b/docs/plan-blackhat/tareas/29-ensayo-autorizado-vercel.md
+@@ -0,0 +1,25 @@
++# 29 — Ensayo autorizado mediante Vercel
++
++Status: en ejecución. Blocked by: revisión del commit fijo, preflight y puertas finales antes de las llamadas.
++
++Propietario: orquestador; adaptación del ejecutor por C (Astra Max); revisión independiente por Security (Astra Max).
++
++Especificación: [recorrido real](23-recorrido-real.md), [ejecución y calibración](../ejecucion-real-y-calibracion-piloto.md), [plan 07](../07-verificacion-y-escalado.md) y [plan 11](../11-evaluacion-reproducible.md). Se conserva el banco y las rúbricas existentes.
++
++El usuario autorizó hasta 1 USD para ocho casos sintéticos en economy, strong y router y después indicó usar Jev por Vercel. El permiso cubre el destino `https://ai-gateway.vercel.sh/typesafe/v1/systemone`, con `typesafe-ai/jev` y `only: [typesafe-ai]`, además de DeepSeek. No comprende el banco humano ni un despliegue. La ventana se limita al 3 de octubre de 2026 hasta las 23:59:59 UTC, dentro de las 24 horas aprobadas. El alias de Gateway no permite fijar pesos inmutables.
++
++## Aceptación
++
++- [x] Reutilizar el conector existente y aceptar solamente las dos combinaciones exactas de endpoint, transporte y modelo documentadas; bloquear mezclas antes de red o DB.
++- [x] Conservar la reserva antes de llamar, el ledger conjunto, el límite de 1 USD y las reservas inciertas.
++- [x] Leer únicamente las credenciales existentes de una misma empresa mediante SQLite `mode=ro`, pasarlas al entorno del hijo aislado y excluirlas de argumentos e informes.
++- [ ] Revisar independientemente el commit fijo, con pruebas sin red.
++- [ ] Ejecutar preflight satisfactorio y las cinco puertas sobre el código integrado.
++- [ ] Ejecutar una vez el ensayo aprobado; conservar cualquier parada y no repetir llamadas inciertas.
++- [ ] Informar resultados, costes estimados/comunicados/inciertos y limitaciones; no atribuir calidad semántica sin revisión humana.
++
++## Verificación observada
++
++C reprodujo dos fallos antes de corregirlos: rechazo del destino Gateway autorizado y texto de informe real que lo describía como simulación. Cuatro pruebas nuevas y las 45 pruebas focalizadas pasan (32,511 s); cero llamadas de producto en esas pruebas. Evidencia original en `.claude/vercel-preflight/`, pendiente de incorporar al paquete final.
++
++La preparación directa anterior no abrió el ledger ni realizó llamadas; queda sustituida por la indicación explícita de usar Vercel. [Autorización y puente](../../../evals/reports/pilot-real-vercel-20261003-01/) conservan la preparación vinculada al hash exacto del manifiesto.
+diff --git a/evals/pilot-real/manifest-vercel.json b/evals/pilot-real/manifest-vercel.json
+new file mode 100644
+index 0000000..5682350
+--- /dev/null
++++ b/evals/pilot-real/manifest-vercel.json
+@@ -0,0 +1,190 @@
++{
++  "version": 2,
++  "bank_kind": "pilot",
++  "mode": "offline_default",
++  "policy_version": "pilot-policy-v1",
++  "dataset": "cases.jsonl",
++  "dataset_sha256": "63e1754f6f6c3fdedc859a16f428ff7e6a21737c1091c1e7553ecf1daa1015f1",
++  "human_rubric": "rubric.md",
++  "human_rubric_sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
++  "seed": 20261003,
++  "configurations": [
++    "economy",
++    "strong",
++    "router"
++  ],
++  "model_versions": {
++    "economy": "deepseek-flash",
++    "strong": "deepseek-v4-pro",
++    "judge": "typesafe-ai/jev"
++  },
++  "published_versions": {
++    "economy": "DeepSeek-V4.1-Flash",
++    "strong": "DeepSeek-V4-Pro-0813",
++    "judge": "Gateway alias typesafe-ai/jev; underlying immutable Jev version not exposed"
++  },
++  "mutable_model_aliases": [
++    "deepseek-flash",
++    "deepseek-v4-pro",
++    "typesafe-ai/jev"
++  ],
++  "allowed_effective_models": {
++    "deepseek-flash": [
++      "deepseek-flash"
++    ],
++    "deepseek-v4-pro": [
++      "deepseek-v4-pro"
++    ],
++    "typesafe-ai/jev": [
++      "typesafe-ai/jev"
++    ]
++  },
++  "prices_per_million": {
++    "economy": {
++      "input": ".30",
++      "output": "1.20"
++    },
++    "strong": {
++      "input": "1.32",
++      "output": "3.96"
++    },
++    "judge": {
++      "input": ".042",
++      "output": "0"
++    }
++  },
++  "price_date": "2026-10-03",
++  "currency": "USD",
++  "pricing_sources": [
++    "https://api-docs.deepseek.com/quick_start/pricing/",
++    "https://ai-gateway.vercel.sh/v1/models",
++    "https://vercel.com/ai-gateway/models/jev"
++  ],
++  "destinations": {
++    "generation": "https://api.deepseek.com",
++    "judge": "https://ai-gateway.vercel.sh/typesafe/v1/systemone"
++  },
++  "judge_transport": "vercel",
++  "masking": {
++    "backend": "local",
++    "detector_version": "regulai-local-v2",
++    "spacy_version": "3.8.16",
++    "model_name": "xx_ent_wiki_sm",
++    "model_version": "3.8.0",
++    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
++    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a",
++    "detect": "both",
++    "language": ""
++  },
++  "generation_options": {
++    "thinking": {
++      "type": "disabled"
++    },
++    "temperature": 0.6,
++    "document_temperature": 0.1
++  },
++  "thresholds": {
++    "classification": 0.8,
++    "verification": 0.8
++  },
++  "jev_max_call_cost": ".003",
++  "call_caps_usd": {
++    "generation": ".05",
++    "classification": ".003",
++    "verification": ".003",
++    "obfuscation": "0"
++  },
++  "maximum_usd": "1.00",
++  "authorization_id": "pilot-community-20261003-vercel-approved-v1",
++  "context_window": 1000000,
++  "max_generation_attempts": {
++    "economy": 1,
++    "strong": 1,
++    "router": 2
++  },
++  "verification_mode": "enforce",
++  "classification_mode": "required",
++  "quality_by_task": {
++    "economy": 0.6,
++    "strong": 0.95
++  },
++  "quality_status": "uncalibrated_fixture_values_not_evidence",
++  "minimum_quality": {
++    "economy": 0.5,
++    "balanced": 0.6,
++    "strong": 0.9
++  },
++  "rubrics": {
++    "classification": "sensitivity-v2",
++    "task": "task-v2",
++    "verification": "verification-v1",
++    "human": "pilot-human-v1"
++  },
++  "limits": {
++    "budget": ".15",
++    "deadline_seconds": 90,
++    "max_output_tokens": 512
++  },
++  "input_limit_bytes": 16000,
++  "synthetic_usage": {
++    "generation_input_tokens": 100,
++    "generation_output_tokens": 20,
++    "judge_input_tokens": 50,
++    "judge_output_tokens": 10
++  },
++  "source_sha256": {
++    "regulai/front/chat_service.py": "7efe1302823e9d9a356f5bda67a3e3eab7b9d9e105a5dc2cd229e543bd6ec602",
++    "regulai/front/policy.py": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
++    "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1",
++    "regulai/front/verification.py": "0342cd9c8825930ee9365386bad0479156b10fce4476c5648835587c08ecacc1",
++    "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
++    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
++    "regulai/front/masking.py": "eda1eeb98c0604da08e48052bc58d19fbfd926c40d5b94d2a01377a5dedce313",
++    "regulai/front/local_masking.py": "02ed047f71633eee74e7d5b99ff4f0381c46292c205b9ddf9e6929a090cda7cb",
++    "regulai/front/classification.py": "6167b9de82e97394b9e83095bce7fd4c5b7adb8b9028d38523ce6f6a051ea8fb",
++    "regulai/front/sources.py": "207892d7b8249a94334acd52d62d8e950995998c6f94cdfe6e744f0a57883e8b",
++    "regulai/front/connectors.py": "51ddd25977f81d2a81169aa3c797fd2a39f0d1034de9fc83ffb631b83ceb9eac",
++    "regulai/front/views.py": "41913cf4aaad75020cec0b0172d9e15d803c32c5f5218dd5aef7f6d50200a095",
++    "regulai/front/models.py": "59d22103dfd5edf36282acfcc86ef22a88d7df94238cff74918e01a0248a0300",
++    "regulai/front/evaluation.py": "ed3799102e86259bc28c70c85b7a050be3ef2583baf6eb90b70d63b9ec62289b",
++    "regulai/front/evaluation_budget.py": "eef799fc923ba67e9c88dfccc2c21669a666cff6a13a3f85ea18a5c8b00718e0",
++    "regulai/front/management/commands/evaluate_ai.py": "dd8e21d2dfaa058ec17741d48aff537cda148c826c9c4f12d0541c663dc40e05",
++    "regulai/front/management/commands/smoke_ai.py": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7",
++    "requirements.txt": "947e437b58acb8d09f6e5e6d10e36b3dd63cf57b46d4441e5497249aca5aa10c"
++  },
++  "scope": "Synthetic control rehearsal. No human reviews completed; no real quality or savings claim.",
++  "bank_purpose": "eight_case_rehearsal",
++  "actions": [
++    "create_disposable_synthetic_tenants",
++    "mask_original_locally_on_cpu",
++    "classify_masked_content",
++    "generate_masked_content",
++    "verify_masked_answer",
++    "confirm_declared_synthetic_consent",
++    "at_most_one_second_generation",
++    "persist_all_attempts_and_costs"
++  ],
++  "runtime_versions": {
++    "python": "3.12.11",
++    "Django": "5.2.17",
++    "djangorestframework": "3.18.1",
++    "openai": "1.102.0",
++    "pydantic": "2.11.7",
++    "requests": "2.33.0",
++    "pypdf": "6.19.0",
++    "python-docx": "1.2.0",
++    "spacy": "3.8.16",
++    "xx-ent-wiki-sm": "3.8.0"
++  },
++  "masking_sources": [
++    "https://raw.githubusercontent.com/explosion/spacy-models/master/meta/xx_ent_wiki_sm-3.8.0.json",
++    "https://spacy.io/usage/models"
++  ],
++  "gateway_scope": {
++    "only": [
++      "typesafe-ai"
++    ],
++    "immutable_underlying_version_available": false,
++    "user_instruction": "Use Jev through Vercel with the already configured credential; same eight synthetic cases and USD1 total."
++  }
++}
+diff --git a/evals/reports/pilot-real-authorized-20261003-01/README.md b/evals/reports/pilot-real-authorized-20261003-01/README.md
+new file mode 100644
+index 0000000..0752c7d
+--- /dev/null
++++ b/evals/reports/pilot-real-authorized-20261003-01/README.md
+@@ -0,0 +1,7 @@
++# Primera autorización nueva: diagnóstico sin llamadas
++
++El usuario aprobó expresamente «Autorizar hasta1USDparaesos8casos» en la conversación, después de recibir destinos, datos, modelos, límites, parada y ventana. `authorization.json` registra esa primera propuesta TypeSafe directo, sin incluir el banco humano. La ventana operativa se recortó al día UTC de revisión de tarifas, dentro del máximo24h autorizado.
++
++El preflight pasó todas las comprobaciones de autorización/fuentes/versión/precios y solo señaló `isolated_credentials_required`: ninguna conexión de producto ni ledger abierto; gasto0USD. Una consulta local separada en SQLite `mode=ro` encontró una credencial DeepSeek y una Gateway, ninguna TypeSafe directa; no mostró valores ni modificó la base.
++
++**Propuesta sustituida después:** el usuario indicó que no dispone de TypeSafe directo y ordenó ejecutar Jev a través de Vercel. Esa autorización expresa conserva ocho casos y1USD total; su manifiesto y ejecución se documentan en [el ensayo Vercel](../pilot-real-vercel-20261003-01/README.md). Esta carpeta es evidencia histórica del diagnóstico, no la configuración activa de ejecución. No se vuelve a pedir aprobación del mismo gasto.
+diff --git a/evals/reports/pilot-real-authorized-20261003-01/authorization.json b/evals/reports/pilot-real-authorized-20261003-01/authorization.json
+new file mode 100644
+index 0000000..0a7fb49
+--- /dev/null
++++ b/evals/reports/pilot-real-authorized-20261003-01/authorization.json
+@@ -0,0 +1,42 @@
++{
++  "status": "approved",
++  "authorization_id": "pilot-community-new-approval-required-v1",
++  "approved_by": "Human user of the current Codex conversation",
++  "approval_reference": "Explicit reply to request_user_input_async call_KWCsyBL4GgidolwelGqsmiC2: Autorizar hasta 1 USD para esos 8 casos",
++  "manifest_sha256s": [
++    "12aecafee1351be7584791db4f4e0d22d9f522abb7552bdce7af804e2525c1ed"
++  ],
++  "valid_from": "2026-10-03T15:23:54+00:00",
++  "valid_until": "2026-10-03T23:59:59+00:00",
++  "maximum_usd": "1.00",
++  "data_scope": "versioned_synthetic_cases_only",
++  "destinations": {
++    "generation": "https://api.deepseek.com",
++    "judge": "https://api.typesafe.ai/v1/systemone"
++  },
++  "masking": {
++    "backend": "local",
++    "detector_version": "regulai-local-v2",
++    "spacy_version": "3.8.16",
++    "model_name": "xx_ent_wiki_sm",
++    "model_version": "3.8.0",
++    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
++    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a",
++    "detect": "both",
++    "language": ""
++  },
++  "pricing_reviewed_on": "2026-10-03",
++  "mutable_alias_acknowledged": true,
++  "reserved_evaluation": false,
++  "notes": "New explicit approval for eight synthetic cases in three configurations only. Maximum USD1 includes failures and uncertain reservations. Human bank, participants, publication and deployment are excluded. The operational window ends with this UTC pricing-review day, within the approved 24-hour maximum. No October 2 approval is reused.",
++  "actions": [
++    "create_disposable_synthetic_tenants",
++    "mask_original_locally_on_cpu",
++    "classify_masked_content",
++    "generate_masked_content",
++    "verify_masked_answer",
++    "confirm_declared_synthetic_consent",
++    "at_most_one_second_generation",
++    "persist_all_attempts_and_costs"
++  ]
++}
+diff --git a/evals/reports/pilot-real-authorized-20261003-01/preflight.stderr.log b/evals/reports/pilot-real-authorized-20261003-01/preflight.stderr.log
+new file mode 100644
+index 0000000..4737be6
+--- /dev/null
++++ b/evals/reports/pilot-real-authorized-20261003-01/preflight.stderr.log
+@@ -0,0 +1 @@
++[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+diff --git a/evals/reports/pilot-real-authorized-20261003-01/preflight.stdout.json b/evals/reports/pilot-real-authorized-20261003-01/preflight.stdout.json
+new file mode 100644
+index 0000000..c4a6bfb
+--- /dev/null
++++ b/evals/reports/pilot-real-authorized-20261003-01/preflight.stdout.json
+@@ -0,0 +1,42 @@
++{
++  "ready_for_real": false,
++  "blockers": [
++    "isolated_credentials_required"
++  ],
++  "manifest_sha256": "12aecafee1351be7584791db4f4e0d22d9f522abb7552bdce7af804e2525c1ed",
++  "source_sha256": {
++    "regulai/front/chat_service.py": "7efe1302823e9d9a356f5bda67a3e3eab7b9d9e105a5dc2cd229e543bd6ec602",
++    "regulai/front/policy.py": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
++    "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1",
++    "regulai/front/verification.py": "0342cd9c8825930ee9365386bad0479156b10fce4476c5648835587c08ecacc1",
++    "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
++    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
++    "regulai/front/masking.py": "eda1eeb98c0604da08e48052bc58d19fbfd926c40d5b94d2a01377a5dedce313",
++    "regulai/front/local_masking.py": "02ed047f71633eee74e7d5b99ff4f0381c46292c205b9ddf9e6929a090cda7cb",
++    "regulai/front/classification.py": "6167b9de82e97394b9e83095bce7fd4c5b7adb8b9028d38523ce6f6a051ea8fb",
++    "regulai/front/sources.py": "207892d7b8249a94334acd52d62d8e950995998c6f94cdfe6e744f0a57883e8b",
++    "regulai/front/connectors.py": "51ddd25977f81d2a81169aa3c797fd2a39f0d1034de9fc83ffb631b83ceb9eac",
++    "regulai/front/views.py": "41913cf4aaad75020cec0b0172d9e15d803c32c5f5218dd5aef7f6d50200a095",
++    "regulai/front/models.py": "59d22103dfd5edf36282acfcc86ef22a88d7df94238cff74918e01a0248a0300",
++    "regulai/front/evaluation.py": "cb56dac13660e928d3934b1d19a4b77baa5ba18cc79e041ffc8b7ef8e09b7bda",
++    "regulai/front/evaluation_budget.py": "eef799fc923ba67e9c88dfccc2c21669a666cff6a13a3f85ea18a5c8b00718e0",
++    "regulai/front/management/commands/evaluate_ai.py": "dd8e21d2dfaa058ec17741d48aff537cda148c826c9c4f12d0541c663dc40e05",
++    "regulai/front/management/commands/smoke_ai.py": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7",
++    "requirements.txt": "947e437b58acb8d09f6e5e6d10e36b3dd63cf57b46d4441e5497249aca5aa10c"
++  },
++  "cases": 8,
++  "maximum_usd": "1.00",
++  "masking_observed": {
++    "backend": "local",
++    "detector_version": "regulai-local-v2",
++    "spacy_version": "3.8.16",
++    "model_name": "xx_ent_wiki_sm",
++    "model_version": "3.8.0",
++    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
++    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a",
++    "detect": "both",
++    "language": ""
++  },
++  "ledger": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\pilot-real-budget.sqlite3",
++  "network_calls": 0
++}
+diff --git a/evals/reports/pilot-real-authorized-20261003-01/record_approval.py b/evals/reports/pilot-real-authorized-20261003-01/record_approval.py
+new file mode 100644
+index 0000000..e250fa0
+--- /dev/null
++++ b/evals/reports/pilot-real-authorized-20261003-01/record_approval.py
+@@ -0,0 +1,39 @@
++"""Record the explicit user reply for the eight-case smoke, then perform read-only preflight."""
++from hashlib import sha256
++import json
++from pathlib import Path
++import subprocess
++import sys
++
++HERE = Path(__file__).resolve().parent
++ROOT = HERE.parents[2]
++assert not (HERE / 'authorization.json').exists(), 'Never overwrite an approval record.'
++manifest_path = ROOT / 'evals/pilot-real/manifest.json'
++manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
++assert sha256(manifest_path.read_bytes()).hexdigest() == '12aecafee1351be7584791db4f4e0d22d9f522abb7552bdce7af804e2525c1ed'
++approval = json.loads((ROOT / 'evals/pilot-real/authorization.pending.json').read_text(encoding='utf-8'))
++approval.update(status='approved', approved_by='Human user of the current Codex conversation',
++    approval_reference='Explicit reply to request_user_input_async call_KWCsyBL4GgidolwelGqsmiC2: Autorizar hasta 1 USD para esos 8 casos',
++    manifest_sha256s=[sha256(manifest_path.read_bytes()).hexdigest()],
++    valid_from='2026-10-03T15:23:54+00:00', valid_until='2026-10-03T23:59:59+00:00',
++    pricing_reviewed_on='2026-10-03', mutable_alias_acknowledged=True, reserved_evaluation=False,
++    notes='New explicit approval for eight synthetic cases in three configurations only. Maximum USD1 includes failures and uncertain reservations. Human bank, participants, publication and deployment are excluded. The operational window ends with this UTC pricing-review day, within the approved 24-hour maximum. No October 2 approval is reused.')
++with (HERE / 'authorization.json').open('x', encoding='utf-8') as handle:
++    handle.write(json.dumps(approval, ensure_ascii=False, indent=2) + '\n')
++command = ['rtk', 'proxy', sys.executable, 'regulai/manage.py', 'smoke_ai',
++           '--settings=regulai.test_settings', '--preflight', '--authorization', str(HERE / 'authorization.json'),
++           '--output', str(HERE / 'must-not-exist')]
++result = subprocess.run(command, cwd=ROOT, capture_output=True, encoding='utf-8', errors='replace')
++(HERE / 'preflight.stdout.json').write_text(result.stdout, encoding='utf-8')
++(HERE / 'preflight.stderr.log').write_text(result.stderr, encoding='utf-8')
++preflight = json.loads(result.stdout)
++assert result.returncode == 0 and preflight['blockers'] == ['isolated_credentials_required'], preflight['blockers']
++assert preflight['network_calls'] == 0 and not (HERE / 'must-not-exist').exists()
++record = {'command': command, 'exit_code': result.returncode, 'ready_for_real': preflight['ready_for_real'],
++          'blockers': preflight['blockers'], 'network_calls': 0, 'actual_api_spend_usd': '0',
++          'ledger_opened': (ROOT / '.claude/pilot-real-budget.sqlite3').exists(),
++          'authorization_sha256': sha256((HERE / 'authorization.json').read_bytes()).hexdigest(),
++          'logs': {name: sha256((HERE / name).read_bytes()).hexdigest() for name in ('preflight.stdout.json', 'preflight.stderr.log')}}
++with (HERE / 'result.json').open('x', encoding='utf-8') as handle:
++    handle.write(json.dumps(record, indent=2) + '\n')
++print(json.dumps({key: record[key] for key in ('exit_code', 'ready_for_real', 'blockers', 'network_calls', 'actual_api_spend_usd', 'ledger_opened')}))
+diff --git a/evals/reports/pilot-real-authorized-20261003-01/result.json b/evals/reports/pilot-real-authorized-20261003-01/result.json
+new file mode 100644
+index 0000000..cbf4e28
+--- /dev/null
++++ b/evals/reports/pilot-real-authorized-20261003-01/result.json
+@@ -0,0 +1,28 @@
++{
++  "command": [
++    "rtk",
++    "proxy",
++    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
++    "regulai/manage.py",
++    "smoke_ai",
++    "--settings=regulai.test_settings",
++    "--preflight",
++    "--authorization",
++    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-real-authorized-20261003-01\\authorization.json",
++    "--output",
++    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-real-authorized-20261003-01\\must-not-exist"
++  ],
++  "exit_code": 0,
++  "ready_for_real": false,
++  "blockers": [
++    "isolated_credentials_required"
++  ],
++  "network_calls": 0,
++  "actual_api_spend_usd": "0",
++  "ledger_opened": false,
++  "authorization_sha256": "7cbe855c31694aa66923bcca89c09a7e306e1866068898af17519882e5a7bb2f",
++  "logs": {
++    "preflight.stdout.json": "37d6cc2845d4b7649f5f74ae562596f9152dd5a23af961e37344f873e9a5a42e",
++    "preflight.stderr.log": "a4ed4c2c830adf807283a578ea7ee8b2f659416a86da69815d6147237e7d7f36"
++  }
++}
+diff --git a/evals/reports/pilot-real-vercel-20261003-01/authorization.json b/evals/reports/pilot-real-vercel-20261003-01/authorization.json
+new file mode 100644
+index 0000000..49d3375
+--- /dev/null
++++ b/evals/reports/pilot-real-vercel-20261003-01/authorization.json
+@@ -0,0 +1,42 @@
++{
++  "status": "approved",
++  "authorization_id": "pilot-community-20261003-vercel-approved-v1",
++  "approved_by": "Human user of the current Codex conversation",
++  "approval_reference": "User explicitly approved USD1 for the eight cases in call_KWCsyBL4GgidolwelGqsmiC2, then instructed in call_pzrhNgSMpmgf2zyfFUV0iaM9: no tengo la clave typesafe, hazlo a traves de vercel coño",
++  "manifest_sha256s": [
++    "ff5a3056a6d13d7bc8a9c8baae559b002e201cc235be1a3aaa3cc4cd9e6e5b9d"
++  ],
++  "valid_from": "2026-10-03T15:23:54+00:00",
++  "valid_until": "2026-10-03T23:59:59+00:00",
++  "maximum_usd": "1.00",
++  "data_scope": "versioned_synthetic_cases_only",
++  "destinations": {
++    "generation": "https://api.deepseek.com",
++    "judge": "https://ai-gateway.vercel.sh/typesafe/v1/systemone"
++  },
++  "masking": {
++    "backend": "local",
++    "detector_version": "regulai-local-v2",
++    "spacy_version": "3.8.16",
++    "model_name": "xx_ent_wiki_sm",
++    "model_version": "3.8.0",
++    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
++    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a",
++    "detect": "both",
++    "language": ""
++  },
++  "pricing_reviewed_on": "2026-10-03",
++  "mutable_alias_acknowledged": true,
++  "reserved_evaluation": false,
++  "notes": "Explicit user-directed replacement of direct TypeSafe with Vercel Gateway, routed only to TypeSafe AI. The Gateway slug, like DeepSeek aliases, does not expose immutable weights. Same USD1 cap, same eight synthetic cases in three configurations. No human bank, invitations, publication, purchases or deployment. The earlier direct-route preparation made zero product calls and opened no ledger.",
++  "actions": [
++    "create_disposable_synthetic_tenants",
++    "mask_original_locally_on_cpu",
++    "classify_masked_content",
++    "generate_masked_content",
++    "verify_masked_answer",
++    "confirm_declared_synthetic_consent",
++    "at_most_one_second_generation",
++    "persist_all_attempts_and_costs"
++  ]
++}
+diff --git a/evals/reports/pilot-real-vercel-20261003-01/manifest.json b/evals/reports/pilot-real-vercel-20261003-01/manifest.json
+new file mode 100644
+index 0000000..5682350
+--- /dev/null
++++ b/evals/reports/pilot-real-vercel-20261003-01/manifest.json
+@@ -0,0 +1,190 @@
++{
++  "version": 2,
++  "bank_kind": "pilot",
++  "mode": "offline_default",
++  "policy_version": "pilot-policy-v1",
++  "dataset": "cases.jsonl",
++  "dataset_sha256": "63e1754f6f6c3fdedc859a16f428ff7e6a21737c1091c1e7553ecf1daa1015f1",
++  "human_rubric": "rubric.md",
++  "human_rubric_sha256": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
++  "seed": 20261003,
++  "configurations": [
++    "economy",
++    "strong",
++    "router"
++  ],
++  "model_versions": {
++    "economy": "deepseek-flash",
++    "strong": "deepseek-v4-pro",
++    "judge": "typesafe-ai/jev"
++  },
++  "published_versions": {
++    "economy": "DeepSeek-V4.1-Flash",
++    "strong": "DeepSeek-V4-Pro-0813",
++    "judge": "Gateway alias typesafe-ai/jev; underlying immutable Jev version not exposed"
++  },
++  "mutable_model_aliases": [
++    "deepseek-flash",
++    "deepseek-v4-pro",
++    "typesafe-ai/jev"
++  ],
++  "allowed_effective_models": {
++    "deepseek-flash": [
++      "deepseek-flash"
++    ],
++    "deepseek-v4-pro": [
++      "deepseek-v4-pro"
++    ],
++    "typesafe-ai/jev": [
++      "typesafe-ai/jev"
++    ]
++  },
++  "prices_per_million": {
++    "economy": {
++      "input": ".30",
++      "output": "1.20"
++    },
++    "strong": {
++      "input": "1.32",
++      "output": "3.96"
++    },
++    "judge": {
++      "input": ".042",
++      "output": "0"
++    }
++  },
++  "price_date": "2026-10-03",
++  "currency": "USD",
++  "pricing_sources": [
++    "https://api-docs.deepseek.com/quick_start/pricing/",
++    "https://ai-gateway.vercel.sh/v1/models",
++    "https://vercel.com/ai-gateway/models/jev"
++  ],
++  "destinations": {
++    "generation": "https://api.deepseek.com",
++    "judge": "https://ai-gateway.vercel.sh/typesafe/v1/systemone"
++  },
++  "judge_transport": "vercel",
++  "masking": {
++    "backend": "local",
++    "detector_version": "regulai-local-v2",
++    "spacy_version": "3.8.16",
++    "model_name": "xx_ent_wiki_sm",
++    "model_version": "3.8.0",
++    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
++    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a",
++    "detect": "both",
++    "language": ""
++  },
++  "generation_options": {
++    "thinking": {
++      "type": "disabled"
++    },
++    "temperature": 0.6,
++    "document_temperature": 0.1
++  },
++  "thresholds": {
++    "classification": 0.8,
++    "verification": 0.8
++  },
++  "jev_max_call_cost": ".003",
++  "call_caps_usd": {
++    "generation": ".05",
++    "classification": ".003",
++    "verification": ".003",
++    "obfuscation": "0"
++  },
++  "maximum_usd": "1.00",
++  "authorization_id": "pilot-community-20261003-vercel-approved-v1",
++  "context_window": 1000000,
++  "max_generation_attempts": {
++    "economy": 1,
++    "strong": 1,
++    "router": 2
++  },
++  "verification_mode": "enforce",
++  "classification_mode": "required",
++  "quality_by_task": {
++    "economy": 0.6,
++    "strong": 0.95
++  },
++  "quality_status": "uncalibrated_fixture_values_not_evidence",
++  "minimum_quality": {
++    "economy": 0.5,
++    "balanced": 0.6,
++    "strong": 0.9
++  },
++  "rubrics": {
++    "classification": "sensitivity-v2",
++    "task": "task-v2",
++    "verification": "verification-v1",
++    "human": "pilot-human-v1"
++  },
++  "limits": {
++    "budget": ".15",
++    "deadline_seconds": 90,
++    "max_output_tokens": 512
++  },
++  "input_limit_bytes": 16000,
++  "synthetic_usage": {
++    "generation_input_tokens": 100,
++    "generation_output_tokens": 20,
++    "judge_input_tokens": 50,
++    "judge_output_tokens": 10
++  },
++  "source_sha256": {
++    "regulai/front/chat_service.py": "7efe1302823e9d9a356f5bda67a3e3eab7b9d9e105a5dc2cd229e543bd6ec602",
++    "regulai/front/policy.py": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
++    "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1",
++    "regulai/front/verification.py": "0342cd9c8825930ee9365386bad0479156b10fce4476c5648835587c08ecacc1",
++    "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
++    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
++    "regulai/front/masking.py": "eda1eeb98c0604da08e48052bc58d19fbfd926c40d5b94d2a01377a5dedce313",
++    "regulai/front/local_masking.py": "02ed047f71633eee74e7d5b99ff4f0381c46292c205b9ddf9e6929a090cda7cb",
++    "regulai/front/classification.py": "6167b9de82e97394b9e83095bce7fd4c5b7adb8b9028d38523ce6f6a051ea8fb",
++    "regulai/front/sources.py": "207892d7b8249a94334acd52d62d8e950995998c6f94cdfe6e744f0a57883e8b",
++    "regulai/front/connectors.py": "51ddd25977f81d2a81169aa3c797fd2a39f0d1034de9fc83ffb631b83ceb9eac",
++    "regulai/front/views.py": "41913cf4aaad75020cec0b0172d9e15d803c32c5f5218dd5aef7f6d50200a095",
++    "regulai/front/models.py": "59d22103dfd5edf36282acfcc86ef22a88d7df94238cff74918e01a0248a0300",
++    "regulai/front/evaluation.py": "ed3799102e86259bc28c70c85b7a050be3ef2583baf6eb90b70d63b9ec62289b",
++    "regulai/front/evaluation_budget.py": "eef799fc923ba67e9c88dfccc2c21669a666cff6a13a3f85ea18a5c8b00718e0",
++    "regulai/front/management/commands/evaluate_ai.py": "dd8e21d2dfaa058ec17741d48aff537cda148c826c9c4f12d0541c663dc40e05",
++    "regulai/front/management/commands/smoke_ai.py": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7",
++    "requirements.txt": "947e437b58acb8d09f6e5e6d10e36b3dd63cf57b46d4441e5497249aca5aa10c"
++  },
++  "scope": "Synthetic control rehearsal. No human reviews completed; no real quality or savings claim.",
++  "bank_purpose": "eight_case_rehearsal",
++  "actions": [
++    "create_disposable_synthetic_tenants",
++    "mask_original_locally_on_cpu",
++    "classify_masked_content",
++    "generate_masked_content",
++    "verify_masked_answer",
++    "confirm_declared_synthetic_consent",
++    "at_most_one_second_generation",
++    "persist_all_attempts_and_costs"
++  ],
++  "runtime_versions": {
++    "python": "3.12.11",
++    "Django": "5.2.17",
++    "djangorestframework": "3.18.1",
++    "openai": "1.102.0",
++    "pydantic": "2.11.7",
++    "requests": "2.33.0",
++    "pypdf": "6.19.0",
++    "python-docx": "1.2.0",
++    "spacy": "3.8.16",
++    "xx-ent-wiki-sm": "3.8.0"
++  },
++  "masking_sources": [
++    "https://raw.githubusercontent.com/explosion/spacy-models/master/meta/xx_ent_wiki_sm-3.8.0.json",
++    "https://spacy.io/usage/models"
++  ],
++  "gateway_scope": {
++    "only": [
++      "typesafe-ai"
++    ],
++    "immutable_underlying_version_available": false,
++    "user_instruction": "Use Jev through Vercel with the already configured credential; same eight synthetic cases and USD1 total."
++  }
++}
+diff --git a/evals/reports/pilot-real-vercel-20261003-01/preparation.json b/evals/reports/pilot-real-vercel-20261003-01/preparation.json
+new file mode 100644
+index 0000000..1e2e651
+--- /dev/null
++++ b/evals/reports/pilot-real-vercel-20261003-01/preparation.json
+@@ -0,0 +1,15 @@
++{
++  "prepared_utc": "2026-10-03T15:34:55.145605+00:00",
++  "manifest_sha256": "ff5a3056a6d13d7bc8a9c8baae559b002e201cc235be1a3aaa3cc4cd9e6e5b9d",
++  "authorization_sha256": "0c879ad85d68fd1f471ed2bc4cd5b346f98a6a83ddb39c87b885d17d7f4117b7",
++  "masking_backend": "local",
++  "initial_cases": 8,
++  "configurations": [
++    "economy",
++    "strong",
++    "router"
++  ],
++  "maximum_usd": "1.00",
++  "dataset_and_rubric_unchanged": true,
++  "real_calls_at_preparation": 0
++}
+diff --git a/evals/reports/pilot-real-vercel-20261003-01/prepare.py b/evals/reports/pilot-real-vercel-20261003-01/prepare.py
+new file mode 100644
+index 0000000..eada1d8
+--- /dev/null
++++ b/evals/reports/pilot-real-vercel-20261003-01/prepare.py
+@@ -0,0 +1,53 @@
++"""Freeze the user's approved Gateway route; grants no scope beyond the explicit replies."""
++from datetime import datetime, timezone
++from hashlib import sha256
++import json
++import os
++from pathlib import Path
++import sys
++
++HERE = Path(__file__).resolve().parent
++ROOT = HERE.parents[2]
++sys.path.insert(0, str(ROOT / 'regulai'))
++os.environ['DJANGO_SETTINGS_MODULE'] = 'regulai.test_settings'
++import django
++django.setup()
++from front.evaluation import source_hashes, runtime_versions, local_masking_manifest
++from front.jev import VERCEL_ENDPOINT, VERCEL_MODEL
++
++assert not (HERE / 'authorization.json').exists(), 'Preserve earlier preparation.'
++base = ROOT / 'evals/pilot-real'
++manifest = json.loads((base / 'manifest.json').read_text(encoding='utf-8'))
++assert manifest['dataset_sha256'] == '63e1754f6f6c3fdedc859a16f428ff7e6a21737c1091c1e7553ecf1daa1015f1'
++manifest['judge_transport'] = 'vercel'
++manifest['destinations']['judge'] = VERCEL_ENDPOINT
++manifest['model_versions']['judge'] = VERCEL_MODEL
++manifest['published_versions']['judge'] = 'Gateway alias typesafe-ai/jev; underlying immutable Jev version not exposed'
++manifest['allowed_effective_models'].pop('jev-1.13.0', None)
++manifest['allowed_effective_models'][VERCEL_MODEL] = [VERCEL_MODEL]
++manifest['mutable_model_aliases'] = list(dict.fromkeys([*manifest['mutable_model_aliases'], VERCEL_MODEL]))
++manifest['pricing_sources'] = ['https://api-docs.deepseek.com/quick_start/pricing/',
++                             'https://ai-gateway.vercel.sh/v1/models', 'https://vercel.com/ai-gateway/models/jev']
++manifest['source_sha256'] = source_hashes()
++manifest['runtime_versions'] = runtime_versions()
++manifest['masking'] = local_masking_manifest()
++manifest['authorization_id'] = 'pilot-community-20261003-vercel-approved-v1'
++manifest['gateway_scope'] = {'only': ['typesafe-ai'], 'immutable_underlying_version_available': False,
++    'user_instruction': 'Use Jev through Vercel with the already configured credential; same eight synthetic cases and USD1 total.'}
++manifest_path = base / 'manifest-vercel.json'
++with manifest_path.open('x', encoding='utf-8') as handle:
++    handle.write(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
++approval = json.loads((ROOT / 'evals/reports/pilot-real-authorized-20261003-01/authorization.json').read_text(encoding='utf-8'))
++approval.update(authorization_id=manifest['authorization_id'],
++    approval_reference='User explicitly approved USD1 for the eight cases in call_KWCsyBL4GgidolwelGqsmiC2, then instructed in call_pzrhNgSMpmgf2zyfFUV0iaM9: no tengo la clave typesafe, hazlo a traves de vercel coño',
++    manifest_sha256s=[sha256(manifest_path.read_bytes()).hexdigest()], destinations=manifest['destinations'],
++    notes='Explicit user-directed replacement of direct TypeSafe with Vercel Gateway, routed only to TypeSafe AI. The Gateway slug, like DeepSeek aliases, does not expose immutable weights. Same USD1 cap, same eight synthetic cases in three configurations. No human bank, invitations, publication, purchases or deployment. The earlier direct-route preparation made zero product calls and opened no ledger.')
++with (HERE / 'authorization.json').open('x', encoding='utf-8') as handle:
++    handle.write(json.dumps(approval, ensure_ascii=False, indent=2) + '\n')
++(HERE / 'manifest.json').write_bytes(manifest_path.read_bytes())
++(HERE / 'preparation.json').write_text(json.dumps({'prepared_utc': datetime.now(timezone.utc).isoformat(),
++    'manifest_sha256': sha256(manifest_path.read_bytes()).hexdigest(),
++    'authorization_sha256': sha256((HERE / 'authorization.json').read_bytes()).hexdigest(),
++    'masking_backend': 'local', 'initial_cases': 8, 'configurations': manifest['configurations'],
++    'maximum_usd': '1.00', 'dataset_and_rubric_unchanged': True, 'real_calls_at_preparation': 0}, indent=2) + '\n', encoding='utf-8')
++print('Frozen user-approved Gateway scope. Product calls have not started.')
+diff --git a/evals/reports/pilot-real-vercel-20261003-01/run_authorized.py b/evals/reports/pilot-real-vercel-20261003-01/run_authorized.py
+new file mode 100644
+index 0000000..947119d
+--- /dev/null
++++ b/evals/reports/pilot-real-vercel-20261003-01/run_authorized.py
+@@ -0,0 +1,123 @@
++"""Bridge existing destination-matched credentials into the isolated, authorized pilot process.
++
++No credential values enter command arguments, artifacts or stdout. The user database
++is opened through a separate SQLite mode=ro connection and is never migrated.
++"""
++import argparse
++import copy
++from datetime import datetime, timezone
++from hashlib import sha256
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++
++HERE = Path(__file__).resolve().parent
++ROOT = HERE.parents[2]
++MANIFEST = ROOT / 'evals/pilot-real/manifest-vercel.json'
++AUTHORIZATION = HERE / 'authorization.json'
++GATEWAY = 'https://ai-gateway.vercel.sh/typesafe/v1/systemone'
++
++
++def credentials_readonly():
++    sys.path.insert(0, str(ROOT / 'regulai'))
++    os.environ['DJANGO_SETTINGS_MODULE'] = 'regulai.settings'
++    import django
++    django.setup()
++    from django.conf import settings
++    from django.db import connections
++    from front.models import CompanyEngine
++    config = copy.deepcopy(settings.DATABASES['default'])
++    if config['ENGINE'] != 'django.db.backends.sqlite3':
++        raise RuntimeError('This reviewed bridge supports an existing local SQLite configuration only.')
++    database = Path(config['NAME']).resolve()
++    if not database.is_file():
++        raise RuntimeError('Existing configuration database is missing; nothing will be created.')
++    before = sha256(database.read_bytes()).hexdigest()
++    config['NAME'] = database.as_uri() + '?mode=ro'
++    config['OPTIONS'] = {**config.get('OPTIONS', {}), 'uri': True}
++    alias = 'pilot_credentials_readonly'
++    connections.databases[alias] = config
++    try:
++        rows = CompanyEngine.objects.using(alias).filter(active=True,
++            engine__base_url__in=['https://api.deepseek.com', 'https://api.deepseek.com/v1']).values_list(
++                'api_key', 'company__jev_api_key', 'company__ai_config')
++        pairs = [(generator, judge) for generator, judge, policy in rows
++                 if generator and judge and isinstance(policy, dict)
++                 and isinstance(policy.get('jev', {}), dict)
++                 and policy.get('jev', {}).get('transport', 'vercel') == 'vercel']
++        if len(pairs) != 1:
++            raise RuntimeError('Exactly one same-company DeepSeek/Gateway credential pair is required.')
++        return pairs[0], database, before
++    finally:
++        connections[alias].close()
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    flags = parser.add_mutually_exclusive_group(required=True)
++    flags.add_argument('--preflight', action='store_true')
++    flags.add_argument('--real', action='store_true')
++    options = parser.parse_args()
++    label = 'live' if options.real else 'preflight'
++    if (HERE / (label + '-result.json')).exists():
++        raise RuntimeError('This execution already has evidence; do not overwrite or retry automatically.')
++    manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
++    if (manifest['judge_transport'] != 'vercel' or manifest['model_versions']['judge'] != 'typesafe-ai/jev'
++            or manifest['destinations'] != {'generation': 'https://api.deepseek.com', 'judge': GATEWAY}
++            or manifest['masking']['backend'] != 'local' or manifest['maximum_usd'] != '1.00'):
++        raise RuntimeError('Credential destination or approved scope mismatch.')
++    manifest_hash = sha256(MANIFEST.read_bytes()).hexdigest()
++    approval_hash = sha256(AUTHORIZATION.read_bytes()).hexdigest()
++    if options.real:
++        prior = json.loads((HERE / 'preflight-result.json').read_text(encoding='utf-8'))
++        if (not prior['ready_for_real'] or prior['manifest_sha256'] != manifest_hash
++                or prior['authorization_sha256'] != approval_hash):
++            raise RuntimeError('An unchanged successful preflight is required.')
++    pair, database, before = credentials_readonly()
++    environment = dict(os.environ)
++    environment['DJANGO_SETTINGS_MODULE'] = 'regulai.test_settings'
++    environment['REGULAI_EVAL_GENERATOR_KEY'], environment['REGULAI_EVAL_JEV_KEY'] = pair
++    output = HERE / 'live-run-01' if options.real else HERE / 'must-not-exist'
++    command = ['rtk', 'proxy', sys.executable, 'regulai/manage.py', 'smoke_ai',
++        '--settings=regulai.test_settings', '--manifest', str(MANIFEST), '--authorization', str(AUTHORIZATION),
++        '--output', str(output), *(['--real', '--max-usd', '1.00'] if options.real else ['--preflight'])]
++    started = datetime.now(timezone.utc).isoformat()
++    result = subprocess.run(command, cwd=ROOT, env=environment, stdout=subprocess.PIPE,
++        stderr=subprocess.PIPE, encoding='utf-8', errors='replace')
++    del environment
++    redacted = False
++    logs = {}
++    for stream, text in (('stdout', result.stdout), ('stderr', result.stderr)):
++        for secret in pair:
++            if secret in text:
++                redacted = True
++                text = text.replace(secret, '[REDACTED_CREDENTIAL]')
++        path = HERE / f'{label}.{stream}.log'
++        with path.open('x', encoding='utf-8') as handle:
++            handle.write(text)
++        logs[path.name] = sha256(path.read_bytes()).hexdigest()
++    ready = json.loads(result.stdout).get('ready_for_real') if options.preflight and result.returncode == 0 else None
++    record = {'command': command, 'exit_code': result.returncode, 'started_utc': started,
++        'finished_utc': datetime.now(timezone.utc).isoformat(), 'ready_for_real': ready,
++        'manifest_sha256': manifest_hash, 'authorization_sha256': approval_hash,
++        'script_sha256': sha256(Path(__file__).read_bytes()).hexdigest(), 'logs': logs,
++        'credential_values_redacted_from_unexpected_logs': redacted,
++        'source_database_open_mode': 'ro', 'source_database_unchanged': sha256(database.read_bytes()).hexdigest() == before,
++        'source_database_sha256_before': before, 'source_database_sha256_after': sha256(database.read_bytes()).hexdigest(),
++        'user_database_migrated': False, 'execution_database': 'isolated memory in child process'}
++    with (HERE / (label + '-result.json')).open('x', encoding='utf-8') as handle:
++        handle.write(json.dumps(record, indent=2) + '\n')
++    print(json.dumps({key: record[key] for key in ('exit_code', 'ready_for_real', 'source_database_unchanged',
++        'credential_values_redacted_from_unexpected_logs')}))
++    return result.returncode
++
++
++if __name__ == '__main__':
++    try:
++        raise SystemExit(main())
++    except Exception as error:
++        # Exception text/locals can contain secrets from third-party libraries.
++        print(json.dumps({'bridge_failed': type(error).__name__, 'credential_values_emitted': False}))
++        raise SystemExit(1)
+diff --git a/regulai/front/evaluation.py b/regulai/front/evaluation.py
+index f79c0b2..3734c5f 100644
+--- a/regulai/front/evaluation.py
++++ b/regulai/front/evaluation.py
+@@ -28,7 +28,7 @@ from django.core.management.base import CommandError
+ from django.db import connection
+ from django.test import override_settings
+ 
+-from . import chat_service
++from . import chat_service, jev
+ from .connectors import get_connector
+ from .evaluation_budget import BudgetExceeded, EvaluationBudget, money
+ from .models import Company, CompanyEngine, Engine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
+@@ -196,8 +196,9 @@ def preflight(manifest_path, authorization_path=None, *, now=None, check_credent
+     # No arbitrary new endpoint is inferred from a file or an environment variable.
+     if manifest['destinations']['generation'] != 'https://api.deepseek.com':
+         blockers.append('unsupported_generator_destination')
+-    if (manifest['destinations']['judge'] != 'https://api.typesafe.ai/v1/systemone'
+-            or manifest['judge_transport'] != 'typesafe' or manifest['model_versions']['judge'] != 'jev-1.13.0'):
++    judge_destination = (manifest['destinations']['judge'], manifest['judge_transport'], manifest['model_versions']['judge'])
++    if judge_destination not in ((jev.ENDPOINT, 'typesafe', 'jev-1.13.0'),
++                                 (jev.VERCEL_ENDPOINT, 'vercel', jev.VERCEL_MODEL)):
+         blockers.append('pinned_judge_destination_required')
+     if manifest.get('generation_options') != {'thinking': {'type': 'disabled'},
+             'temperature': 0.6, 'document_temperature': 0.1}:
+@@ -510,8 +511,11 @@ def write_reports(output, manifest, rows, budget):
+     for item in summaries:
+         lines.append('| ' + ' | '.join(str(item[key]) for key in ('configuration', 'split', 'n', 'delivered', 'human_reviewed_n',
+             'provider_calls', 'local_transformations', 'tariff_estimated_usd', 'provider_reported_usd', 'uncertain_reserved_usd', 'p50_latency_ms', 'p95_latency_ms')) + ' |')
++    provenance = ('Answers and judge results come from the configured live providers. Their outputs do not establish provider quality.'
++                  if manifest['execution_mode'] == 'real' else
++                  'Simulator answers and judges are fixtures. Their labels do not establish provider quality.')
+     lines += ['', 'Per-case answers, citations, sensitivity, coverage, attempts and all calls are in results.jsonl. These are synthetic data.',
+-        'Simulator answers and judges are fixtures. Their labels do not establish provider quality. Cost per correct answer stays null until complete independent human review and complete cost information.',
++        provenance + ' Cost per correct answer stays null until complete independent human review and complete cost information.',
+         'When masking_backend is local, masking uses the real CPU detector. Its API cost is zero; CPU, memory and operational costs are not measured. Local transformations are excluded from external call counts.',
+         'An estimated price is not an invoice; unknown expenses retain their full reservation. p50/p95 are observations of this sample, not an SLA.',
+         f"Stop reason: {manifest.get('stop_reason') or 'none'}."]
+diff --git a/regulai/front/test_evaluation_pilot.py b/regulai/front/test_evaluation_pilot.py
+index ff68240..f0d1959 100644
+--- a/regulai/front/test_evaluation_pilot.py
++++ b/regulai/front/test_evaluation_pilot.py
+@@ -1,16 +1,127 @@
+ from copy import deepcopy
++from decimal import Decimal
+ from io import StringIO
+ import json
+ from pathlib import Path
+ from tempfile import TemporaryDirectory
+ from unittest.mock import patch
+ 
++import requests
+ from django.core.management import call_command
+ from django.core.management.base import CommandError
+ from django.db import connection
+ from django.test import SimpleTestCase, TestCase
+ 
++from . import evaluation, jev
+ from .evaluation import PILOT_MANIFEST, REVIEW_FIELDS, attach_reviews, digest, load_pilot, summarize_pilot
++from .models import Company
++from .test_smoke import SmokeHarness
++
++
++class VercelPilotTests(SmokeHarness, TestCase):
++    def setUp(self):
++        super().setUp()
++        self.use_local_mask()
++        self.manifest['destinations']['judge'] = jev.VERCEL_ENDPOINT
++        self.manifest['judge_transport'] = 'vercel'
++        self.manifest['model_versions']['judge'] = jev.VERCEL_MODEL
++        self.manifest['published_versions']['judge'] = None
++        self.manifest['mutable_model_aliases'].append(jev.VERCEL_MODEL)
++        self.manifest['allowed_effective_models'].pop('jev-1.13.0')
++        self.manifest['allowed_effective_models'][jev.VERCEL_MODEL] = [jev.VERCEL_MODEL]
++        self.save_approval()
++
++    def requests_transport(self, method, url, **kwargs):
++        self.assertEqual((method, url), ('post', jev.VERCEL_ENDPOINT))
++        self.assertFalse(kwargs['allow_redirects'])
++        body = json.loads(kwargs['data'])
++        self.assertEqual(body['model'], jev.VERCEL_MODEL)
++        self.assertEqual(body['providerOptions'], {'gateway': {'only': ['typesafe-ai']}})
++        self.judge_payloads.append(body)
++        self.assert_reserved('classification' if 'category' in body['questions'] else 'verification')
++        answers = {}
++        for key, question in body['questions'].items():
++            if question['type'] == 'choice':
++                chosen = {'category': 'public', 'task': 'general', 'difficulty': 'economy'}[key]
++                answers[key] = {'type': 'choice', 'choice': chosen, 'confidence': 1.0,
++                    'probabilities': {value: float(value == chosen) for value in question['criteria']}}
++            else:
++                answers[key] = {'type': 'noul', 'noul': 0.0}
++        payload = {'model': jev.VERCEL_MODEL, 'answers': answers,
++            'usage': {'input_tokens': 275, 'output_tokens': 20},
++            'providerMetadata': {'gateway': {'cost': '0.00001155', 'marketCost': '0.00001155',
++                'gatewayCost': '0.00001155', 'surchargeCost': '0', 'generationId': 'synthetic-gateway',
++                'routing': {'originalModelId': jev.VERCEL_MODEL, 'canonicalSlug': jev.VERCEL_MODEL,
++                    'resolvedProvider': 'typesafe-ai', 'finalProvider': 'typesafe-ai'}}}}
++        response = requests.Response()
++        response.status_code = 200
++        response._content = json.dumps(payload).encode()
++        response._content_consumed = True
++        return response
++
++    def test_authorized_gateway_route_preserves_provider_cost_and_zero_local_api_cost(self):
++        report, _ = evaluation.preflight(self.manifest_path, self.approval_path)
++        self.assertTrue(report['ready_for_real'], report['blockers'])
++        self.run_smoke('vercel')
++        snapshot = self.ledger()
++        judges = [call for call in snapshot['calls'] if call['purpose'] in ('classification', 'verification')]
++        self.assertEqual(len(judges), 6)
++        for call in judges:
++            self.assertEqual(call['metadata']['model'], jev.VERCEL_MODEL)
++            self.assertEqual(call['metadata']['model_effective'], jev.VERCEL_MODEL)
++            self.assertEqual(call['metadata']['cost_kind'], 'provider_reported')
++            self.assertEqual(Decimal(call['cost']), Decimal('0.00001155'))
++        self.assertEqual(sum(Decimal(call['cost']) for call in judges), Decimal('0.00006930'))
++        local = [call for call in snapshot['calls'] if call['metadata']['transport'] == 'local']
++        self.assertEqual(len(local), 6)
++        self.assertTrue(all(call['reserved'] == call['cost'] == '0' for call in local))
++        self.assertEqual((len(self.judge_payloads), len(self.generation_payloads)), (6, 3))
++        self.assertEqual(snapshot['uncertain_reservations_usd'], '0')
++        self.socket.assert_not_called()
++
++    def test_mixed_or_unapproved_judge_tuples_fail_before_database_or_network(self):
++        before = Company.objects.count()
++        invalid = [
++            (jev.VERCEL_ENDPOINT, 'typesafe', jev.VERCEL_MODEL),
++            (jev.ENDPOINT, 'vercel', jev.VERCEL_MODEL),
++            (jev.VERCEL_ENDPOINT, 'vercel', 'jev-1.13.0'),
++            ('https://unapproved.example/v1/systemone', 'vercel', jev.VERCEL_MODEL),
++            (jev.ENDPOINT, 'typesafe', 'jev-1.14.0'),
++        ]
++        for endpoint, transport, model in invalid:
++            with self.subTest(endpoint=endpoint, transport=transport, model=model):
++                self.manifest['destinations']['judge'] = endpoint
++                self.manifest['judge_transport'] = transport
++                self.manifest['model_versions']['judge'] = model
++                self.save_approval()
++                report, _ = evaluation.preflight(self.manifest_path, self.approval_path)
++                self.assertIn('pinned_judge_destination_required', report['blockers'])
++                with self.assertRaises(CommandError):
++                    self.run_smoke('invalid-route')
++        self.assertEqual(Company.objects.count(), before)
++        self.assertFalse(self.ledger_path.exists())
++        self.http.assert_not_called()
++        self.sdk.assert_not_called()
++        self.socket.assert_not_called()
++
++
++class PilotReportModeTests(SimpleTestCase):
++    def test_real_report_names_provider_outputs_and_keeps_human_review_pending(self):
++        with TemporaryDirectory() as directory:
++            output = Path(directory)
++            evaluation.write_reports(output, {'execution_mode': 'real'}, [], {})
++            report = (output / 'report.md').read_text(encoding='utf-8')
++        self.assertIn('configured live providers', report)
++        self.assertNotIn('Simulator answers and judges are fixtures', report)
++        self.assertIn('no quality or savings claim', report)
++
++    def test_simulated_report_retains_fixture_warning(self):
++        with TemporaryDirectory() as directory:
++            output = Path(directory)
++            evaluation.write_reports(output, {'execution_mode': 'simulated'}, [], {})
++            report = (output / 'report.md').read_text(encoding='utf-8')
++        self.assertIn('Simulator answers and judges are fixtures', report)
++        self.assertNotIn('configured live providers', report)
+ 
+ 
+ class PilotOfflineTests(TestCase):
+diff --git a/regulai/front/test_smoke.py b/regulai/front/test_smoke.py
+index a3ceca9..340a876 100644
+--- a/regulai/front/test_smoke.py
++++ b/regulai/front/test_smoke.py
+@@ -22,7 +22,7 @@ from .evaluation_budget import EvaluationBudget
+ from .models import Company
+ 
+ 
+-class SmokeIsolationTests(TestCase):
++class SmokeHarness:
+     def setUp(self):
+         directory = TemporaryDirectory()
+         self.addCleanup(directory.cleanup)
+@@ -137,6 +137,8 @@ class SmokeIsolationTests(TestCase):
+         self.approval['masking'] = self.manifest['masking']
+         self.save_approval()
+ 
++
++class SmokeIsolationTests(SmokeHarness, TestCase):
+     def test_local_detector_hides_original_at_both_http_boundaries_and_reserves_zero_api_cost(self):
+         self.use_local_mask()
+         original_email = 'evaluation.person@example.net'

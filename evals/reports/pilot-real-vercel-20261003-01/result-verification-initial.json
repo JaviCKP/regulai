@@ -1,0 +1,9 @@
+{
+  "command": "rtk proxy .venv\\Scripts\\python.exe evals\\reports\\pilot-real-vercel-20261003-01\\verify_results.py",
+  "exit_code": 1,
+  "reason": "The first verifier read plan.json, which is the initial plan, and asked for completed_order. That field belongs to the final manifest.json. KeyError: completed_order.",
+  "initial_script": "verify_results_initial.py",
+  "correction": "Read the final manifest.json and additionally assert that its planned order matches plan.json; retain all existing result/accounting assertions.",
+  "live_artifacts_changed": false,
+  "product_calls": 0
+}

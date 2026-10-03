@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "code_commit": "698e8f0bb11b6f5ef91e8ac27ef9404c8868f7cc",
+  "planned_combinations": 24,
+  "observed_combinations": 8,
+  "distinct_case_ids": 5,
+  "states": {
+    "blocked": 3,
+    "completed": 2,
+    "failed": 2,
+    "outcome_unknown": 1
+  },
+  "external_calls": 17,
+  "local_transformations": 12,
+  "external_purposes": {
+    "classification": 7,
+    "generation": 5,
+    "verification": 5
+  },
+  "provider_reported_usd": "0.000312522",
+  "tariff_estimated_usd": "0.00074496",
+  "uncertain_reservations_usd": "0.003",
+  "budget_exposure_usd": "0.013858062",
+  "remaining_admission_usd": "0.986141938",
+  "real_human_reviews": 0,
+  "stop_reason": "failed_or_uncertain_provider_call",
+  "new_product_calls_by_verifier": 0,
+  "limitation": "Checks preservation/accounting, not human semantic correctness or a final provider invoice.",
+  "source_sha256": {
+    "live-run-01/budget.json": "52c0f4d68c7de5c8150d78a826b4cf9507fbad5e31a7d1e2c4c9a8b7361a6c82",
+    "live-run-01/cases.executed.jsonl": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+    "live-run-01/completed-cases.jsonl": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+    "live-run-01/human-review.pending.json": "ad8fabe4005ac3c5c51c2ec0a4c35949a2212cacaf2ee22896a8f9e8f660a6a6",
+    "live-run-01/manifest.json": "b68505a9b7e331699acb4d77aceacb8555c45be1ec31727f8a464c51feb36833",
+    "live-run-01/plan.json": "ee98fe9d3c2147ec0c9b22d4ff50348a571db6eafa4dc4bdf6947c2d9de9dc45",
+    "live-run-01/report.md": "cc4184510b04d94318709bc14448ba7a5de14958e6aaaaba701f5bf22314bbe8",
+    "live-run-01/results.jsonl": "ff0fef9dab860e4b265b838250afeecd42865bd5e74d4e422ff8a5bfbfeb30c2",
+    "live-run-01/rubric.md": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+    "live-run-01/summary.csv": "1542bed95b83bc3731b82f8bdb8b85a33994e544b737889c3e385966d21b1f5b",
+    "live-run-01/summary.json": "f422eaa9a15eb9955d55236b6b8137a8f2f5cddf52bcf76bc5a7ff8896df640e"
+  }
+}

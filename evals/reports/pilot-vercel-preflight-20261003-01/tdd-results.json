@@ -1,0 +1,42 @@
+{
+  "route_red": {
+    "command": "rtk proxy .venv\\Scripts\\python.exe regulai\\manage.py test front.test_evaluation_pilot.VercelPilotTests --settings=regulai.test_settings --noinput",
+    "exit_code": 1,
+    "tests": 1,
+    "failures": 1,
+    "elapsed_test_seconds": 0.149,
+    "observation": "AssertionError: False is not true : ['pinned_judge_destination_required']",
+    "tool_chunk_id": "9e0da6",
+    "source_before_fix": true
+  },
+  "route_green": {
+    "command": "rtk proxy .venv\\Scripts\\python.exe regulai\\manage.py test front.test_evaluation_pilot.VercelPilotTests --settings=regulai.test_settings --noinput",
+    "chunk_id": "2c48c4",
+    "wall_time_seconds": 0.0000123,
+    "exit_code": 0,
+    "original_token_count": 55,
+    "output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 9.414s\r\n\r\nOK\r\nDestroying test database for alias 'default'...\r\r\nFound 1 test(s).\r\nSystem check identified no issues (0 silenced).\r\n",
+    "initial_output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nCreating test database for alias 'default'...\r\r\n{\"timestamp\": \"2026-10-03T15:31:34.997100+00:00\", \"level\": \"INFO\", \"logger\": \"front.migrations.0016_encrypt_api_keys\", \"request_id\": null, \"code\": \"unclassified_event\", \"exception_type\": null}\r\n"
+  },
+  "report_red": {
+    "command": "rtk proxy .venv\\Scripts\\python.exe regulai\\manage.py test front.test_evaluation_pilot.PilotReportModeTests --settings=regulai.test_settings --noinput",
+    "chunk_id": "2c547e",
+    "wall_time_seconds": 1.7843556999999999,
+    "exit_code": 1,
+    "original_token_count": 500,
+    "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nF.\r\n======================================================================\r\nFAIL: test_real_report_names_provider_outputs_and_keeps_human_review_pending (front.test_evaluation_pilot.PilotReportModeTests.test_real_report_names_provider_outputs_and_keeps_human_review_pending)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\regulai\\front\\test_evaluation_pilot.py\", line 114, in test_real_report_names_provider_outputs_and_keeps_human_review_pending\r\n    self.assertIn('configured live providers', report)\r\nAssertionError: 'configured live providers' not found in '# Pilot evaluation\\n\\nMode: **real**. Runs: 0. Human review is separate; no quality or savings claim.\\n\\n| Configuration | Split | n | Delivered | Human reviewed | External calls | Local transformations | Estimated USD | Reported USD | Uncertain reserve USD | p50 ms | p95 ms |\\n| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |\\n\\nPer-case answers, citations, sensitivity, coverage, attempts and all calls are in results.jsonl. These are synthetic data.\\nSimulator answers and judges are fixtures. Their labels do not establish provider quality. Cost per correct answer stays null until complete independent human review and complete cost information.\\nWhen masking_backend is local, masking uses the real CPU detector. Its API cost is zero; CPU, memory and operational costs are not measured. Local transformations are excluded from external call counts.\\nAn estimated price is not an invoice; unknown expenses retain their full reservation. p50/p95 are observations of this sample, not an SLA.\\nStop reason: none.\\n'\r\n\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.022s\r\n\r\nFAILED (failures=1)\r\nFound 2 test(s).\r\nSystem check identified no issues (0 silenced).\r\n"
+  },
+  "both_green": {
+    "command": "rtk proxy .venv\\Scripts\\python.exe regulai\\manage.py test front.test_evaluation_pilot.VercelPilotTests front.test_evaluation_pilot.PilotReportModeTests --settings=regulai.test_settings --noinput",
+    "chunk_id": "ed3824",
+    "wall_time_seconds": 0.000008,
+    "exit_code": 0,
+    "original_token_count": 56,
+    "output": "....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 8.980s\r\n\r\nOK\r\nDestroying test database for alias 'default'...\r\r\nFound 4 test(s).\r\nSystem check identified no issues (0 silenced).\r\n",
+    "initial_output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nCreating test database for alias 'default'...\r\r\n{\"timestamp\": \"2026-10-03T15:32:53.431860+00:00\", \"level\": \"INFO\", \"logger\": \"front.migrations.0016_encrypt_api_keys\", \"request_id\": null, \"code\": \"unclassified_event\", \"exception_type\": null}\r\n"
+  },
+  "product_calls": 0,
+  "actual_api_spend_usd": "0",
+  "test_cost_values": "Synthetic responses only; not paid provider usage.",
+  "isolation": "Django disposable test DB, temporary manifests/approval/ledger, synthetic keys; requests/httpx boundaries mocked and socket connect forbidden."
+}

@@ -1,0 +1,109 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Found 21 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: admin, auth, authtoken, contenttypes, front, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
+  Applying authtoken.0003_tokenproxy... OK
+  Applying authtoken.0004_alter_tokenproxy_options... OK
+  Applying front.0001_initial... OK
+  Applying front.0002_engine_companyengine... OK
+  Applying front.0003_add_severity_to_rule... OK
+  Applying front.0004_add_conversation_and_message... OK
+  Applying front.0005_add_applies_to_rule... OK
+  Applying front.0006_add_file_to_message... OK
+  Applying front.0007_add_department_model... OK
+  Applying front.0008_add_avatar_to_profile... OK
+  Applying front.0009_add_default_engine_to_profile... OK
+  Applying front.0010_add_engine_models... OK
+  Applying front.0011_add_connector_type_to_engine... OK
+  Applying front.0012_seed_default_engines... OK
+  Applying front.0013_add_name_to_companyengine... OK
+  Applying front.0015_add_file_hashes_to_prompt... OK
+  Applying front.0016_encrypt_api_keys...{"timestamp": "2026-10-03T15:39:35.028148+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+ OK
+  Applying front.0017_alter_companyengine_api_key... OK
+  Applying front.0018_remove_companyengine_unique_together... OK
+  Applying front.0019_add_rule_action_field... OK
+  Applying front.0020_seed_default_rules_groups... OK
+  Applying front.0021_obfuscationconfig... OK
+  Applying front.0022_alert_source... OK
+  Applying front.0023_company_department_system_prompt... OK
+  Applying front.0024_seed_mistral_engine... OK
+  Applying front.0025_message_response_file... OK
+  Applying front.0026_authorized_chat_state... OK
+  Applying front.0027_enginemodel_context_window_enginemodel_currency_and_more... OK
+  Applying front.0028_auditlog_company... OK
+  Applying front.0029_model_price_units... OK
+  Applying front.0030_enginemodel_reasoning... OK
+  Applying front.0031_infer_historical_prompt_company... OK
+  Applying front.0032_obfuscationconfig_backend... OK
+  Applying sessions.0001_initial...test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) ... {"timestamp": "2026-10-03T15:39:36.115888+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9ac5c2e8-eaff-4d80-9027-a6e12e31c1d0", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:39:36.340240+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c8858ae3-ba3e-4785-83ae-1978fd598c2f", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:39:36.635198+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "b30e36a0-c1a8-4a85-b134-3cf90947def0", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:39:39.568304+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "6c0a9d2c-980f-4c54-8816-349cff7acb17", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:39:39.851950+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "56c2420c-1f10-4cf9-ad1a-6bb82bbe955a", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:39:40.280861+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4fcd12d2-a368-4eca-aea9-ebcec611b097", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:39:40.843440+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "3b5f4a49-6ec0-4879-b338-81a341e9f569", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:39:41.881998+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "b719d6ae-b8d1-432b-a841-cbe00f0671aa", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+ok
+test_authorization_revoked_during_mask_prevents_classifier (front.test_smoke.SmokeIsolationTests.test_authorization_revoked_during_mask_prevents_classifier) ... {"timestamp": "2026-10-03T15:39:42.358783+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "736f9655-0ad4-4f3f-b407-a1765d1bc3f6", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+ok
+test_document_temperature_matches_the_frozen_manifest_at_sdk_transport (front.test_smoke.SmokeIsolationTests.test_document_temperature_matches_the_frozen_manifest_at_sdk_transport) ... ok
+test_effective_model_drift_stops_before_further_egress (front.test_smoke.SmokeIsolationTests.test_effective_model_drift_stops_before_further_egress) ... {"timestamp": "2026-10-03T15:39:47.239595+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2ce27643-52e0-4285-8d60-2169b492097d", "code": "internal_error", "exception_type": "RuntimeError"}
+ok
+test_existing_lock_is_preserved_before_any_database_write (front.test_smoke.SmokeIsolationTests.test_existing_lock_is_preserved_before_any_database_write) ... ok
+test_failed_local_detector_has_zero_api_cost_and_no_external_fallback (front.test_smoke.SmokeIsolationTests.test_failed_local_detector_has_zero_api_cost_and_no_external_fallback) ... {"timestamp": "2026-10-03T15:39:48.199213+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "cbda8424-e11d-4441-91ff-5b3418f31fd8", "code": "provider_failed", "exception_type": "RuntimeError"}
+ok
+test_failed_revocation_settlement_retains_unknown_reservation_without_transport (front.test_smoke.SmokeIsolationTests.test_failed_revocation_settlement_retains_unknown_reservation_without_transport) ... {"timestamp": "2026-10-03T15:39:48.557528+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1a0bc227-da84-49af-b1bf-032e77c285a2", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+ok
+test_local_approval_revoked_during_reservation_preserves_sec1_before_detector (front.test_smoke.SmokeIsolationTests.test_local_approval_revoked_during_reservation_preserves_sec1_before_detector) ... {"timestamp": "2026-10-03T15:39:49.209111+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4f498879-a338-4e60-89fc-3dd4c6b78236", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+ok
+test_local_detector_hides_original_at_both_http_boundaries_and_reserves_zero_api_cost (front.test_smoke.SmokeIsolationTests.test_local_detector_hides_original_at_both_http_boundaries_and_reserves_zero_api_cost) ... ok
+test_local_model_drift_or_missing_runtime_blocks_before_database_or_transport (front.test_smoke.SmokeIsolationTests.test_local_model_drift_or_missing_runtime_blocks_before_database_or_transport) ... ok
+test_mask_http_error_stops_before_jev_and_keeps_unknown_cost (front.test_smoke.SmokeIsolationTests.test_mask_http_error_stops_before_jev_and_keeps_unknown_cost) ... {"timestamp": "2026-10-03T15:39:58.148278+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "ad632e4e-d594-4c4b-8eba-d8f6d9d638ba", "code": "provider_failed", "exception_type": "RuntimeError"}
+ok
+test_pending_or_expired_permission_has_no_database_or_network_effect (front.test_smoke.SmokeIsolationTests.test_pending_or_expired_permission_has_no_database_or_network_effect) ... ok
+test_real_commands_share_ledger_and_reserve_all_transports (front.test_smoke.SmokeIsolationTests.test_real_commands_share_ledger_and_reserve_all_transports) ... ok
+test_restart_cannot_spend_unknown_previous_reservations (front.test_smoke.SmokeIsolationTests.test_restart_cannot_spend_unknown_previous_reservations) ... {"timestamp": "2026-10-03T15:40:03.389174+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "338c382e-ee1d-4193-94de-61b3c36ff79f", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+ok
+test_timeout_or_invalid_judge_retains_reservation_and_stops_without_retry (front.test_smoke.SmokeIsolationTests.test_timeout_or_invalid_judge_retains_reservation_and_stops_without_retry) ... {"timestamp": "2026-10-03T15:40:04.062086+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "938890a7-ec42-4644-adbc-c9ed45b5658b", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:40:04.328050+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "d580e329-947d-4c34-944e-39860027c228", "code": "security_check_failed", "exception_type": "RuntimeError"}
+ok
+test_unsettled_local_computation_keeps_unknown_outcome_but_known_zero_api_cost (front.test_smoke.SmokeIsolationTests.test_unsettled_local_computation_keeps_unknown_outcome_but_known_zero_api_cost) ... ok
+test_approval_identity_cannot_be_reused_or_attached_to_historical_calls (front.test_evaluation_budget.BudgetTests.test_approval_identity_cannot_be_reused_or_attached_to_historical_calls) ... ok
+test_concurrent_reservation_and_restart_never_release_unknown_expense (front.test_evaluation_budget.BudgetTests.test_concurrent_reservation_and_restart_never_release_unknown_expense) ... ok
+test_estimated_cost_does_not_release_conservative_reservation (front.test_evaluation_budget.BudgetTests.test_estimated_cost_does_not_release_conservative_reservation) ... ok
+test_excess_charge_is_retained_and_stops_future_calls (front.test_evaluation_budget.BudgetTests.test_excess_charge_is_retained_and_stops_future_calls) ... ok
+test_zero_mask_and_proven_nonstarted_call_are_recorded_without_expense (front.test_evaluation_budget.BudgetTests.test_zero_mask_and_proven_nonstarted_call_are_recorded_without_expense) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 28.863s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+ OK
+System check identified no issues (0 silenced).

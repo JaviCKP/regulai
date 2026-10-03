@@ -1,0 +1,37 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "smoke_ai",
+    "--settings=regulai.test_settings",
+    "--manifest",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\pilot-real\\manifest-vercel.json",
+    "--authorization",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-real-vercel-20261003-01\\authorization.json",
+    "--output",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-real-vercel-20261003-01\\live-run-01",
+    "--real",
+    "--max-usd",
+    "1.00"
+  ],
+  "exit_code": 1,
+  "started_utc": "2026-10-03T15:42:54.948017+00:00",
+  "finished_utc": "2026-10-03T15:43:22.312397+00:00",
+  "ready_for_real": null,
+  "manifest_sha256": "ff5a3056a6d13d7bc8a9c8baae559b002e201cc235be1a3aaa3cc4cd9e6e5b9d",
+  "authorization_sha256": "0c879ad85d68fd1f471ed2bc4cd5b346f98a6a83ddb39c87b885d17d7f4117b7",
+  "script_sha256": "35c5b80656f39946fc5714d49627e01738562c1bb4b3f3a6eb662f02bac5c0d5",
+  "logs": {
+    "live.stdout.log": "7f10b4e48838bb6e14123ebecb63c92a2a0e470c68546fb112f9ac4282d2776f",
+    "live.stderr.log": "0e736b38774ec2f295ad56a599b6e4809458c6bc268a37f8f1c24571a87c445d"
+  },
+  "credential_values_redacted_from_unexpected_logs": false,
+  "source_database_open_mode": "ro",
+  "source_database_unchanged": true,
+  "source_database_sha256_before": "652076bf4f3bb4bd6a93dde9ae8fc0eac4f8b34ade26ddf9619ec294760229bd",
+  "source_database_sha256_after": "652076bf4f3bb4bd6a93dde9ae8fc0eac4f8b34ade26ddf9619ec294760229bd",
+  "user_database_migrated": false,
+  "execution_database": "isolated memory in child process"
+}

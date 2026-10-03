@@ -1,0 +1,20 @@
+{
+  "commit": "698e8f0bb11b6f5ef91e8ac27ef9404c8868f7cc",
+  "labels": [
+    "review_cases.GatewaySecurityChecks.test_exact_gateway_tuple_uses_only_approved_provider_and_shared_ledger",
+    "review_cases.GatewaySecurityChecks.test_crossed_tuple_and_host_variants_cannot_reach_any_provider",
+    "review_cases.GatewaySecurityChecks.test_gateway_timeout_retains_reservation_without_direct_or_model_fallback"
+  ],
+  "failures": 0,
+  "elapsed_seconds": 13.421,
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.socket.sendto": 0
+  },
+  "database": "ephemeral synthetic SQLite",
+  "bridge_executed": false,
+  "log_sha256": "929c02b13985a3731c7ee2d5a5ed1bc76789641b20dd5ae2f4bed5eef14a0ddc"
+}

@@ -1,0 +1,11 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+{"timestamp": "2026-10-03T15:42:56.584812+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T15:43:00.419973+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "012c0756-fb92-499f-8fa3-b5e8cef067de", "code": "classification_manipulation", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:43:01.506926+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a6b61e56-fbca-414c-a67c-9702ebcb4813", "code": "classification_manipulation", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T15:43:04.428264+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T15:43:08.169558+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T15:43:12.435229+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T15:43:14.918211+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T15:43:19.076974+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T15:43:21.780574+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "393028e1-db56-4ca2-af85-928be29b7f65", "code": "security_check_failed", "exception_type": "RuntimeError"}
+CommandError: Pilot stopped: failed_or_uncertain_provider_call. Retain the report and ledger; do not automatically retry.

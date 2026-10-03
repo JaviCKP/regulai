@@ -1,0 +1,18 @@
+Found 2 test(s).
+Skipping setup of unused database(s): default.
+System check identified no issues (0 silenced).
+test_approved_eight_case_scope_matches_frozen_manifest_without_database_or_network (review_scope.FrozenScopeChecks.test_approved_eight_case_scope_matches_frozen_manifest_without_database_or_network) ... FAIL
+test_bridge_is_only_parsed_and_uses_environment_not_credential_arguments (review_scope.FrozenScopeChecks.test_bridge_is_only_parsed_and_uses_environment_not_credential_arguments) ... ok
+
+======================================================================
+FAIL: test_approved_eight_case_scope_matches_frozen_manifest_without_database_or_network (review_scope.FrozenScopeChecks.test_approved_eight_case_scope_matches_frozen_manifest_without_database_or_network)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\review-vercel-security\review_scope.py", line 51, in test_approved_eight_case_scope_matches_frozen_manifest_without_database_or_network
+    self.assertTrue(report['ready_for_real'], report['blockers'])
+AssertionError: False is not true : ['source_changed']
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.129s
+
+FAILED (failures=1)

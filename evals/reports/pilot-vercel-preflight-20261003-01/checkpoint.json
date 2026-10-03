@@ -1,0 +1,54 @@
+{
+  "status": "complete_for_root_review",
+  "source_hashes": {
+    "regulai/front/evaluation.py": "ed3799102e86259bc28c70c85b7a050be3ef2583baf6eb90b70d63b9ec62289b",
+    "regulai/front/test_evaluation_pilot.py": "2e7f53ea413dce533ec8c0c7951a7ab76429a17e7c852e0fdf79cb6413dd8b2b",
+    "regulai/front/test_smoke.py": "8a9993915d6607e1ed665cffe8e968dc705e08b2da08765b21ce8ea38cc0f3d1"
+  },
+  "files_changed": [
+    "regulai/front/evaluation.py",
+    "regulai/front/test_evaluation_pilot.py",
+    "regulai/front/test_smoke.py"
+  ],
+  "proposed_commit": "fix: allow the approved Jev Gateway route in pilot preflight",
+  "behavior": "Two exact endpoint/transport/model tuples only. Live-mode reports describe live providers; offline fixture warning unchanged. SmokeHarness extraction preserves all old assertions.",
+  "tests": {
+    "new_tdd": {
+      "route_red": 1,
+      "route_green": 0,
+      "report_red": 1,
+      "both_green": 0
+    },
+    "focal": {
+      "exit_code": 0,
+      "n": 45,
+      "seconds": 32.511
+    },
+    "diff_check": 0
+  },
+  "monetary_observation": {
+    "actual_product_calls_by_c": 0,
+    "actual_usd_by_c": "0",
+    "synthetic_gateway_entries": 6,
+    "synthetic_gateway_reported_total_usd": "0.00006930",
+    "synthetic_local_entries": 6,
+    "synthetic_local_api_total_usd": "0",
+    "synthetic_generation_calls": 3
+  },
+  "preserved": "Cases, rubrics, human labels, thresholds, generation prices, reserve-before-call ledger and SEC-1 untouched.",
+  "limitations": [
+    "Offline transport tests do not establish current account entitlement or actual provider availability.",
+    "Jev Gateway exposes mutable alias typesafe-ai/jev, not an immutable underlying model version.",
+    "The full Gateway routing/generationId metadata is validated by the client but not persisted by chat_service; normalized cost/token/effective model/request ID remains the existing trace.",
+    "Human review stays pending; no quality/savings claim.",
+    "Root must freeze and authorize its separate eight-case Gateway manifest and run the five gates before executing any paid request."
+  ],
+  "evidence": [
+    "manifest-delta.json",
+    "tdd-results.json",
+    "focal-results.json"
+  ],
+  "credentials_accessed": false,
+  "git_index_changed": false,
+  "commit_created": false
+}

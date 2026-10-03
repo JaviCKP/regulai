@@ -1,0 +1,302 @@
+{
+  "cap_usd": "1.00",
+  "known_cost_usd": "0.00026766",
+  "provider_reported_usd": "0",
+  "tariff_estimated_usd": "0.00026766",
+  "budget_exposure_usd": "0.02186880",
+  "remaining_usd": "0.97813120",
+  "uncertain_reservations_usd": "0",
+  "calls": [
+    {
+      "id": "73893ebb-e6fc-4468-a5d7-ef68d7d6c0fc",
+      "at": "2026-10-03T15:39:39.914252+00:00",
+      "purpose": "obfuscation",
+      "reserved": "0",
+      "status": "completed",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "obfuscation:1",
+        "model": null,
+        "transport": "local",
+        "cost_scope": "api",
+        "cost_kind": "configured_zero"
+      }
+    },
+    {
+      "id": "2446d488-bc92-44a0-97e0-9c2de70fc175",
+      "at": "2026-10-03T15:39:40.187131+00:00",
+      "purpose": "classification",
+      "reserved": "0.003",
+      "status": "completed",
+      "cost": "0.00001155",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "typesafe-ai/jev",
+        "input_tokens": 275,
+        "output_tokens": 20,
+        "provider_request_id": null,
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "dad96f13-762c-4912-8db1-1023d45f6349",
+      "at": "2026-10-03T15:39:40.439530+00:00",
+      "purpose": "generation",
+      "reserved": "0.00244860",
+      "status": "completed",
+      "cost": "0.00013596",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "engine:1",
+        "model": "deepseek-v4-pro",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "deepseek-v4-pro",
+        "input_tokens": 100,
+        "output_tokens": 1,
+        "provider_request_id": "synthetic-response",
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "6273c3f0-fe34-4674-ae57-ae9a3c8d1342",
+      "at": "2026-10-03T15:39:42.770677+00:00",
+      "purpose": "obfuscation",
+      "reserved": "0",
+      "status": "completed",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "obfuscation:1",
+        "model": null,
+        "transport": "local",
+        "cost_scope": "api",
+        "cost_kind": "configured_zero"
+      }
+    },
+    {
+      "id": "73591988-4c86-4001-9763-b05e341b2b88",
+      "at": "2026-10-03T15:39:43.027932+00:00",
+      "purpose": "verification",
+      "reserved": "0.003",
+      "status": "completed",
+      "cost": "0.00001155",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "typesafe-ai/jev",
+        "input_tokens": 275,
+        "output_tokens": 20,
+        "provider_request_id": null,
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "b3d32318-0f6c-4dad-98cf-37ea1d0db08c",
+      "at": "2026-10-03T15:39:43.249102+00:00",
+      "purpose": "obfuscation",
+      "reserved": "0",
+      "status": "completed",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "router",
+        "provider": "obfuscation:2",
+        "model": null,
+        "transport": "local",
+        "cost_scope": "api",
+        "cost_kind": "configured_zero"
+      }
+    },
+    {
+      "id": "a4653cd6-77f1-4843-b553-54cef56e2dbc",
+      "at": "2026-10-03T15:39:43.509333+00:00",
+      "purpose": "classification",
+      "reserved": "0.003",
+      "status": "completed",
+      "cost": "0.00001155",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "router",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "typesafe-ai/jev",
+        "input_tokens": 275,
+        "output_tokens": 20,
+        "provider_request_id": null,
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "ac51b250-18a6-4b57-b4fc-a14f23fa73cc",
+      "at": "2026-10-03T15:39:43.764566+00:00",
+      "purpose": "generation",
+      "reserved": "0.00071010",
+      "status": "completed",
+      "cost": "0.00003120",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "router",
+        "provider": "engine:2",
+        "model": "deepseek-flash",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "deepseek-flash",
+        "input_tokens": 100,
+        "output_tokens": 1,
+        "provider_request_id": "synthetic-response",
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "4df11405-1085-4331-9169-1fb7ba7dcfe9",
+      "at": "2026-10-03T15:39:44.445615+00:00",
+      "purpose": "obfuscation",
+      "reserved": "0",
+      "status": "completed",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "router",
+        "provider": "obfuscation:2",
+        "model": null,
+        "transport": "local",
+        "cost_scope": "api",
+        "cost_kind": "configured_zero"
+      }
+    },
+    {
+      "id": "e9adfe69-9fa4-4804-9c63-0a4aacfe6a99",
+      "at": "2026-10-03T15:39:44.788547+00:00",
+      "purpose": "verification",
+      "reserved": "0.003",
+      "status": "completed",
+      "cost": "0.00001155",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "router",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "typesafe-ai/jev",
+        "input_tokens": 275,
+        "output_tokens": 20,
+        "provider_request_id": null,
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "064cd30c-4749-45d3-817d-1ffedef1e657",
+      "at": "2026-10-03T15:39:45.012558+00:00",
+      "purpose": "obfuscation",
+      "reserved": "0",
+      "status": "completed",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "economy",
+        "provider": "obfuscation:3",
+        "model": null,
+        "transport": "local",
+        "cost_scope": "api",
+        "cost_kind": "configured_zero"
+      }
+    },
+    {
+      "id": "b701edea-69e8-4054-a0cc-6e99600e3aa4",
+      "at": "2026-10-03T15:39:45.299823+00:00",
+      "purpose": "classification",
+      "reserved": "0.003",
+      "status": "completed",
+      "cost": "0.00001155",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "economy",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "typesafe-ai/jev",
+        "input_tokens": 275,
+        "output_tokens": 20,
+        "provider_request_id": null,
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "e9e6ea25-5b60-40aa-b447-ad05d54cc168",
+      "at": "2026-10-03T15:39:45.569152+00:00",
+      "purpose": "generation",
+      "reserved": "0.00071010",
+      "status": "completed",
+      "cost": "0.00003120",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "economy",
+        "provider": "engine:3",
+        "model": "deepseek-flash",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "deepseek-flash",
+        "input_tokens": 100,
+        "output_tokens": 1,
+        "provider_request_id": "synthetic-response",
+        "cost_kind": "tariff_estimate"
+      }
+    },
+    {
+      "id": "f2318abc-915e-4acd-8a2a-a199ff1de94c",
+      "at": "2026-10-03T15:39:46.272150+00:00",
+      "purpose": "obfuscation",
+      "reserved": "0",
+      "status": "completed",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "economy",
+        "provider": "obfuscation:3",
+        "model": null,
+        "transport": "local",
+        "cost_scope": "api",
+        "cost_kind": "configured_zero"
+      }
+    },
+    {
+      "id": "736e87da-6850-4188-9866-1331b2df8a8e",
+      "at": "2026-10-03T15:39:46.562498+00:00",
+      "purpose": "verification",
+      "reserved": "0.003",
+      "status": "completed",
+      "cost": "0.00001155",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "economy",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "transport": "http",
+        "cost_scope": "api",
+        "model_effective": "typesafe-ai/jev",
+        "input_tokens": 275,
+        "output_tokens": 20,
+        "provider_request_id": null,
+        "cost_kind": "tariff_estimate"
+      }
+    }
+  ]
+}

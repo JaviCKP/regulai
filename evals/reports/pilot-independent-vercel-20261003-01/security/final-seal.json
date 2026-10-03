@@ -1,0 +1,57 @@
+{
+  "commit": "698e8f0bb11b6f5ef91e8ac27ef9404c8868f7cc",
+  "sealed_utc": "2026-10-03T15:43:54.360204+00:00",
+  "snapshots": {
+    "snapshot-698e8f0.json": {
+      "verified_files": 2005,
+      "sha256": "12cc4599f85ef2177a8e200680febcb54d6fa9029b6df6136f8ded3a88ecdc93"
+    },
+    "snapshot-698e8f0-approvedbytes.json": {
+      "verified_files": 2005,
+      "sha256": "92de905570a4c50b0bc2c91d9a30d35569a58a9fd5f41ffa4e47a86f2a1e2573"
+    }
+  },
+  "verdict": "No new blocking security findings within the fixed authorized scope",
+  "final_tests": {
+    "supplied": 45,
+    "independent": 6,
+    "total": 51,
+    "failures": 0
+  },
+  "network_attempts": 0,
+  "bridge_executed": false,
+  "user_database_accessed": false,
+  "report": "docs\\plan-blackhat\\revisiones-piloto\\security-vercel-698e8f0.md",
+  "report_sha256": "5af1613a19d7609813fd51a55bfa315fd29348fc29b7926aedca4287e090fc6f",
+  "evidence": {
+    "bridge-static.json": "1b87033f761ae5c5cdf9f586d9a765bbddbeab44e5af41f15d024fe4b47afffc",
+    "eol-approved-byte-audit.json": "8a4c7a45d6bf8a531fa4adc0e7b97d42c454875da7656c246f1547cf8ec55bd7",
+    "frozen-scope-approvedbytes.json": "6a0efdb53288e9a0ad4279e792c9ea3c6ac58b14e9c0c2f08c3934f28cff4773",
+    "frozen-scope-approvedbytes.log": "c5441347b07ff3b22057fc852497bd567b387e46945fd26e6bd84237dca42fc4",
+    "frozen-scope-preflight.json": "dbeb5c3f65317e5dadf2761c32bfd0885535e723aff5f95eb442021a7d736681",
+    "frozen-scope.json": "8187e601f8539c86e2569fda2b1aa4d80286402423bf57cd60282daa4fbe36be",
+    "frozen-scope.log": "eaa4737374f2892bb54dd8068e5fa33dd0f0d6d2e7943ae11a4e99e6d79ec46c",
+    "gateway-approved-capture.json": "a417ca2b4c0ff0160da03a7f19b8940954d05b38042382cca652911bf03c93a2",
+    "gateway-router-capture.json": "51355556160148fbca769be4e2fa333cfdcbe01041220ade71a3590ee1fca7b3",
+    "gateway-timeout-capture.json": "6635a2793bde5aa866af8f9ee76cf60c7094a182700852438b8aace9264a7bac",
+    "own-gateway.json": "1b2ca39257a2fdf265c12daef8be01bb5fe665d4b3d531b976aba850749045f6",
+    "own-gateway.log": "aab805e0059479e54cdfb6849d0ab74fee7f5557e8d727b52a6c8e19a5eeb6c2",
+    "prepare.py": "423f76c5cee60cd544c9be025dcce75d4bc51f6b083bac9d7b168ce6d8bfccb0",
+    "prepare_approved_bytes.py": "8a152d00be01e6609a4917a5c3a098730b75f929efe456293f39d4687d7f4f10",
+    "review_cases.py": "566295a99ae453ad98853d2389d53614c9a5c36775ff30d3b8a19fe5adbfe70a",
+    "review_router.py": "34478bdb50f086dbb1a111b8d5f2d3066ad5b85126637114bd4794fa03e58d58",
+    "review_router_initial_fixture.py": "9713c88a550e3414ab408aa73b973f4b451cb107086eae847c17606d645fa9e4",
+    "review_scope.py": "3285956bbf275429d0939920f9c13ba626f51e0fb8936efbc983766b50f8fb53",
+    "router-negative-verification-only.json": "5cda61cb17b108d985138f4db2f0ade2ff785e4ae6aeeaa1bac99e29632e640e",
+    "router-negative-verification-only.log": "5c330ce04ded56a113c0fbf607ca5fbe2dfc1794fa2d6f57565dd4647531fcc3",
+    "router-negative.json": "82ace01e2edd0e255cea11c96f80b03001714429ca1ea31f14e643e649b39fa0",
+    "router-negative.log": "1383a608775280888056a04b43f6ed9e29db265c4c42d6f8ec240f1fab8bc6ea",
+    "run_tests.py": "42c9aae4d6016e41af6393fcda288bf164c06a8d2ca71def35e07d0298563817",
+    "seal.py": "09f4865327c53e537cb062e99e1c40b8a8e98be579567cca14b28aec1c844ee3",
+    "snapshot-698e8f0-approvedbytes.json": "92de905570a4c50b0bc2c91d9a30d35569a58a9fd5f41ffa4e47a86f2a1e2573",
+    "snapshot-698e8f0.json": "12cc4599f85ef2177a8e200680febcb54d6fa9029b6df6136f8ded3a88ecdc93",
+    "supplied-focal.json": "c6d3007f758b73db6a7165445854cddadc49a7662ca337102d012ff033985a40",
+    "supplied-focal.log": "4c48046a056bf8ccdf5c996a75db0e600d474832bf107a8cbf6c5cfd834a90e9",
+    "tuple-rejections.json": "3a6f7fd02fee748dcdae2edeb5967484cf21e40d95ab27c76e2b9a81a502dd4c"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "commit": "698e8f0bb11b6f5ef91e8ac27ef9404c8868f7cc",
+  "baseline": "6668db4",
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_smoke",
+    "front.test_evaluation_budget",
+    "--settings=regulai.test_settings",
+    "--verbosity=2"
+  ],
+  "cwd": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-vercel-spec\\source",
+  "exit_code": 0,
+  "duration_seconds": 31.328,
+  "archive_sha256": "fb838cafc1dc59fcc70afea416837fd6999032d5ae76c29fb7efd9b94cb95842",
+  "log_sha256": "04c2ba7f6762c0d6c9778f3c6a01d2e266f6df0856812bea5f0d86ab5203abd8"
+}

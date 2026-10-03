@@ -1,0 +1,18 @@
+{
+  "commit": "698e8f0bb11b6f5ef91e8ac27ef9404c8868f7cc",
+  "labels": [
+    "review_scope.FrozenScopeChecks"
+  ],
+  "failures": 1,
+  "elapsed_seconds": 1.14,
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.socket.sendto": 0
+  },
+  "database": "ephemeral synthetic SQLite",
+  "bridge_executed": false,
+  "log_sha256": "eaa4737374f2892bb54dd8068e5fa33dd0f0d6d2e7943ae11a4e99e6d79ec46c"
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "destination": "https://ai-gateway.vercel.sh/typesafe/v1/systemone",
+    "transport": "typesafe",
+    "model": "jev-1.13.0",
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "destination": "https://api.typesafe.ai/v1/systemone",
+    "transport": "vercel",
+    "model": "typesafe-ai/jev",
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "destination": "https://ai-gateway.vercel.sh/typesafe/v1/systemone",
+    "transport": "vercel",
+    "model": "jev-1.13.0",
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "destination": "https://api.typesafe.ai/v1/systemone",
+    "transport": "typesafe",
+    "model": "jev-latest",
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "destination": "https://ai-gateway.vercel.sh/typesafe/v1/systemone/",
+    "transport": "vercel",
+    "model": "typesafe-ai/jev",
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  },
+  {
+    "destination": "https://ai-gateway.vercel.sh.attacker.invalid/typesafe/v1/systemone",
+    "transport": "vercel",
+    "model": "typesafe-ai/jev",
+    "blockers": [
+      "pinned_judge_destination_required"
+    ]
+  }
+]

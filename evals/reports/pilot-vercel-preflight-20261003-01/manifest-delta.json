@@ -1,0 +1,146 @@
+{
+  "artifact_kind": "proposal_only_not_authorization",
+  "checked_on": "2026-10-03",
+  "scope": "Eight existing synthetic smoke cases × economy, strong, router; no human bank or participants.",
+  "json_patch": [
+    {
+      "op": "replace",
+      "path": "/destinations/judge",
+      "value": "https://ai-gateway.vercel.sh/typesafe/v1/systemone"
+    },
+    {
+      "op": "replace",
+      "path": "/judge_transport",
+      "value": "vercel"
+    },
+    {
+      "op": "replace",
+      "path": "/model_versions/judge",
+      "value": "typesafe-ai/jev"
+    },
+    {
+      "op": "replace",
+      "path": "/published_versions/judge",
+      "value": null
+    },
+    {
+      "op": "add",
+      "path": "/mutable_model_aliases/-",
+      "value": "typesafe-ai/jev"
+    },
+    {
+      "op": "remove",
+      "path": "/allowed_effective_models/jev-1.13.0"
+    },
+    {
+      "op": "add",
+      "path": "/allowed_effective_models/typesafe-ai~1jev",
+      "value": [
+        "typesafe-ai/jev"
+      ]
+    },
+    {
+      "op": "replace",
+      "path": "/pricing_sources",
+      "value": [
+        "https://api-docs.deepseek.com/quick_start/pricing/",
+        "https://ai-gateway.vercel.sh/v1/models",
+        "https://vercel.com/ai-gateway/models/jev"
+      ]
+    }
+  ],
+  "unchanged": {
+    "maximum_usd": "1.00",
+    "currency": "USD",
+    "maximum_window_hours": 24,
+    "judge_prices_per_million": {
+      "input": ".042",
+      "output": "0"
+    },
+    "call_caps_usd": {
+      "generation": ".05",
+      "classification": ".003",
+      "verification": ".003",
+      "obfuscation": "0"
+    },
+    "cases_rubrics_thresholds_and_generation_options": "unchanged",
+    "masking": "existing local CPU detector identity; no external masking destination",
+    "persistent_budget_path": ".claude/pilot-real-budget.sqlite3",
+    "alias_cost_timeout_revocation_reserve_before_call_rules": "unchanged",
+    "default_execution_mode": "offline"
+  },
+  "request_contract": {
+    "endpoint": "https://ai-gateway.vercel.sh/typesafe/v1/systemone",
+    "transport": "vercel",
+    "model": "typesafe-ai/jev",
+    "providerOptions": {
+      "gateway": {
+        "only": [
+          "typesafe-ai"
+        ]
+      }
+    },
+    "no_gateway_fallback_models": true,
+    "no_client_retries": true,
+    "response_shape": "TypeSafe: noul/choice/score; usage.input_tokens/output_tokens",
+    "effective_model_allowlist": [
+      "typesafe-ai/jev"
+    ],
+    "metadata": "provider_metadata or providerMetadata; gateway.cost validated and used as provider_reported; routing fields if supplied must name typesafe-ai/jev and typesafe-ai",
+    "immutable_underlying_version": "not exposed; responding alias alone cannot detect a provider changing the model behind that alias",
+    "ledger_metadata": "normalized model_effective, cost_kind, token counts and request_id preserved; full Gateway routing/generationId are not persisted by chat_service"
+  },
+  "budget_reasoning": {
+    "observed_catalog_input_usd_per_token": "0.000000042",
+    "observed_catalog_output_usd_per_token": "0",
+    "published_total_request_token_limit": 64000,
+    "input_only_tariff_at_published_limit_usd": "0.002688",
+    "application_reservation_per_judge_call_usd": ".003",
+    "shared_ledger_limit_usd": "1.00",
+    "limitation": "The tariff calculation is not an invoice or provider-enforced spend cap. Unexpected billed cost is retained; unknown outcomes keep the full reservation and stop further calls.",
+    "direct_provider_or_new_destinations": "not permitted by this Gateway proposal"
+  },
+  "catalog": {
+    "source": "https://ai-gateway.vercel.sh/v1/models",
+    "id": "typesafe-ai/jev",
+    "type": "evaluation",
+    "context_window": 32000,
+    "max_tokens": 0,
+    "pricing": {
+      "input": "0.000000042",
+      "output": "0"
+    },
+    "zdr": "none",
+    "no_training": "all",
+    "limitation": "Catalog flags are provider claims. No zero-retention guarantee is inferred."
+  },
+  "official_sources": [
+    {
+      "url": "https://vercel.com/docs/ai-gateway/sdks-and-apis/typesafe",
+      "supports": "Exact compatible endpoint, Gateway Bearer authentication, model alias, noul and snake-case usage, gateway cost metadata."
+    },
+    {
+      "url": "https://vercel.com/docs/ai-gateway/models-and-providers/provider-options",
+      "supports": "The only provider filter constrains serving providers."
+    },
+    {
+      "url": "https://vercel.com/docs/ai-gateway/modalities/evaluation",
+      "supports": "Evaluation fallback is opt-in and bills both stages; no fallback is enabled here."
+    },
+    {
+      "url": "https://ai-gateway.vercel.sh/v1/models",
+      "supports": "Exact catalog tariff and context/token metadata; public read-only lookup, no inference."
+    }
+  ],
+  "root_actions_before_live_run": [
+    "Apply this delta to the smoke-only manifest and refresh source_sha256 after the code is fixed.",
+    "Bind the actual human authorization and <=24h window to the exact new manifest hash; maximum 1 USD; accept mutable aliases explicitly in the recorded scope.",
+    "Use only the existing DeepSeek and Gateway credentials through the isolated child environment; no TypeSafe direct key or new credit purchase.",
+    "Freeze code SHA; finish all five required gates and read-only preflight.",
+    "Run through the unchanged shared ledger. Retain every error/unknown reservation. On timeout, provider/model drift, exceeded bound or revocation stop without automatic retry.",
+    "Recovery requires reviewing ledger and provider evidence; never delete/reset uncertain entries to reclaim budget."
+  ],
+  "paid_calls_by_c": 0,
+  "observed_api_cost_usd_by_c": "0",
+  "human_reviews_performed": 0
+}

@@ -1,0 +1,9 @@
+{
+  "script_sha256": "35c5b80656f39946fc5714d49627e01738562c1bb4b3f3a6eb662f02bac5c0d5",
+  "analysis": "AST and source only; no bridge import, function execution, keys or user database access",
+  "credentials_in_argv": false,
+  "source_query_connection": "separate SQLite URI with mode=ro",
+  "child_settings": "regulai.test_settings",
+  "secret_transport": "child process environment",
+  "runtime_secret_isolation_tested": false
+}

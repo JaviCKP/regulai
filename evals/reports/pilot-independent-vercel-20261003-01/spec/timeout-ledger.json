@@ -1,0 +1,45 @@
+{
+  "cap_usd": "1.00",
+  "known_cost_usd": "0",
+  "provider_reported_usd": "0",
+  "tariff_estimated_usd": "0",
+  "budget_exposure_usd": "0.003",
+  "remaining_usd": "0.997",
+  "uncertain_reservations_usd": "0.003",
+  "calls": [
+    {
+      "id": "85267b2b-f606-429d-b5a2-48d84756a353",
+      "at": "2026-10-03T15:39:36.267118+00:00",
+      "purpose": "obfuscation",
+      "reserved": "0",
+      "status": "completed",
+      "cost": "0",
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "obfuscation:1",
+        "model": null,
+        "transport": "local",
+        "cost_scope": "api",
+        "cost_kind": "configured_zero"
+      }
+    },
+    {
+      "id": "eaf67504-8add-404d-aa96-67b5925e9a42",
+      "at": "2026-10-03T15:39:39.285485+00:00",
+      "purpose": "classification",
+      "reserved": "0.003",
+      "status": "outcome_unknown",
+      "cost": null,
+      "metadata": {
+        "case_id": "arithmetic",
+        "configuration": "strong",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "transport": "http",
+        "cost_scope": "api",
+        "cost_kind": "unknown"
+      }
+    }
+  ]
+}
