@@ -14,6 +14,7 @@ from front.models import *
 from front.access import actor_company, authorized_conversations, company_audit_scope, platform_required, protect_operator
 from front.policy import validate_yara
 from front.masking import mask_texts  # Preserve the existing views.mask_texts import surface.
+from front.forms import ObfuscationConfigForm
 from front.connectors import get_connector, ChatMessage, ChatResponse
 from front.rate_limit import (
     login_rate_limit, chat_rate_limit, signup_rate_limit,
@@ -2820,47 +2821,21 @@ def obfuscation_create(request):
     """Create a new obfuscation configuration."""
     company = get_user_company(request.user)
 
-    if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        api_url = request.POST.get('api_url', '').strip()
-        detect = request.POST.get('detect', 'both')
-        language = request.POST.get('language', '').strip()
-        active = request.POST.get('active') == 'on'
-
-        errors = []
-        if not name:
-            errors.append('Name is required.')
-        if not api_url:
-            errors.append('API URL is required.')
-
-        if errors:
-            for error in errors:
-                messages.error(request, error)
-            return render(request, 'obfuscation/form.html', {
-                'form_data': request.POST,
-                'is_edit': False,
-            })
-
-        ObfuscationConfig.objects.create(
-            name=name,
-            company=company,
-            api_url=api_url,
-            detect=detect,
-            language=language,
-            active=active,
-        )
-
+    form = ObfuscationConfigForm(request.POST if request.method == 'POST' else None,
+        instance=ObfuscationConfig(company=company))
+    if request.method == 'POST' and form.is_valid():
+        config = form.save()
         log_action(request.user, 'obfuscation_create', {
-            'name': name,
-            'api_url': api_url,
-            'detect': detect,
+            'name': config.name,
+            'backend': config.backend,
+            'api_url': config.api_url,
+            'detect': config.detect,
             'company': company.name,
         }, request)
-
-        messages.success(request, f'Obfuscation config "{name}" created successfully.')
+        messages.success(request, f'Obfuscation config "{config.name}" created successfully.')
         return redirect('front:obfuscation_list')
 
-    return render(request, 'obfuscation/form.html', {'is_edit': False})
+    return render(request, 'obfuscation/form.html', {'is_edit': False, 'form': form})
 
 
 @security_required
@@ -2869,46 +2844,22 @@ def obfuscation_edit(request, pk):
     company = get_user_company(request.user)
     config = get_object_or_404(ObfuscationConfig, pk=pk, company=company)
 
-    if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        api_url = request.POST.get('api_url', '').strip()
-        detect = request.POST.get('detect', 'both')
-        language = request.POST.get('language', '').strip()
-        active = request.POST.get('active') == 'on'
-
-        errors = []
-        if not name:
-            errors.append('Name is required.')
-        if not api_url:
-            errors.append('API URL is required.')
-
-        if errors:
-            for error in errors:
-                messages.error(request, error)
-            return render(request, 'obfuscation/form.html', {
-                'config': config,
-                'is_edit': True,
-            })
-
-        config.name = name
-        config.api_url = api_url
-        config.detect = detect
-        config.language = language
-        config.active = active
-        config.save()
-
+    form = ObfuscationConfigForm(request.POST if request.method == 'POST' else None, instance=config)
+    if request.method == 'POST' and form.is_valid():
+        config = form.save()
         log_action(request.user, 'obfuscation_edit', {
-            'name': name,
-            'api_url': api_url,
-            'detect': detect,
+            'name': config.name,
+            'backend': config.backend,
+            'api_url': config.api_url,
+            'detect': config.detect,
             'company': company.name,
         }, request)
-
-        messages.success(request, f'Obfuscation config "{name}" updated successfully.')
+        messages.success(request, f'Obfuscation config "{config.name}" updated successfully.')
         return redirect('front:obfuscation_list')
 
     return render(request, 'obfuscation/form.html', {
         'config': config,
+        'form': form,
         'is_edit': True,
     })
 

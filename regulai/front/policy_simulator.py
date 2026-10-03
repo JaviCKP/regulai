@@ -21,7 +21,7 @@ from .models import AuditLog, Company, CompanyEngine, EngineModel, ObfuscationCo
 from .management.commands.bootstrap_ai_policy import initial_policy
 from .policy import AIConfig, active_rules, digest, evaluate_policy, validate_yara
 from .routing import RoutingError, actual_cost, route
-from .masking import mask_identity, mask_texts, valid_masks
+from .masking import mask_cost_bounds, mask_identity, mask_texts, valid_masks
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,10 @@ def _config(source, company):
         parse_constant=invalid_constant)).model_dump()
     destinations = {item for items in config['destinations'].values() for item in items}
     owned_engines = set(CompanyEngine.objects.filter(company=company, active=True).values_list('pk', flat=True))
-    owned_masks = set(ObfuscationConfig.objects.filter(company=company, active=True).values_list('pk', flat=True))
-    if owned_masks and config['limits']['budget'] is not None and config['masking']['max_call_cost'] is None:
+    masks = list(ObfuscationConfig.objects.filter(company=company, active=True))
+    owned_masks = {mask.pk for mask in masks}
+    bounds = mask_cost_bounds(masks, config['masking']['max_call_cost'])
+    if config['limits']['budget'] is not None and any(value is None for value in bounds.values()):
         raise ValueError('unbounded_masking_cost')
     for destination in destinations:
         if destination == 'jev':
@@ -142,8 +144,11 @@ def _outcome(actor, config, sample, rules, signals):
     if local.status in {'block', 'unavailable'}:
         return {'policy': local.as_dict(), 'route': {'status': 'not_evaluated', 'origin': origin,
             'reason_codes': ['security_not_allowed']}}
-    if (cfg.limits.budget is not None and cfg.masking.max_call_cost is None
-            and ObfuscationConfig.objects.filter(company=actor.profile.company, active=True).exists()):
+    try:
+        mask_bounds = mask_cost_bounds(masks, cfg.masking.max_call_cost)
+        if cfg.limits.budget is not None and any(value is None for value in mask_bounds.values()):
+            raise ValueError('Unbounded HTTP masking')
+    except ValueError:
         policy = local.as_dict()
         policy.update(status='unavailable', reason_codes=['policy_configuration_invalid'], allowed_destinations=[])
         return {'policy': policy, 'route': {'status': 'not_evaluated', 'origin': origin,
@@ -195,11 +200,9 @@ def _outcome(actor, config, sample, rules, signals):
             if budget < 0:
                 raise RoutingError('budget_exhausted')
         if budget is not None:
-            mask_count = ObfuscationConfig.objects.filter(company=actor.profile.company, active=True).count()
-            if mask_count:
-                budget -= Decimal(cfg.masking.max_call_cost) * mask_count * 2
-                if budget < 0:
-                    raise RoutingError('budget_exhausted')
+            budget -= sum(mask_bounds.values(), Decimal(0)) * 2
+            if budget < 0:
+                raise RoutingError('budget_exhausted')
         selected = route(candidates, [sample], allowed_destinations=policy.allowed_destinations,
             min_quality=cfg.routing.min_quality[difficulty], max_output_tokens=cfg.routing.max_output_tokens,
             budget=budget)
@@ -226,7 +229,11 @@ def _semantic(actor, company, sample, rules):
     if not valid_masks(masks):
         return {'status': 'not_authorized', 'reason_codes': ['masking_required']}, [], None
     cfg = AIConfig.model_validate(company.ai_config)
-    if masks and cfg.masking.max_call_cost is None:
+    try:
+        mask_bounds = mask_cost_bounds(masks, cfg.masking.max_call_cost)
+        if any(value is None for value in mask_bounds.values()):
+            raise ValueError('Unbounded HTTP masking')
+    except ValueError:
         return {'status': 'not_authorized', 'reason_codes': ['policy_configuration_invalid']}, [], None
     decision = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)],
         config=company.ai_config, destinations=destinations, rules=rules)
@@ -236,8 +243,7 @@ def _semantic(actor, company, sample, rules):
             or cfg.jev.input_price is None or cfg.jev.output_price is None or cfg.jev.currency != 'USD'):
         return {'status': 'not_evaluated', 'reason_codes': ['budget_or_credentials_unconfigured']}, [], None
     bound = Decimal(cfg.jev.max_call_cost)
-    mask_bound = Decimal(cfg.masking.max_call_cost) if masks else Decimal(0)
-    if bound + mask_bound * len(masks) > Decimal(cfg.limits.budget):
+    if bound + sum(mask_bounds.values(), Decimal(0)) > Decimal(cfg.limits.budget):
         return {'status': 'not_evaluated', 'reason_codes': ['budget_exhausted']}, [], None
     fresh = Profile.objects.select_related('company', 'user').get(user=actor)
     authorized = can_manage_company_policy(fresh.user)
@@ -276,17 +282,22 @@ def _semantic(actor, company, sample, rules):
         if remaining <= 0:
             raise PipelineStop('deadline_exceeded')
         spent = sum((Decimal(item['cost_bound']) for item in calls), Decimal(0))
+        mask_bound = mask_bounds[mask.pk]
         if spent + mask_bound + bound > Decimal(cfg.limits.budget):
             raise PipelineStop('budget_exhausted')
         current_mask_call = {'purpose': 'simulation_obfuscation', 'provider': f'obfuscation:{mask.pk}',
-            'model': None, 'status': 'started', 'cost': None, 'cost_bound': str(mask_bound), 'currency': 'USD'}
+            'model': None, 'status': 'started', 'cost': None, 'cost_bound': str(mask_bound), 'currency': 'USD',
+            'transport': mask.backend, 'cost_kind': 'unknown'}
+        if mask.backend == 'local':
+            current_mask_call.update(cost='0', cost_kind='configured_zero', cost_scope='api')
         calls.append(current_mask_call)
         current_mask_audit = AuditLog.objects.create(user=actor, company=company, action='policy_simulate',
             details=json.dumps({'policy_digest': digest(company.ai_config), 'sample_digest': digest(sample), 'call': current_mask_call}))
         return remaining
 
     def after_mask(mask):
-        current_mask_call.update(status='completed', cost='0' if mask_bound == 0 else None)
+        current_mask_call.update(status='completed', cost='0' if mask_bounds[mask.pk] == 0 else None,
+            cost_kind='configured_zero' if mask_bounds[mask.pk] == 0 else 'unknown')
         save_mask()
 
     try:
@@ -318,6 +329,7 @@ def _semantic(actor, company, sample, rules):
     prices = {key: getattr(cfg.jev, key) for key in ('input_price', 'output_price', 'currency', 'price_date')}
     call = {'purpose': 'simulation_classification', 'provider': 'jev', 'model': cfg.jev.model,
         'status': 'started', 'cost': None, 'cost_bound': str(bound), 'currency': cfg.jev.currency,
+        'transport': 'http',
         'price_snapshot': prices, 'threshold': cfg.jev.threshold, 'rubric_version': jev.CLASSIFICATION_RUBRIC_VERSION,
         'task_rubric_version': jev.TASK_RUBRIC_VERSION}
     # Persist an attempt before crossing the provider boundary; a timeout is never free.

@@ -38,9 +38,14 @@ def initial_policy(company):
     masks = list(ObfuscationConfig.objects.filter(company=company, active=True).order_by('pk'))
     if not masks:
         warnings.append('Required masking is missing: configure an active company obfuscator for PII and secrets before sending.')
+    elif all(mask.backend == 'local' for mask in masks):
+        config['masking']['max_call_cost'] = '0'
     for mask in masks:
         destinations.append(f'obfuscation:{mask.pk}')
-        warnings.append(f'Obfuscator {mask.pk}: set a contractual maximum call cost before enabling a budget.')
+        if mask.backend == 'local':
+            warnings.append(f'Obfuscator {mask.pk}: local API cost is zero; install the local detector and its model before sending.')
+        else:
+            warnings.append(f'Obfuscator {mask.pk}: set a contractual maximum call cost before enabling a budget.')
         if mask.detect != 'both':
             warnings.append(f'Obfuscator {mask.pk}: mandatory masking requires both PII and secrets.')
     if not candidates:

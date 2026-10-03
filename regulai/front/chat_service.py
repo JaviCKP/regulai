@@ -20,7 +20,7 @@ from .routing import Candidate, RoutingError, actual_cost, route
 from .verification import MAX_CLAIMS, verify_response
 from .sources import build_sources
 from .classification import decide
-from .masking import mask_identity, mask_texts, valid_masks
+from .masking import mask_cost_bounds, mask_identity, mask_texts, valid_masks
 from . import jev
 
 logger = logging.getLogger(__name__)
@@ -491,12 +491,14 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 raise PipelineStop('authorization_changed')
         return fresh
 
-    def start_call(purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None):
+    def start_call(purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None, transport='http'):
         preflight(destination, texts, model_pk=model_pk)
         ensure_budget(cost_bound, reserve)
         call = {'purpose': purpose, 'provider': destination, 'model': model, 'status': 'started',
                 'cost': None, 'cost_bound': str(cost_bound) if cost_bound is not None else None,
-                'price_snapshot': prices, 'currency': 'USD', 'cost_kind': 'unknown'}
+                'price_snapshot': prices, 'currency': 'USD', 'cost_kind': 'unknown', 'transport': transport}
+        if transport == 'local':
+            call.update(cost='0', cost_kind='configured_zero', cost_scope='api')
         prompt.decision['calls'].append(call)
         prompt.save(update_fields=['decision', 'updated_at'])
         if prompt._call_observer is not None:
@@ -593,12 +595,17 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if budget is not None and not any(model.input_price is not None and model.output_price is not None
                                          and model.currency == 'USD' for _, model, _ in rows.values()):
             raise PipelineStop('unknown_price')
-        mask_bound = Decimal(cfg.masking.max_call_cost) if cfg.masking.max_call_cost is not None else None
-        if budget is not None and masks and mask_bound is None:
+        try:
+            mask_bounds = mask_cost_bounds(masks, cfg.masking.max_call_cost)
+        except ValueError:
+            raise PipelineStop('policy_configuration_invalid') from None
+        mask_chain_bound = (None if any(value is None for value in mask_bounds.values()) else
+                            sum(mask_bounds.values(), Decimal(0)))
+        if budget is not None and mask_chain_bound is None:
             raise PipelineStop('policy_configuration_invalid')
         # Establish a complete mandatory monetary/capacity bound before masking
         # or classification. The final route still applies semantic task quality.
-        mandatory = (jev_bound or Decimal(0)) * (int(classify) + int(semantic)) + (mask_bound or Decimal(0)) * len(masks) * 2
+        mandatory = (jev_bound or Decimal(0)) * (int(classify) + int(semantic)) + (mask_chain_bound or Decimal(0)) * 2
         raw_current = text + ('\n\nSources:\n' + raw_sources.prompt_json if raw_sources else '')
         raw_messages = system + ([ChatMessage('system', DOCUMENT_INSTRUCTION)] if document else []) + history + [ChatMessage('user', raw_current)]
         preliminary = [replace(_candidate(*row, 'general'), quality=1.0) for key, row in rows.items()
@@ -609,12 +616,12 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if masks:
             mask_call = None
             # Validate all mandatory checking costs before the first paid boundary.
-            ensure_budget(mask_bound, None if (classify or semantic) and jev_bound is None else
-                          (mask_bound or Decimal(0)) * (len(masks) * 2 - 1) + (jev_bound or Decimal(0)) * (int(classify) + int(semantic)))
+            ensure_budget(mask_chain_bound, None if (classify or semantic) and jev_bound is None else
+                          (mask_chain_bound or Decimal(0)) + (jev_bound or Decimal(0)) * (int(classify) + int(semantic)))
             def before_mask(mask, value):
                 nonlocal mask_call
                 mask_call = start_call('obfuscation', f'obfuscation:{mask.pk}', None,
-                    policy_texts + [('prompts', value)], mask_bound, {})
+                    policy_texts + [('prompts', value)], mask_bounds[mask.pk], {}, transport=mask.backend)
                 return remaining()
             def after_mask(mask):
                 complete_call(*mask_call, None)
@@ -672,7 +679,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             messages.insert(0, ChatMessage('system', 'The request may lack necessary information. State uncertainty and ask for clarification where needed; do not invent missing facts.'))
         verify_reserve = jev_bound if semantic else Decimal(0)
         if masks:
-            verify_reserve = None if verify_reserve is None or mask_bound is None else verify_reserve + mask_bound * len(masks)
+            verify_reserve = None if verify_reserve is None or mask_chain_bound is None else verify_reserve + mask_chain_bound
         route_budget = None if budget is None else max(Decimal(0), budget - (spent_bound() or Decimal(0)) - (verify_reserve or Decimal(0)))
         selected = route(first_candidates, messages, allowed_destinations=allowed,
             min_quality=cfg.routing.min_quality[difficulty], needs_json=document is not None,

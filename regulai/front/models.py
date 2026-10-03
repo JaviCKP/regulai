@@ -363,7 +363,8 @@ class CompanyEngine(models.Model):
 
 
 class ObfuscationConfig(models.Model):
-    """Configuración de ofuscación para una empresa (integración con PasteGuard)."""
+    """Barrera de privacidad local o HTTP autorizada por una empresa."""
+    BACKEND_CHOICES = [("local", "Local detector"), ("http", "PasteGuard HTTP")]
     DETECT_CHOICES = [
         ("pii", "PII"),
         ("secrets", "Secrets"),
@@ -372,7 +373,8 @@ class ObfuscationConfig(models.Model):
 
     name = models.CharField(max_length=255)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="obfuscation_configs")
-    api_url = models.URLField(help_text="Base URL del servicio PasteGuard (ej: https://pasteguard.com)")
+    backend = models.CharField(max_length=10, choices=BACKEND_CHOICES, default="http")
+    api_url = models.URLField(blank=True, help_text="Base URL del servicio PasteGuard; obligatoria solo para HTTP.")
     detect = models.CharField(max_length=20, choices=DETECT_CHOICES, default="both")
     language = models.CharField(max_length=10, blank=True, default="", help_text="Idioma para detección (vacío=auto-detectar)")
     active = models.BooleanField(default=True)
@@ -380,6 +382,20 @@ class ObfuscationConfig(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+    def clean(self):
+        super().clean()
+        if self.backend == 'http':
+            from urllib.parse import urlsplit
+            try:
+                endpoint = urlsplit(self.api_url)
+                valid = endpoint.scheme in {'http', 'https'} and endpoint.netloc and not endpoint.username and not endpoint.password
+            except ValueError:
+                valid = False
+            if not valid:
+                raise ValidationError({'api_url': 'HTTP requires a valid HTTP(S) URL without embedded credentials.'})
+        elif self.backend == 'local' and self.language not in {'', 'es', 'en'}:
+            raise ValidationError({'language': 'The local detector supports Spanish and English; use es, en or leave empty.'})
 
     def __str__(self):
         return f"{self.name} ({self.company.name})"

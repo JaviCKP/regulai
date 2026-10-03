@@ -134,7 +134,10 @@ class AlertAdmin(admin.ModelAdmin):
 
 @admin.register(ObfuscationConfig)
 class ObfuscationConfigAdmin(admin.ModelAdmin):
-    list_display = ("name", "company", "api_url", "detect", "active", "created_at")
-    list_filter = ("active", "detect", "company")
+    list_display = ("name", "company", "backend", "api_url", "detect", "active", "created_at")
+    list_filter = ("active", "backend", "detect", "company")
     search_fields = ("name", "company__name", "api_url")
     ordering = ("-created_at",)
+
+    def get_changeform_initial_data(self, request):
+        return {**super().get_changeform_initial_data(request), 'backend': 'local'}

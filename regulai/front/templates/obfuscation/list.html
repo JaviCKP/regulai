@@ -74,7 +74,7 @@
             <thead class="table-light">
               <tr>
                 <th>Name</th>
-                <th>API URL</th>
+                <th>Processing location</th>
                 <th>Detect</th>
                 <th>Language</th>
                 <th class="text-center">Status</th>
@@ -90,7 +90,10 @@
                     <strong>{{ config.name }}</strong>
                   </div>
                 </td>
-                <td><code class="text-muted small">{{ config.api_url }}</code></td>
+                <td>
+                  <span class="badge bg-secondary-subtle text-secondary">{{ config.get_backend_display }}</span>
+                  {% if config.backend == 'http' %}<div><code class="text-muted small">{{ config.api_url }}</code></div>{% endif %}
+                </td>
                 <td>
                   <span class="badge bg-info-subtle text-info">{{ config.get_detect_display }}</span>
                 </td>
