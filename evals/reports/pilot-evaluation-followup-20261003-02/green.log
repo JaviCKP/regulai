@@ -1,0 +1,76 @@
+Found 21 test(s).
+System check identified no issues (0 silenced).
+90 simulated runs; 6 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmp4s8iw9d2\run
+60 simulated runs; 0 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmpanb4rf4x\0
+60 simulated runs; 0 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmpanb4rf4x\1
+150 simulated runs; 0 failed controls; real calls 0. Reports: C:\Users\javi\AppData\Local\Temp\tmpq5n4b2bn\run
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default'...
+
+{"timestamp": "2026-10-03T14:36:58.768790+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:36:59.823074+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "95289924-da7d-48a8-a5e3-d793068274c8", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:00.049649+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "3609af82-e557-43db-88a4-1742beb92998", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:00.309260+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "54ef5605-f31d-46b3-aad7-d60ef759d07b", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:01.638978+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "6c285f0d-17b4-4bca-8bad-4fa0f3bcf5bf", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:01.798384+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "78587b4d-2527-4c0c-95d7-300c704363ee", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:02.019050+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2883a4e7-609f-4233-a7ba-b1e2be9b483d", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:02.284677+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "93b172e3-712e-4767-ad2f-184dd276763d", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:02.886000+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2549354d-7d48-4f66-9442-e831bf2eafe2", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:37:03.095760+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2206dd0f-39d0-4d37-98b0-1ea8d8b7e098", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+..{"timestamp": "2026-10-03T14:37:05.512986+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "cecc4db9-0257-4590-a2a2-590562a07e11", "code": "internal_error", "exception_type": "RuntimeError"}
+..{"timestamp": "2026-10-03T14:37:05.818729+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "d63bce65-9809-49f9-b0de-e00ac5566e86", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:37:06.030709+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "03d6db2f-248d-451f-8a34-63e049f8bdbd", "code": "provider_failed", "exception_type": "RuntimeError"}
+...{"timestamp": "2026-10-03T14:37:11.712808+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "26d9c7ca-7a18-4e88-87cd-46d4be03fd9e", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:37:12.406008+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a58218f3-cf88-418e-af66-4c776a86997e", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:12.888351+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "5026b04b-8f69-45d2-914e-531096122999", "code": "security_check_failed", "exception_type": "RuntimeError"}
+..{"timestamp": "2026-10-03T14:37:18.333247+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "33b607ab-9bd1-51c0-aa0b-3ebe92480dd4", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:22.072774+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "95437b5c-b286-54ad-82fa-6af93fc16418", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:22.103795+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "a2143e5f-d43e-58d1-b6de-c7fddec31693", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:22.136336+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "16c02949-a27b-5eff-8944-36f80ce639e0", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:23.386352+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "0a850da0-a897-557a-b64c-34de098c5c4f", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:23.437374+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "00801738-e280-5214-809b-1147c007063d", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:23.487876+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8078be5c-c8bc-58ca-bf10-af4d491a2482", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:37:24.919838+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "5e782b59-7492-56f4-9fb3-d8872ed71b35", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.207967+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "01a83423-93c9-5bf7-bbdc-d05e499d69fa", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.217467+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "6c758b5e-7056-531c-8060-f13131c67006", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.226972+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "7af2d010-b848-534b-9964-0f276df50d29", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.238497+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "75b80adf-86b4-5066-95b8-a4e8965b9a01", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.249004+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "5bdc14e3-bdfd-5da8-817a-51170da37901", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.263530+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "674905e4-7962-59a8-8430-91e5a376892d", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.308036+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9134bd53-faef-5a22-b9d0-c3c683ee52df", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.348065+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "c12d588a-0c83-5dc6-a297-297383e777ec", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.388087+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "de31e102-f99e-566e-bced-8e1ba5e5ed24", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:27.619672+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9cec3e7d-807d-5500-ae7b-5ace0bb0c083", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:28.996871+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "f138ea92-184f-5b85-b677-179815e49d4b", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.007375+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "2383562a-1a9e-5629-bd15-ec2c22295270", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.017875+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "0fb1d3cb-0600-5051-a24d-9a9ea0bbd027", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.028387+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "00a3aafa-65f1-5505-a9bd-52cf28ff7d04", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.038386+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4319e7e1-1efc-57b2-b1e1-cbfa0b4c374a", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.048900+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "ccf32097-99ba-59cb-8ced-241354d53e2f", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.087911+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fad5e01d-564f-5731-8db6-813fa969c222", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.126920+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "d5050895-6856-576c-a9f9-8b6ba0e7982f", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:29.165939+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "aa1ce9a9-eace-55e8-b852-e71d4318c49a", "code": "invalid_response", "exception_type": "RuntimeError"}
+.{"timestamp": "2026-10-03T14:37:29.387009+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "ba899b41-3c90-50f6-8c33-ff4310bfae11", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:30.151624+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "150a53a8-80f4-5c16-ba00-eee135cb9b06", "code": "quality_unavailable", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:32.139409+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "b8303bee-feca-534e-a128-31d5dcbcb946", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:32.154918+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "24bd5afa-0e93-57c2-9f7a-c25b6f029ed9", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:32.170923+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8c34780c-f973-57cb-801e-83432afa365f", "code": "restricted_content", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:33.440458+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fefd9a51-838b-5690-bec8-793c360ad211", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:33.470479+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "06b8b961-fac2-5ea2-93dd-10ec6d1d5080", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:33.501981+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "b86d726e-6867-59c0-99c9-99c6c846591b", "code": "outcome_unknown", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.110811+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "047b4e70-ed29-5a12-8c1a-5fb83bcad458", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.120317+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "6a3aaa3d-36c9-59d1-923a-0f3c84d52b5d", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.131323+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "8ade2cb8-84cb-5d65-a9c4-05b1d84d4251", "code": "unknown_price", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.141326+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "743f9723-c245-55d3-85a4-3e1bd4624be4", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.150832+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "9960bc48-a63b-5d4f-9825-08c219c5af1b", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.161842+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "819e35a6-6163-5d5a-aba8-b44f6e8589ab", "code": "context_overflow", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.201356+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "3ff4ef45-4e61-5d9a-bde9-4133e0416459", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.242372+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "fffe4422-4b68-5819-a005-ad9b60bed351", "code": "invalid_response", "exception_type": "RuntimeError"}
+{"timestamp": "2026-10-03T14:37:34.283898+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1f643bb4-a0b8-5f15-b7d6-c2a0388f2bb5", "code": "invalid_response", "exception_type": "RuntimeError"}
+.......
+----------------------------------------------------------------------
+Ran 21 tests in 35.033s
+
+OK
+Destroying test database for alias 'default'...
+

@@ -1,0 +1,149 @@
+Found 1 test(s).
+System check identified no issues (0 silenced).
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default'...
+
+{"timestamp": "2026-10-03T14:36:25.860450+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-03T14:36:26.762953+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "64d92fc1-9f63-4f71-80d7-7c3bfbff4982", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F{"timestamp": "2026-10-03T14:36:26.959060+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1e79dd74-63a0-4a91-a9ab-9a228b37036e", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F{"timestamp": "2026-10-03T14:36:28.539632+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "4a591bad-ed39-4838-94be-6e7a926774b4", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F{"timestamp": "2026-10-03T14:36:29.522773+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "346d4492-44d6-4aea-910a-58a7abb1bb04", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F{"timestamp": "2026-10-03T14:36:29.770070+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "bd23e1df-94e1-4997-8d56-ef0aba54e3ef", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F{"timestamp": "2026-10-03T14:36:30.090710+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "bd8a3b80-25c6-4351-b363-2c4dc41d722b", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F{"timestamp": "2026-10-03T14:36:31.197187+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "1380eae1-4238-4c6c-8221-52ebb4b10d99", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F{"timestamp": "2026-10-03T14:36:33.403053+00:00", "level": "ERROR", "logger": "front.chat_service", "request_id": "62928baf-fc46-4139-8da7-1d16a56801bb", "code": "external_budget_unavailable", "exception_type": "RuntimeError"}
+F
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='revoked', purpose='obfuscation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'obfuscation'
+
+- ['obfuscation']
++ []
+
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='revoked', purpose='classification')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation', 'classification'] != ['obfuscation']
+
+First list contains 1 additional elements.
+First extra element 1:
+'classification'
+
+- ['obfuscation', 'classification']
++ ['obfuscation']
+
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='revoked', purpose='generation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation', 'classification', 'generation'] != ['obfuscation', 'classification']
+
+First list contains 1 additional elements.
+First extra element 2:
+'generation'
+
+- ['obfuscation', 'classification', 'generation']
+?                                 --------------
+
++ ['obfuscation', 'classification']
+
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='revoked', purpose='verification')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation', 'classification', 'generation', 'obfuscation', 'verification'] != ['obfuscation', 'classification', 'generation', 'obfuscation']
+
+First list contains 1 additional elements.
+First extra element 4:
+'verification'
+
+- ['obfuscation', 'classification', 'generation', 'obfuscation', 'verification']
+?                                                              ----------------
+
++ ['obfuscation', 'classification', 'generation', 'obfuscation']
+
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='expired', purpose='obfuscation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'obfuscation'
+
+- ['obfuscation']
++ []
+
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='expired', purpose='classification')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation', 'classification'] != ['obfuscation']
+
+First list contains 1 additional elements.
+First extra element 1:
+'classification'
+
+- ['obfuscation', 'classification']
++ ['obfuscation']
+
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='expired', purpose='generation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation', 'classification', 'generation'] != ['obfuscation', 'classification']
+
+First list contains 1 additional elements.
+First extra element 2:
+'generation'
+
+- ['obfuscation', 'classification', 'generation']
+?                                 --------------
+
++ ['obfuscation', 'classification']
+
+======================================================================
+FAIL: test_authorization_changed_during_reservation_prevents_each_transport (front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport) (change='expired', purpose='verification')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_smoke.py", line 224, in test_authorization_changed_during_reservation_prevents_each_transport
+    self.assertEqual(self.events, expected)
+AssertionError: Lists differ: ['obfuscation', 'classification', 'generation', 'obfuscation', 'verification'] != ['obfuscation', 'classification', 'generation', 'obfuscation']
+
+First list contains 1 additional elements.
+First extra element 4:
+'verification'
+
+- ['obfuscation', 'classification', 'generation', 'obfuscation', 'verification']
+?                                                              ----------------
+
++ ['obfuscation', 'classification', 'generation', 'obfuscation']
+
+----------------------------------------------------------------------
+Ran 1 test in 6.911s
+
+FAILED (failures=8)
+Destroying test database for alias 'default'...
+

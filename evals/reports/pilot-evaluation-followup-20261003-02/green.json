@@ -1,0 +1,21 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_smoke",
+    "front.test_evaluation_budget",
+    "front.test_evaluation",
+    "--settings=regulai.test_settings"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-10-03T14:37:35.021282+00:00",
+  "seconds": 37.656,
+  "log_sha256": "e0d5e4e390780ba741bffa18135901245fd0966698d64e868f8a5ba7c866cffe",
+  "source_sha256": {
+    "regulai/front/evaluation.py": "ba6bfbd40008cc9fbeb778400d0bd30ab744391fc8c8339eb9253b5d1fa0b40c",
+    "regulai/front/test_smoke.py": "f4e75f6f0aa17ba9028d2fd8bfbcfe5268df2507b1a98b9293a760eeb3ab0ea6"
+  }
+}

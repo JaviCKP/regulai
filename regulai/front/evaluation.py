@@ -207,6 +207,16 @@ class LedgerObserver:
             metadata={'case_id': self.case_id, 'configuration': self.configuration,
                       'provider': call['provider'], 'model': call['model']})
         self.tokens.append(token)
+        try:
+            if self.authorize:
+                self.authorize()
+        except Exception:
+            self.stop_reason = 'authorization_changed_before_transport'
+            # Reservation can wait for a writer while the approval is revoked or
+            # expires. No transport has started, so this expense is provably zero.
+            # Keep the token for conservative recovery if settlement itself fails.
+            self.ledger.complete(token, cost='0', status='not_started', cost_kind='not_incurred')
+            raise
         return token
 
     def after_call(self, call, token):

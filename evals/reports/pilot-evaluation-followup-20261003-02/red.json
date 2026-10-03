@@ -1,0 +1,19 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_smoke.SmokeIsolationTests.test_authorization_changed_during_reservation_prevents_each_transport",
+    "--settings=regulai.test_settings"
+  ],
+  "exit_code": 1,
+  "finished_utc": "2026-10-03T14:36:33.781702+00:00",
+  "seconds": 9.359,
+  "log_sha256": "93cc33346d97d2c25d343e3b5e457ef0d70ccbd9bdfe44de3b4e7b0181107a6b",
+  "source_sha256": {
+    "regulai/front/evaluation.py": "f797fe87e4ceb049bb702d41d55f6d3717453b723ff01cefd7d509549dd53323",
+    "regulai/front/test_smoke.py": "e4255632cf6bb69410b8b794342ec3ba87a3ddf477c0f5d7820d4c17d14fd90d"
+  }
+}

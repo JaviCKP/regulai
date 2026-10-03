@@ -192,6 +192,70 @@ class SmokeIsolationTests(TestCase):
         self.assertFalse(self.ledger_path.with_suffix('.lock').exists())
         self.assertTrue((self.root / 'run' / 'report.md').exists())
 
+    def test_authorization_changed_during_reservation_prevents_each_transport(self):
+        reserve = EvaluationBudget.reserve
+        prefixes = {
+            'obfuscation': [],
+            'classification': ['obfuscation'],
+            'generation': ['obfuscation', 'classification'],
+            'verification': ['obfuscation', 'classification', 'generation', 'obfuscation'],
+        }
+        for change in ('revoked', 'expired'):
+            for purpose, expected in prefixes.items():
+                with self.subTest(change=change, purpose=purpose):
+                    self.save_approval()
+                    self.events = []
+                    before = len(self.ledger()['calls']) if self.ledger_path.exists() else 0
+
+                    def reserve_then_change(ledger, call_purpose, maximum, **kwargs):
+                        token = reserve(ledger, call_purpose, maximum, **kwargs)
+                        if call_purpose == purpose:
+                            changed = {**self.approval}
+                            if change == 'revoked':
+                                changed['status'] = 'revoked'
+                            else:
+                                changed['valid_until'] = (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat()
+                            self.approval_path.write_text(json.dumps(changed), encoding='utf-8')
+                        return token
+
+                    with patch.object(EvaluationBudget, 'reserve', reserve_then_change):
+                        with self.assertRaises(CommandError):
+                            self.run_smoke(f'reserve-{change}-{purpose}')
+                    self.assertEqual(self.events, expected)
+                    calls = self.ledger()['calls'][before:]
+                    self.assertEqual(len(calls), len(expected) + 1)
+                    self.assertEqual(calls[-1]['purpose'], purpose)
+                    self.assertEqual(calls[-1]['status'], 'not_started')
+                    self.assertEqual(calls[-1]['cost'], '0')
+                    self.assertEqual(calls[-1]['metadata']['cost_kind'], 'not_incurred')
+                    self.assertGreater(Decimal(calls[-1]['reserved']), 0)
+                    self.socket.assert_not_called()
+
+    def test_failed_revocation_settlement_retains_unknown_reservation_without_transport(self):
+        reserve, complete = EvaluationBudget.reserve, EvaluationBudget.complete
+
+        def reserve_then_revoke(ledger, purpose, maximum, **kwargs):
+            token = reserve(ledger, purpose, maximum, **kwargs)
+            self.approval_path.write_text(json.dumps({**self.approval, 'status': 'revoked'}), encoding='utf-8')
+            return token
+
+        def fail_nonstarted_settlement(ledger, token, **kwargs):
+            if kwargs.get('status') == 'not_started':
+                raise sqlite3.OperationalError('Synthetic settlement failure')
+            return complete(ledger, token, **kwargs)
+
+        with patch.object(EvaluationBudget, 'reserve', reserve_then_revoke), \
+                patch.object(EvaluationBudget, 'complete', fail_nonstarted_settlement):
+            with self.assertRaises(CommandError):
+                self.run_smoke('reserve-settlement-failure')
+        snapshot = self.ledger()
+        self.assertEqual(self.events, [])
+        self.assertEqual(len(snapshot['calls']), 1)
+        self.assertEqual(snapshot['calls'][0]['status'], 'outcome_unknown')
+        self.assertIsNone(snapshot['calls'][0]['cost'])
+        self.assertEqual(snapshot['uncertain_reservations_usd'], '0.01')
+        self.socket.assert_not_called()
+
     def test_timeout_or_invalid_judge_retains_reservation_and_stops_without_retry(self):
         for fault, purposes in [('generation-timeout', ['obfuscation', 'classification', 'generation']),
                                  ('malformed-judge', ['obfuscation', 'classification'])]:
