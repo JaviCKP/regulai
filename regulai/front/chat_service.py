@@ -600,7 +600,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             current += '\n\nSources:\n' + sources.prompt_json
             system = system + [ChatMessage('system', DOCUMENT_INSTRUCTION)]
         messages = system + history + [ChatMessage('user', current)]
-        if 'clarification_required' in prompt.decision.get('notices', []) or 'insufficient_evidence' in prompt.decision.get('notices', []):
+        if {'classification_ambiguous', 'task_ambiguous', 'difficulty_ambiguous',
+                'clarification_required', 'insufficient_evidence'}.intersection(prompt.decision.get('notices', [])):
             messages.insert(0, ChatMessage('system', 'The request may lack necessary information. State uncertainty and ask for clarification where needed; do not invent missing facts.'))
         verify_reserve = jev_bound if semantic else Decimal(0)
         if masks:

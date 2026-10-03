@@ -369,3 +369,35 @@ class ClassificationChatTests(ChatFixture):
                     self.assertEqual(self.http.call_count, 1)
                     self.assertEqual([call['purpose'] for call in result['receipt']['calls']], ['classification'])
                     self.assertEqual(result['receipt']['total']['attempts'], 0)
+
+    def test_every_ambiguity_notice_instructs_the_generator_to_clarify_if_needed(self):
+        self.configure(verification={'mode': 'local'}, destinations={
+            'internal': ['jev', f'engine:{self.credential.pk}'],
+            'confidential': ['jev', f'engine:{self.credential.pk}']})
+        cases = [
+            ('category', 'classification_ambiguous', {'choice': 'internal', 'confidence': 0.49,
+                'probabilities': {'public': 0.14, 'internal': 0.59, 'unknown': 0.22,
+                    'confidential': 0.05, 'restricted': 0.0}}),
+            ('task', 'task_ambiguous', {'choice': 'summary', 'confidence': 0.4,
+                'probabilities': {'summary': 1.0, 'document_question': 0.0, 'general': 0.0, 'extraction': 0.0}}),
+            ('difficulty', 'difficulty_ambiguous', {'choice': 'economy', 'confidence': 0.4,
+                'probabilities': {'economy': 1.0, 'balanced': 0.0, 'strong': 0.0}}),
+            ('ambiguous', 'clarification_required', {'noul': 0.2}),
+            ('insufficient_evidence', 'insufficient_evidence', {'noul': 0.2}),
+        ]
+        for key, notice, values in cases:
+            payload = json.loads(next(test_policy_simulator.jev_response().iter_content(8192)))
+            payload['answers'][key].update(values)
+            self.http.side_effect = lambda *args, **kwargs: provider_response(payload)
+            for path in ('/chat/send/', '/api/chat/send/', '/chat/'):
+                with self.subTest(path=path, notice=notice):
+                    self.provider.reset_mock()
+                    response = self.send(path, 'Synthetic instruction test')
+                    self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+                    if path != '/chat/':
+                        self.assertIn(notice, response.json()['receipt']['notices'])
+                    messages = self.provider.call_args.args[0]
+                    instruction = '\n'.join(message.content for message in messages if message.role == 'system')
+                    self.assertIn('State uncertainty', instruction)
+                    self.assertIn('ask for clarification where needed', instruction)
+                    self.assertIn('do not invent missing facts', instruction)
