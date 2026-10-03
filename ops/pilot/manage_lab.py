@@ -50,8 +50,8 @@ def seed():
             input_price='1', output_price='1', currency='USD', price_date=date(2026, 10, 3))
         credential = CompanyEngine.objects.create(company=company, engine=engine,
             api_key='synthetic-engine-' + label)
-        mask = ObfuscationConfig.objects.create(company=company, name='Synthetic mask ' + label,
-            api_url='http://provider:8080', detect='both')
+        mask = ObfuscationConfig.objects.create(company=company, name='Local CPU mask ' + label,
+            backend='local', api_url='', detect='both')
         destinations = [f'engine:{credential.pk}', f'obfuscation:{mask.pk}']
         company.ai_config = {'version': 1, 'local_sensitivity': 'internal',
             'destinations': {level: destinations for level in ('public', 'internal', 'confidential')},
@@ -83,7 +83,9 @@ def seed():
             content='Synthetic private file fixture', status='legacy')
     (LAB / 'accounts.json').write_text(json.dumps(accounts, indent=2), encoding='utf-8')
     (LAB / 'lab-files.json').write_text(json.dumps(private_files), encoding='utf-8')
-    print(json.dumps({'companies': 2, 'accounts': 4, 'engines': 2, 'masks': 2, 'real_provider_calls': 0}))
+    from front.local_masking import detector_metadata
+    print(json.dumps({'companies': 2, 'accounts': 4, 'engines': 2, 'masks': 2, 'real_provider_calls': 0,
+                      'local_masking': detector_metadata()}))
 
 
 def snapshot():

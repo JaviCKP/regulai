@@ -61,7 +61,8 @@ def main():
             'sources': {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in [
                 'scripts/pilot_document_demo.py', 'regulai/front/management/commands/run_demo.py',
                 'regulai/front/management/commands/evaluate_ai.py', 'regulai/front/chat_service.py',
-                'regulai/front/documents.py', 'regulai/front/templates/chat/chat.html']},
+                'regulai/front/documents.py', 'regulai/front/templates/chat/chat.html',
+                'regulai/front/masking.py', 'regulai/front/local_masking.py']},
         }
         (workspace / 'run.json').write_text(json.dumps(metadata, indent=2) + '\n', encoding='utf-8')
         print(f'OFFLINE SYNTHETIC PILOT at http://127.0.0.1:{options.port}/login/', flush=True)

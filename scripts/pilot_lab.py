@@ -251,7 +251,7 @@ class Lab:
         assert served.status_code == 200 and sha256(served.content).digest() == sha256(static.read_bytes()).digest(), {
             'static_status': served.status_code, 'expected_sha256': sha256(static.read_bytes()).hexdigest(),
             'served_sha256': sha256(served.content).hexdigest()}
-        response = self.send(alpha, 'Hello SYNTHETIC_PII_EMAIL').json()
+        response = self.send(alpha, 'Hello synthetic.pilot@example.invalid').json()
         assert response['status'] == 'completed', response
         receipt_url = self.base + '/chat/requests/' + response['request_id'] + '/receipt/'
         assert alpha.get(receipt_url, timeout=10).status_code == 200
@@ -259,10 +259,13 @@ class Lab:
         before = len(self.events())
         blocked = self.send(alpha, 'SYNTHETIC_BLOCK').json()
         assert blocked['status'] == 'blocked' and len(self.events()) == before
-        assert any(event['purpose'] == 'mask' and event['contains_original_sentinel'] for event in self.events())
-        assert not any(event['purpose'] == 'generation' and event['contains_original_sentinel'] for event in self.events())
+        assert not any(event['purpose'] == 'mask' for event in self.events())
+        assert not any(event['contains_original_sentinel'] for event in self.events())
+        local_calls = [call for call in response['receipt']['calls'] if call.get('transport') == 'local']
+        assert len(local_calls) == 2 and all(call['cost'] == '0' and call['cost_kind'] == 'configured_zero'
+                                           for call in local_calls)
         self.checks['https_cookies_hosts_static_private_files_and_tenants'] = True
-        self.checks['real_http_synthetic_transport_masking_and_local_block'] = True
+        self.checks['real_local_detector_before_http_synthetic_transport_and_local_block'] = True
         self.reset_wait()
         identity = str(uuid.uuid4())
         before = sum(event['purpose'] == 'generation' for event in self.events())
@@ -270,9 +273,9 @@ class Lab:
         twin.verify = self.ca
         twin.cookies.update(alpha.cookies)
         with ThreadPoolExecutor(max_workers=2) as executor:
-            future = executor.submit(self.send, alpha, 'LAB_WAIT duplicate', identity)
+            future = executor.submit(self.send, alpha, 'lab_wait duplicate', identity)
             self.wait_provider()
-            duplicate = self.send(twin, 'LAB_WAIT duplicate', identity).json()
+            duplicate = self.send(twin, 'lab_wait duplicate', identity).json()
             assert duplicate['status'] == 'processing'
             (self.work / 'provider/release').write_text('release', encoding='utf-8')
             assert future.result().json()['status'] == 'completed'
@@ -282,7 +285,7 @@ class Lab:
         identity = str(uuid.uuid4())
         before = sum(event['purpose'] == 'generation' for event in self.events())
         with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(self.send, alpha, 'LAB_WAIT disconnect', identity, _timeout=0.5)
+            future = executor.submit(self.send, alpha, 'lab_wait disconnect', identity, _timeout=0.5)
             self.wait_provider()
             try:
                 future.result()
@@ -292,7 +295,7 @@ class Lab:
                 raise AssertionError('The client must disconnect while the provider is pending.')
             (self.work / 'provider/release').write_text('release', encoding='utf-8')
         for attempt in range(40):
-            recovered = self.send(alpha, 'LAB_WAIT disconnect', identity).json()
+            recovered = self.send(alpha, 'lab_wait disconnect', identity).json()
             if recovered['status'] == 'completed':
                 break
             assert recovered['status'] == 'processing'
@@ -303,7 +306,7 @@ class Lab:
         self.reset_wait()
         identity = str(uuid.uuid4())
         with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(self.send, alpha, 'LAB_WAIT restart', identity)
+            future = executor.submit(self.send, alpha, 'lab_wait restart', identity)
             self.wait_provider()
             self.run('docker', 'kill', self.web, name='kill-during-call')
             try:
@@ -315,13 +318,13 @@ class Lab:
         (self.work / 'provider/release').write_text('release', encoding='utf-8')
         self.manage('expire', '--request-id', identity, name='age-only-synthetic-request')
         before = len(self.events())
-        replay = self.send(alpha, 'LAB_WAIT restart', identity).json()
+        replay = self.send(alpha, 'lab_wait restart', identity).json()
         assert replay['status'] == 'outcome_unknown' and len(self.events()) == before
         assert replay['success'] is False
         assert any(call['purpose'] == 'generation' and call.get('cost') is None
                    for call in replay['receipt']['calls'])
         assert replay['receipt'].get('total', {}).get('cost') is None
-        assert self.send(alpha, 'LAB_WAIT restart', identity).json()['status'] == 'outcome_unknown'
+        assert self.send(alpha, 'lab_wait restart', identity).json()['status'] == 'outcome_unknown'
         self.checks['killed_inflight_request_stays_unknown_without_resend'] = True
         (self.output / 'transport-events.json').write_text(json.dumps(self.events(), indent=2), encoding='utf-8')
         (self.output / 'restart-result.json').write_text(json.dumps(replay, indent=2), encoding='utf-8')
@@ -330,6 +333,7 @@ class Lab:
         self.app('python', 'regulai/manage.py', 'test', 'front.test_state', 'front.test_onboarding_migrations',
             'front.test_backend_hardening.SecretRotationTests', 'front.test_backend_hardening.BackendHardeningTests',
             'front.test_backend_hardening.LocalBootstrapTests', 'front.test_required_masking', 'front.test_pipeline_privacy',
+            'front.test_local_masking', 'front.test_local_masking_integration',
             'front.test_operations', 'api.test_permissions', '--settings=regulai.pilot_postgres_test_settings',
             '--noinput', name='postgres-http-state-migration-security-tests')
         self.checks['postgres_http_state_migration_security_suite'] = True

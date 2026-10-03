@@ -9,7 +9,7 @@ import time
 ROOT = Path('/lab/provider')
 ROOT.mkdir(parents=True, exist_ok=True)
 LOCK = threading.Lock()
-SENTINEL = 'SYNTHETIC_PII_EMAIL'
+SENTINEL = 'synthetic.pilot@example.invalid'
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -35,7 +35,7 @@ class Handler(BaseHTTPRequestHandler):
             result = {'masked': json.dumps([text.replace(SENTINEL, '[MASKED]') for text in texts])}
         elif self.path == '/v1/chat/completions':
             assert not event['contains_original_sentinel'], 'Original reached generation transport'
-            if 'LAB_WAIT' in raw.decode():
+            if 'lab_wait' in raw.decode():
                 (ROOT / 'waiting').write_text('ready', encoding='utf-8')
                 deadline = time.monotonic() + 20
                 while not (ROOT / 'release').exists() and time.monotonic() < deadline:
