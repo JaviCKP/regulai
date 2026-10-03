@@ -444,6 +444,7 @@
                   {% if msg.response_record %}
                   {% if msg.response_record.prompt.decision.verification.status != 'passed' %}
                   <p role="status" class="badge bg-warning text-dark">No verificado</p>
+                  <a href="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">Retained evidence JSON (not verified)</a>
                   {% else %}
                   <details class="request-evidence mt-2" data-evidence-url="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">
                     <summary>Document evidence</summary>
