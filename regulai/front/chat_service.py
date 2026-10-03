@@ -451,7 +451,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             if spent + cost + reserve > budget:
                 raise PipelineStop('budget_exhausted')
 
-    def preflight(destination, texts):
+    def preflight(destination, texts, *, model_pk=None):
         remaining()
         fresh = Profile.objects.select_related('company', 'department', 'user').get(user=actor)
         if (not fresh.user.is_active or fresh.company_id != initial_company_id or fresh.department_id != initial_department_id
@@ -471,6 +471,19 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             raise PipelineStop('security_check_failed')
         if destination == 'jev' and digest(fresh.company.jev_api_key) != jev_identity:
             raise PipelineStop('authorization_changed')
+        if destination.startswith('engine:'):
+            linked_id = int(destination.split(':', 1)[1])
+            expected = rows.get((linked_id, model_pk))
+            if expected is None:
+                raise PipelineStop('authorization_changed')
+            original_engine = expected[0]
+            fresh_engine = CompanyEngine.objects.filter(pk=linked_id, company_id=initial_company_id,
+                active=True).select_related('engine').first()
+            fresh_model = EngineModel.objects.filter(pk=model_pk, engine_id=original_engine.engine_id,
+                active=True).first()
+            if (not fresh_engine or not fresh_model or fresh_engine.engine_id != original_engine.engine_id
+                    or destination_identity(fresh_engine, fresh_model) != identities[(linked_id, model_pk)]):
+                raise PipelineStop('authorization_changed')
         if destination.startswith('obfuscation:'):
             mask_id = int(destination.split(':', 1)[1])
             mask = ObfuscationConfig.objects.filter(pk=mask_id, company_id=initial_company_id, active=True).first()
@@ -478,8 +491,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 raise PipelineStop('authorization_changed')
         return fresh
 
-    def start_call(purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0)):
-        preflight(destination, texts)
+    def start_call(purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None):
+        preflight(destination, texts, model_pk=model_pk)
         ensure_budget(cost_bound, reserve)
         call = {'purpose': purpose, 'provider': destination, 'model': model, 'status': 'started',
                 'cost': None, 'cost_bound': str(cost_bound) if cost_bound is not None else None,
@@ -497,7 +510,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             try:
                 # An external reserve can wait on shared state. Its return is not
                 # evidence that company authorization remained unchanged.
-                preflight(destination, texts)
+                preflight(destination, texts, model_pk=model_pk)
             except PipelineStop:
                 call.update(status='not_started', cost='0', cost_kind='not_incurred', cost_exposure_bound='0')
                 prompt.save(update_fields=['decision', 'updated_at'])
@@ -684,10 +697,6 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         for attempt, selection in enumerate([selected] + ([retry] if retry else []), 1):
             candidate = selection.candidate
             engine, model, _ = rows[(candidate.company_engine_id, candidate.model_pk)]
-            fresh_engine = CompanyEngine.objects.filter(pk=engine.pk, company_id=initial_company_id, active=True).select_related('engine').first()
-            fresh_model = EngineModel.objects.filter(pk=model.pk, engine_id=engine.engine_id, active=True).first()
-            if not fresh_engine or not fresh_model or destination_identity(fresh_engine, fresh_model) != identities[(engine.pk, model.pk)]:
-                raise PipelineStop('authorization_changed')
             if attempt == 2:
                 messages = messages + retry_messages
             # Mask expansion and retry instructions must still fit the selected capacity.
@@ -710,7 +719,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 preflight(destination, policy_texts + [('prompts', m.content) for m in messages])
             call, started = start_call('generation', f'engine:{engine.pk}', model.model_id,
                 policy_texts + [('prompts', m.content) for m in messages], selection.estimated_cost,
-                selection.price_snapshot, verify_reserve)
+                selection.price_snapshot, verify_reserve, model_pk=model.pk)
             connector = get_connector(engine.engine.connector_type, engine.api_key, engine.engine.base_url or None)
             try:
                 response = connector.chat(messages, model=model.model_id, max_tokens=selection.max_output_tokens,

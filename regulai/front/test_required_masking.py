@@ -11,7 +11,7 @@ from django.urls import reverse
 
 from front import test_chat_flow, test_pipeline
 from front.models import ObfuscationConfig, Prompt
-from front.models import Company, Profile
+from front.models import Company, CompanyEngine, Engine, EngineModel, Profile
 from front.chat_service import send_chat_message
 
 
@@ -282,3 +282,89 @@ class RequiredMaskingBoundaryTests(test_chat_flow.ChatFixture):
         self.assertEqual(settled[0]['cost'], '0')
         self.http.assert_not_called()
         self.provider.assert_not_called()
+
+    def test_generation_destination_changed_during_reservation_never_reaches_transport_or_replays(self):
+        other_company = Company.objects.create(name='Other reservation tenant')
+        other_engine = Engine.objects.create(name='Other reservation engine', connector_type='openai')
+        mutations = (
+            (CompanyEngine, self.credential.pk, {'active': False}),
+            (EngineModel, self.model.pk, {'active': False}),
+            (CompanyEngine, self.credential.pk, {'api_key': 'synthetic-replaced-key'}),
+            (CompanyEngine, self.credential.pk, {'company_id': other_company.pk}),
+            (Engine, self.engine.pk, {'base_url': 'https://replaced.invalid/v1'}),
+            (Engine, self.engine.pk, {'connector_type': 'anthropic'}),
+            (EngineModel, self.model.pk, {'model_id': 'synthetic-replaced-model'}),
+            (EngineModel, self.model.pk, {'engine_id': other_engine.pk}),
+            (CompanyEngine, self.credential.pk, {'engine_id': other_engine.pk}),
+            (EngineModel, self.model.pk, {'input_price': '3'}),
+        )
+        for changed_model, row_pk, changes in mutations:
+            with self.subTest(model=changed_model.__name__, changes=changes):
+                CompanyEngine.objects.filter(pk=self.credential.pk).update(active=True, api_key='synthetic-key',
+                    company_id=self.company.pk, engine_id=self.engine.pk)
+                EngineModel.objects.filter(pk=self.model.pk).update(active=True, model_id='synthetic-v1',
+                    engine_id=self.engine.pk, input_price='1', output_price='2')
+                Engine.objects.filter(pk=self.engine.pk).update(base_url='', connector_type='openai')
+                requests_sent, settled, reserved_bounds = [], [], []
+                fixture = self
+
+                class Observer:
+                    def before_call(self, call):
+                        fixture.assertEqual(Prompt.objects.get(status='processing').decision['calls'][-1], call)
+                        if call['purpose'] == 'generation':
+                            reserved_bounds.append(call['cost_bound'])
+                            changed_model.objects.filter(pk=row_pk).update(**changes)
+                        return call['purpose'] + '-synthetic-reserve'
+
+                    def after_call(self, call, token):
+                        fixture.assertEqual(token, call['purpose'] + '-synthetic-reserve')
+                        settled.append(call)
+
+                def transport(request):
+                    requests_sent.append(request)
+                    return httpx.Response(200, json={'id': 'synthetic-reservation-review',
+                        'object': 'chat.completion', 'created': 0, 'model': 'synthetic-v1',
+                        'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': 'Safe answer'},
+                                     'finish_reason': 'stop'}],
+                        'usage': {'prompt_tokens': 20, 'completion_tokens': 10, 'total_tokens': 30}})
+
+                command = {'content': 'Synthetic reservation boundary'}
+                with patch('front.connectors.OpenAIConnector.chat', test_pipeline.OPENAI_CHAT), \
+                        patch('openai.DefaultHttpxClient', side_effect=lambda **kwargs:
+                            httpx.Client(transport=httpx.MockTransport(transport), **kwargs)):
+                    result = send_chat_message(self.user, command, call_observer=Observer())
+                    self.assertEqual(len(requests_sent), 0, result.data)
+                    self.assertEqual(result.data['error_type'], 'authorization_changed')
+                    self.assertEqual(result.data['status'], 'validation_error')
+                    self.assertNotIn('assistant_message', result.data)
+                    generation = next(call for call in settled if call['purpose'] == 'generation')
+                    self.assertEqual(generation['status'], 'not_started')
+                    self.assertEqual(generation['cost'], '0')
+                    self.assertEqual(generation['cost_kind'], 'not_incurred')
+                    self.assertEqual(generation['cost_exposure_bound'], '0')
+                    self.assertNotIn(generation['cost_bound'], (None, '0'))
+                    self.assertEqual([generation['cost_bound']], reserved_bounds)
+                    pending = Prompt.objects.get(request_id=result.data['request_id'])
+                    self.assertEqual(pending.decision['calls'][-1], generation)
+                    replay = send_chat_message(self.user, {**command, 'request_id': result.data['request_id']},
+                        call_observer=Observer())
+                    self.assertEqual(replay.data['receipt']['calls'], result.data['receipt']['calls'])
+                    self.assertEqual(len(settled), 2)
+                    self.assertEqual(len(requests_sent), 0)
+
+    def test_unchanged_generation_destination_completes_after_reservation(self):
+        started, settled = [], []
+        class Observer:
+            def before_call(self, call):
+                started.append(call)
+                return len(started)
+
+            def after_call(self, call, token):
+                settled.append((call, token))
+
+        result = send_chat_message(self.user, {'content': 'Unchanged synthetic destination'}, call_observer=Observer())
+        self.assertEqual(result.data['status'], 'completed')
+        self.assertEqual([call['purpose'] for call in started], ['obfuscation', 'generation', 'obfuscation'])
+        self.assertEqual([call['status'] for call, _ in settled], ['completed'] * 3)
+        self.assertEqual([token for _, token in settled], [1, 2, 3])
+        self.provider.assert_called_once()

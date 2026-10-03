@@ -1,0 +1,23 @@
+{
+  "base_commit": "c1e3a360e7ba3051bb8f0bda487b005dd29834a0",
+  "source_sha256": {
+    "regulai/front/chat_service.py": "fbccd511231f9ba5f055229a1ad524b948c60aa8a85a2e37cce11c493eb7992d",
+    "regulai/front/test_required_masking.py": "5af3dba4e72efff7e59beab0583e51968adaa804f57b1ad650e31a69e9241a69"
+  },
+  "evidence_sha256": {
+    "evals/reports/pilot-privacy-followup-20261003-01/check.txt": "569740892270a412c02f5021e0703ecaafdc8a409e03320c9bdac90bb6558f0b",
+    "evals/reports/pilot-privacy-followup-20261003-01/checkpoint.md": "f2505bf9b67e7bdc73c92733a980a442bf0e48617cdfdc73afd8f1b5aa0a80dc",
+    "evals/reports/pilot-privacy-followup-20261003-01/green-destination-reservation.txt": "ffafcb7b9735a14fa7b7ed415897c220886ac952cb5a78c54f83ad6d008e6bc3",
+    "evals/reports/pilot-privacy-followup-20261003-01/README.md": "f9ea4b7a2b687e7c4901e48e620e4f645482edeb3e5e78c29cddfc4aa2d948f4",
+    "evals/reports/pilot-privacy-followup-20261003-01/red-destination-reservation.txt": "d62711b7040d6ad3d9d598b2a9a0d5a6e3983f7e4dcc24a84dc749f2401cc6e5",
+    "evals/reports/pilot-privacy-followup-20261003-01/targeted-final.txt": "c8d9a0d5db3530069140dc96b933e6707f3648211f5ffdc070e277d2b0366f60",
+    "evals/reports/pilot-privacy-followup-20261003-01/targeted-verified.txt": "a56e449030585ef19d73ce11cc544ac7f05492bbd428bfb27f23e8b315541690"
+  },
+  "red_tests": 1,
+  "red_assertion_failures": 10,
+  "red_exit": 1,
+  "final_tests": 19,
+  "final_seconds": "5.290",
+  "final_exit": 0,
+  "paid_calls": 0
+}
