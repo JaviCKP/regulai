@@ -133,7 +133,6 @@ class ReviewRegressionTests(ChatFixture):
                          result['assistant_message']['content'])
         self.assertIn('The approved period is seventeen days.', result['assistant_message']['content'])
 
-    @unittest.expectedFailure
     def test_b06_oversized_judge_state_is_rejected_before_generation(self):
         self.configure(classification='local', limits={'budget': None})
         self.model.context_window = 1_000_000

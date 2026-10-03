@@ -10,6 +10,8 @@ from django.utils import timezone
 from front.models import Conversation, Message, ObfuscationConfig, Prompt
 from front.test_chat_flow import ChatFixture
 from front import test_pipeline
+from front.connectors import ChatResponse
+from front.models import CompanyEngine, Engine, EngineModel
 
 
 class PipelinePrivacyTests(ChatFixture):
@@ -97,3 +99,52 @@ class PipelinePrivacyTests(ChatFixture):
         repeated = self.send('/api/chat/send/', request_id=result['request_id']).json()
         self.assertEqual(repeated['status'], 'outcome_unknown')
         self.assertEqual(self.provider.call_count, 1)
+
+    def fallback(self, *, cross_engine=False, allow=False):
+        engine = Engine.objects.create(name='Second engine', connector_type='openai') if cross_engine else self.engine
+        credential = CompanyEngine.objects.create(company=self.company, engine=engine, api_key='synthetic-other') if cross_engine else self.credential
+        stronger = EngineModel.objects.create(engine=engine, name='Strong', model_id='synthetic-strong',
+            context_window=32768, input_price=2, output_price=3)
+        self.company.ai_config['destinations']['internal'] += [f'engine:{credential.pk}']
+        self.company.ai_config['routing'] = {'mode': 'manual', 'allow_cross_engine_fallback': allow, 'candidates': [
+            {'company_engine_id': self.credential.pk, 'model_id': self.model.pk, 'level': 'economy', 'quality': {'general': .5}},
+            {'company_engine_id': credential.pk, 'model_id': stronger.pk, 'level': 'strong', 'quality': {'general': .9}}]}
+        self.company.save()
+        return credential
+
+    def test_retry_sends_previous_answer_and_concrete_failed_checks_with_valid_roles(self):
+        self.configure()
+        self.fallback()
+        self.http.side_effect = test_pipeline.jev_http(failures={'failure_contradiction': 1})
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['status'], 'failed', result)
+        self.assertEqual(self.provider.call_count, 2)
+        messages = self.provider.call_args.args[0]
+        self.assertEqual([m.role for m in messages], ['user', 'assistant', 'user'])
+        self.assertEqual(messages[-2].content, 'Correct answer')
+        self.assertIn('failure_contradiction', messages[-1].content)
+        self.assertNotIn('failure_omission', messages[-1].content)
+
+    def test_manual_fallback_stays_with_selected_engine_unless_enabled(self):
+        self.configure()
+        other = self.fallback(cross_engine=True)
+        self.http.side_effect = test_pipeline.jev_http(failures={'failure_contradiction': 1})
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(self.provider.call_count, 1, result)
+        self.company.ai_config['routing']['allow_cross_engine_fallback'] = True
+        self.company.save()
+        self.provider.reset_mock()
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(self.provider.call_count, 2, result)
+        self.assertEqual(result['receipt']['route']['company_engine_id'], other.pk)
+
+    def test_busy_provider_retry_does_not_invent_failed_checks_or_an_answer(self):
+        self.configure()
+        self.fallback()
+        error = RuntimeError('sensitive provider message')
+        error.status_code = 503
+        self.provider.side_effect = [error, ChatResponse('Recovered', 30, 'synthetic-v1', 'stop', 20, 10)]
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertEqual([m.role for m in self.provider.call_args.args[0]], ['user'])
+        self.assertEqual(self.provider.call_args.args[0][0].content, 'Hola')

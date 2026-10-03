@@ -221,7 +221,7 @@ class PipelineTests(test_chat_flow.ChatFixture):
         self.http.return_value.json.return_value = {'masked': '["Masked text"]', 'context': {}, 'counters': {}}
         result = self.send('/api/chat/send/').json()
         self.assertEqual(result['status'], 'completed', result)
-        self.assertEqual([call['purpose'] for call in result['receipt']['calls']], ['obfuscation', 'generation'])
+        self.assertEqual([call['purpose'] for call in result['receipt']['calls']], ['obfuscation', 'generation', 'obfuscation'])
         self.assertFalse(result['receipt']['total']['complete'])
         self.assertIn('Masked text', str(self.provider.call_args))
         self.assertFalse(self.http.call_args.kwargs['allow_redirects'])
