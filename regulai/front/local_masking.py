@@ -8,8 +8,9 @@ from pathlib import Path
 import re
 import threading
 import time
+import unicodedata
 
-DETECTOR_VERSION = 'regulai-local-v2'
+DETECTOR_VERSION = 'regulai-local-v5'
 SPACY_VERSION = '3.8.16'
 MODEL_NAME = 'xx_ent_wiki_sm'
 MODEL_VERSION = '3.8.0'
@@ -25,7 +26,12 @@ _STRUCTURAL_KEYS = frozenset({'claims', 'text', 'citations', 'source_id', 'alias
                             'abstain', 'reason', 'sources', 'id', 'locator', 'excerpt', 'role', 'content'})
 _PATTERNS = [
     ('EMAIL', re.compile(r'(?<![\w.+-])[\w.!#$%&\'*+/=?^`{|}~-]{1,64}@[\w-]+(?:\.[\w-]+)+', re.I)),
-    ('ID', re.compile(r'\b(?:\d{8}[A-Z]|[XYZKLM]\d{7}[A-Z]|[ABCDEFGHJNPQRSUVW]\d{7}[0-9A-J])\b', re.I)),
+    # Word addresses are ambiguous in free prose. Require an explicit contact
+    # field and a bounded local part/domain rather than masking "at" or "dot".
+    ('EMAIL', re.compile(r'\b(?:correo|e-?mail|contacto)(?:[ \t]+[\w-]{1,24}){0,2}[ \t]*:[ \t]*'
+        r'(?P<value>[\w.+-]{1,64}(?:[ \t]+[\w.+-]{1,64}){0,3}[ \t]+(?:arroba|at)[ \t]+'
+        r'[\w-]{1,63}(?:[ \t]+(?:punto|dot)[ \t]+[\w-]{1,63}){1,4})(?![\w-])', re.I)),
+    ('ID', re.compile(r'\b(?:\d(?:[ \t.-]?\d){7}[ \t.-]?[A-Z]|[XYZKLM][ \t.-]?\d(?:[ \t.-]?\d){6}[ \t.-]?[A-Z]|[ABCDEFGHJNPQRSUVW][ \t.-]?\d(?:[ \t.-]?\d){6}[ \t.-]?[0-9A-J])\b', re.I)),
     ('ACCOUNT', re.compile(r'\b[A-Z]{2}\d{2}(?:[ \t]?\d){10,30}\b')),
     ('PHONE', re.compile(r'(?<!\w)(?:\+34[ .-]?)?[6789]\d{2}[ .-]?\d{3}[ .-]?\d{3}(?!\w)')),
     ('PHONE', re.compile(r'(?<!\w)\+\d{1,3}[ .-]?(?:\(\d{1,4}\)[ .-]?)?\d(?:[ .-]?\d){7,13}(?!\w)')),
@@ -84,17 +90,40 @@ def _luhn(value):
     return total % 10 == 0
 
 
+def _matching_view(text):
+    """Normalize pattern input only, retaining offsets into the untouched text."""
+    normalized, offsets = [], []
+    for index, char in enumerate(text):
+        if char in '\u200b\u200c\u200d\u2060\ufeff':
+            continue
+        for token in unicodedata.normalize('NFKC', char):
+            if token.isdecimal():
+                token = str(unicodedata.decimal(token))
+            elif token in '\u2010\u2011\u2012\u2013\u2014\u2015\u2212':
+                token = '-'
+            normalized.append(token)
+            offsets.append(index)
+    return ''.join(normalized), offsets
+
+
 def _mask_plain(text, nlp, deadline):
     if time.monotonic() >= deadline:
         raise TimeoutError('Local masking deadline exceeded.')
     protected = [match.span() for match in _PLACEHOLDER.finditer(text)]
     spans = []
-    for category, pattern in _PATTERNS:
-        for match in pattern.finditer(text):
-            start, end = match.span('value') if 'value' in pattern.groupindex else match.span()
-            if category == 'CARD' and not _luhn(text[start:end]):
-                continue
-            spans.append((start, end, category))
+    matching, offsets = _matching_view(text)
+    # Normalization can introduce delimiters inside a secret. Keep the original
+    # matches as well so a normalized view can only add to their masked extent.
+    views = [(text, None)] + ([(matching, offsets)] if matching != text else [])
+    for candidate, mapping in views:
+        for category, pattern in _PATTERNS:
+            for match in pattern.finditer(candidate):
+                start, end = match.span('value') if 'value' in pattern.groupindex else match.span()
+                if category == 'CARD' and not _luhn(candidate[start:end]):
+                    continue
+                if mapping is not None:
+                    start, end = mapping[start], mapping[end - 1] + 1
+                spans.append((start, end, category))
     labels = {'PER': 'PERSON', 'PERSON': 'PERSON', 'LOC': 'LOCATION', 'GPE': 'LOCATION', 'ORG': 'ORGANIZATION'}
     field_labels = [match.span() for match in _FIELD_LABEL.finditer(text)]
     for entity in nlp(text).ents:
