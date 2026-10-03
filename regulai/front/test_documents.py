@@ -37,8 +37,8 @@ class DocumentTests(SimpleTestCase):
 
     def test_invalid_or_bounded_uploads_never_appear_complete(self):
         for name, content, status, warning in [
-            ("legacy.xls", b"legacy", "unsupported", "unsupported_format"),
-            ("image.png", b"\x89PNG\r\n\x1a\n", "unsupported", "unsupported_format"),
+            ("legacy.xls", b"legacy", "unreadable", "unsupported_format"),
+            ("image.png", b"\x89PNG\r\n\x1a\n", "unreadable", "unsupported_format"),
             ("fake.pdf", b"ordinary text", "unreadable", "signature_mismatch"),
             ("fake.txt", b"%PDF-1.4\n", "unreadable", "signature_mismatch"),
             ("binary.txt", b"abc\x00def", "unreadable", "invalid_text"),

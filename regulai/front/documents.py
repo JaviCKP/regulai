@@ -576,7 +576,6 @@ def extract_document(uploaded_file):
         file_size=uploaded_file.size,
     )
     if document.format not in TEXT_FORMATS | MIME_TYPES.keys():
-        document.status = "unsupported"
         document.warnings.append("unsupported_format")
         return document
     mime = MIME_TYPES.get(document.format, "text/plain")

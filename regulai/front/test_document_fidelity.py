@@ -33,6 +33,11 @@ class FidelityTests(SimpleTestCase):
                 archive.writestr(name, content)
         return output.getvalue()
 
+    def test_unsupported_formats_use_the_unreadable_coverage_contract(self):
+        document = self.extract("legacy.xls", b"synthetic legacy bytes")
+        self.assertEqual(document.status, "unreadable")
+        self.assertIn("unsupported_format", document.warnings)
+
     def test_text_encodings_formfeed_and_bm_are_not_binary(self):
         for content in ("BM invoice\fPrice: 17 €".encode("utf-8"),
                         "Price: 17 €".encode("utf-16"), "Price: 17 €".encode("cp1252")):
