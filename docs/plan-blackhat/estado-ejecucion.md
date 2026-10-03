@@ -23,9 +23,9 @@ La ejecución final de ASTRA sobre `12ca58d3a2b5a6570840ca80676a1799f6eac097` (m
 
 Solo tres etiquetas development cambiaron por D3 con [justificación por caso](cambios-banco-correcciones.md); no se tocó reserved ni umbrales para aprobar. La prueba negativa de la suite fuerza seis controles fallidos y la prueba CLI 52, por diseño; ninguna representa un fallo del banco final.
 
-## Registro histórico — 2 de octubre de 2026
+## Registro de verificaciones anteriores
 
-Lo siguiente conserva resultados de la entrega original, antes de las correcciones. Sus 129 tests, conducta de clasificación ambigua, limitaciones de recursos/teclado y hashes pertenecen a esa revisión; el estado actual está arriba. Las llamadas reales se hicieron bajo otra autorización puntual y no forman parte de este encargo. El script de `jev_verification_component` no está versionado: sus resultados no acreditan reproducibilidad E2E.
+Las secciones fechadas siguientes conservan las integraciones parciales del 3 de octubre y la entrega original del 2 de octubre. Los 129 tests, la conducta antigua de clasificación ambigua, las limitaciones de recursos/teclado y los hashes originales pertenecen a esa revisión; el estado actual está arriba. Las llamadas reales se hicieron bajo otra autorización puntual y no forman parte de este encargo. El script de `jev_verification_component` no está versionado: sus resultados no acreditan reproducibilidad E2E.
 
 ## Correcciones iniciadas el 3 de octubre de 2026
 
