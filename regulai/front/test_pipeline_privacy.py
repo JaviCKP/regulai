@@ -100,6 +100,33 @@ class PipelinePrivacyTests(ChatFixture):
         self.assertEqual(comparison['calls'][0]['purpose'], 'simulation_classification')
         self.assertEqual(Decimal(comparison['calls'][0]['cost']), Decimal('0.00014'))
 
+    def test_mask_deactivated_during_classification_stops_before_generation(self):
+        self.configure(verification={'mode': 'local'})
+        self.mask()
+        mask = ObfuscationConfig.objects.get(company=self.company)
+        evaluator = test_pipeline.jev_http()
+        def post(url, **kwargs):
+            if url.endswith('/api/mask'):
+                return SimpleNamespace(raise_for_status=lambda: None,
+                    json=lambda: {'masked': kwargs['json']['text']})
+            ObfuscationConfig.objects.filter(pk=mask.pk).update(active=False)
+            return evaluator(url, **kwargs)
+        self.http.side_effect = post
+        for path in ('/api/chat/send/', '/chat/send/', '/chat/'):
+            with self.subTest(path=path):
+                ObfuscationConfig.objects.filter(pk=mask.pk).update(active=True)
+                self.provider.reset_mock()
+                self.http.reset_mock()
+                response = self.send(path, 'Synthetic report')
+                self.assertEqual(response.json()['error_type'], 'authorization_changed')
+                self.provider.assert_not_called()
+                self.assertEqual(self.http.call_count, 2)
+                receipt = response.json()['receipt']
+                self.assertEqual([call['purpose'] for call in receipt['calls']], ['obfuscation', 'classification'])
+                self.assertEqual(Decimal(receipt['total']['cost']), Decimal('0.00014'))
+                self.assertEqual(receipt['total']['attempts'], 0)
+                self.assertTrue(receipt['total']['complete'])
+
     def mask(self, *, bound='0', malformed=False):
         config = ObfuscationConfig.objects.create(company=self.company, name='Batch mask', api_url='https://mask.invalid')
         self.company.ai_config['destinations']['internal'].append(f'obfuscation:{config.pk}')

@@ -436,6 +436,11 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             raise PipelineStop('security_check_failed')
         if destination == 'jev' and digest(fresh.company.jev_api_key) != jev_identity:
             raise PipelineStop('authorization_changed')
+        if destination.startswith('obfuscation:'):
+            mask_id = int(destination.split(':', 1)[1])
+            mask = ObfuscationConfig.objects.filter(pk=mask_id, company_id=initial_company_id, active=True).first()
+            if not mask or digest([mask.api_url, mask.detect, mask.language]) != mask_identities[mask_id]:
+                raise PipelineStop('authorization_changed')
         return fresh
 
     def start_call(purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0)):
@@ -541,9 +546,6 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                           (mask_bound or Decimal(0)) * (len(masks) * 2 - 1) + (jev_bound or Decimal(0)) * (int(classify) + int(semantic)))
             def before_mask(mask, value):
                 nonlocal mask_call
-                fresh = ObfuscationConfig.objects.filter(pk=mask.pk, company_id=initial_company_id, active=True).first()
-                if not fresh or digest([fresh.api_url, fresh.detect, fresh.language]) != mask_identities[mask.pk]:
-                    raise PipelineStop('authorization_changed')
                 mask_call = start_call('obfuscation', f'obfuscation:{mask.pk}', None,
                     policy_texts + [('prompts', value)], mask_bound, {})
                 return remaining()
