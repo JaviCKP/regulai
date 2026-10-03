@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.core.checks import run_checks, Tags
@@ -216,7 +217,7 @@ class BackendHardeningTests(TestCase):
         listing = secure.get(reverse('front:obfuscation_list'))
         self.assertContains(listing, f'<form method="post" action="{url}"')
         self.assertContains(listing, 'name="csrfmiddlewaretoken"')
-        token = secure.cookies['csrftoken'].value
+        token = secure.cookies[settings.CSRF_COOKIE_NAME].value
         self.assertEqual(secure.post(url, {'csrfmiddlewaretoken': token}).status_code, 302)
         config.refresh_from_db()
         self.assertFalse(config.active)
