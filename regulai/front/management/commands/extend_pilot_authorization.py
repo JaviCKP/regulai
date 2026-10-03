@@ -34,6 +34,8 @@ class Command(BaseCommand):
             # approval under the same exclusive lock used by the real runner.
             with evaluation.real_lock():
                 check, approval = validate()
+                if evaluation.digest(approval) != report['authorization_digest']:
+                    raise CommandError('Authorization changed while waiting for the ledger lock; review it again.')
                 try:
                     created = EvaluationBudget.extend_authorization(evaluation.LEDGER_PATH, approval['maximum_usd'],
                         previous_id=approval['extends']['authorization_id'],

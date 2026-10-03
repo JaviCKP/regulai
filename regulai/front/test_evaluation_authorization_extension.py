@@ -1,6 +1,6 @@
 """Explicit new data scope must share the old budget and cannot replay a run."""
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import closing
+from contextlib import closing, contextmanager
 from copy import deepcopy
 from io import StringIO
 import json
@@ -207,5 +207,20 @@ class ApprovalExtensionCommandTests(SmokeHarness, TestCase):
                 self.extension_command(apply=True)
             self.assertEqual(self.ledger_path.read_bytes(), before)
         self.socket.assert_not_called()
+        self.http.assert_not_called()
+        self.sdk.assert_not_called()
+
+    def test_approval_change_while_waiting_for_lock_cannot_register_another_digest(self):
+        self.extension_approval()
+        before = self.ledger_path.read_bytes()
+        @contextmanager
+        def change_during_lock_wait():
+            self.approval['approval_reference'] = 'A different synthetic approval document'
+            self.save_approval()
+            yield
+        with patch.object(evaluation, 'real_lock', change_during_lock_wait), self.assertRaisesMessage(
+                CommandError, 'Authorization changed while waiting'):
+            self.extension_command(apply=True)
+        self.assertEqual(self.ledger_path.read_bytes(), before)
         self.http.assert_not_called()
         self.sdk.assert_not_called()
