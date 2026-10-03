@@ -90,6 +90,28 @@ class FidelityTests(SimpleTestCase):
         self.assertEqual(document.status, "complete")
         self.assertIn("encoding_assumed", document.warnings)
 
+    def test_uneven_csv_rows_keep_the_declared_cell_positions(self):
+        for separator in (",", ";", "\t", "|"):
+            with self.subTest(separator=separator):
+                content = f"name{separator}price{separator}note\nAda{separator}17\nBob{separator}18{separator}ok\n"
+                document = self.extract("uneven.csv", content.encode())
+                self.assertEqual(document.status, "complete")
+                self.assertEqual(document.fragments[1]["text"], "A2: Ada\tB2: 17")
+                self.assertEqual(document.fragments[2]["locator"], "row:3/cells:A3-C3")
+                self.assertEqual(document.fragments[2]["text"], "A3: Bob\tB3: 18\tC3: ok")
+
+    def test_csv_with_ambiguous_ragged_delimiters_declares_unknown_coverage(self):
+        document = self.extract("ambiguous.csv", b"name;price;note,tag\nAda;17\nBob;18;ok,tag\n")
+        self.assertEqual(document.status, "partial")
+        self.assertEqual(document.fragments, [])
+        self.assertEqual(document.disclosures, [
+            {"code": "csv_dialect_unknown", "count": 1, "locators": ["document"]}])
+
+    def test_csv_without_delimiter_in_sample_cannot_claim_later_cells_are_complete(self):
+        document = self.extract("late-delimiter.csv", b"a" * 65536 + b";17\nb;18\n")
+        self.assertEqual(document.status, "partial")
+        self.assertIn("csv_dialect_unknown", document.warnings)
+
     def test_text_groups_lines_without_losing_evidence_or_locations(self):
         content = ("ordinary text\n" * 1499 + "late evidence").encode()
         document = self.extract("large.txt", content)
@@ -409,6 +431,26 @@ class FidelityTests(SimpleTestCase):
 
 class DocumentHTTPTests(ChatFixture):
     configure = test_pipeline.PipelineTests.configure
+
+    def test_uneven_csv_sends_correct_cells_and_ambiguous_csv_blocks_without_network(self):
+        self.configure()
+        self.provider.return_value = ChatResponse(json.dumps({"claims": [{"text": "Ada pays 17",
+            "citations": [{"id": "S2", "quote": "A2: Ada\tB2: 17"}]}]}), 30, "synthetic-v1", "stop", 20, 10)
+        result = self.send("/api/chat/send/", "What is Ada's price?",
+            file=SimpleUploadedFile("uneven.csv", b"name;price;note\nAda;17\nBob;18;ok\n")).json()
+        self.assertEqual(result["status"], "completed", result)
+        self.assertEqual(result["evidence"]["items"][0]["locator"], "row:2/cells:A2-B2")
+        self.assertIn("B2: 17", str(self.provider.call_args))
+        self.http.reset_mock()
+        self.provider.reset_mock()
+        for path in ("/chat/", "/chat/send/", "/api/chat/send/"):
+            with self.subTest(path=path):
+                result = self.send(path, "Summarize", file=SimpleUploadedFile("ambiguous.csv",
+                    b"name;price;note,tag\nAda;17\nBob;18;ok,tag\n")).json()
+                self.assertEqual(result["error_type"], "input_unreadable")
+                self.assertIn("csv_dialect_unknown", result["receipt"]["coverage"]["warnings"])
+                self.http.assert_not_called()
+                self.provider.assert_not_called()
 
     def test_deleted_word_row_is_absent_from_every_external_document_payload(self):
         self.configure()

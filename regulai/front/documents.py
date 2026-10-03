@@ -143,11 +143,30 @@ def _parse_csv(document, content):
 
     text = _decode_text(document, content)
     csv.field_size_limit(1024 * 1024)
+    sample = text[:65536]
     try:
-        dialect = csv.Sniffer().sniff(text[:65536], delimiters=",;\t|")
+        dialect = csv.Sniffer().sniff(sample, delimiters=",;\t|")
+        delimiter = dialect.delimiter
     except csv.Error:
+        # Sniffer requires consistent widths. Ragged rows can still identify a
+        # single delimiter; if several fit, do not invent cell locations.
+        candidates = []
+        for separator in ",;\t|":
+            try:
+                widths = [len(row) for row in csv.reader(io.StringIO(sample), delimiter=separator, strict=True)]
+            except csv.Error:
+                continue
+            if any(width > 1 for width in widths):
+                candidates.append(separator)
+        if len(candidates) == 1:
+            delimiter = candidates[0]
+        elif not candidates and not any(separator in text for separator in ",;\t|"):
+            delimiter = ","  # All supported dialects produce the same single column.
+        else:
+            _disclose(document, "csv_dialect_unknown", "document")
+            return
         dialect = csv.excel
-    for row_number, row in enumerate(csv.reader(io.StringIO(text), dialect=dialect, strict=True), 1):
+    for row_number, row in enumerate(csv.reader(io.StringIO(text), dialect=dialect, delimiter=delimiter, strict=True), 1):
         if row_number > MAX_UNITS:
             document.warnings.append("unit_limit")
             return
