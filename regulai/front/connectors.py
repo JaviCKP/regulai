@@ -23,7 +23,7 @@ class ChatResponse:
     content: str
     tokens_used: int = 0
     model: str = ""
-    finish_reason: str = ""
+    finish_reason: str | None = ""
     input_tokens: int | None = None
     output_tokens: int | None = None
     provider_request_id: str | None = None
@@ -44,6 +44,7 @@ class BaseConnector(ABC):
         model: str,
         max_tokens: int = 1000,
         temperature: float = 0.6,
+        *, supports_json: bool = False, reasoning: bool = False,
         **kwargs
     ) -> ChatResponse:
         """Send a chat request and return the response."""
@@ -70,9 +71,14 @@ class OpenAIConnector(BaseConnector):
         model: str,
         max_tokens: int = 1000,
         temperature: float = 0.6,
+        *, supports_json: bool = False, reasoning: bool = False,
         **kwargs
     ) -> ChatResponse:
-        """Send a chat request using OpenAI API."""
+        """Use explicit model capabilities; supports_json requests JSON output.
+
+        A missing finish_reason is preserved: compatible providers must report
+        an explicit completion signal before the response can pass verification.
+        """
         # Convert ChatMessage objects to dict format
         api_messages = []
         for msg in messages:
@@ -84,8 +90,9 @@ class OpenAIConnector(BaseConnector):
         response = self.client.chat.completions.create(
             model=model,
             messages=api_messages,
-            max_tokens=max_tokens,
-            temperature=temperature,
+            **({'max_completion_tokens': max_tokens} if reasoning else
+               {'max_tokens': max_tokens, 'temperature': temperature}),
+            **({'response_format': {'type': 'json_object'}} if supports_json else {}),
             timeout=kwargs.get('timeout', 30),
             **({'extra_body': kwargs['extra_body']} if 'extra_body' in kwargs else {}),
         )
