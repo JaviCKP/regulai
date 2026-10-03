@@ -29,9 +29,9 @@ class ReviewRegressionTests(ChatFixture):
     configure = test_pipeline.PipelineTests.configure
 
     def enable_mask(self, replacements):
-        mask = ObfuscationConfig.objects.create(company=self.company, name='Synthetic mask',
-                                                api_url='https://mask.invalid')
-        self.company.ai_config['destinations']['internal'].append(f'obfuscation:{mask.pk}')
+        mask = self.required_mask
+        if f'obfuscation:{mask.pk}' not in self.company.ai_config['destinations']['internal']:
+            self.company.ai_config['destinations']['internal'].append(f'obfuscation:{mask.pk}')
         self.company.save()
         evaluator = self.http.side_effect or test_pipeline.jev_http()
 
@@ -59,8 +59,10 @@ class ReviewRegressionTests(ChatFixture):
     def classification_response(self, probabilities, confidence, *, credentials=0.0):
         transport = test_pipeline.jev_http()
 
-        def post(url, *, data, **kwargs):
+        def post(url, *, data=None, **kwargs):
             response = transport(url, data=data, **kwargs)
+            if data is None:
+                return response
             payload = json.loads(b''.join(response.iter_content()))
             if 'category' in payload['answers']:
                 payload['answers']['category'].update(probabilities=probabilities,
@@ -103,6 +105,8 @@ class ReviewRegressionTests(ChatFixture):
     def test_b03_missing_mask_cost_bound_is_rejected_before_any_external_call(self):
         self.configure()
         self.enable_mask({'12345678Z': '<DNI_1>'})
+        self.company.ai_config['masking'] = {}
+        self.company.save()
         result = self.send('/api/chat/send/', 'Mi DNI es 12345678Z').json()
         self.assertEqual((result.get('error_type'), self.http.call_count, self.provider.call_count),
                          ('policy_configuration_invalid', 0, 0), result)
@@ -250,7 +254,8 @@ context.submitCommand = async command => {submitted = command;};
 
     def test_c01_uncertain_ordinal_category_completes_as_confidential(self):
         self.configure()
-        self.company.ai_config['destinations']['confidential'] = [f'engine:{self.credential.pk}', 'jev']
+        self.company.ai_config['destinations']['confidential'] = [f'engine:{self.credential.pk}', 'jev',
+            f'obfuscation:{self.required_mask.pk}']
         self.company.save()
         self.classification_response({'public': .14, 'internal': .59, 'unknown': .22,
                                       'confidential': .05, 'restricted': 0.0}, .49)

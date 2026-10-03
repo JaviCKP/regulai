@@ -15,7 +15,8 @@ from django.utils import timezone
 
 from front.connectors import ChatResponse
 from front.models import (Company, CompanyEngine, Conversation, Engine, EngineModel,
-                          Message, Profile, Prompt, Response, Rule, RulesGroup)
+                          Message, ObfuscationConfig, Profile, Prompt, Response, Rule, RulesGroup)
+from front.test_chat_flow import mask_response
 
 
 class RequestStateTests(TransactionTestCase):
@@ -28,8 +29,9 @@ class RequestStateTests(TransactionTestCase):
         EngineModel.objects.create(engine=self.engine, name='Synthetic', model_id='synthetic-v1', context_window=32768, supports_json=True)
         self.credential = CompanyEngine.objects.create(company=self.company, engine=self.engine,
                                                        api_key='synthetic-key')
-        self.company.ai_config = {'version': 1, 'local_sensitivity': 'internal',
-            'allow_empty_rules': True, 'destinations': {'internal': [f'engine:{self.credential.pk}']}}
+        mask = ObfuscationConfig.objects.create(company=self.company, name='State mask', api_url='https://mask.invalid')
+        self.company.ai_config = {'version': 1, 'local_sensitivity': 'internal', 'masking': {'max_call_cost': '0'},
+            'allow_empty_rules': True, 'destinations': {'internal': [f'engine:{self.credential.pk}', f'obfuscation:{mask.pk}']}}
         self.company.save()
         group = RulesGroup.objects.create(name='Consent synthetic', company=self.company)
         self.rule = Rule.objects.create(name='Consent synthetic', rules_group=group, action='consent',
@@ -37,7 +39,7 @@ class RequestStateTests(TransactionTestCase):
         self.client.force_login(self.user)
         self.provider = self.enterContext(patch('front.connectors.OpenAIConnector.chat',
             return_value=ChatResponse('Synthetic answer', 10, 'synthetic-v1', 'stop')))
-        self.enterContext(patch('requests.post', side_effect=AssertionError('Unexpected external HTTP')))
+        self.enterContext(patch('requests.post', side_effect=mask_response))
 
     def send(self, content='CONSENT_MARKER', **extra):
         return self.client.post('/api/chat/send/', {'content': content,

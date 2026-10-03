@@ -119,6 +119,7 @@ class ClassificationPolicyConfig(StrictConfig):
 
 
 class MaskingConfig(StrictConfig):
+    # Masking is mandatory at every sending boundary; configuration cannot disable it.
     max_call_cost: str | None = None
 
     @field_validator('max_call_cost')

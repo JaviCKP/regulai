@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from front.models import Alert, AuditLog, Company, Conversation, Engine, CompanyEngine, EngineModel, Message, Profile, Prompt, Response, Rule, RulesGroup
+from front.models import Alert, AuditLog, Company, Conversation, Engine, CompanyEngine, EngineModel, Message, ObfuscationConfig, Profile, Prompt, Response, Rule, RulesGroup
+from front.test_chat_flow import mask_response
 
 
 def jev_response(category='internal'):
@@ -32,6 +33,13 @@ def jev_response(category='internal'):
     return ProviderResponse()
 
 
+def simulation_transport(category='internal'):
+    def transport(*args, **kwargs):
+        url = kwargs.pop('url')
+        return mask_response(url, **kwargs) if url.endswith('/api/mask') else jev_response(category)
+    return transport
+
+
 class PolicySimulatorTests(TestCase):
     def setUp(self):
         self.admin = User.objects.create_user('simulator-admin', is_superuser=True)
@@ -39,6 +47,10 @@ class PolicySimulatorTests(TestCase):
             'version': 1, 'revision': 1, 'allow_empty_rules': True,
             'local_sensitivity': 'internal', 'destinations': {'internal': ['jev']},
         })
+        self.mask = ObfuscationConfig.objects.create(company=self.company, name='Simulator mask', api_url='https://mask.invalid')
+        self.company.ai_config['destinations']['internal'].append(f'obfuscation:{self.mask.pk}')
+        self.company.ai_config['masking'] = {'max_call_cost': '0'}
+        self.company.save()
         Profile.objects.create(user=self.admin, company=self.company)
         self.employee = User.objects.create_user('simulator-employee')
         Profile.objects.create(user=self.employee, company=self.company)
@@ -142,7 +154,7 @@ class PolicySimulatorTests(TestCase):
             context_window=20_000, max_tokens=2000, input_price='1', output_price='2')
         strong = EngineModel.objects.create(engine=engine, name='Strong', model_id='synthetic-strong',
             context_window=20_000, max_tokens=2000, input_price='10', output_price='20')
-        self.company.ai_config.update(destinations={'internal': [f'engine:{company_engine.pk}']},
+        self.company.ai_config.update(destinations={'internal': [f'engine:{company_engine.pk}', f'obfuscation:{self.mask.pk}']},
             routing={'mode': 'auto', 'candidates': [
                 {'company_engine_id': company_engine.pk, 'model_id': cheap.pk, 'level': 'economy', 'quality': {'general': 0.9}},
                 {'company_engine_id': company_engine.pk, 'model_id': strong.pk, 'level': 'strong', 'quality': {'general': 0.99}},
@@ -171,18 +183,18 @@ class PolicySimulatorTests(TestCase):
             'max_call_cost': '0.001'}, limits={'budget': '0.002'})
         self.company.jev_api_key = 'synthetic-key'
         self.company.save()
-        with patch('requests.sessions.Session.request', return_value=jev_response()) as network:
+        with patch('requests.sessions.Session.request', side_effect=simulation_transport()) as network:
             response = self.client.post(self.url, self.command(mode='semantic'))
         self.assertEqual(response.status_code, 200)
         result = response.context['comparison']
         self.assertEqual(result['semantic']['status'], 'completed')
         self.assertEqual(result['signals']['origin'], 'jev')
-        self.assertEqual(len(result['calls']), 1)
-        self.assertEqual(result['calls'][0]['purpose'], 'simulation_classification')
-        self.assertEqual(result['calls'][0]['cost'], '0.00003')
-        self.assertEqual(network.call_count, 1)
+        self.assertEqual(len(result['calls']), 2)
+        self.assertEqual(result['calls'][-1]['purpose'], 'simulation_classification')
+        self.assertEqual(result['calls'][-1]['cost'], '0.00003')
+        self.assertEqual(network.call_count, 2)
         self.assertEqual(network.call_args.kwargs['url'], 'https://ai-gateway.vercel.sh/typesafe/v1/systemone')
-        audit = AuditLog.objects.get(action='policy_simulate')
+        audit = AuditLog.objects.filter(action='policy_simulate').latest('pk')
         self.assertNotIn('Synthetic public report', audit.details)
         self.assertNotIn('synthetic-key', audit.details)
         for model in (Conversation, Message, Prompt, Response, Alert):
@@ -199,15 +211,20 @@ class PolicySimulatorTests(TestCase):
         network.assert_not_called()
         self.company.ai_config['limits']['budget'] = '0.003'
         self.company.save()
-        with patch('requests.sessions.Session.request', side_effect=requests.ReadTimeout) as network:
+        def timeout_transport(*args, **kwargs):
+            url = kwargs.pop('url')
+            if url.endswith('/api/mask'):
+                return mask_response(url, **kwargs)
+            raise requests.ReadTimeout()
+        with patch('requests.sessions.Session.request', side_effect=timeout_transport) as network:
             timeout = self.client.post(self.url, self.command(mode='semantic'))
         comparison = timeout.context['comparison']
         self.assertEqual(comparison['semantic']['status'], 'unavailable')
-        self.assertEqual(comparison['calls'][0]['cost'], None)
-        self.assertEqual(comparison['calls'][0]['cost_bound'], '0.002')
-        self.assertTrue(comparison['calls'][0]['outcome_unknown'])
-        self.assertEqual(json.loads(AuditLog.objects.get(action='policy_simulate').details)['call']['status'], 'failed')
-        self.assertEqual(network.call_count, 1)
+        self.assertEqual(comparison['calls'][-1]['cost'], None)
+        self.assertEqual(comparison['calls'][-1]['cost_bound'], '0.002')
+        self.assertTrue(comparison['calls'][-1]['outcome_unknown'])
+        self.assertEqual(json.loads(AuditLog.objects.filter(action='policy_simulate').latest('pk').details)['call']['status'], 'failed')
+        self.assertEqual(network.call_count, 2)
 
     def test_concurrent_rule_edit_and_modified_draft_invalidate_activation(self):
         group = RulesGroup.objects.create(company=self.company, name='Guarded rules')
@@ -245,12 +262,12 @@ class PolicySimulatorTests(TestCase):
         self.company.save()
         proposed = dict(self.company.ai_config, classification_policy={'on_ambiguity': 'stop'},
             jev=dict(self.company.ai_config['jev'], threshold=0.99))
-        with patch('requests.sessions.Session.request', return_value=jev_response()):
+        with patch('requests.sessions.Session.request', side_effect=simulation_transport()):
             response = self.client.post(self.url, self.command(mode='semantic', proposed_config=json.dumps(proposed)))
         self.assertEqual(response.context['comparison']['current']['policy']['status'], 'allow')
         self.assertEqual(response.context['comparison']['proposed']['policy']['status'], 'unavailable')
         self.assertEqual(response.context['comparison']['proposed']['policy']['reason_codes'], ['classification_ambiguous'])
-        with patch('requests.sessions.Session.request', return_value=jev_response('restricted')):
+        with patch('requests.sessions.Session.request', side_effect=simulation_transport('restricted')):
             response = self.client.post(self.url, self.command(mode='semantic'))
         self.assertEqual(response.context['comparison']['current']['policy']['status'], 'block')
         self.assertEqual(response.context['comparison']['current']['policy']['reason_codes'], ['restricted_content'])
@@ -259,7 +276,8 @@ class PolicySimulatorTests(TestCase):
         for sensitivity in ('confidential', 'restricted'):
             with self.subTest(sensitivity=sensitivity):
                 self.company.ai_config.update(local_sensitivity=sensitivity,
-                    destinations={'public': ['jev'], sensitivity: ['jev']})
+                    destinations={'public': ['jev', f'obfuscation:{self.mask.pk}'],
+                        sensitivity: ['jev', f'obfuscation:{self.mask.pk}']})
                 self.company.save()
                 response = self.client.post(self.url, self.command(signal_sensitivity='public'))
                 policy = response.context['comparison']['current']['policy']
@@ -272,7 +290,7 @@ class PolicySimulatorTests(TestCase):
         model = EngineModel.objects.create(engine=engine, name='Budget model', model_id='synthetic-budget',
             context_window=20_000, max_tokens=2000, input_price='0', output_price='0.5')
         self.company.ai_config.update(classification='required', verification={'mode': 'enforce'},
-            destinations={'internal': [f'engine:{credential.pk}', 'jev']},
+            destinations={'internal': [f'engine:{credential.pk}', 'jev', f'obfuscation:{self.mask.pk}']},
             jev={'input_price': '1', 'output_price': '1', 'max_call_cost': '0.001'},
             limits={'budget': '0.0015'}, routing={'mode': 'manual', 'candidates': [
                 {'company_engine_id': credential.pk, 'model_id': model.pk,

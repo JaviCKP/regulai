@@ -33,9 +33,9 @@ class PipelinePrivacyTests(ChatFixture):
                 response = self.send(path, 'Synthetic report')
                 self.assertEqual(response.json()['error_type'], 'security_check_failed')
                 self.provider.assert_not_called()
-                self.assertEqual(self.http.call_count, 1)
+                self.assertEqual(self.http.call_count, 2)
                 receipt = response.json()['receipt']
-                self.assertEqual([call['purpose'] for call in receipt['calls']], ['classification'])
+                self.assertEqual([call['purpose'] for call in receipt['calls']], ['obfuscation', 'classification'])
                 self.assertEqual(receipt['calls'][0]['status'], 'completed')
                 self.assertEqual(Decimal(receipt['total']['cost']), Decimal('0.00014'))
                 self.assertEqual(receipt['total']['attempts'], 0)
@@ -95,10 +95,10 @@ class PipelinePrivacyTests(ChatFixture):
             self.assertEqual(comparison[name]['policy']['sensitivity'], 'confidential')
             self.assertEqual(comparison[name]['policy']['status'], 'allow')
             self.assertEqual(comparison[name]['route']['status'], 'selected')
-        self.assertEqual(self.http.call_count, 1)
+        self.assertEqual(self.http.call_count, 2)
         self.provider.assert_not_called()
-        self.assertEqual(comparison['calls'][0]['purpose'], 'simulation_classification')
-        self.assertEqual(Decimal(comparison['calls'][0]['cost']), Decimal('0.00014'))
+        self.assertEqual(comparison['calls'][-1]['purpose'], 'simulation_classification')
+        self.assertEqual(Decimal(comparison['calls'][-1]['cost']), Decimal('0.00014'))
 
     def test_mask_deactivated_during_classification_stops_before_generation(self):
         self.configure(verification={'mode': 'local'})
@@ -128,8 +128,9 @@ class PipelinePrivacyTests(ChatFixture):
                 self.assertTrue(receipt['total']['complete'])
 
     def mask(self, *, bound='0', malformed=False):
-        config = ObfuscationConfig.objects.create(company=self.company, name='Batch mask', api_url='https://mask.invalid')
-        self.company.ai_config['destinations']['internal'].append(f'obfuscation:{config.pk}')
+        config = self.required_mask
+        if f'obfuscation:{config.pk}' not in self.company.ai_config['destinations']['internal']:
+            self.company.ai_config['destinations']['internal'].append(f'obfuscation:{config.pk}')
         self.company.ai_config['masking'] = {'max_call_cost': bound}
         self.company.save()
         evaluator = test_pipeline.jev_http()
@@ -456,8 +457,8 @@ class PipelinePrivacyTests(ChatFixture):
         self.company.save()
         result = self.send('/api/chat/send/').json()
         self.assertEqual(result['status'], 'completed', result)
-        self.assertEqual(result['receipt']['calls'][0]['rubric_version'], 'sensitivity-v2')
-        self.assertEqual(result['receipt']['calls'][0]['task_rubric_version'], 'task-v2')
+        self.assertEqual(result['receipt']['calls'][1]['rubric_version'], 'sensitivity-v2')
+        self.assertEqual(result['receipt']['calls'][1]['task_rubric_version'], 'task-v2')
         self.assertEqual(result['decision']['rubric_version'], 'sensitivity-v2')
 
     def test_company_admin_can_run_masked_semantics_without_global_flags(self):

@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 from front.models import *
 from front.access import actor_company, authorized_conversations, company_audit_scope, platform_required, protect_operator
 from front.policy import validate_yara
+from front.masking import mask_texts  # Preserve the existing views.mask_texts import surface.
 from front.connectors import get_connector, ChatMessage, ChatResponse
 from front.rate_limit import (
     login_rate_limit, chat_rate_limit, signup_rate_limit,
@@ -2799,32 +2800,6 @@ def prompt_detail(request, pk):
 
 
 # ==================== OBFUSCATION ====================
-
-def mask_texts(texts, masks, before_call=None, after_call=None, *, timeout=10):
-    """Mask a structured batch atomically; never guess segment boundaries."""
-    if not isinstance(texts, list) or any(not isinstance(text, str) for text in texts):
-        raise ValueError('Invalid masking input')
-    current = texts
-    for config in masks:
-        value = json.dumps(current, ensure_ascii=False)
-        payload = {'text': value, 'detect': ['pii', 'secrets'] if config.detect == 'both' else [config.detect]}
-        if config.language:
-            payload['language'] = config.language
-        seconds = before_call(config, value) if before_call else timeout
-        response = requests.post(config.api_url.rstrip('/') + '/api/mask', json=payload,
-                                 timeout=seconds, allow_redirects=False)
-        response.raise_for_status()
-        if after_call:
-            after_call(config)
-        result = response.json()
-        if not isinstance(result, dict) or not isinstance(result.get('masked'), str):
-            raise ValueError('Invalid masking response')
-        masked = json.loads(result['masked'])
-        if not isinstance(masked, list) or len(masked) != len(current) or any(not isinstance(text, str) for text in masked):
-            raise ValueError('Invalid masking segments')
-        current = masked
-    return current
-
 
 @security_required
 def obfuscation_list(request):

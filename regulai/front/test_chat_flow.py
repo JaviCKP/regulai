@@ -1,5 +1,6 @@
 """HTTP regressions for the shared chat flow; every provider is synthetic."""
 import uuid
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
@@ -10,7 +11,16 @@ from front.connectors import ChatResponse
 from front.models import Alert, Company, CompanyEngine, Engine, EngineModel, Message, ObfuscationConfig, Profile, Prompt, Rule, RulesGroup
 
 
+def mask_response(url, **kwargs):
+    if not url.endswith('/api/mask'):
+        raise AssertionError('Unexpected external HTTP')
+    return SimpleNamespace(raise_for_status=lambda: None,
+        json=lambda: {'masked': kwargs['json']['text']})
+
+
 class ChatFixture(TestCase):
+    requires_mask = True
+
     def setUp(self):
         cache.clear()
         self.user = User.objects.create_user('chat-user', password='synthetic-password')
@@ -21,6 +31,11 @@ class ChatFixture(TestCase):
         self.credential = CompanyEngine.objects.create(company=self.company, engine=self.engine, api_key='synthetic-key')
         self.company.ai_config = {'version': 1, 'local_sensitivity': 'internal', 'allow_empty_rules': True,
                                   'destinations': {'internal': [f'engine:{self.credential.pk}']}}
+        if self.requires_mask:
+            self.required_mask = ObfuscationConfig.objects.create(company=self.company,
+                name='Required synthetic mask', api_url='https://mask.invalid')
+            self.company.ai_config['destinations']['internal'].append(f'obfuscation:{self.required_mask.pk}')
+            self.company.ai_config['masking'] = {'max_call_cost': '0'}
         self.company.save()
         self.group = RulesGroup.objects.create(name='Synthetic security', company=self.company)
         self.rule = Rule.objects.create(name='Fake secret', rules_group=self.group,
@@ -29,8 +44,7 @@ class ChatFixture(TestCase):
         self.client.raise_request_exception = False
         self.provider = self.enterContext(patch('front.connectors.OpenAIConnector.chat',
             return_value=ChatResponse('Hola', 10, 'synthetic-v1', 'stop')))
-        self.http = self.enterContext(patch('requests.post'))
-        self.http.return_value.json.return_value = {}
+        self.http = self.enterContext(patch('requests.post', side_effect=mask_response))
 
     def send(self, path, content='Hola', **extra):
         data = {'content' if path.startswith('/api/') else 'prompt': content,

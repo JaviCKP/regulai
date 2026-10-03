@@ -14,7 +14,9 @@ OPENAI_CHAT = OpenAIConnector.chat
 def jev_http(choices=None, failures=None):
     choices = choices or {}
     failures = failures or {}
-    def post(url, *, data, **kwargs):
+    def post(url, *, data=None, **kwargs):
+        if url.endswith('/api/mask'):
+            return test_chat_flow.mask_response(url, **kwargs)
         request = json.loads(data)
         answers = {}
         for key, question in request['questions'].items():
@@ -59,6 +61,9 @@ class PipelineTests(test_chat_flow.ChatFixture):
             'verification': {'mode': 'enforce', 'threshold': 0.8},
             'limits': {'budget': '1'},
             'destinations': {'internal': [f'engine:{self.credential.pk}', 'jev']}, **extra})
+        for destinations in self.company.ai_config['destinations'].values():
+            if destinations and f'obfuscation:{self.required_mask.pk}' not in destinations:
+                destinations.append(f'obfuscation:{self.required_mask.pk}')
         self.company.save()
         self.http.side_effect = jev_http()
         self.provider.return_value = ChatResponse('Correct answer', 30, 'synthetic-v1', 'stop', 20, 10)
@@ -89,7 +94,8 @@ class PipelineTests(test_chat_flow.ChatFixture):
                 result = response.json()
                 self.assertEqual(result['status'], 'completed', result)
                 self.assertEqual(result['receipt']['verification']['status'], 'passed')
-                self.assertEqual([c['purpose'] for c in result['receipt']['calls']], ['classification', 'generation', 'verification'])
+                self.assertEqual([c['purpose'] for c in result['receipt']['calls']],
+                    ['obfuscation', 'classification', 'generation', 'obfuscation', 'verification'])
                 self.assertEqual(Decimal(result['receipt']['total']['cost']), Decimal('0.00032'))
 
     def test_local_block_makes_no_calls_even_with_required_jev(self):
@@ -151,7 +157,7 @@ class PipelineTests(test_chat_flow.ChatFixture):
         result = self.send('/api/chat/send/').json()
         self.assertEqual(result['status'], 'failed', result)
         self.assertEqual(self.provider.call_count, 2)
-        self.assertEqual(self.http.call_count, 3)
+        self.assertEqual(self.http.call_count, 6)
         self.assertEqual(result['receipt']['verification']['status'], 'failed')
         self.assertNotIn('assistant_message', result)
         self.assertEqual(result['receipt']['total']['attempts'], 2)
@@ -175,7 +181,7 @@ class PipelineTests(test_chat_flow.ChatFixture):
         self.provider.return_value = ChatResponse('SYNTHETIC_SECRET', 30, 'synthetic-v1', 'stop', 20, 10)
         result = self.send('/api/chat/send/').json()
         self.assertEqual(result['error_type'], 'security_check_failed')
-        self.assertEqual(self.http.call_count, 1)
+        self.assertEqual(self.http.call_count, 2)
         self.assertNotIn('assistant_message', result)
 
     def test_history_mutation_during_classification_prevents_next_egress(self):
@@ -201,8 +207,8 @@ class PipelineTests(test_chat_flow.ChatFixture):
     def test_advisory_judge_unavailable_is_visible_and_excluded_from_history(self):
         self.configure(verification={'mode': 'advisory'})
         transport = jev_http()
-        def unavailable_judge(url, *, data, **kwargs):
-            if 'failure_omission' in json.loads(data)['questions']:
+        def unavailable_judge(url, *, data=None, **kwargs):
+            if data and 'failure_omission' in json.loads(data)['questions']:
                 import requests
                 raise requests.ReadTimeout()
             return transport(url, data=data, **kwargs)
@@ -214,10 +220,9 @@ class PipelineTests(test_chat_flow.ChatFixture):
         self.assertNotIn('FIRST_UNVERIFIED_INPUT', str(self.provider.call_args))
 
     def test_masking_is_authorized_and_logged_per_call(self):
-        self.company.ai_config['destinations']['internal'].append('obfuscation:1')
-        mask = ObfuscationConfig.objects.create(company=self.company, name='Mask', api_url='https://mask.invalid')
-        self.company.ai_config['destinations']['internal'][-1] = f'obfuscation:{mask.pk}'
+        self.company.ai_config['masking'] = {'max_call_cost': None}
         self.company.save()
+        self.http.side_effect = None
         self.http.return_value.json.return_value = {'masked': '["Masked text"]', 'context': {}, 'counters': {}}
         result = self.send('/api/chat/send/').json()
         self.assertEqual(result['status'], 'completed', result)

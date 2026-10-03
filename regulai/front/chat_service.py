@@ -2,6 +2,7 @@
 from dataclasses import dataclass, replace
 from datetime import timedelta
 from decimal import Decimal
+from copy import deepcopy
 import json
 import math
 import logging
@@ -19,6 +20,7 @@ from .routing import Candidate, RoutingError, actual_cost, route
 from .verification import MAX_CLAIMS, verify_response
 from .sources import build_sources
 from .classification import decide
+from .masking import mask_identity, mask_texts, valid_masks
 from . import jev
 
 logger = logging.getLogger(__name__)
@@ -36,6 +38,7 @@ class ChatResult:
 ERRORS = {
     'security_check_failed': 'No se pudo comprobar la seguridad; no se ha enviado la petición.',
     'policy_configuration_invalid': 'El administrador debe configurar una política de salida válida.',
+    'masking_required': 'La empresa debe activar un enmascarador autorizado para datos personales y secretos.',
     'destination_not_allowed': 'La política no autoriza enviar este contenido al destino seleccionado.',
     'input_unreadable': 'No se pudo revisar el documento completo. No se ha enviado.',
     'idempotency_conflict': 'El identificador ya pertenece a otra entrada. Inicia una nueva petición.',
@@ -47,6 +50,8 @@ ERRORS = {
     'context_overflow': 'El contenido completo no cabe en los modelos autorizados.',
     'unknown_price': 'No se puede garantizar el límite de gasto con las tarifas o cotas disponibles.',
     'budget_exhausted': 'El presupuesto no permite completar la generación y sus comprobaciones.',
+    'external_budget_unavailable': 'No se pudo reservar el presupuesto de evaluación; no se ha iniciado la llamada.',
+    'external_accounting_failed': 'No se pudo cerrar el registro de evaluación; se conserva la reserva de coste.',
     'budget_bound_exceeded': 'El coste comunicado superó la cota configurada; se ha detenido el envío.',
     'deadline_exceeded': 'Se ha agotado el tiempo disponible para esta petición.',
     'authorization_changed': 'Cambió el usuario, el contexto o el destino autorizado; inicia otra petición.',
@@ -107,6 +112,18 @@ def request_result(prompt):
     return ChatResult(data, http_status)
 
 
+def observe_completed_calls(prompt, *, terminal=False):
+    """Report persisted metadata once; external observers never receive content."""
+    observer = getattr(prompt, '_call_observer', None)
+    if observer is None:
+        return
+    for item in prompt._observer_tokens:
+        call, token, observed = item
+        if not observed and (terminal or call['status'] != 'started'):
+            item[2] = True
+            observer.after_call(deepcopy(call), token)
+
+
 def finish(prompt, status, code=None):
     prompt.status = status
     if code:
@@ -125,6 +142,15 @@ def finish(prompt, status, code=None):
     if prompt.user_message:
         Message.objects.filter(pk=prompt.user_message_id).update(blocked=prompt.filtered)
         prompt.user_message.blocked = prompt.filtered
+    try:
+        observe_completed_calls(prompt, terminal=True)
+    except Exception:
+        # A settlement failure cannot release the observer's persisted reserve.
+        logger.error('External call accounting failed', extra={'code': 'external_accounting_failed',
+            'request_id': str(prompt.request_id)})
+        prompt.status = 'failed'
+        prompt.decision['error_type'] = 'external_accounting_failed'
+        prompt.save(update_fields=['status', 'decision', 'updated_at'])
     return request_result(prompt)
 
 
@@ -160,7 +186,7 @@ def authorized_history(actor, conversation, *, window=True):
     return selected
 
 
-def send_chat_message(actor, command):
+def send_chat_message(actor, command, *, call_observer=None):
     """The actor is authenticated by the adapter; all command values are untrusted."""
     started = time.monotonic()
     try:
@@ -232,6 +258,8 @@ def send_chat_message(actor, command):
         return request_result(prompt)
     prompt.status = 'processing'
     prompt._started = started
+    prompt._call_observer = call_observer
+    prompt._observer_tokens = []
     if document and document.status not in ('complete', 'complete_text_only'):
         return finish(prompt, 'validation_error', 'input_unreadable')
     try:
@@ -316,6 +344,9 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
     initial_history = digest([(m.role, m.content) for m in history])
     engines = {row.pk: row for row in CompanyEngine.objects.filter(company=profile.company, active=True).select_related('engine') if row.api_key}
     masks = list(ObfuscationConfig.objects.filter(company=profile.company, active=True).order_by('created_at', 'pk'))
+    if not valid_masks(masks):
+        prompt.decision['policy'].update(status='unavailable', reason_codes=['masking_required'], allowed_destinations=[])
+        return finish(prompt, 'validation_error', 'masking_required')
     configured = cfg.routing.candidates
     manual = cfg.routing.mode == 'manual' or engine_id is not None or model_id is not None
     if manual:
@@ -355,7 +386,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         'schema': DOCUMENT_RESPONSE_SCHEMA}}}).encode('utf-8'))
     extra_input_bytes = {key: schema_bytes for key, (engine, _, _) in rows.items()
                          if document and engine.engine.connector_type == 'anthropic'}
-    mask_identities = {m.pk: digest([m.api_url, m.detect, m.language]) for m in masks}
+    mask_identities = {m.pk: mask_identity(m) for m in masks}
     jev_identity = digest(profile.company.jev_api_key)
     proof = {'request_id': str(prompt.request_id), 'user': actor.pk, 'company': profile.company_id,
              'conversation': prompt.conversation_id, 'input': input_digest,
@@ -407,7 +438,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         return min(seconds, cfg.limits.call_timeout_seconds)
 
     def spent_bound():
-        values = [call.get('cost_bound') for call in prompt.decision['calls']]
+        values = [call.get('cost_exposure_bound', call.get('cost_bound')) for call in prompt.decision['calls']]
         if any(value is None for value in values):
             return None
         return sum((Decimal(value) for value in values), Decimal(0))
@@ -427,6 +458,10 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 or digest([fresh.company.system_prompt, fresh.department.system_prompt if fresh.department else None]) != initial_context):
             raise PipelineStop('authorization_changed')
         actor.profile = fresh
+        active_masks = list(ObfuscationConfig.objects.filter(company_id=initial_company_id, active=True))
+        if (not valid_masks(active_masks)
+                or {mask.pk: mask_identity(mask) for mask in active_masks} != mask_identities):
+            raise PipelineStop('authorization_changed')
         if digest([(m.role, m.content) for m in authorized_history(actor, prompt.conversation)]) != initial_history:
             raise PipelineStop('authorization_changed')
         check = evaluate_policy(actor, texts, destinations=[destination], sensitivity=sensitivity)
@@ -439,7 +474,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if destination.startswith('obfuscation:'):
             mask_id = int(destination.split(':', 1)[1])
             mask = ObfuscationConfig.objects.filter(pk=mask_id, company_id=initial_company_id, active=True).first()
-            if not mask or digest([mask.api_url, mask.detect, mask.language]) != mask_identities[mask_id]:
+            if not mask or mask_identity(mask) != mask_identities[mask_id]:
                 raise PipelineStop('authorization_changed')
         return fresh
 
@@ -448,9 +483,25 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         ensure_budget(cost_bound, reserve)
         call = {'purpose': purpose, 'provider': destination, 'model': model, 'status': 'started',
                 'cost': None, 'cost_bound': str(cost_bound) if cost_bound is not None else None,
-                'price_snapshot': prices, 'currency': 'USD'}
+                'price_snapshot': prices, 'currency': 'USD', 'cost_kind': 'unknown'}
         prompt.decision['calls'].append(call)
         prompt.save(update_fields=['decision', 'updated_at'])
+        if prompt._call_observer is not None:
+            try:
+                token = prompt._call_observer.before_call(deepcopy(call))
+            except Exception:
+                call.update(status='not_started', cost='0', cost_kind='not_incurred', cost_exposure_bound='0')
+                prompt.save(update_fields=['decision', 'updated_at'])
+                raise PipelineStop('external_budget_unavailable') from None
+            prompt._observer_tokens.append([call, token, False])
+            try:
+                # An external reserve can wait on shared state. Its return is not
+                # evidence that company authorization remained unchanged.
+                preflight(destination, texts)
+            except PipelineStop:
+                call.update(status='not_started', cost='0', cost_kind='not_incurred', cost_exposure_bound='0')
+                prompt.save(update_fields=['decision', 'updated_at'])
+                raise
         prompt._call_started = time.monotonic()
         return call, prompt._call_started
 
@@ -461,6 +512,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             call.update(model_effective=getattr(result, 'model', None) or getattr(result, 'effective_model', None),
                         input_tokens=result.input_tokens, output_tokens=result.output_tokens,
                         cost=str(cost) if cost is not None else None,
+                        cost_kind='tariff_estimate' if cost is not None else 'unknown',
                         provider_request_id=getattr(result, 'provider_request_id', None) or getattr(result, 'request_id', None))
             # Retain normalized categories, not arbitrary provider strings or response content.
             call['usage'] = {k: v for k, v in result.usage.items() if isinstance(v, (int, float))
@@ -468,13 +520,16 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             gateway = getattr(result, 'provider_metadata', {}).get('gateway', {})
             if 'cost' in gateway:
                 call['cost'] = gateway['cost']
+                call['cost_kind'] = 'provider_reported'
             if call['cost'] is not None and call['cost_bound'] is not None and Decimal(call['cost']) > Decimal(call['cost_bound']):
-                call['cost_bound'] = call['cost']
+                call['cost_exposure_bound'] = call['cost']
                 prompt.save(update_fields=['decision', 'updated_at'])
                 raise PipelineStop('budget_bound_exceeded')
         elif call['purpose'] == 'obfuscation' and call['cost_bound'] is not None and Decimal(call['cost_bound']) == 0:
             call['cost'] = '0'
+            call['cost_kind'] = 'configured_zero'
         prompt.save(update_fields=['decision', 'updated_at'])
+        observe_completed_calls(prompt)
         remaining()
 
     jev_prices = {key: getattr(cfg.jev, key) for key in ('input_price', 'output_price', 'currency', 'price_date')}
@@ -539,7 +594,6 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             max_output_tokens=cfg.routing.max_output_tokens, extra_input_bytes=extra_input_bytes,
             budget=None if budget is None else max(Decimal(0), budget - mandatory))
         if masks:
-            from .views import mask_texts
             mask_call = None
             # Validate all mandatory checking costs before the first paid boundary.
             ensure_budget(mask_bound, None if (classify or semantic) and jev_bound is None else
@@ -667,6 +721,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                         and not getattr(error, 'outcome_unknown', False) and 'timeout' not in type(error).__name__.lower()):
                     call.update(status='failed', duration_ms=round((time.monotonic() - started) * 1000))
                     prompt.save(update_fields=['decision', 'updated_at'])
+                    observe_completed_calls(prompt)
                     continue
                 raise
             complete_call(call, started, response)

@@ -21,6 +21,7 @@ from .models import AuditLog, Company, CompanyEngine, EngineModel, ObfuscationCo
 from .management.commands.bootstrap_ai_policy import initial_policy
 from .policy import AIConfig, active_rules, digest, evaluate_policy, validate_yara
 from .routing import RoutingError, actual_cost, route
+from .masking import mask_identity, mask_texts, valid_masks
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +130,18 @@ def _outcome(actor, config, sample, rules, signals):
             'origin': origin, 'reason_codes': ['security_not_allowed']}}
     cfg = AIConfig.model_validate(config)
     notices, plausible_tasks = [], [task]
+    masks = list(ObfuscationConfig.objects.filter(company=actor.profile.company, active=True))
+    if not valid_masks(masks):
+        policy = local.as_dict()
+        policy.update(status='unavailable', reason_codes=['masking_required'], allowed_destinations=[])
+        return {'policy': policy, 'route': {'status': 'not_evaluated', 'origin': origin,
+            'reason_codes': ['security_not_allowed']}}
+    mask_destinations = [f'obfuscation:{mask.pk}' for mask in masks]
+    local = evaluate_policy(actor, [('prompts', sample)], config=config, rules=rules,
+        destinations=mask_destinations)
+    if local.status in {'block', 'unavailable'}:
+        return {'policy': local.as_dict(), 'route': {'status': 'not_evaluated', 'origin': origin,
+            'reason_codes': ['security_not_allowed']}}
     if (cfg.limits.budget is not None and cfg.masking.max_call_cost is None
             and ObfuscationConfig.objects.filter(company=actor.profile.company, active=True).exists()):
         policy = local.as_dict()
@@ -152,7 +165,8 @@ def _outcome(actor, config, sample, rules, signals):
         ranks = {'public': 0, 'internal': 1, 'confidential': 2, 'restricted': 3}
         if sensitivity in ranks and local.sensitivity in ranks:
             sensitivity = max((sensitivity, local.sensitivity), key=ranks.get)
-    policy = evaluate_policy(actor, [('prompts', sample)], config=config, rules=rules, sensitivity=sensitivity)
+    policy = evaluate_policy(actor, [('prompts', sample)], config=config, rules=rules, sensitivity=sensitivity,
+        destinations=mask_destinations)
     policy.allowed_destinations = sorted(set(policy.allowed_destinations) & set(local.allowed_destinations))
     if policy.status in {'allow', 'consent_required'} and not policy.allowed_destinations:
         policy.status, policy.reason_codes = 'block', ['destination_not_allowed']
@@ -183,7 +197,7 @@ def _outcome(actor, config, sample, rules, signals):
         if budget is not None:
             mask_count = ObfuscationConfig.objects.filter(company=actor.profile.company, active=True).count()
             if mask_count:
-                budget -= Decimal(cfg.masking.max_call_cost) * mask_count
+                budget -= Decimal(cfg.masking.max_call_cost) * mask_count * 2
                 if budget < 0:
                     raise RoutingError('budget_exhausted')
         selected = route(candidates, [sample], allowed_destinations=policy.allowed_destinations,
@@ -209,6 +223,8 @@ def _semantic(actor, company, sample, rules):
         config=company.ai_config, destinations=['jev'], rules=rules)
     if decision.status != 'allow':
         return {'status': 'not_authorized', 'reason_codes': decision.reason_codes}, [], None
+    if not valid_masks(masks):
+        return {'status': 'not_authorized', 'reason_codes': ['masking_required']}, [], None
     cfg = AIConfig.model_validate(company.ai_config)
     if masks and cfg.masking.max_call_cost is None:
         return {'status': 'not_authorized', 'reason_codes': ['policy_configuration_invalid']}, [], None
@@ -224,16 +240,17 @@ def _semantic(actor, company, sample, rules):
     if bound + mask_bound * len(masks) > Decimal(cfg.limits.budget):
         return {'status': 'not_evaluated', 'reason_codes': ['budget_exhausted']}, [], None
     fresh = Profile.objects.select_related('company', 'user').get(user=actor)
+    authorized = can_manage_company_policy(fresh.user)
     actor.profile = fresh
     check = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)], destinations=['jev'])
-    if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
+    if (not authorized or fresh.company_id != company.pk
             or digest(fresh.company.ai_config) != digest(company.ai_config)
             or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)
             or check.status != 'allow' or check.fingerprint != decision.fingerprint):
         return {'status': 'not_authorized', 'reason_codes': ['authorization_changed']}, [], None
     calls = []
     deadline = time.monotonic() + cfg.limits.deadline_seconds
-    mask_identities = {mask.pk: digest([mask.api_url, mask.detect, mask.language]) for mask in masks}
+    mask_identities = {mask.pk: mask_identity(mask) for mask in masks}
     current_mask_call = current_mask_audit = None
 
     def save_mask():
@@ -244,11 +261,14 @@ def _semantic(actor, company, sample, rules):
     def before_mask(mask, value):
         nonlocal current_mask_call, current_mask_audit, fresh
         fresh = Profile.objects.select_related('company', 'user').get(user=actor)
+        # Assigning the reverse OneToOne below replaces fresh.user's relation
+        # cache with actor. Check the freshly loaded flags before that assignment.
+        authorized = can_manage_company_policy(fresh.user)
         actor.profile = fresh
-        active = {item.pk: digest([item.api_url, item.detect, item.language]) for item in
+        active = {item.pk: mask_identity(item) for item in
             ObfuscationConfig.objects.filter(company_id=company.pk, active=True)}
         check = evaluate_policy(actor, [('prompts', sample), ('prompts', value)], destinations=[f'obfuscation:{mask.pk}'])
-        if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
+        if (not authorized or fresh.company_id != company.pk
                 or active != mask_identities or check.fingerprint != decision.fingerprint or check.status != 'allow'
                 or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)):
             raise PipelineStop('authorization_changed')
@@ -271,17 +291,17 @@ def _semantic(actor, company, sample, rules):
 
     try:
         if masks:
-            from .views import mask_texts
             state['request'] = mask_texts([sample], masks, before_mask, after_mask)[0]
         serialized = json.dumps({'state': state, 'questions': questions}, ensure_ascii=False)
         if len(json.dumps(state, ensure_ascii=False).encode('utf-8')) > jev.MAX_STATE_BYTES:
             raise PipelineStop('evaluation_input_too_large')
         fresh = Profile.objects.select_related('company', 'user').get(user=actor)
+        authorized = can_manage_company_policy(fresh.user)
         actor.profile = fresh
         check = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)], destinations=['jev'])
-        active = {item.pk: digest([item.api_url, item.detect, item.language]) for item in
+        active = {item.pk: mask_identity(item) for item in
             ObfuscationConfig.objects.filter(company_id=company.pk, active=True)}
-        if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
+        if (not authorized or fresh.company_id != company.pk
                 or active != mask_identities or check.fingerprint != decision.fingerprint or check.status != 'allow'
                 or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)):
             raise PipelineStop('authorization_changed')

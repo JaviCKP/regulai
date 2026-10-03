@@ -10,7 +10,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import AuditLog, Company, CompanyEngine, Conversation, Engine, EngineModel, Message, Profile, Prompt, Role
+from .models import AuditLog, Company, CompanyEngine, Conversation, Engine, EngineModel, Message, ObfuscationConfig, Profile, Prompt, Role
 
 
 class RegistrationTests(TestCase):
@@ -163,11 +163,13 @@ class BootstrapPolicyTests(TestCase):
         self.assertEqual(AuditLog.objects.get(action='policy_activate').company_id, self.company.pk)
 
     def test_missing_prices_with_budget_block_simulation_without_external_calls(self):
+        ObfuscationConfig.objects.create(company=self.company, name='Bootstrap mask', api_url='https://mask.invalid')
         generated = self.client.post(reverse('front:policy_simulator'), {'action': 'bootstrap'})
         draft = json.loads(generated.context['proposed_config'])
         draft['allow_empty_rules'] = True
         draft['routing']['candidates'][0]['quality'] = {'general': 0.8}
         draft['limits']['budget'] = '1'
+        draft['masking']['max_call_cost'] = '0'
         with patch('requests.sessions.Session.request') as network:
             response = self.client.post(reverse('front:policy_simulator'), {
                 'proposed_config': json.dumps(draft), 'sample': 'Synthetic sample'})
