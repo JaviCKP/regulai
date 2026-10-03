@@ -152,6 +152,12 @@ class OfflineProviders:
             quote = self.case.get('quote', sources[0]['text'])
             normalized = ' '.join(quote.split())
             source = next((fragment for fragment in sources if normalized in ' '.join(fragment['text'].split())), sources[0])
+            if len(''.join(normalized.split())) < 12 and len(normalized.split()) < 3:
+                literal = ' '.join(source['text'].split())
+                position = literal.find(normalized)
+                if position >= 0:
+                    start = max(0, min(position, len(literal) - 1600))
+                    quote = literal[start:start + 1600]
             source_id = source['id']
             source_id = {'false_citation': 'invented-source', 'html_citation': '<img src=x onerror=alert(1)>',
                          'foreign_citation': 'other-conversation-source', 'path_citation': 'C:/private/source.txt'}.get(fault, source_id)
