@@ -1,0 +1,85 @@
+[
+  {
+    "name": "check",
+    "revision": "52bdc8d71d37dcf40b59293346a4f74f043ef416",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "check",
+      "--settings=regulai.test_settings"
+    ],
+    "returncode": 0,
+    "log": "check.log",
+    "log_sha256": "95ada13e775ae9eeed2922dc580859f018e6c1a12c80d0b6808568f466f2b075"
+  },
+  {
+    "name": "tests",
+    "revision": "52bdc8d71d37dcf40b59293346a4f74f043ef416",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "test",
+      "front",
+      "api",
+      "--settings=regulai.test_settings"
+    ],
+    "returncode": 0,
+    "log": "tests.log",
+    "log_sha256": "dc0f2c57c7f6d91d7a696fd71779173f34002f7248e650bbfad77ec8c31da28c"
+  },
+  {
+    "name": "migrations",
+    "revision": "52bdc8d71d37dcf40b59293346a4f74f043ef416",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "makemigrations",
+      "--check",
+      "--dry-run",
+      "--settings=regulai.test_settings"
+    ],
+    "returncode": 0,
+    "log": "migrations.log",
+    "log_sha256": "c0730a8ce8686ffc7f26b4c9a16b5a3e05e63c433845599923891f1682fc94a9"
+  },
+  {
+    "name": "evaluation",
+    "revision": "52bdc8d71d37dcf40b59293346a4f74f043ef416",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "evaluate_ai",
+      "--settings=regulai.test_settings",
+      "--output",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\23-documentation-final\\offline"
+    ],
+    "returncode": 0,
+    "log": "evaluation.log",
+    "log_sha256": "2b39e31169331cf6fec5ba8032fd777ce2a7a59181c41013bb0e56169e332be4"
+  },
+  {
+    "name": "audit",
+    "revision": "52bdc8d71d37dcf40b59293346a4f74f043ef416",
+    "command": [
+      "rtk",
+      "proxy",
+      "uv",
+      "tool",
+      "run",
+      "pip-audit",
+      "-r",
+      "requirements.txt"
+    ],
+    "returncode": 0,
+    "log": "audit.log",
+    "log_sha256": "3e4fadc41f706ac6d6f45121c9a1ed7f03e4b6712656796d1292d322c86d08c6"
+  }
+]

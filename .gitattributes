@@ -2,6 +2,7 @@
 regulai/static/vendor/** -text
 # Verification logs preserve exact captured bytes, including assertion whitespace.
 evals/reports/community-fixes-verification-20261003/*.log -text -whitespace
+evals/reports/community-fixes-docs-verification-20261003/*.log -text -whitespace
 # Independent review manifests refer to the original report bytes.
 docs/plan-blackhat/revisiones-correcciones/spec-*.md -text
 docs/plan-blackhat/revisiones-correcciones/standards*.md -text
