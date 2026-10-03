@@ -195,7 +195,7 @@ def login_view(request):
 
     return render(request, 'auth/login.html', {
         'next': request.GET.get('next', ''),
-        'allow_registration': getattr(settings, 'ALLOW_REGISTRATION', True)
+        'allow_registration': getattr(settings, 'ALLOW_REGISTRATION', False)
     })
 
 
@@ -217,11 +217,10 @@ def signup_view(request):
     Public signup view for creating new companies and admin users.
     Rate limited to 3 registrations per hour per IP.
 
-    SECURITY: Only the first user becomes a superuser (platform owner).
-    Subsequent users are company admins with staff privileges but NOT superusers.
+    Registration creates a company administrator without platform privileges.
     """
     # Check if registration is allowed
-    if not getattr(settings, 'ALLOW_REGISTRATION', True):
+    if not getattr(settings, 'ALLOW_REGISTRATION', False):
         messages.error(request, 'Registration is currently disabled.')
         return redirect('front:login')
 
@@ -280,10 +279,6 @@ def signup_view(request):
                 domain=company_domain if company_domain else None
             )
 
-            # SECURITY: Only the first user (platform owner) gets superuser privileges
-            # Subsequent users are company admins with staff access but NOT superusers
-            is_first_user = User.objects.count() == 0
-
             # Create user with appropriate privileges
             user = User.objects.create_user(
                 username=username,
@@ -292,7 +287,7 @@ def signup_view(request):
                 first_name=first_name,
                 last_name=last_name,
                 is_staff=True,  # Allow access to security features
-                is_superuser=is_first_user  # Only first user is platform superuser
+                is_superuser=False
             )
 
             # Get or create admin role
@@ -319,24 +314,16 @@ def signup_view(request):
             log_action(user, 'user_registered', {
                 'username': username,
                 'company': company_name,
-                'is_first_user': is_first_user,
-                'is_superuser': is_first_user
+                'is_superuser': False
             }, request)
 
             # Auto-login the user
             login(request, user)
 
-            # Show appropriate message
-            if is_first_user:
-                messages.success(request,
-                    f'Welcome to regulAI! You are the platform owner. '
-                    f'Your company "{company_name}" has been created with full system access.'
-                )
-            else:
-                messages.success(request,
-                    f'Welcome to regulAI! Your company "{company_name}" has been created. '
-                    f'You have administrator access for your company.'
-                )
+            messages.success(request,
+                f'Welcome to regulAI! Your company "{company_name}" has been created. '
+                f'You have administrator access for your company.'
+            )
 
             return redirect('front:dashboard')
 

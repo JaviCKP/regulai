@@ -1,11 +1,12 @@
 from front.models import Alert, Profile
-from front.access import is_platform_operator
+from front.access import can_manage_company_policy, is_platform_operator
 
 
 def unresolved_alerts_count(request):
     """Context processor para añadir el contador de alertas no resueltas."""
     user = request.user
-    permissions = {'is_platform_operator': is_platform_operator(user)}
+    permissions = {'is_platform_operator': is_platform_operator(user),
+        'can_manage_company_policy': can_manage_company_policy(user)}
     if user.is_authenticated and user.is_active and (user.is_staff or user.is_superuser):
         company_id = Profile.objects.filter(user=user).values_list('company_id', flat=True).first()
         alerts = Alert.objects.filter(resolved=False, company_id=company_id) if company_id else Alert.objects.none()

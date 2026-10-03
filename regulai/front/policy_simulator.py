@@ -12,14 +12,13 @@ from django.db import OperationalError, transaction
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods, require_POST
 
-from .access import actor_company
+from .access import actor_company, can_manage_company_policy, company_policy_required
 from .chat_service import PipelineStop, candidates_for
 from .classification import decide
 from . import jev
 from .models import AuditLog, Company, CompanyEngine, EngineModel, ObfuscationConfig, Profile, Rule, RulesGroup
 from .policy import AIConfig, active_rules, digest, evaluate_policy, validate_yara
 from .routing import RoutingError, actual_cost, route
-from .views import admin_required
 
 
 def _config(source, company):
@@ -272,7 +271,7 @@ def _semantic(actor, company, sample, rules):
     return semantic, [call], signals
 
 
-@admin_required
+@company_policy_required
 @require_http_methods(['GET', 'POST'])
 def policy_simulator(request):
     company = actor_company(request.user)
@@ -327,14 +326,14 @@ def policy_simulator(request):
     return render(request, 'policy_simulator.html', context, status=status)
 
 
-@admin_required
+@company_policy_required
 @require_POST
 def policy_simulator_activate(request):
     company = actor_company(request.user)
     try:
         with transaction.atomic():
             fresh = Profile.objects.select_for_update().select_related('company', 'user').get(user=request.user)
-            if not fresh.user.is_active or not fresh.user.is_superuser:
+            if not can_manage_company_policy(fresh.user):
                 raise PermissionDenied('Administrator permission is required.')
             if fresh.company_id != company.pk:
                 raise signing.BadSignature('Company changed')
