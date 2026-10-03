@@ -88,7 +88,6 @@ class ReviewRegressionTests(ChatFixture):
                          'The second generation sends the original first turn in history.')
         self.assertNotIn('12345678Z', jev_text, 'Classification and judging must use masked text.')
 
-    @unittest.expectedFailure
     def test_b02_alert_notifications_are_isolated_by_company(self):
         other = Company.objects.create(name='Other tenant')
         group = RulesGroup.objects.create(name='Other rules', company=other)
