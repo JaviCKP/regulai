@@ -1,0 +1,1825 @@
+[
+  {
+    "stage": "01-regressions",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "352f91b98d7b276d84c86e6c7f1b4bb9cda8318d33144592d12350a59cd331c2",
+        "tests": 141,
+        "seconds": 22.9,
+        "expected_failures": 12
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\01-regressions\\offline"
+        ],
+        "output_sha256": "9e027d75351fd48e8418d09a48d74b5ddccc1060936db3d50c84cfa0c34c72e4",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "899483a269a4685b250172e3a08e9aeea724134d"
+  },
+  {
+    "stage": "02-classification",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "98a65f2efcad8dcdbd81cde35966d2ab07f4db3abac5575462c2a8ef22999d15",
+        "tests": 163,
+        "seconds": 24.081,
+        "expected_failures": 11
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\02-classification\\offline"
+        ],
+        "output_sha256": "7fa1e559ed46bf657859e149c1d9a4072477c4ebf0f33ecb9eb2ffb1bdbec895",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "f80a14afa8f43c01518035d8d93b755b95f6f735"
+  },
+  {
+    "stage": "03-documents",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "a4fc6d61ce0aa7f296acbcc80dab3812ae44d1e1b9a6bd655699e6a3a071a9df",
+        "tests": 180,
+        "seconds": 29.446,
+        "expected_failures": 10
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\03-documents\\offline"
+        ],
+        "output_sha256": "adda632a08d32d8199d3e07b68742a826aeb5f66db35f90a2afea80c1d5ec180",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "9f58dbf3b44fcf8e734d820e0d6291bfe000c097"
+  },
+  {
+    "stage": "04-verification",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "7d60f2197d256ef052723585636184b7e86d5064665aa51564e80e08d1a0593f",
+        "tests": 199,
+        "seconds": 31.721,
+        "expected_failures": 9
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\04-verification\\offline"
+        ],
+        "output_sha256": "2183071b89960cf509b14cae5d3305247e9ba6fa10d1ea05530f4052d91c8b11",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "e0424619afa0f5249ad1752910ee9acb37064eac"
+  },
+  {
+    "stage": "05-security",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "b1bb0b182e27871ff684f8a8279a191511961982767f2e209cfaf6f1662c3be5",
+        "tests": 214,
+        "seconds": 32.148,
+        "expected_failures": 8
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\05-security\\offline"
+        ],
+        "output_sha256": "17881fdb874b19fef640966677354fe3e25d582d257c22880d763d22ede5f4aa",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "48fdba90d500b7e4760c5c53569aadb079b14506"
+  },
+  {
+    "stage": "06-price-migration",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "4ea98696a469c4d8e5b88b4270fc92c8bd28b41db7587270a7ae3d46d07e2624",
+        "tests": 216,
+        "seconds": 33.915,
+        "expected_failures": 8
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\06-price-migration\\offline"
+        ],
+        "output_sha256": "1a3df8e1ea5c78ba6f8cc7f14e126b3d68890be79e3f63b277157bba084f476b",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "33a264cf06a8d4b8066d8af5b0dadddcda565867"
+  },
+  {
+    "stage": "07-reasoning-migration",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "9e49934cd093fefe5dc28d0bccf31c9c1e7c82efb9c6886d431360616ed74fe4",
+        "tests": 217,
+        "seconds": 34.95,
+        "expected_failures": 8
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\07-reasoning-migration\\offline"
+        ],
+        "output_sha256": "6ac9837c1acd60c5d769c8ad192a1a1eace0728dba07d30ec0e632f2e718c8a5",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "59c820b8a6b4c49a588dd311d3a962dc39db6faa"
+  },
+  {
+    "stage": "08-historical-migration",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "f938e3d98a200f90e5565002692a7f8750ffeb79b77dc70043d113d62ded539e",
+        "tests": 218,
+        "seconds": 32.687,
+        "expected_failures": 8
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\08-historical-migration\\offline"
+        ],
+        "output_sha256": "cf7ac550a5ce269d82705f3c514bdb3e17cc72a49eecc8912b51985dd2018cdd",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "f677d54513e4d728dd1be0853902ab2ae2be0b41"
+  },
+  {
+    "stage": "09-frontend",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 1,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "caabf10d60806844c10e3f07b9b1d062f58a30d70bfd45b29cd7bc53fbef4f58",
+        "tests": 231,
+        "seconds": 34.325,
+        "expected_failures": 7
+      }
+    ],
+    "revision": null,
+    "resolution": "Reverted in 8ae1b92, byte-preserving vendor checkout fixed and verified in 10-frontend-fixed."
+  },
+  {
+    "stage": "10-frontend-fixed",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "f840ea7cb09102639754e15952125007905beb37637bc53283d488723d78e97c",
+        "tests": 233,
+        "seconds": 35.501,
+        "expected_failures": 7
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\10-frontend-fixed\\offline"
+        ],
+        "output_sha256": "002e5ea75b71e7f4dfbecec81cc6515876d944e9119f31a28f1e436349048395",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "b3d9269494808b1e7bfb5cea94eecc8a3ee80bca"
+  },
+  {
+    "stage": "11-onboarding",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "de3db21eedaf653263ec0bcadcc6dbe867270c1c4bb69c99d46c303db92de2f5",
+        "tests": 246,
+        "seconds": 35.521,
+        "expected_failures": 7
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\11-onboarding\\offline"
+        ],
+        "output_sha256": "75152df0e4231500811f210783bbf8ddf67be4af27b535b714995838e3858b68",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "2cea7820bb1ef9197db266a1023b98d0b5b3a627"
+  },
+  {
+    "stage": "12-operations",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "5c75dd5ca9bce87c1af21ca8bb30277b6ecf86cae4c1ca8481cdb33f8a770b36",
+        "tests": 252,
+        "seconds": 35.773,
+        "expected_failures": 7
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\12-operations\\offline"
+        ],
+        "output_sha256": "d91864adfd1f346b12d97ca261971ea9f7e78f1831163bee6acde8877a4e9c21",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "2ffb355fee9ab931e6ff1d241485e0c29dee13fd"
+  },
+  {
+    "stage": "13-pipeline",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "6dd50a184b059e459594eb8ea88a000b5fb54e73c9c0ab17bbd503b671a6cc68",
+        "tests": 275,
+        "seconds": 43.918,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\13-pipeline\\offline"
+        ],
+        "output_sha256": "b4e732f5b682c844912059e90f0735958e440ae1a1cd04ca4ce94da814adbbe6",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "eb8fde7d28fa9354b925d9ccc6996472128b4751"
+  },
+  {
+    "stage": "14-history-limits-ui",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "865fa72c762687d245721ea1524bbf18a146671c592e901e09b8e257ec329722",
+        "tests": 275,
+        "seconds": 45.244,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\14-history-limits-ui\\offline"
+        ],
+        "output_sha256": "f2f91b918a41d6af34a8607ffb64f0be9ac535e083d84dde5f44de2b7b929633",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "9549e74a97c114f7427c14eda0d883516be4b627"
+  },
+  {
+    "stage": "15-receipt-limits",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "4a69faff93170f7f6a428bd46818d1d68fb6103ae78b20422e503b138b460203",
+        "tests": 275,
+        "seconds": 44.458,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\15-receipt-limits\\offline"
+        ],
+        "output_sha256": "c149a5d94d0a5b87456748190447f36743e6fff9ee067d6841422c164bddf693",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "f7783361a513d699c2153c631e27397044f97945"
+  },
+  {
+    "stage": "16-pipeline-review",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "fbec4f876533dd1f98d19523261ceddfa76993366c45639884fda08bfb401a84",
+        "tests": 279,
+        "seconds": 46.899,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\16-pipeline-review\\offline"
+        ],
+        "output_sha256": "b17ecf49c585ca19ea04d79b4f758c5b0f4a6f821ad36f1d28aca699bab35750",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "95dfb774e8e77ea5616afc6209557a4254289d81"
+  },
+  {
+    "stage": "17-security-review",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "58ec4e2e531a8223a55c05e9b1a63b1d19e9b087da2380d866fde76e0cf76f24",
+        "tests": 280,
+        "seconds": 46.602,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\17-security-review\\offline"
+        ],
+        "output_sha256": "93f9dbd6166d897631b9631a0ab5a36bc42d4331b448d8dfeada10ad8ed54572",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "e7311bf04d3ccbb409f7b2a10bcc61d848d186a4"
+  },
+  {
+    "stage": "18-classification-review",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "9dfff9f12b40b55a1c9cb31042d93410901d3858b837ac20f1c35352dcdee757",
+        "tests": 283,
+        "seconds": 49.358,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\18-classification-review\\offline"
+        ],
+        "output_sha256": "ce85aeb201a234d4bd6c255dee141ace8dbd068b9a12ae0c0040692a6c45cd7c",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "9840bd6d9365c8bc4618248ee954ac278f934484"
+  },
+  {
+    "stage": "19-documents-review",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "51438cc7aea065f13f368849466d237ffeacd2df67c5396349ed4b34eab0dac0",
+        "tests": 295,
+        "seconds": 58.25,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\19-documents-review\\offline"
+        ],
+        "output_sha256": "f50aad1312ea4dd25bdb87d722642638529e402194b935140a1aef7cfbd454ef",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "90000c657fbc5f63e3faa18d25657160c15cba88"
+  },
+  {
+    "stage": "20-frontend-review",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "9e17f4571945eb08a43ffea8f2032c0b18a3f9e60223173411ea4193f7de4295",
+        "tests": 296,
+        "seconds": 60.252,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\20-frontend-review\\offline"
+        ],
+        "output_sha256": "af1b8acd7d20b3683fda8f54b96e5326203061e02c1469f01631dad423254e4e",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "c373c879b16710423d72341be82a9a16b5f30f58"
+  },
+  {
+    "stage": "21-operations-review",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "6e967f3788f9a732ad48cc99baf65b37e25c40faf837c8b4f2c030bb93f10ee2",
+        "tests": 297,
+        "seconds": 71.258,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\21-operations-review\\offline"
+        ],
+        "output_sha256": "3b011d294b80ef576105321a240bd8068767a26f5fd2d78685fdde426cd6c7ca",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "934dc0f3c4faaf53740da86132304e3766851e5f"
+  },
+  {
+    "stage": "22-onboarding-review",
+    "gates": [
+      {
+        "name": "check",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "check",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "e01cd9fb7edd41199014e3aa93bb18b19d6ffe03a1ebf70cfe2fa373680c599c"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "test",
+          "front",
+          "api",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "4ffffa7ffd966f49414ce3975efe1032ab835c02114f72ffc3e9dfa0fbc5d0fa",
+        "tests": 302,
+        "seconds": 65.158,
+        "expected_failures": 0
+      },
+      {
+        "name": "migrations",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "makemigrations",
+          "--check",
+          "--dry-run",
+          "--settings=regulai.test_settings"
+        ],
+        "output_sha256": "ac97af09b929b793dec1fa6d6e550fd6a1174b446e647ee5d134222d74694887"
+      },
+      {
+        "name": "evaluation",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+          "regulai/manage.py",
+          "evaluate_ai",
+          "--settings=regulai.test_settings",
+          "--output",
+          "C:\\Users\\javi\\Documents\\Codex\\regulai-wt\\evidence\\22-onboarding-review\\offline"
+        ],
+        "output_sha256": "3b5145b3fea2ffaed3c9bec12d7c31b3702814baf7c586e5b82280c392bd1666",
+        "runs": 150,
+        "failed_controls": 0,
+        "real_calls": 0
+      },
+      {
+        "name": "audit",
+        "returncode": 0,
+        "command": [
+          "rtk",
+          "proxy",
+          "uv",
+          "tool",
+          "run",
+          "pip-audit",
+          "-r",
+          "requirements.txt"
+        ],
+        "output_sha256": "b34fd55615833b1e791b833612804aad17365e9c6064cb7cc0491a1a22d34fc9"
+      }
+    ],
+    "revision": "51f4ee5662633edc21be4cda98bed8d8eba1c0f0"
+  }
+]

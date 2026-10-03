@@ -1,0 +1,23 @@
+{
+  "baseline": "4400f0b",
+  "baseline_result": "12 AssertionError; 0 setup errors; 0 skipped",
+  "baseline_log": "baseline-regressions.log",
+  "current_revision": "12ca58d3a2b5a6570840ca80676a1799f6eac097",
+  "current_test_file_sha256": "516dd1799795135f63e774707b6788ae4b5776228fb717b266c78a7e1e78bcbc",
+  "current_expected_failures": 0,
+  "tests": [
+    "test_b01_every_turn_and_jev_receive_masked_content",
+    "test_b02_alert_notifications_are_isolated_by_company",
+    "test_b03_missing_mask_cost_bound_is_rejected_before_any_external_call",
+    "test_b04_document_citations_resolve_the_masked_source",
+    "test_b05_advisory_document_answer_is_readable_prose",
+    "test_b06_oversized_judge_state_is_rejected_before_generation",
+    "test_b07_word_tracked_changes_use_the_accepted_text",
+    "test_b08_one_json_code_fence_is_accepted_as_a_document_answer",
+    "test_b09_expired_consent_issues_a_fresh_usable_token",
+    "test_b10_chat_can_submit_without_crypto_random_uuid",
+    "test_c01_uncertain_ordinal_category_completes_as_confidential",
+    "test_c02_credentials_signal_below_point_eight_still_blocks_generation"
+  ],
+  "verification": "All twelve are included in the successful full suite recorded in tests.log."
+}

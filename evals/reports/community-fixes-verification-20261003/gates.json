@@ -1,0 +1,90 @@
+[
+  {
+    "name": "check",
+    "revision": "12ca58d3a2b5a6570840ca80676a1799f6eac097",
+    "started_at": "2026-10-03T08:08:23.114295+00:00",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "check",
+      "--settings=regulai.test_settings"
+    ],
+    "returncode": 0,
+    "log": "check.log",
+    "log_sha256": "95ada13e775ae9eeed2922dc580859f018e6c1a12c80d0b6808568f466f2b075"
+  },
+  {
+    "name": "tests",
+    "revision": "12ca58d3a2b5a6570840ca80676a1799f6eac097",
+    "started_at": "2026-10-03T08:08:25.384037+00:00",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "test",
+      "front",
+      "api",
+      "--settings=regulai.test_settings"
+    ],
+    "returncode": 0,
+    "log": "tests.log",
+    "log_sha256": "2308f4776c2ec0089e0682be29f49c018c24df8fde1e7d1b65e9a3d41dbcec4f"
+  },
+  {
+    "name": "migrations",
+    "revision": "12ca58d3a2b5a6570840ca80676a1799f6eac097",
+    "started_at": "2026-10-03T08:09:34.558390+00:00",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "makemigrations",
+      "--check",
+      "--dry-run",
+      "--settings=regulai.test_settings"
+    ],
+    "returncode": 0,
+    "log": "migrations.log",
+    "log_sha256": "c0730a8ce8686ffc7f26b4c9a16b5a3e05e63c433845599923891f1682fc94a9"
+  },
+  {
+    "name": "evaluation",
+    "revision": "12ca58d3a2b5a6570840ca80676a1799f6eac097",
+    "started_at": "2026-10-03T08:09:35.781635+00:00",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "evaluate_ai",
+      "--settings=regulai.test_settings",
+      "--output",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\offline-community-fixes-final-20261003"
+    ],
+    "returncode": 0,
+    "log": "evaluation.log",
+    "log_sha256": "e542bedba9f7e7097f1447a6e6efe378a7e61bd6d7a181fdb78d06b582e62296"
+  },
+  {
+    "name": "audit",
+    "revision": "12ca58d3a2b5a6570840ca80676a1799f6eac097",
+    "started_at": "2026-10-03T08:09:41.943649+00:00",
+    "command": [
+      "rtk",
+      "proxy",
+      "uv",
+      "tool",
+      "run",
+      "pip-audit",
+      "-r",
+      "requirements.txt"
+    ],
+    "returncode": 0,
+    "log": "audit.log",
+    "log_sha256": "3e4fadc41f706ac6d6f45121c9a1ed7f03e4b6712656796d1292d322c86d08c6"
+  }
+]

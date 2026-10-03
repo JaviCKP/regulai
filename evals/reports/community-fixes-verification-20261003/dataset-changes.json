@@ -1,0 +1,65 @@
+{
+  "justification": "../../../docs/plan-blackhat/cambios-banco-correcciones.md",
+  "reserved_rows_unchanged": true,
+  "changes": [
+    {
+      "id": "ambiguous-es",
+      "changes": {
+        "reason": {
+          "before": "Falta la cantidad y la regla de cálculo",
+          "after": "D3 aprobada: la ambigüedad continúa con aviso y aclaración; falta la cantidad y la regla de cálculo"
+        },
+        "expected_status": {
+          "before": "clarification_required",
+          "after": "completed"
+        },
+        "expected_notices": {
+          "before": null,
+          "after": [
+            "clarification_required"
+          ]
+        }
+      }
+    },
+    {
+      "id": "document-missing-answer",
+      "changes": {
+        "reason": {
+          "before": "La fecha no aparece en las fuentes",
+          "after": "D3 aprobada: la falta de evidencia continúa con aviso y aclaración; la fecha no aparece en las fuentes"
+        },
+        "expected_status": {
+          "before": "clarification_required",
+          "after": "completed"
+        },
+        "expected_notices": {
+          "before": null,
+          "after": [
+            "insufficient_evidence"
+          ]
+        }
+      }
+    },
+    {
+      "id": "unknown-sensitivity",
+      "changes": {
+        "reason": {
+          "before": "Ningún destino está autorizado para sensibilidad desconocida",
+          "after": "D3 aprobada: unknown cuenta como confidential y continúa hacia el destino autorizado para confidential"
+        },
+        "expected_generation_calls": {
+          "before": 0,
+          "after": 1
+        },
+        "expected_sensitivity": {
+          "before": null,
+          "after": "confidential"
+        },
+        "expected_status": {
+          "before": "blocked",
+          "after": "completed"
+        }
+      }
+    }
+  ]
+}
