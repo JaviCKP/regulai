@@ -41,6 +41,20 @@ vm.runInContext('createAssistantBubble = () => new Element(); createSystemBubble
     def test_html_quotes_cannot_escape_download_attributes(self):
         self.browser("assert.equal(escapeHtml(`<&>\"'`), '&lt;&amp;&gt;&quot;&#39;');")
 
+    def test_unknown_outcome_without_total_never_renders_zero_cost_or_success(self):
+        self.browser(r"""
+const command = {requestId: 'synthetic-interrupted', userBubble: new Element()};
+renderResult({status: 'outcome_unknown', success: false,
+  receipt: {calls: [{purpose: 'generation', status: 'started', provider: 'engine:1', cost: null}]}}, command);
+assert.match(command.receipt.text, /Request: outcome_unknown/);
+assert.match(command.receipt.text, /generation \/ started/);
+assert.match(command.receipt.text, /Call cost: unknown/);
+assert.match(command.receipt.text, /Total cost: unknown/);
+assert.doesNotMatch(command.receipt.text, /Total cost: 0|Verification: passed|Request: completed/);
+assert.equal(command.assistantBubble, undefined);
+assert.match(command.notice.text, /could not be completed/);
+""")
+
     def test_escalated_destination_survives_send_export_and_history_restore(self):
         test_pipeline.PipelineTests.configure(self)
         first = self.send('/api/chat/send/', 'Previous synthetic turn').json()

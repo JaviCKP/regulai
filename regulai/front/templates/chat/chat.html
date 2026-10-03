@@ -136,9 +136,25 @@
 
   .chat-bubble.user {
     margin-left: auto;
-    background-color: #5d87ff;
+    background-color: #3154b7;
     color: white;
     border-radius: 1rem 1rem 0 1rem;
+  }
+
+  .chat-bubble.user:not(.blocked) a {
+    color: white;
+    text-decoration: underline;
+  }
+
+  .chat-bubble.user:not(.blocked) .btn-outline-primary {
+    color: #3154b7;
+    background-color: white;
+    border-color: white;
+  }
+
+  .chat-bubble.user:not(.blocked) .btn-outline-primary:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
   }
 
   .chat-bubble.assistant {

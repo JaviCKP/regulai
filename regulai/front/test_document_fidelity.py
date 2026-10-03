@@ -3,7 +3,10 @@ import io
 import json
 import zipfile
 import zlib
+import hashlib
+import uuid
 from datetime import datetime
+from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.workbook.properties import CalcProperties
 from openpyxl.comments import Comment
@@ -21,10 +24,41 @@ from front.documents import extract_document
 from front import test_documents
 from front import test_pipeline
 from front.connectors import ChatResponse
+from front.models import Prompt
 from front.test_chat_flow import ChatFixture
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import ArrayObject, DictionaryObject, NameObject, TextStringObject
 from pypdf.generic import DecodedStreamObject
+
+
+class FrozenPilotCorpusTests(SimpleTestCase):
+    """Expectations were authored before extraction; fixture bytes are immutable."""
+
+    def test_public_extractor_matches_twelve_frozen_synthetic_cases(self):
+        corpus = Path(__file__).resolve().parents[2] / 'evals' / 'documents' / 'pilot-20261003'
+        raw_expectations = (corpus / 'expectations.json').read_bytes()
+        cases = json.loads(raw_expectations)['cases']
+        manifest = json.loads((corpus / 'files' / 'manifest.json').read_text(encoding='utf-8'))
+        self.assertEqual(hashlib.sha256(raw_expectations).hexdigest(), manifest['expectations_sha256'])
+        files = {item['file']: item for item in manifest['files']}
+        self.assertEqual(set(files), {case['file'] for case in cases})
+        for case in cases:
+            with self.subTest(case=case['id']):
+                raw = (corpus / 'files' / case['file']).read_bytes()
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), files[case['file']]['sha256'])
+                document = extract_document(SimpleUploadedFile(case['file'], raw))
+                self.assertEqual(document.status, case['status'])
+                self.assertEqual(set(document.warnings), set(case['warnings']))
+                if 'units_total' in case:
+                    self.assertEqual(document.units_total, case['units_total'])
+                for phrase in case['contains']:
+                    self.assertIn(phrase, document.text)
+                for phrase in case.get('not_contains', []):
+                    self.assertNotIn(phrase, document.text)
+                for phrase in case.get('fragments_not_contains', []):
+                    self.assertNotIn(phrase, str(document.fragments))
+                if case['evidence_locator']:
+                    self.assertIn(case['evidence_locator'], [item['locator'] for item in document.fragments])
 
 
 def inline_image_pdf(image=None, nested=False):
@@ -484,6 +518,39 @@ class FidelityTests(SimpleTestCase):
 
 class DocumentHTTPTests(ChatFixture):
     configure = test_pipeline.PipelineTests.configure
+
+    def test_frozen_unreadable_and_partial_documents_block_all_send_entries(self):
+        corpus = Path(__file__).resolve().parents[2] / 'evals' / 'documents' / 'pilot-20261003' / 'files'
+        for filename, status in [('simulated-scan.pdf', 'partial'), ('blank.pdf', 'unreadable'),
+                                 ('formula-uncached.xlsx', 'partial')]:
+            for path in ('/chat/', '/chat/send/', '/api/chat/send/'):
+                with self.subTest(file=filename, path=path):
+                    result = self.send(path, 'Read the full document',
+                        file=SimpleUploadedFile(filename, (corpus / filename).read_bytes())).json()
+                    self.assertEqual(result['error_type'], 'input_unreadable')
+                    self.assertEqual(result['receipt']['coverage']['status'], status)
+                    self.provider.assert_not_called()
+                    self.http.assert_not_called()
+
+    def test_frozen_final_page_clause_survives_all_send_entries_with_exact_citation(self):
+        self.configure()
+        corpus = Path(__file__).resolve().parents[2] / 'evals' / 'documents' / 'pilot-20261003' / 'files'
+        quote = 'Clausula final: el preaviso es de 17 dias.'
+        self.provider.return_value = ChatResponse(json.dumps({'claims': [{'text': 'El preaviso es de 17 dias.',
+            'citations': [{'id': 'S2', 'quote': quote}]}]}), 30, 'synthetic-v1', 'stop', 20, 10)
+        for path in ('/chat/', '/chat/send/', '/api/chat/send/'):
+            with self.subTest(path=path):
+                self.provider.reset_mock()
+                request_id = uuid.uuid4()
+                response = self.send(path, 'What is the final notice period?', request_id=str(request_id),
+                    file=SimpleUploadedFile('blank-and-final-clause.pdf', (corpus / 'blank-and-final-clause.pdf').read_bytes()))
+                self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+                prompt = Prompt.objects.get(request_id=request_id)
+                self.assertEqual(prompt.status, 'completed')
+                self.assertIn(quote, str(self.provider.call_args))
+                saved = prompt.response.evidence['items'][0]
+                self.assertEqual(saved['locator'], 'page:3')
+                self.assertEqual(saved['excerpt'], quote)
 
     def test_decimal_numbering_never_restart_reaches_the_generator_and_cited_evidence(self):
         self.configure()
