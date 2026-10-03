@@ -2482,6 +2482,7 @@ def alert_resolve(request, pk):
 
 
 @security_required
+@require_POST
 def alert_unresolve(request, pk):
     """Marks an alert as unresolved."""
     # Get user's company

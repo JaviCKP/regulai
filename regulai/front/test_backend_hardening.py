@@ -290,3 +290,18 @@ class BackendHardeningTests(TestCase):
         self.assertFalse(alert.resolved)
         self.assertEqual(self.client.post(reverse('front:engine_toggle', args=[credential.pk])).status_code, 302)
         self.assertEqual(self.client.post(reverse('front:alert_resolve', args=[alert.pk])).status_code, 302)
+
+    def test_alert_unresolve_requires_post_csrf_and_preserves_get_state(self):
+        alert = Alert.objects.get(company=self.company)
+        alert.resolved = True
+        alert.save()
+        url = reverse('front:alert_unresolve', args=[alert.pk])
+        self.assertEqual(self.client.get(url).status_code, 405)
+        alert.refresh_from_db()
+        self.assertTrue(alert.resolved)
+        secure = Client(enforce_csrf_checks=True)
+        secure.force_login(self.staff)
+        self.assertEqual(secure.post(url).status_code, 403)
+        self.assertEqual(self.client.post(url).status_code, 302)
+        alert.refresh_from_db()
+        self.assertFalse(alert.resolved)
