@@ -28,3 +28,6 @@ Verificación final ASTRA `12ca58d`: **302 tests OK en 66,767 s**; cinco gates e
 
 
 Entrega documental R integrada: `cacae92` documenta contratos/límites efectivos, arranque, unidades USD/millón y rotación de claves; `f65da23` actualiza estado, tareas e índices de evidencia. Revisión independiente aún pendiente; mantener in-review. Comprobación R: 22 documentos, 234 enlaces relativos existentes, 77 commits resueltos, doce nombres exactos de regresión, módulos citados existentes, nueve hashes de informes originales contra blobs Git y cinco logs finales contra gates.json; git diff --check sin incidencias.
+
+
+Revisión R: Spec sin hallazgos; Standards reprodujo que una política válida puede completar el envío sin ObfuscationConfig activa. La documentación ahora condiciona la transformación a servicios activos de la empresa y detalla su configuración/activación, permiso de destino, cota bajo presupuesto y contrato JSON. D2 humana se conserva; no se añadió una obligación global al código. Mantener in-review hasta verificar esta corrección y cerrar por ASTRA.

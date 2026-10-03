@@ -8,9 +8,9 @@ Las doce regresiones de [ReviewRegressionTests](../../regulai/front/test_review_
 
 | Fallo | Estado | Comportamiento y prueba | Commit integrado |
 | --- | --- | --- | --- |
-| B1: historial y Jev en claro | Hecho | Todo segmento autorizado sale enmascarado a los demás destinos; `b01_every_turn_and_jev_receive_masked_content` | `e49cc6e`, integración `eb8fde7` |
+| B1: historial y Jev en claro | Hecho | Con enmascarado activo, todo segmento autorizado sale enmascarado a los demás destinos; `b01_every_turn_and_jev_receive_masked_content` | `e49cc6e`, integración `eb8fde7` |
 | B2: alertas de otra empresa | Hecho | Notificaciones por empresa y rol autorizado; `b02_alert_notifications_are_isolated_by_company` | `cd75ed3` |
-| B3: máscara sin precio bajo presupuesto | Hecho | Cota ausente rechaza antes de cualquier salida; `b03_missing_mask_cost_bound_is_rejected_before_any_external_call` | `5a14086`, `f80a14a`, `e49cc6e` |
+| B3: máscara sin precio bajo presupuesto | Hecho | Con máscara activa y presupuesto, cota ausente rechaza antes de cualquier salida; `b03_missing_mask_cost_bound_is_rejected_before_any_external_call` | `5a14086`, `f80a14a`, `e49cc6e` |
 | B4: citas de fuentes enmascaradas | Hecho | Resolución sobre los fragmentos enviados; `b04_document_citations_resolve_the_masked_source` | `e49cc6e`, `e657410` |
 | B5: JSON visible en advisory | Hecho | Prosa legible, etiqueta No verificado, evidencia vacía e historial no elegible; `b05_advisory_document_answer_is_readable_prose` | `e49cc6e`, `638ed0f` |
 | B6: tamaño de juez rechazado tras generar | Hecho | Cota del peor estado antes de generar, sin recorte; `b06_oversized_judge_state_is_rejected_before_generation` | `e657410` |
@@ -27,7 +27,7 @@ Cada módulo concentra comportamiento detrás de una interfaz concreta. La polí
 
 | Carril | Estado | Cambio y evidencia observable | Commits integrados |
 | --- | --- | --- | --- |
-| P: privacidad, estado y dinero | Hecho | Lote estructurado, pares completos de historial, presupuesto previo, cancelación sin crear mensajes, reintento con respuesta/control concreto, motor manual acotado y timeout; `front.test_pipeline_privacy` cruza las tres entradas y transportes sintéticos | `e49cc6e`, `35f8ff0`, `e657410`, `7e21faf`, `2b363e5`, `7f60127`, `eb8fde7` |
+| P: privacidad, estado y dinero | Hecho | Lote estructurado con máscaras activas, pares completos de historial, presupuesto previo, cancelación sin crear mensajes, reintento con respuesta/control concreto, motor manual acotado y timeout; `front.test_pipeline_privacy` cruza las tres entradas y transportes sintéticos | `e49cc6e`, `35f8ff0`, `e657410`, `7e21faf`, `2b363e5`, `7f60127`, `eb8fde7` |
 | D: documentos | Hecho; validación Office real pendiente | Cuatro estados, disclosures, CSV/codificaciones, fórmulas con caché y expresión YARA, decimal multinivel, formatos numéricos legibles y bloques; `front.test_documents` y `front.test_document_fidelity` | `c14e5fa`–`b61d11d`, `9f58dbf` |
 | V: fuentes y conectores | Hecho; calidad real pendiente | Alias S1, hasta 30 afirmaciones, extractos desde 1, mínimo de cita, JSON por capacidad y reasoning explícito; `front.test_verification`, `front.test_connectors` y `front.test_jev` | `ea9798e`, `f848a7c`, `dd85236`, `20cc061`, `e997230`, `e042461` |
 | C: clasificación y simulador | Hecho; calibración pendiente | Ordinal, unknown configurable, coherencia, señales desde 0,2, avisos, calidad de tareas plausibles y simulador compartido; `front.test_classification` | `5a14086`, `12d80fe`, `35f8ff0` |
@@ -88,11 +88,13 @@ Jev/juez reciben contexto y fuentes completos, sin muestreo. Antes de generar se
 
 ## Enmascarado y presupuesto
 
-YARA examina primero el original, incluidas fórmulas. Decisión y consentimiento preceden al enmascarado. El servicio recibe un array JSON serializado **dentro de su campo `text: str`**. Debe devolver `masked` como string de un array JSON de strings de igual longitud y orden; debe preservar estructura y coherencia dentro del lote. Una respuesta incompatible falla cerrada.
+**Condición operativa:** se utilizan únicamente las ObfuscationConfig activas de la empresa. La transformación de entrada y respuesta requiere al menos una configuración activa. Si no hay ninguna, su ausencia no bloquea por sí sola: una política que permita el destino puede enviar el contenido autorizado sin transformar. La decisión D2 aprobada necesita [servicio configurado y activado](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa) para ser una protección efectiva; no existe una obligación global de activar enmascarado impuesta por el código.
 
-El lote cubre petición, sistemas de empresa/departamento, historial elegido, fragmentos y localizadores. Jev y el generador reciben esas versiones; la respuesta también se enmascara antes del juez y del historial. Las citas se validan contra lo realmente enviado **antes de enmascarar la respuesta**, y se comprueban de nuevo después: así una cita inventada no se convierte en un placeholder que la haga parecer literal.
+YARA examina primero el original, incluidas fórmulas. Con enmascarado activo, decisión y consentimiento preceden a su llamada. El servicio recibe un array JSON serializado **dentro de su campo `text: str`**. Debe devolver `masked` como string de un array JSON de strings de igual longitud y orden; debe preservar estructura y coherencia dentro del lote. Una respuesta incompatible falla cerrada.
 
-Con presupuesto configurado, `masking.max_call_cost` debe ser explícito, incluso `"0"` para servicio propio. Falta de cota impide cualquier llamada y simulación semántica. Un máximo positivo es reserva, no precio real inventado. Todos los importes usan Decimal; precios JSON/modelo son USD por millón de tokens. Capacidad, calidad, cuotas o precio desconocidos no equivalen a cero. Las cuotas económicas generales por organización no están implementadas; el ledger histórico de smoke es específico de esos ensayos. La sobrecarga interna no publicada del proveedor permanece como hipótesis del estimador; se cuenta el envelope público Anthropic.
+Con máscaras activas, el lote cubre petición, sistemas de empresa/departamento, historial elegido, fragmentos y localizadores. Jev y el generador reciben esas versiones; la respuesta también se enmascara antes del juez y del historial. Las citas se validan contra lo realmente enviado **antes de enmascarar la respuesta**, y se comprueban de nuevo después: así una cita inventada no se convierte en un placeholder que la haga parecer literal.
+
+Con enmascarado activo y presupuesto configurado, `masking.max_call_cost` debe ser explícito, incluso `"0"` para servicio propio. Falta de cota impide cualquier llamada y simulación semántica. Un máximo positivo es reserva, no precio real inventado. Todos los importes usan Decimal; precios JSON/modelo son USD por millón de tokens. Capacidad, calidad, cuotas o precio desconocidos no equivalen a cero. Las cuotas económicas generales por organización no están implementadas; el ledger histórico de smoke es específico de esos ensayos. La sobrecarga interna no publicada del proveedor permanece como hipótesis del estimador; se cuenta el envelope público Anthropic.
 
 ## Arranque, recursos y pendientes reales
 

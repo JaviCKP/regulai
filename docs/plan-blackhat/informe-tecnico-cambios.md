@@ -12,7 +12,7 @@
 
 1. El servicio compartido aplica política, aislamiento y consentimiento a las tres entradas HTTP.
 2. Las correcciones cierran las doce regresiones B/C y los hallazgos técnicos posteriores de revisores independientes.
-3. Cobertura, fuentes enmascaradas, límites efectivos y costes desconocidos se declaran sin recortes silenciosos.
+3. Cobertura, límites y costes desconocidos se declaran; las fuentes se enmascaran cuando hay servicios activos de la empresa.
 4. Arranque exige política explícita; borrador y activación se separan, y las claves tienen recuperación offline documentada.
 5. La evidencia local es sintética; calibración humana, Office real y E2E con proveedores vivos siguen pendientes.
 
@@ -92,7 +92,7 @@ La configuración de IA se valida con Pydantic. `evaluate_policy` devuelve una d
 
 **Decisión y motivo.** Se eligió un servicio dentro de Django, con funciones concretas para política, extracción, ruta y verificación. No se añadieron microservicios, colas ni un motor de workflows. El objetivo era que un arreglo en el control de salida afectase a las tres entradas y pudiera probarse en sus interfaces HTTP.
 
-**Qué hay ahora.** El servicio comprueba texto, contexto y archivo; registra la decisión; y vuelve a comprobar autorización, política y destino antes de las salidas externas. Esto alcanza al generador, a Jev y a la integración de enmascarado existente cuando se utiliza.
+**Qué hay ahora.** El servicio comprueba texto, contexto y archivo; registra la decisión; y vuelve a comprobar autorización, política y destino antes de las salidas externas. Esto alcanza al generador, a Jev y a la integración de enmascarado existente cuando se utiliza. Enmascarar entrada, contexto, historial, fuentes y respuesta requiere ObfuscationConfig activa de esa empresa. Sin ninguna activa, una política válida puede permitir enviar contenido sin transformar; véase [configuración y activación del servicio](arranque-y-demo.md#activar-el-enmascarado-de-la-empresa).
 
 **Problema resuelto y evidencia.** El error de validación deja de ser una vía para continuar al proveedor. `front.test_chat_flow` y `front.test_pipeline` comprueban fallos, bloqueos y las tres entradas con proveedores simulados. La ausencia de coincidencias YARA, por sí sola, no concede permiso de salida.
 
@@ -193,7 +193,7 @@ Cuando el modo o el documento exige evaluación semántica, tras las comprobacio
 
 **Decisión y motivo.** Separar comprobaciones deterministas de juicio semántico: que un extracto exista no demuestra que respalde la afirmación. Tampoco se utiliza una autonota del generador como prueba de corrección.
 
-**Qué hay ahora.** Modos `local`, `advisory` y `enforce`, con alcance registrado. En documentos se exige la comprobación semántica del flujo; en modo `advisory` puede entregarse contenido con controles locales correctos aunque la semántica no esté aprobada, dejando el estado indicado. No se etiqueta como verificado ni se incorpora como historial elegible. La evidencia de la respuesta se conserva como aprobada cuando la verificación pasa. Las citas se validan antes del enmascarado de respuesta para impedir que un placeholder blanquee una cita inventada, y se comprueban de nuevo después.
+**Qué hay ahora.** Modos `local`, `advisory` y `enforce`, con alcance registrado. En documentos se exige la comprobación semántica del flujo; en modo `advisory` puede entregarse contenido con controles locales correctos aunque la semántica no esté aprobada, dejando el estado indicado. No se etiqueta como verificado ni se incorpora como historial elegible. La evidencia de la respuesta se conserva como aprobada cuando la verificación pasa. Con enmascarado activo, las citas se validan antes del enmascarado de respuesta para impedir que un placeholder blanquee una cita inventada, y se comprueban de nuevo después.
 
 **Problema resuelto y evidencia.** Se detectan los fallos cubiertos por `front.test_verification` y `front.test_pipeline`: truncamiento, citas inexistentes, formatos inválidos y reacción ante rechazo del juez. Las dos generaciones y su coste se registran. La corrección factual universal y la mejora real de la alternativa fuerte siguen sin demostrarse.
 

@@ -20,7 +20,7 @@ Adaptación del emisor offline: citas prefijadas cortas se amplían con texto li
 
 ## Actualización — 3 de octubre de 2026
 
-Consumidores P/O integrados: alias de servidor, citas sobre fuentes enmascaradas, parámetros por capacidad y reasoning persistido. Spec V no encontró otro defecto técnico. Unidades documentadas en [Jev](../jev-gateway.md): USD por millón; snapshot histórico, no precio actual. Calidad semántica general/E2E vivo pendientes.
+Consumidores P/O integrados: alias de servidor, citas sobre fuentes realmente enviadas (enmascaradas con servicios activos), parámetros por capacidad y reasoning persistido. Spec V no encontró otro defecto técnico. Unidades documentadas en [Jev](../jev-gateway.md): USD por millón; snapshot histórico, no precio actual. Calidad semántica general/E2E vivo pendientes.
 
 [Resultado técnico actual y pendientes](../informe-correcciones-community.md); [registro consolidado](../estado-ejecucion.md).
 

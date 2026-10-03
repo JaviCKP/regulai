@@ -11,7 +11,7 @@ Especificación y propiedad: [contratos de correcciones](../correcciones-communi
 
 ## Verificación observada en la integración inicial (histórico)
 
-Integrado mediante merge `eb8fde7`, conservando los commits pequeños de P (`e49cc6e`–`3e5e89e`). Enmascarado conjunto, verificación sobre fuentes enviadas, decisiones conservadoras, consentimiento renovable, límite previo del juez, reintento con controles concretos, motor manual acotado, historial por pares/bytes y plazos efectivos. La expansión del historial por el enmascarador también se rechaza si supera su cota.
+Integrado mediante merge `eb8fde7`, conservando los commits pequeños de P (`e49cc6e`–`3e5e89e`). Enmascarado conjunto cuando hay servicios activos de la empresa, verificación sobre fuentes enviadas, decisiones conservadoras, consentimiento renovable, límite previo del juez, reintento con controles concretos, motor manual acotado, historial por pares/bytes y plazos efectivos. La expansión del historial por el enmascarador también se rechaza si supera su cota.
 
 ASTRA volvió a ejecutar las doce regresiones finales B1–B10/C1–C2 contra el producto `4400f0b`: doce AssertionError, cero errores y cero omitidas. Siete pruebas adicionales de P reprodujeron siete fallos de aserción en la base (cancelación, plazo, roles y feedback, motor manual, 503 incierto, logging y rúbricas). El falso positivo por transformar una cita inventada durante el enmascarado se reprodujo y corrigió antes de integrar.
 

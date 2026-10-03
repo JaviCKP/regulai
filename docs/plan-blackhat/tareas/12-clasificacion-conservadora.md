@@ -20,7 +20,7 @@ Compatibilidad: si no se configura call_timeout_seconds, se limita al deadline a
 
 ## Actualización — 3 de octubre de 2026
 
-Pipeline integrado y revisión C cerrada en `d4e1313`, `9840bd6`: calidad mínima de una tarea plausible e instrucción de aclaración ante avisos. C1/C2 pasan sin expectedFailure; simulador semántico enmascarado integrado. Clasificación local no activa Jev por auto. Calibración humana pendiente.
+Pipeline integrado y revisión C cerrada en `d4e1313`, `9840bd6`: calidad mínima de una tarea plausible e instrucción de aclaración ante avisos. C1/C2 pasan sin expectedFailure; simulador semántico con enmascarado integrado cuando hay servicios activos. Clasificación local no activa Jev por auto. Calibración humana pendiente.
 
 [Resultado técnico actual y pendientes](../informe-correcciones-community.md); [registro consolidado](../estado-ejecucion.md).
 
