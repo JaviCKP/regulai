@@ -448,6 +448,7 @@ def _parse_docx(document, content):
 
 def _parse_pdf(document, content):
     from pypdf import PdfReader, filters
+    from pypdf.generic import ContentStream
 
     remaining = MAX_EXPANDED_BYTES
 
@@ -486,7 +487,9 @@ def _parse_pdf(document, content):
         if hasattr(resources, "get_object"):
             resources = resources.get_object()
         locator = f"page:{number + 1}"
-        image_count = 0
+        # Inspect drawing operators only; page.images would decode image pixels.
+        contents = page.get_contents()
+        image_count = sum(operator == b"INLINE IMAGE" for _, operator in contents.operations) if contents is not None else 0
         pending = [(resources, 0)]
         seen = set()
         while pending:
@@ -503,6 +506,7 @@ def _parse_pdf(document, content):
                 if item.get("/Subtype") == "/Image":
                     image_count += 1
                 elif item.get("/Subtype") == "/Form":
+                    image_count += sum(operator == b"INLINE IMAGE" for _, operator in ContentStream(item, reader).operations)
                     nested = item.get("/Resources", {})
                     pending.append((nested.get_object() if hasattr(nested, "get_object") else nested, depth + 1))
         if image_count:

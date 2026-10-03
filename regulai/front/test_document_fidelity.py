@@ -1,6 +1,7 @@
 """Public extraction regressions; fixtures contain synthetic content only."""
 import io
 import zipfile
+import zlib
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.workbook.properties import CalcProperties
@@ -20,6 +21,29 @@ from front import test_documents
 from front.test_chat_flow import ChatFixture
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import ArrayObject, DictionaryObject, NameObject, TextStringObject
+from pypdf.generic import DecodedStreamObject
+
+
+def inline_image_pdf(image=None, nested=False):
+    writer = PdfWriter(clone_from=PdfReader(io.BytesIO(test_documents.DocumentTests().pdf(["Readable evidence"]))))
+    page = writer.pages[0]
+    stream = DecodedStreamObject()
+    image = image if image is not None else b"BI /W 1 /H 1 /CS /RGB /BPC 8 ID \xff\x00\x00 EI"
+    stream.set_data(b"q 10 0 0 10 0 0 cm " + image + b" Q\n")
+    if nested:
+        stream[NameObject("/Subtype")] = NameObject("/Form")
+        stream[NameObject("/Resources")] = DictionaryObject()
+        page["/Resources"][NameObject("/XObject")] = DictionaryObject({
+            NameObject("/InlineForm"): writer._add_object(stream)})
+        body = DecodedStreamObject()
+        body.set_data(page.get_contents().get_data() + b"\n/InlineForm Do\n")
+    else:
+        body = DecodedStreamObject()
+        body.set_data(page.get_contents().get_data() + b"\n" + stream.get_data())
+    page[NameObject("/Contents")] = writer._add_object(body)
+    output = io.BytesIO()
+    writer.write(output)
+    return output.getvalue()
 
 
 class FidelityTests(SimpleTestCase):
@@ -243,6 +267,24 @@ class FidelityTests(SimpleTestCase):
         self.assertEqual(linked.status, "complete")
         self.assertIn("Linked text", linked.text)
 
+    def test_pdf_inline_images_are_declared_with_their_page(self):
+        document = self.extract("inline.pdf", inline_image_pdf())
+        self.assertEqual(document.status, "complete_text_only")
+        self.assertIn("Readable evidence", document.text)
+        self.assertEqual(document.disclosures, [
+            {"code": "images_unread", "count": 1, "locators": ["page:1"]}])
+
+    def test_pdf_inline_images_in_forms_are_declared_without_expanding_pixels(self):
+        image = (b"BI /W 33554433 /H 1 /CS /G /BPC 8 /F /Fl ID " +
+                 zlib.compress(b"x" * 33554433) + b" EI")
+        for nested in (False, True):
+            with self.subTest(nested=nested):
+                document = self.extract("compressed-inline.pdf", inline_image_pdf(image=image, nested=nested))
+                self.assertEqual(document.status, "complete_text_only")
+                self.assertIn("Readable evidence", document.text)
+                self.assertEqual(document.disclosures, [
+                    {"code": "images_unread", "count": 1, "locators": ["page:1"]}])
+
     def test_pdf_declares_images_forms_attachments_and_detects_scan_pages(self):
         fixture = test_documents.DocumentTests()
         visible = self.extract("logo.pdf", fixture.pdf(["Readable"], image=True))
@@ -346,6 +388,20 @@ class FidelityTests(SimpleTestCase):
 
 
 class DocumentHTTPTests(ChatFixture):
+    def test_inline_pdf_requires_coverage_consent_before_all_three_send_entries(self):
+        self.company.ai_config["destinations"]["internal"].append("jev")
+        self.company.jev_api_key = "synthetic-jev-key"
+        self.company.save()
+        for path in ("/chat/", "/chat/send/", "/api/chat/send/"):
+            with self.subTest(path=path):
+                response = self.send(path, "Summarize", file=SimpleUploadedFile("inline.pdf", inline_image_pdf()))
+                self.assertEqual(response.json()["status"], "pending_consent")
+                self.assertEqual(response.json()["consent_reason"], "coverage_incomplete")
+                self.assertEqual(response.json()["receipt"]["coverage"]["disclosures"], [
+                    {"code": "images_unread", "count": 1, "locators": ["page:1"]}])
+                self.provider.assert_not_called()
+                self.http.assert_not_called()
+
     def test_partial_document_blocks_all_three_send_entries_without_network(self):
         for path in ("/chat/", "/chat/send/", "/api/chat/send/"):
             with self.subTest(path=path):
