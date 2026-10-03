@@ -25,6 +25,33 @@ NAVIGATION = {
 
 
 class ResourceTests(SimpleTestCase):
+    def test_git_checkout_preserves_every_pinned_asset_with_autocrlf(self):
+        git = shutil.which('git')
+        self.assertIsNotNone(git, 'Git is required to validate checkout byte preservation.')
+        with tempfile.TemporaryDirectory() as directory:
+            source, checkout = Path(directory) / 'source', Path(directory) / 'checkout'
+            source.mkdir()
+            shutil.copytree(ROOT / 'regulai/static/vendor', source / 'regulai/static/vendor')
+            (source / 'scripts').mkdir()
+            shutil.copyfile(ROOT / 'scripts/vendor_assets.py', source / 'scripts/vendor_assets.py')
+            if (ROOT / '.gitattributes').exists():
+                shutil.copyfile(ROOT / '.gitattributes', source / '.gitattributes')
+            commands = [
+                [git, 'init', str(source)],
+                [git, '-C', str(source), 'config', 'core.autocrlf', 'true'],
+                [git, '-C', str(source), 'add', '.'],
+                [git, '-C', str(source), '-c', 'user.name=Offline checkout',
+                    '-c', 'user.email=offline@example.invalid', 'commit', '-m', 'Pin offline fixture'],
+                [git, 'clone', '--local', '-c', 'core.autocrlf=true', str(source), str(checkout)],
+            ]
+            for command in commands:
+                result = subprocess.run(command, text=True, capture_output=True, timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr)
+            result = subprocess.run([__import__('sys').executable, str(checkout / 'scripts/vendor_assets.py'), '--check'],
+                                    text=True, capture_output=True, timeout=15)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('Verified 7 local UI assets.', result.stdout)
+
     def test_bad_download_hash_preserves_every_existing_asset(self):
         namespace = runpy.run_path(str(ROOT / 'scripts/vendor_assets.py'))
         main = namespace['main']
