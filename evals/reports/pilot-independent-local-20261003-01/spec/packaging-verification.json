@@ -1,0 +1,111 @@
+{
+  "commit": "d63731a9c5dfda27c3dc504c295422502383d2f1",
+  "runtime_baseline": "0957df45362bc7cbf41c154bb13514d58901763a",
+  "core_autocrlf": true,
+  "corpus_hash_checks": [
+    {
+      "path": "expectations.json",
+      "sha256": "f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c",
+      "expected": "f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c",
+      "equal": true
+    },
+    {
+      "path": "generate_corpus.py",
+      "sha256": "c58428a1a343eca2a40daa70964e9427a2586f0b96ba3eed6d4b886a61043490",
+      "expected": "c58428a1a343eca2a40daa70964e9427a2586f0b96ba3eed6d4b886a61043490",
+      "equal": true
+    },
+    {
+      "path": "files/blank-and-final-clause.pdf",
+      "sha256": "ca384838c0eebe690b332c75ebcf1851d1b55c224d520a19bc73f243787d29bd",
+      "expected": "ca384838c0eebe690b332c75ebcf1851d1b55c224d520a19bc73f243787d29bd",
+      "equal": true
+    },
+    {
+      "path": "files/blank.pdf",
+      "sha256": "b3e44df802e407df3d586bb3d4b3a7db17bc868565f04a061077f7d8de3e44bd",
+      "expected": "b3e44df802e407df3d586bb3d4b3a7db17bc868565f04a061077f7d8de3e44bd",
+      "equal": true
+    },
+    {
+      "path": "files/formula-cached.xlsx",
+      "sha256": "8a1dd698840f993b83f733934ec5c15e621637559cf5640c908348a59a83918d",
+      "expected": "8a1dd698840f993b83f733934ec5c15e621637559cf5640c908348a59a83918d",
+      "equal": true
+    },
+    {
+      "path": "files/formula-uncached.xlsx",
+      "sha256": "df35bcfc0dc0e40ee9943fd699a5a2f7b03d9e04e9ea25f6213b3a787d033cfa",
+      "expected": "df35bcfc0dc0e40ee9943fd699a5a2f7b03d9e04e9ea25f6213b3a787d033cfa",
+      "equal": true
+    },
+    {
+      "path": "files/multilevel-numbering.docx",
+      "sha256": "1f52b6eb10a7a69cf559ea03ce644326e35b408feb297bb23b8693f357849967",
+      "expected": "1f52b6eb10a7a69cf559ea03ce644326e35b408feb297bb23b8693f357849967",
+      "equal": true
+    },
+    {
+      "path": "files/quoted.csv",
+      "sha256": "0812cab7ad62db52992ca98e68fd576d51525769b255bd7cd3ad61e7ed624640",
+      "expected": "0812cab7ad62db52992ca98e68fd576d51525769b255bd7cd3ad61e7ed624640",
+      "equal": true
+    },
+    {
+      "path": "files/simulated-scan.pdf",
+      "sha256": "7170f6ae58b93ddffb2c5e0688886d8e377537bac563ada5ff9242ebfe8ff9d2",
+      "expected": "7170f6ae58b93ddffb2c5e0688886d8e377537bac563ada5ff9242ebfe8ff9d2",
+      "equal": true
+    },
+    {
+      "path": "files/table.pdf",
+      "sha256": "7063a03d9592ae9a08501279cdcc58db8e02b2ff45e0206d5fea29af9c781c53",
+      "expected": "7063a03d9592ae9a08501279cdcc58db8e02b2ff45e0206d5fea29af9c781c53",
+      "equal": true
+    },
+    {
+      "path": "files/text-and-image.docx",
+      "sha256": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+      "expected": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+      "equal": true
+    },
+    {
+      "path": "files/text-and-image.pdf",
+      "sha256": "1378588570d6a15a9678309349c06059e5712a382d07d27feec1dee0aaf82d52",
+      "expected": "1378588570d6a15a9678309349c06059e5712a382d07d27feec1dee0aaf82d52",
+      "equal": true
+    },
+    {
+      "path": "files/textual.pdf",
+      "sha256": "1ec3db23c6fab0e63f565f054173b7a78b41610d03e68a38b3995e7bbb411753",
+      "expected": "1ec3db23c6fab0e63f565f054173b7a78b41610d03e68a38b3995e7bbb411753",
+      "equal": true
+    },
+    {
+      "path": "files/tracked-changes.docx",
+      "sha256": "9d70611e1c85e7a10ab6cbd5bcd773b07ecc4e41c7528ebe25fdd80686163cb4",
+      "expected": "9d70611e1c85e7a10ab6cbd5bcd773b07ecc4e41c7528ebe25fdd80686163cb4",
+      "equal": true
+    }
+  ],
+  "approval_status": "pending",
+  "approval_checks": [
+    {
+      "bank": "pilot-real",
+      "sha256": "12aecafee1351be7584791db4f4e0d22d9f522abb7552bdce7af804e2525c1ed",
+      "bound_to_pending_approval": true,
+      "detector_version": "regulai-local-v2"
+    },
+    {
+      "bank": "pilot-human",
+      "sha256": "82e94e25bbf0ea512e82c925884e57ca85a8cd6b693be86907ecd9c31f349665",
+      "bound_to_pending_approval": true,
+      "detector_version": "regulai-local-v2"
+    }
+  ],
+  "runtime_drift": [],
+  "network_calls": 0,
+  "api_spend_usd": "0",
+  "human_participants": 0,
+  "passed": true
+}

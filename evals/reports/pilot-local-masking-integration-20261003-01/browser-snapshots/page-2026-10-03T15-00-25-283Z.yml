@@ -1,0 +1,136 @@
+- generic [ref=f13e2]:
+  - complementary [ref=f13e3]:
+    - generic [ref=f13e4]:
+      - generic [ref=f13e5]:
+        - link "regulAI regulAI" [ref=f13e6] [cursor=pointer]:
+          - /url: /
+          - img "regulAI" [ref=f13e7]
+          - generic [ref=f13e8]: regulAI
+        - text: 
+      - navigation [ref=f13e9]:
+        - list [ref=f13e10]:
+          - listitem [ref=f13e11]: Home
+          - listitem [ref=f13e12]:
+            - link "Home" [ref=f13e13] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f13e19]:
+            - link "Chat" [ref=f13e20] [cursor=pointer]:
+              - /url: /chat/
+          - listitem [ref=f13e26]: Security
+          - listitem [ref=f13e27]:
+            - link "Dashboard" [ref=f13e28] [cursor=pointer]:
+              - /url: /dashboard/
+          - listitem [ref=f13e36]:
+            - link "Prompts" [ref=f13e37] [cursor=pointer]:
+              - /url: /prompts/
+          - listitem [ref=f13e43]:
+            - link "Rules Groups" [ref=f13e44] [cursor=pointer]:
+              - /url: /rules/groups/
+          - listitem [ref=f13e51]:
+            - link "Rules" [ref=f13e52] [cursor=pointer]:
+              - /url: /rules/
+          - listitem [ref=f13e59]:
+            - link "Rules Community" [ref=f13e60] [cursor=pointer]:
+              - /url: /rules/community/
+          - listitem [ref=f13e69]:
+            - link "Alerts" [ref=f13e70] [cursor=pointer]:
+              - /url: /alerts/
+          - listitem [ref=f13e77]:
+            - link "Obfuscation" [ref=f13e78] [cursor=pointer]:
+              - /url: /obfuscation/
+          - listitem [ref=f13e85]: Settings
+          - listitem [ref=f13e86]:
+            - link "Company" [ref=f13e87] [cursor=pointer]:
+              - /url: /settings/company/
+          - listitem [ref=f13e95]:
+            - link "Users" [ref=f13e96] [cursor=pointer]:
+              - /url: /settings/users/
+          - listitem [ref=f13e105]:
+            - link "Departments" [ref=f13e106] [cursor=pointer]:
+              - /url: /settings/departments/
+          - listitem [ref=f13e113]:
+            - link "AI Engines" [ref=f13e114] [cursor=pointer]:
+              - /url: /settings/engines/
+          - listitem [ref=f13e122]:
+            - link "Audit Log" [ref=f13e123] [cursor=pointer]:
+              - /url: /settings/audit-logs/
+          - listitem [ref=f13e130]:
+            - link "Policy simulator" [ref=f13e131] [cursor=pointer]:
+              - /url: /policies/simulator/
+  - generic [ref=f13e138]:
+    - banner [ref=f13e139]:
+      - navigation [ref=f13e140]:
+        - list [ref=f13e141]:
+          - text: 
+          - listitem [ref=f13e142]:
+            - link "" [ref=f13e143] [cursor=pointer]:
+              - /url: /alerts/
+        - list [ref=f13e146]:
+          - listitem [ref=f13e147]:
+            - generic [ref=f13e148]:
+              - generic [ref=f13e149]: local-privacy-ui
+              - generic [ref=f13e150]: Local privacy visual fixture
+          - listitem [ref=f13e151]:
+            - link [ref=f13e152] [cursor=pointer]:
+              - /url: /profile/
+            - text:  
+          - listitem [ref=f13e153]:
+            - link "" [ref=f13e154] [cursor=pointer]:
+              - /url: /logout/
+    - generic [ref=f13e158]:
+      - generic [ref=f13e159]:
+        - generic [ref=f13e160]:
+          - heading [level=4] [ref=f13e161]
+          - paragraph [ref=f13e167]: Configure PII and secrets obfuscation for outgoing prompts
+        - link [ref=f13e168] [cursor=pointer]:
+          - /url: /obfuscation/create/
+      - alert [ref=f13e172]:
+        - text: Obfuscation config "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW" updated successfully.
+        - button [ref=f13e173] [cursor=pointer]
+      - generic [ref=f13e174]:
+        - generic [ref=f13e183]:
+          - heading "2" [level=3] [ref=f13e184]
+          - text: Total Configurations
+        - generic [ref=f13e193]:
+          - heading "1" [level=3] [ref=f13e194]
+          - text: Active Configurations
+      - table [ref=f13e198]:
+        - rowgroup [ref=f13e199]:
+          - row [ref=f13e200]:
+            - columnheader "Name" [ref=f13e201]
+            - columnheader "Processing location" [ref=f13e202]
+            - columnheader "Detect" [ref=f13e203]
+            - columnheader "Language" [ref=f13e204]
+            - columnheader "Status" [ref=f13e205]
+            - columnheader "Actions" [ref=f13e206]
+        - rowgroup [ref=f13e207]:
+          - row [ref=f13e208]:
+            - cell [ref=f13e209]:
+              - strong [ref=f13e214]: WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+            - cell "PasteGuard HTTP https://pasteguard.example.invalid" [ref=f13e215]:
+              - generic [ref=f13e216]: PasteGuard HTTP
+              - code [ref=f13e218]: https://pasteguard.example.invalid
+            - cell "PII & Secrets" [ref=f13e219]
+            - cell "Auto-detect" [ref=f13e221]
+            - cell "Inactive" [ref=f13e222]
+            - cell [ref=f13e224]:
+              - generic [ref=f13e225]:
+                - button [ref=f13e227] [cursor=pointer]
+                - link [ref=f13e231] [cursor=pointer]:
+                  - /url: /obfuscation/2/edit/
+                - link [ref=f13e237] [cursor=pointer]:
+                  - /url: /obfuscation/2/delete/
+          - row [ref=f13e243]:
+            - cell [ref=f13e244]:
+              - strong [ref=f13e249]: Local privacy detector
+            - cell "Local detector" [ref=f13e250]
+            - cell "PII & Secrets" [ref=f13e252]
+            - cell "Auto-detect" [ref=f13e254]
+            - cell "Active" [ref=f13e255]
+            - cell [ref=f13e257]:
+              - generic [ref=f13e258]:
+                - button [ref=f13e260] [cursor=pointer]
+                - link [ref=f13e266] [cursor=pointer]:
+                  - /url: /obfuscation/1/edit/
+                - link [ref=f13e272] [cursor=pointer]:
+                  - /url: /obfuscation/1/delete/

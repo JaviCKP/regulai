@@ -1,0 +1,40 @@
+{
+  "base": "700389c216592db1e0c8725749bb4fd02cf3fa10",
+  "base_masking_sha256": "2508742be605a0c6f74d5c4a5a4fca7860667b9bbdc139ca3b16bb502835f697",
+  "before": {
+    "backend": "local",
+    "active": true,
+    "api_url": "https://former-mask.example.invalid"
+  },
+  "after": {
+    "active": true,
+    "api_url": "https://former-mask.example.invalid"
+  },
+  "baseline_accepts_former_http": true,
+  "captured_http_for_former_local": [
+    {
+      "url": "https://former-mask.example.invalid/api/mask",
+      "payload": {
+        "text": "[\"ana.rollback@example.invalid\"]",
+        "detect": [
+          "pii",
+          "secrets"
+        ],
+        "language": "es"
+      }
+    }
+  ],
+  "http_control_active": true,
+  "http_control_captured": [
+    {
+      "url": "https://authorized-mask.example.invalid/api/mask",
+      "payload": {
+        "text": "[\"authorized synthetic control\"]",
+        "detect": [
+          "pii",
+          "secrets"
+        ]
+      }
+    }
+  ]
+}

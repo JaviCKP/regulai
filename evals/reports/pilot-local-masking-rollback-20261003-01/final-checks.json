@@ -1,0 +1,36 @@
+{
+  "commands": [
+    "rtk proxy .venv/Scripts/python.exe regulai/manage.py check --settings=regulai.test_settings",
+    "rtk proxy .venv/Scripts/python.exe regulai/manage.py makemigrations --check --dry-run --settings=regulai.test_settings",
+    "rtk git diff --check"
+  ],
+  "results": [
+    {
+      "i": 0,
+      "status": "fulfilled",
+      "chunk_id": "e80ef1",
+      "wall_time_seconds": 1.1168931,
+      "exit_code": 0,
+      "original_token_count": 32,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nSystem check identified no issues (0 silenced).\r\n"
+    },
+    {
+      "i": 1,
+      "status": "fulfilled",
+      "chunk_id": "86f58c",
+      "wall_time_seconds": 1.1465081,
+      "exit_code": 0,
+      "original_token_count": 25,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nNo changes detected\r\n"
+    },
+    {
+      "i": 2,
+      "status": "fulfilled",
+      "chunk_id": "afef2e",
+      "wall_time_seconds": 0.0000209,
+      "exit_code": 0,
+      "original_token_count": 20,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\n\n"
+    }
+  ]
+}

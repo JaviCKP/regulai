@@ -1,0 +1,213 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - link "regulAI regulAI" [ref=f1e6] [cursor=pointer]:
+          - /url: /
+          - img "regulAI" [ref=f1e7]
+          - generic [ref=f1e8]: regulAI
+        - text: 
+      - navigation [ref=f1e9]:
+        - list [ref=f1e10]:
+          - listitem [ref=f1e11]: Home
+          - listitem [ref=f1e12]:
+            - link "Home" [ref=f1e13] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f1e19]:
+            - link "Chat" [ref=f1e20] [cursor=pointer]:
+              - /url: /chat/
+          - listitem [ref=f1e26]: Security
+          - listitem [ref=f1e27]:
+            - link "Dashboard" [ref=f1e28] [cursor=pointer]:
+              - /url: /dashboard/
+          - listitem [ref=f1e36]:
+            - link "Prompts" [ref=f1e37] [cursor=pointer]:
+              - /url: /prompts/
+          - listitem [ref=f1e43]:
+            - link "Rules Groups" [ref=f1e44] [cursor=pointer]:
+              - /url: /rules/groups/
+          - listitem [ref=f1e51]:
+            - link "Rules" [ref=f1e52] [cursor=pointer]:
+              - /url: /rules/
+          - listitem [ref=f1e59]:
+            - link "Rules Community" [ref=f1e60] [cursor=pointer]:
+              - /url: /rules/community/
+          - listitem [ref=f1e69]:
+            - link "Alerts" [ref=f1e70] [cursor=pointer]:
+              - /url: /alerts/
+          - listitem [ref=f1e77]:
+            - link "Obfuscation" [ref=f1e78] [cursor=pointer]:
+              - /url: /obfuscation/
+          - listitem [ref=f1e85]: Settings
+          - listitem [ref=f1e86]:
+            - link "Company" [ref=f1e87] [cursor=pointer]:
+              - /url: /settings/company/
+          - listitem [ref=f1e95]:
+            - link "Users" [ref=f1e96] [cursor=pointer]:
+              - /url: /settings/users/
+          - listitem [ref=f1e105]:
+            - link "Departments" [ref=f1e106] [cursor=pointer]:
+              - /url: /settings/departments/
+          - listitem [ref=f1e113]:
+            - link "AI Engines" [ref=f1e114] [cursor=pointer]:
+              - /url: /settings/engines/
+          - listitem [ref=f1e122]:
+            - link "Audit Log" [ref=f1e123] [cursor=pointer]:
+              - /url: /settings/audit-logs/
+          - listitem [ref=f1e130]:
+            - link "Policy simulator" [ref=f1e131] [cursor=pointer]:
+              - /url: /policies/simulator/
+  - generic [ref=f1e138]:
+    - banner [ref=f1e139]:
+      - navigation [ref=f1e140]:
+        - list [ref=f1e141]:
+          - text: 
+          - listitem [ref=f1e142]:
+            - link "" [ref=f1e143] [cursor=pointer]:
+              - /url: /alerts/
+        - list [ref=f1e146]:
+          - listitem [ref=f1e147]:
+            - generic [ref=f1e148]:
+              - generic [ref=f1e149]: local-privacy-ui
+              - generic [ref=f1e150]: Local privacy visual fixture
+          - listitem [ref=f1e151]:
+            - link [ref=f1e152] [cursor=pointer]:
+              - /url: /profile/
+            - text:  
+          - listitem [ref=f1e153]:
+            - link "" [ref=f1e154] [cursor=pointer]:
+              - /url: /logout/
+    - generic [ref=f1e157]:
+      - generic [ref=f1e162]:
+        - img "regulAI" [ref=f1e164]
+        - generic [ref=f1e165]:
+          - heading "Welcome to regulAI, local-privacy-ui" [level=2] [ref=f1e166]
+          - paragraph [ref=f1e167]: Administrator Dashboard - Organization access and configuration
+      - generic [ref=f1e168]:
+        - generic [ref=f1e172]:
+          - generic [ref=f1e173]: 
+          - generic [ref=f1e175]:
+            - heading "0" [level=3] [ref=f1e176]
+            - text: Total Prompts
+        - generic [ref=f1e180]:
+          - generic [ref=f1e181]: 
+          - generic [ref=f1e183]:
+            - heading "0" [level=3] [ref=f1e184]
+            - text: Blocked
+        - generic [ref=f1e188]:
+          - generic [ref=f1e189]: 
+          - generic [ref=f1e191]:
+            - heading "0" [level=3] [ref=f1e192]
+            - text: Active Rules
+        - generic [ref=f1e196]:
+          - generic [ref=f1e197]: 
+          - generic [ref=f1e199]:
+            - heading "0" [level=3] [ref=f1e200]
+            - text: Pending Alerts
+      - generic [ref=f1e201]:
+        - generic [ref=f1e203]:
+          - heading "AI Chat" [level=5] [ref=f1e205]:
+            - generic [ref=f1e206]: 
+            - text: AI Chat
+          - generic [ref=f1e207]:
+            - paragraph [ref=f1e208]: Start conversations with AI while testing your security rules in real-time.
+            - generic [ref=f1e210]:
+              - generic [ref=f1e211]: 
+              - generic [ref=f1e212]:
+                - strong [ref=f1e213]: Multiple AI Engines
+                - text: Use OpenAI GPT-4, Anthropic Claude, DeepSeek, or any OpenAI-compatible API. Switch between models on the fly.
+            - generic [ref=f1e215]:
+              - generic [ref=f1e216]: 
+              - generic [ref=f1e217]:
+                - strong [ref=f1e218]: Document Analysis
+                - text: Analyze text, PDF, DOCX, CSV and XLSX. Extraction coverage and policy checks run before sending.
+            - generic [ref=f1e220]:
+              - generic [ref=f1e221]: 
+              - generic [ref=f1e222]:
+                - strong [ref=f1e223]: Document Coverage
+                - text: Unreadable or unsupported content needs a readable document before analysis can continue.
+            - link "Open AI Chat" [ref=f1e224] [cursor=pointer]:
+              - /url: /chat/
+              - generic [ref=f1e225]: 
+              - text: Open AI Chat
+        - generic [ref=f1e227]:
+          - heading "Security & Management" [level=5] [ref=f1e229]:
+            - generic [ref=f1e230]: 
+            - text: Security & Management
+          - generic [ref=f1e231]:
+            - paragraph [ref=f1e232]: Monitor all AI interactions, configure security rules with YARA patterns, and maintain complete audit trails for compliance.
+            - generic [ref=f1e233]:
+              - link " Dashboard Real-time statistics, usage trends, and analytics. Monitor prompt volume, block rates, and security events over time." [ref=f1e235] [cursor=pointer]:
+                - /url: /dashboard/
+                - generic [ref=f1e236]:
+                  - generic [ref=f1e237]: 
+                  - strong [ref=f1e238]: Dashboard
+                  - text: Real-time statistics, usage trends, and analytics. Monitor prompt volume, block rates, and security events over time.
+              - link " Prompts Review all prompts sent to AI engines. See full content, which rules triggered, and whether they were blocked." [ref=f1e240] [cursor=pointer]:
+                - /url: /prompts/
+                - generic [ref=f1e241]:
+                  - generic [ref=f1e242]: 
+                  - strong [ref=f1e243]: Prompts
+                  - text: Review all prompts sent to AI engines. See full content, which rules triggered, and whether they were blocked.
+              - link " Alerts Security incidents when rules are triggered. View severity, user details, file hashes, and resolve issues." [ref=f1e245] [cursor=pointer]:
+                - /url: /alerts/
+                - generic [ref=f1e246]:
+                  - generic [ref=f1e247]: 
+                  - strong [ref=f1e248]: Alerts
+                  - text: Security incidents when rules are triggered. View severity, user details, file hashes, and resolve issues.
+              - link " Audit Logs Complete activity trail for compliance. Track logins, rule changes, alerts, and all system actions." [ref=f1e250] [cursor=pointer]:
+                - /url: /settings/audit-logs/
+                - generic [ref=f1e251]:
+                  - generic [ref=f1e252]: 
+                  - strong [ref=f1e253]: Audit Logs
+                  - text: Complete activity trail for compliance. Track logins, rule changes, alerts, and all system actions.
+              - 'link " Rules Groups Organize YARA rules by category: PII protection, API keys, passwords, custom patterns, etc." [ref=f1e255] [cursor=pointer]':
+                - /url: /rules/groups/
+                - generic [ref=f1e256]:
+                  - generic [ref=f1e257]: 
+                  - strong [ref=f1e258]: Rules Groups
+                  - text: "Organize YARA rules by category: PII protection, API keys, passwords, custom patterns, etc."
+              - link " YARA Rules Create detection patterns using YARA syntax. Block sensitive data, credentials, or custom content." [ref=f1e260] [cursor=pointer]:
+                - /url: /rules/
+                - generic [ref=f1e261]:
+                  - generic [ref=f1e262]: 
+                  - strong [ref=f1e263]: YARA Rules
+                  - text: Create detection patterns using YARA syntax. Block sensitive data, credentials, or custom content.
+              - link " Rules Community Browse and sync community-maintained YARA rules from GitHub. Configure rules for your organization with one click." [ref=f1e265] [cursor=pointer]:
+                - /url: /rules/community/
+                - generic [ref=f1e267]:
+                  - generic [ref=f1e268]: 
+                  - generic [ref=f1e269]:
+                    - strong [ref=f1e270]: Rules Community
+                    - text: Browse and sync community-maintained YARA rules from GitHub. Configure rules for your organization with one click.
+      - generic [ref=f1e273]:
+        - heading "Administration" [level=5] [ref=f1e275]:
+          - generic [ref=f1e276]: 
+          - text: Administration
+        - generic [ref=f1e277]:
+          - paragraph [ref=f1e278]: "Configure your organization: manage users and permissions, organize departments, and set up AI engines with their API credentials."
+          - generic [ref=f1e279]:
+            - link " Users 1 registered Create user accounts, assign roles (admin, staff, user), set departments, and manage permissions. Users inherit security rules from their company." [ref=f1e281] [cursor=pointer]:
+              - /url: /settings/users/
+              - generic [ref=f1e283]:
+                - generic [ref=f1e284]: 
+                - generic [ref=f1e286]:
+                  - heading "Users" [level=5] [ref=f1e287]
+                  - paragraph [ref=f1e288]: 1 registered
+                  - text: Create user accounts, assign roles (admin, staff, user), set departments, and manage permissions. Users inherit security rules from their company.
+            - link " Departments 0 created Organize users by department for better management and reporting. Useful for tracking AI usage by team or business unit." [ref=f1e290] [cursor=pointer]:
+              - /url: /settings/departments/
+              - generic [ref=f1e292]:
+                - generic [ref=f1e293]: 
+                - generic [ref=f1e295]:
+                  - heading "Departments" [level=5] [ref=f1e296]
+                  - paragraph [ref=f1e297]: 0 created
+                  - text: Organize users by department for better management and reporting. Useful for tracking AI usage by team or business unit.
+            - 'link " AI Engines 0 active Configure AI providers with API keys: OpenAI, Anthropic Claude, DeepSeek, or custom OpenAI-compatible endpoints. Manage available models for each engine." [ref=f1e299] [cursor=pointer]':
+              - /url: /settings/engines/
+              - generic [ref=f1e301]:
+                - generic [ref=f1e302]: 
+                - generic [ref=f1e304]:
+                  - heading "AI Engines" [level=5] [ref=f1e305]
+                  - paragraph [ref=f1e306]: 0 active
+                  - text: "Configure AI providers with API keys: OpenAI, Anthropic Claude, DeepSeek, or custom OpenAI-compatible endpoints. Manage available models for each engine."

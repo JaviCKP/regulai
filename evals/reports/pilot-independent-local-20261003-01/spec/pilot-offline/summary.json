@@ -1,0 +1,440 @@
+[
+  {
+    "configuration": "economy",
+    "split": "development",
+    "n": 8,
+    "controls_passed": 8,
+    "delivered": 4,
+    "coverage": 0.5,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 29,
+    "provider_calls": 17,
+    "local_transformations": 12,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 6,
+      "generation": 6,
+      "verification": 5
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00034710",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 336.5,
+    "p95_latency_ms": 391.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "economy",
+    "split": "all",
+    "n": 8,
+    "controls_passed": 8,
+    "delivered": 4,
+    "coverage": 0.5,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 29,
+    "provider_calls": 17,
+    "local_transformations": 12,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 6,
+      "generation": 6,
+      "verification": 5
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00034710",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 336.5,
+    "p95_latency_ms": 391.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "strong",
+    "split": "development",
+    "n": 8,
+    "controls_passed": 8,
+    "delivered": 5,
+    "coverage": 0.625,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 29,
+    "provider_calls": 17,
+    "local_transformations": 12,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 6,
+      "generation": 6,
+      "verification": 5
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00129030",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 351.5,
+    "p95_latency_ms": 438.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "strong",
+    "split": "all",
+    "n": 8,
+    "controls_passed": 8,
+    "delivered": 5,
+    "coverage": 0.625,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 29,
+    "provider_calls": 17,
+    "local_transformations": 12,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 6,
+      "generation": 6,
+      "verification": 5
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00129030",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 351.5,
+    "p95_latency_ms": 438.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "router",
+    "split": "development",
+    "n": 8,
+    "controls_passed": 8,
+    "delivered": 5,
+    "coverage": 0.625,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 2,
+    "accounting_entries": 34,
+    "provider_calls": 20,
+    "local_transformations": 14,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 6,
+      "generation": 8,
+      "verification": 6
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00077160",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 445.0,
+    "p95_latency_ms": 2687.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "router",
+    "split": "all",
+    "n": 8,
+    "controls_passed": 8,
+    "delivered": 5,
+    "coverage": 0.625,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 2,
+    "accounting_entries": 34,
+    "provider_calls": 20,
+    "local_transformations": 14,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 6,
+      "generation": 8,
+      "verification": 6
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00077160",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 445.0,
+    "p95_latency_ms": 2687.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  }
+]

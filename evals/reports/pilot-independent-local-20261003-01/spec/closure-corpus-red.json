@@ -1,0 +1,20 @@
+{
+  "commit": "0957df45362bc7cbf41c154bb13514d58901763a",
+  "baseline": "700389c216592db1e0c8725749bb4fd02cf3fa10",
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_document_fidelity.FrozenPilotCorpusTests",
+    "--settings=regulai.test_settings",
+    "--verbosity=2"
+  ],
+  "cwd": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\closure",
+  "exit_code": 1,
+  "duration_seconds": 1.515,
+  "log": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\closure-corpus-red.log",
+  "log_sha256": "a9a8297a1746223dee39535139b25caaed1445245ef35eb3f4d7a1170233c01c",
+  "archive_sha256": "ffe0ff7a5956b806aa2db28c94a21f2955730bbc1598b7e988d7842b27c8d51f"
+}

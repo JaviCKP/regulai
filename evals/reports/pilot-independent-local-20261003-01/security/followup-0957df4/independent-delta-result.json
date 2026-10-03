@@ -1,0 +1,28 @@
+{
+  "commit": "0957df45362bc7cbf41c154bb13514d58901763a",
+  "labels": [
+    "delta_checks.NumericNormalizationControls",
+    "delta_checks.EvaluatorControls.test_numeric_json_is_masked_for_classifier_generator_and_verifier",
+    "delta_checks.EvaluatorControls.test_model_identity_drift_during_reserve_stops_before_real_detector"
+  ],
+  "failures": 0,
+  "elapsed_seconds": 15.688,
+  "model": {
+    "backend": "local",
+    "detector_version": "regulai-local-v2",
+    "spacy_version": "3.8.16",
+    "model_name": "xx_ent_wiki_sm",
+    "model_version": "3.8.0",
+    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
+    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a"
+  },
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.socket.sendto": 0
+  },
+  "database": "isolated memory SQLite",
+  "log_sha256": "00e9245abd5bc117c53cc5ede93822ad58375d198b60dac1dc1c162e4f9deb30"
+}

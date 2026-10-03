@@ -1,0 +1,23 @@
+{
+  "commit": "da836e308daf7e518fa4f27a7c04e426f46dcd45",
+  "baseline": "700389c216592db1e0c8725749bb4fd02cf3fa10",
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "smoke_ai",
+    "--settings=regulai.test_settings",
+    "--preflight",
+    "--authorization",
+    "evals/pilot-real/authorization.pending.json",
+    "--output",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\unused-preflight"
+  ],
+  "cwd": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\source",
+  "exit_code": 0,
+  "duration_seconds": 1.594,
+  "log": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\preflight.log",
+  "log_sha256": "ec3e921fcebfe668838840365059056208c97b4ccfca63c8928e21e77c9d41ed",
+  "archive_sha256": "f08ab741ddc8e9e0cb987ce4725248dfc93051ea511fcea9a38c2a2a33f14bc2"
+}

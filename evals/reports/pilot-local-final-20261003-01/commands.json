@@ -1,0 +1,80 @@
+[
+  {
+    "name": "smoke",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "smoke_ai",
+      "--settings=regulai.test_settings",
+      "--output",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-local-final-20261003-01\\smoke"
+    ],
+    "exit_code": 0,
+    "seconds": 12.297,
+    "log": "smoke.log",
+    "sha256": "af515264910d99e30c014ec740e6237fd72f713c8a46a2a43371f569b15fedcd"
+  },
+  {
+    "name": "human",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "evaluate_ai",
+      "--settings=regulai.test_settings",
+      "--manifest",
+      "evals/pilot-human/manifest.json",
+      "--output",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-local-final-20261003-01\\human"
+    ],
+    "exit_code": 0,
+    "seconds": 34.437,
+    "log": "human.log",
+    "sha256": "648c4f21144b524d4598e129dd07bfa912d70d67da2b55edcd88712c11e420f6"
+  },
+  {
+    "name": "preflight-smoke",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "smoke_ai",
+      "--settings=regulai.test_settings",
+      "--preflight",
+      "--authorization",
+      "evals/pilot-real/authorization.pending.json",
+      "--output",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-local-final-20261003-01\\must-not-exist-smoke"
+    ],
+    "exit_code": 0,
+    "seconds": 1.64,
+    "log": "preflight-smoke.log",
+    "sha256": "b9f3ce58a7225cc216f1624f74405898a44fa9b7de28a44b1a77a9162400dedb"
+  },
+  {
+    "name": "preflight-human",
+    "command": [
+      "rtk",
+      "proxy",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+      "regulai/manage.py",
+      "evaluate_ai",
+      "--settings=regulai.test_settings",
+      "--manifest",
+      "evals/pilot-human/manifest.json",
+      "--preflight",
+      "--authorization",
+      "evals/pilot-real/authorization.pending.json",
+      "--output",
+      "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\pilot-local-final-20261003-01\\must-not-exist-human"
+    ],
+    "exit_code": 0,
+    "seconds": 1.532,
+    "log": "preflight-human.log",
+    "sha256": "469cb6badacd16dccec4b15ef42c1b806eac34fb32ef33cf2e2120212a31a386"
+  }
+]

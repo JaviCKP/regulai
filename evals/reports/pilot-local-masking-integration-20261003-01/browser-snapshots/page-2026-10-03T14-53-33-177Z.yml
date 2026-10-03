@@ -1,0 +1,19 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - img "regulAI" [ref=e5]
+    - paragraph [ref=e6]: AI Security Auditing Platform
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: Username
+        - textbox "Username" [active] [ref=e18]:
+          - /placeholder: Enter your username
+      - generic [ref=e19]:
+        - generic [ref=e20]: Password
+        - textbox "Password" [ref=e26]:
+          - /placeholder: Enter your password
+      - generic [ref=e28]:
+        - checkbox "Remember me" [ref=e29]
+        - generic [ref=e30]: Remember me
+      - button "Sign In" [ref=e31] [cursor=pointer]
+    - generic [ref=e32]: Secured by regulAI

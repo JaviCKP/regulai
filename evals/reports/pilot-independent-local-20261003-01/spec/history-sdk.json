@@ -1,0 +1,83 @@
+[
+  {
+    "messages": [
+      {
+        "role": "system",
+        "content": "SYSTEM_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "system",
+        "content": "DEPARTMENT_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "user",
+        "content": "RECENT_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "assistant",
+        "content": "[[REGULAI_PERSON]]"
+      },
+      {
+        "role": "user",
+        "content": "CURRENT_KEEP [[REGULAI_EMAIL]]"
+      }
+    ],
+    "model": "synthetic-v1",
+    "max_tokens": 1000,
+    "temperature": 0.6
+  },
+  {
+    "messages": [
+      {
+        "role": "system",
+        "content": "SYSTEM_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "system",
+        "content": "DEPARTMENT_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "user",
+        "content": "RECENT_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "assistant",
+        "content": "[[REGULAI_PERSON]]"
+      },
+      {
+        "role": "user",
+        "content": "CURRENT_KEEP [[REGULAI_EMAIL]]"
+      }
+    ],
+    "model": "synthetic-v1",
+    "max_tokens": 1000,
+    "temperature": 0.6
+  },
+  {
+    "messages": [
+      {
+        "role": "system",
+        "content": "SYSTEM_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "system",
+        "content": "DEPARTMENT_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "user",
+        "content": "RECENT_KEEP [[REGULAI_EMAIL]]"
+      },
+      {
+        "role": "assistant",
+        "content": "[[REGULAI_PERSON]]"
+      },
+      {
+        "role": "user",
+        "content": "CURRENT_KEEP [[REGULAI_EMAIL]]"
+      }
+    ],
+    "model": "synthetic-v1",
+    "max_tokens": 1000,
+    "temperature": 0.6
+  }
+]

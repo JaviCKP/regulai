@@ -1,0 +1,13 @@
+{
+  "browser": "Chromium via @playwright/cli 0.1.22",
+  "provider_network_calls": 0,
+  "synthetic_database": true,
+  "human_trial": false,
+  "viewports": [{"width": 1440, "height": 1000}, {"width": 390, "height": 844}],
+  "checks": ["empty list", "local selected by default", "local creation without URL", "HTTP URL validation", "bound draft retained after error", "HTTP edit preserves backend", "inactive HTTP configuration", "Tab from name to id_backend", "200-character unbroken name", "desktop and mobile screenshots inspected"],
+  "overflow": {"mobile_before": 2655, "mobile_after": 393, "mobile_viewport": 390, "desktop_after": 1443, "desktop_viewport": 1440, "residual": "3px inherited page margin; inner table scroll remains"},
+  "dark_css": {"native_product_setting": false, "forced_attribute": "data-bs-theme=dark", "limit": "Inherited light cards with pale secondary text; not a supported dark theme claim"},
+  "console_final": {"errors": 0, "warnings": 0},
+  "login_console": "One VERBOSE autocomplete suggestion, no error",
+  "cleanup": {"browser_closed": true, "server_stopped": true, "synthetic_database_retained_for_evidence": true}
+}

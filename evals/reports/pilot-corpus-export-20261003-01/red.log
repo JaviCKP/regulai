@@ -1,0 +1,19 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+F
+======================================================================
+FAIL: test_public_extractor_matches_twelve_frozen_synthetic_cases (front.test_document_fidelity.FrozenPilotCorpusTests.test_public_extractor_matches_twelve_frozen_synthetic_cases)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\.claude\pilot-corpus-export-red\source\regulai\front\test_document_fidelity.py", line 42, in test_public_extractor_matches_twelve_frozen_synthetic_cases
+    self.assertEqual(hashlib.sha256(raw_expectations).hexdigest(), manifest['expectations_sha256'])
+AssertionError: '0be77985b17543f49fee65fda098b56cb4299b5ee936e0cdadacec16e7364fda' != 'f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c'
+- 0be77985b17543f49fee65fda098b56cb4299b5ee936e0cdadacec16e7364fda
++ f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)
+Found 1 test(s).
+System check identified no issues (0 silenced).

@@ -1,0 +1,145 @@
+- generic [ref=f10e2]:
+  - complementary [ref=f10e3]:
+    - generic [ref=f10e4]:
+      - generic [ref=f10e5]:
+        - link "regulAI regulAI" [ref=f10e6] [cursor=pointer]:
+          - /url: /
+          - img "regulAI" [ref=f10e7]
+          - generic [ref=f10e8]: regulAI
+        - text: 
+      - navigation [ref=f10e9]:
+        - list [ref=f10e10]:
+          - listitem [ref=f10e11]: Home
+          - listitem [ref=f10e12]:
+            - link "Home" [ref=f10e13] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f10e19]:
+            - link "Chat" [ref=f10e20] [cursor=pointer]:
+              - /url: /chat/
+          - listitem [ref=f10e26]: Security
+          - listitem [ref=f10e27]:
+            - link "Dashboard" [ref=f10e28] [cursor=pointer]:
+              - /url: /dashboard/
+          - listitem [ref=f10e36]:
+            - link "Prompts" [ref=f10e37] [cursor=pointer]:
+              - /url: /prompts/
+          - listitem [ref=f10e43]:
+            - link "Rules Groups" [ref=f10e44] [cursor=pointer]:
+              - /url: /rules/groups/
+          - listitem [ref=f10e51]:
+            - link "Rules" [ref=f10e52] [cursor=pointer]:
+              - /url: /rules/
+          - listitem [ref=f10e59]:
+            - link "Rules Community" [ref=f10e60] [cursor=pointer]:
+              - /url: /rules/community/
+          - listitem [ref=f10e69]:
+            - link "Alerts" [ref=f10e70] [cursor=pointer]:
+              - /url: /alerts/
+          - listitem [ref=f10e77]:
+            - link "Obfuscation" [ref=f10e78] [cursor=pointer]:
+              - /url: /obfuscation/
+          - listitem [ref=f10e85]: Settings
+          - listitem [ref=f10e86]:
+            - link "Company" [ref=f10e87] [cursor=pointer]:
+              - /url: /settings/company/
+          - listitem [ref=f10e95]:
+            - link "Users" [ref=f10e96] [cursor=pointer]:
+              - /url: /settings/users/
+          - listitem [ref=f10e105]:
+            - link "Departments" [ref=f10e106] [cursor=pointer]:
+              - /url: /settings/departments/
+          - listitem [ref=f10e113]:
+            - link "AI Engines" [ref=f10e114] [cursor=pointer]:
+              - /url: /settings/engines/
+          - listitem [ref=f10e122]:
+            - link "Audit Log" [ref=f10e123] [cursor=pointer]:
+              - /url: /settings/audit-logs/
+          - listitem [ref=f10e130]:
+            - link "Policy simulator" [ref=f10e131] [cursor=pointer]:
+              - /url: /policies/simulator/
+  - generic [ref=f10e138]:
+    - banner [ref=f10e139]:
+      - navigation [ref=f10e140]:
+        - list [ref=f10e141]:
+          - text: 
+          - listitem [ref=f10e142]:
+            - link "" [ref=f10e143] [cursor=pointer]:
+              - /url: /alerts/
+        - list [ref=f10e146]:
+          - listitem [ref=f10e147]:
+            - generic [ref=f10e148]:
+              - generic [ref=f10e149]: local-privacy-ui
+              - generic [ref=f10e150]: Local privacy visual fixture
+          - listitem [ref=f10e151]:
+            - link [ref=f10e152] [cursor=pointer]:
+              - /url: /profile/
+            - text:  
+          - listitem [ref=f10e153]:
+            - link "" [ref=f10e154] [cursor=pointer]:
+              - /url: /logout/
+    - generic [ref=f10e157]:
+      - generic [ref=f10e160]:
+        - heading [level=5] [ref=f10e161]
+        - generic [ref=f10e167]:
+          - generic [ref=f10e168]:
+            - generic [ref=f10e169]: Name *
+            - textbox "Name *" [ref=f10e170]:
+              - /placeholder: Company privacy detector
+              - text: WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+            - generic [ref=f10e171]: A descriptive name for this obfuscation configuration.
+          - generic [ref=f10e172]:
+            - generic [ref=f10e173]: Processing location *
+            - combobox "Processing location *" [ref=f10e174]:
+              - option "Local detector"
+              - option "PasteGuard HTTP" [selected]
+            - generic [ref=f10e175]: Local detects PII and secrets on this server, before any external AI call. HTTP sends the original content to your authorized PasteGuard service.
+          - generic [ref=f10e176]:
+            - generic [ref=f10e177]: PasteGuard API URL (HTTP only)
+            - textbox "PasteGuard API URL (HTTP only)" [ref=f10e178]:
+              - /placeholder: https://pasteguard.example
+              - text: https://pasteguard.example.invalid
+            - generic [ref=f10e179]:
+              - text: Required for HTTP. The
+              - code [ref=f10e180]: /api/mask
+              - text: endpoint is appended automatically. Local processing does not use this URL.
+          - generic [ref=f10e181]:
+            - generic [ref=f10e182]: Detection Type
+            - combobox "Detection Type" [ref=f10e183]:
+              - option "PII"
+              - option "Secrets"
+              - option "PII & Secrets" [selected]
+            - generic [ref=f10e184]: Both PII and secrets are required by the chat privacy barrier. Partial detection blocks sending.
+          - generic [ref=f10e185]:
+            - generic [ref=f10e186]: Language
+            - textbox "Language" [ref=f10e187]:
+              - /placeholder: es / en
+            - generic [ref=f10e188]:
+              - text: "Local processing supports Spanish and English:"
+              - code [ref=f10e189]: es
+              - text: ","
+              - code [ref=f10e190]: en
+              - text: or empty for both.
+          - generic [ref=f10e191]:
+            - generic [ref=f10e192]:
+              - checkbox "Active" [ref=f10e193]
+              - generic [ref=f10e194]: Active
+            - generic [ref=f10e195]: Only active configurations are applied to outgoing prompts.
+          - generic [ref=f10e196]:
+            - button [ref=f10e197] [cursor=pointer]
+            - link "Cancel" [ref=f10e203] [cursor=pointer]:
+              - /url: /obfuscation/
+      - generic [ref=f10e206]:
+        - heading [level=6] [ref=f10e207]
+        - paragraph [ref=f10e211]: Obfuscation masks detected personal data and secrets in prompts, context, documents and responses. Choose local processing to keep originals on this server.
+        - separator [ref=f10e212]
+        - heading "How it works:" [level=6] [ref=f10e213]
+        - list [ref=f10e214]:
+          - listitem [ref=f10e215]: Detects PII (names, emails, phones, etc.)
+          - listitem [ref=f10e219]: Detects secrets (API keys, tokens, etc.)
+          - listitem [ref=f10e223]: Replaces detected data with stable placeholders
+          - listitem [ref=f10e227]: Multiple configs are chained in sequence
+        - separator [ref=f10e231]
+        - paragraph [ref=f10e232]:
+          - text: "Local processing needs the detector model installed on the server. Its incremental API cost is zero: set the policy's masking maximum call cost to"
+          - code [ref=f10e233]: "0"
+          - text: for a local-only chain. HTTP configurations require their own contractual call bound. Detection can miss sensitive data; YARA and the company policy still apply.

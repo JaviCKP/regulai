@@ -1,0 +1,134 @@
+{
+  "revision": "HEAD",
+  "resolved_revision": "d63731a9c5dfda27c3dc504c295422502383d2f1",
+  "archive_command": [
+    "rtk",
+    "proxy",
+    "git",
+    "archive",
+    "--format=zip",
+    "--output=C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\pilot-corpus-export-green-03\\source.zip",
+    "HEAD",
+    ".gitattributes",
+    "regulai",
+    "evals/documents/pilot-20261003",
+    "evals/pilot-real",
+    "evals/pilot-human"
+  ],
+  "archive_sha256": "c7e80b78e2ac1e1b3ef238892043f8bcc475c139a46501b79fe557d2657fb8ae",
+  "checks": [
+    {
+      "path": "expectations.json",
+      "expected": "f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c",
+      "observed": "f3ccaaae8702e9043fb2c26e3a8ab22486a8af6a510870dc544d752261ef4c3c",
+      "bytes": 3309,
+      "matches": true
+    },
+    {
+      "path": "generate_corpus.py",
+      "expected": "c58428a1a343eca2a40daa70964e9427a2586f0b96ba3eed6d4b886a61043490",
+      "observed": "c58428a1a343eca2a40daa70964e9427a2586f0b96ba3eed6d4b886a61043490",
+      "bytes": 9422,
+      "matches": true
+    },
+    {
+      "path": "files/blank-and-final-clause.pdf",
+      "expected": "ca384838c0eebe690b332c75ebcf1851d1b55c224d520a19bc73f243787d29bd",
+      "observed": "ca384838c0eebe690b332c75ebcf1851d1b55c224d520a19bc73f243787d29bd",
+      "bytes": 1519,
+      "matches": true
+    },
+    {
+      "path": "files/blank.pdf",
+      "expected": "b3e44df802e407df3d586bb3d4b3a7db17bc868565f04a061077f7d8de3e44bd",
+      "observed": "b3e44df802e407df3d586bb3d4b3a7db17bc868565f04a061077f7d8de3e44bd",
+      "bytes": 431,
+      "matches": true
+    },
+    {
+      "path": "files/formula-cached.xlsx",
+      "expected": "8a1dd698840f993b83f733934ec5c15e621637559cf5640c908348a59a83918d",
+      "observed": "8a1dd698840f993b83f733934ec5c15e621637559cf5640c908348a59a83918d",
+      "bytes": 4992,
+      "matches": true
+    },
+    {
+      "path": "files/formula-uncached.xlsx",
+      "expected": "df35bcfc0dc0e40ee9943fd699a5a2f7b03d9e04e9ea25f6213b3a787d033cfa",
+      "observed": "df35bcfc0dc0e40ee9943fd699a5a2f7b03d9e04e9ea25f6213b3a787d033cfa",
+      "bytes": 4991,
+      "matches": true
+    },
+    {
+      "path": "files/multilevel-numbering.docx",
+      "expected": "1f52b6eb10a7a69cf559ea03ce644326e35b408feb297bb23b8693f357849967",
+      "observed": "1f52b6eb10a7a69cf559ea03ce644326e35b408feb297bb23b8693f357849967",
+      "bytes": 36782,
+      "matches": true
+    },
+    {
+      "path": "files/quoted.csv",
+      "expected": "0812cab7ad62db52992ca98e68fd576d51525769b255bd7cd3ad61e7ed624640",
+      "observed": "0812cab7ad62db52992ca98e68fd576d51525769b255bd7cd3ad61e7ed624640",
+      "bytes": 77,
+      "matches": true
+    },
+    {
+      "path": "files/simulated-scan.pdf",
+      "expected": "7170f6ae58b93ddffb2c5e0688886d8e377537bac563ada5ff9242ebfe8ff9d2",
+      "observed": "7170f6ae58b93ddffb2c5e0688886d8e377537bac563ada5ff9242ebfe8ff9d2",
+      "bytes": 13583,
+      "matches": true
+    },
+    {
+      "path": "files/table.pdf",
+      "expected": "7063a03d9592ae9a08501279cdcc58db8e02b2ff45e0206d5fea29af9c781c53",
+      "observed": "7063a03d9592ae9a08501279cdcc58db8e02b2ff45e0206d5fea29af9c781c53",
+      "bytes": 1467,
+      "matches": true
+    },
+    {
+      "path": "files/text-and-image.docx",
+      "expected": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+      "observed": "38c43302be0249621eea168e77532edd326d9d8ae8e70e3bfd7a3fd9bd1ed315",
+      "bytes": 46712,
+      "matches": true
+    },
+    {
+      "path": "files/text-and-image.pdf",
+      "expected": "1378588570d6a15a9678309349c06059e5712a382d07d27feec1dee0aaf82d52",
+      "observed": "1378588570d6a15a9678309349c06059e5712a382d07d27feec1dee0aaf82d52",
+      "bytes": 13639,
+      "matches": true
+    },
+    {
+      "path": "files/textual.pdf",
+      "expected": "1ec3db23c6fab0e63f565f054173b7a78b41610d03e68a38b3995e7bbb411753",
+      "observed": "1ec3db23c6fab0e63f565f054173b7a78b41610d03e68a38b3995e7bbb411753",
+      "bytes": 1904,
+      "matches": true
+    },
+    {
+      "path": "files/tracked-changes.docx",
+      "expected": "9d70611e1c85e7a10ab6cbd5bcd773b07ecc4e41c7528ebe25fdd80686163cb4",
+      "observed": "9d70611e1c85e7a10ab6cbd5bcd773b07ecc4e41c7528ebe25fdd80686163cb4",
+      "bytes": 36789,
+      "matches": true
+    }
+  ],
+  "authorization_manifest_hashes_match": true,
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\pilot-corpus-export-green-03\\source\\regulai\\manage.py",
+    "test",
+    "front.test_document_fidelity.FrozenPilotCorpusTests",
+    "--settings=regulai.test_settings",
+    "--noinput"
+  ],
+  "exit_code": 0,
+  "seconds": 5.578,
+  "log_sha256": "441d0bd5b7c11ea5362a5913abe515818b412a4e03131bb159cea621c22bbea5",
+  "real_calls": 0
+}

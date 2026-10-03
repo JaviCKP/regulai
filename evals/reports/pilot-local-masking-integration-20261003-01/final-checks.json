@@ -1,0 +1,56 @@
+{
+  "commands": [
+    "rtk proxy .venv/Scripts/python.exe regulai/manage.py check --settings=regulai.test_settings",
+    "rtk proxy .venv/Scripts/python.exe regulai/manage.py makemigrations --check --dry-run --settings=regulai.test_settings",
+    "rtk git diff --check",
+    "rtk git rev-parse HEAD",
+    "rtk proxy powershell -NoProfile -Command 'Get-NetTCPConnection -LocalPort 8777 -State Listen -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,OwningProcess'"
+  ],
+  "results": [
+    {
+      "i": 0,
+      "status": "fulfilled",
+      "chunk_id": "cc9816",
+      "wall_time_seconds": 1.6567733,
+      "exit_code": 0,
+      "original_token_count": 32,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nSystem check identified no issues (0 silenced).\r\n"
+    },
+    {
+      "i": 1,
+      "status": "fulfilled",
+      "chunk_id": "c0ebdc",
+      "wall_time_seconds": 1.6821297,
+      "exit_code": 0,
+      "original_token_count": 25,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nNo changes detected\r\n"
+    },
+    {
+      "i": 2,
+      "status": "fulfilled",
+      "chunk_id": "74ea31",
+      "wall_time_seconds": 0.259285,
+      "exit_code": 0,
+      "original_token_count": 20,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\n\n"
+    },
+    {
+      "i": 3,
+      "status": "fulfilled",
+      "chunk_id": "3a9f2c",
+      "wall_time_seconds": 0.1837928,
+      "exit_code": 0,
+      "original_token_count": 30,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nda836e308daf7e518fa4f27a7c04e426f46dcd45\n"
+    },
+    {
+      "i": 4,
+      "status": "fulfilled",
+      "chunk_id": "b01b07",
+      "wall_time_seconds": 1.4400078,
+      "exit_code": 1,
+      "original_token_count": 20,
+      "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\n"
+    }
+  ]
+}

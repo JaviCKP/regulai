@@ -1,0 +1,22 @@
+{
+  "commit": "da836e308daf7e518fa4f27a7c04e426f46dcd45",
+  "baseline": "700389c216592db1e0c8725749bb4fd02cf3fa10",
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "evaluate_ai",
+    "--settings=regulai.test_settings",
+    "--manifest",
+    "evals/pilot-human/manifest.json",
+    "--output",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\human-offline"
+  ],
+  "cwd": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\source",
+  "exit_code": 0,
+  "duration_seconds": 25.031,
+  "log": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.claude\\review-local-spec\\human.log",
+  "log_sha256": "60804b1dc8c969f558e62a0dc8d23a8846b1df35eefcb60fbe1184899edcaa60",
+  "archive_sha256": "f08ab741ddc8e9e0cb987ce4725248dfc93051ea511fcea9a38c2a2a33f14bc2"
+}

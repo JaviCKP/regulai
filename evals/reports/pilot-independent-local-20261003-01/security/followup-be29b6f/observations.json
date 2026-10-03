@@ -1,0 +1,310 @@
+[
+  {
+    "name": "numeric_json_sdk",
+    "requests": [
+      {
+        "entry": "/chat/send/",
+        "http_status": 200,
+        "status": "completed",
+        "calls": [
+          {
+            "purpose": "obfuscation",
+            "provider": "obfuscation:1",
+            "model": null,
+            "status": "completed",
+            "cost": "0",
+            "cost_bound": "0",
+            "price_snapshot": {},
+            "currency": "USD",
+            "cost_kind": "configured_zero",
+            "transport": "local",
+            "cost_scope": "api",
+            "duration_ms": 2969
+          },
+          {
+            "purpose": "generation",
+            "provider": "engine:1",
+            "model": "synthetic-v1",
+            "status": "completed",
+            "cost": null,
+            "cost_bound": null,
+            "price_snapshot": {
+              "input_price": null,
+              "output_price": null,
+              "currency": "USD",
+              "price_date": null
+            },
+            "currency": "USD",
+            "cost_kind": "unknown",
+            "transport": "http",
+            "duration_ms": 610,
+            "model_effective": "synthetic-v1",
+            "input_tokens": 20,
+            "output_tokens": 10,
+            "provider_request_id": "security-synthetic",
+            "usage": {
+              "completion_tokens": 10,
+              "prompt_tokens": 20,
+              "total_tokens": 30
+            },
+            "verification": {
+              "status": "passed",
+              "local_status": "passed",
+              "finish_reason": "complete",
+              "checks": [
+                {
+                  "code": "nonempty",
+                  "status": "passed"
+                },
+                {
+                  "code": "completion",
+                  "status": "passed",
+                  "reason": "complete"
+                }
+              ],
+              "mode": "local",
+              "rubric_version": "verification-v1",
+              "scope": "format_and_completion",
+              "attempt": 1
+            }
+          },
+          {
+            "purpose": "obfuscation",
+            "provider": "obfuscation:1",
+            "model": null,
+            "status": "completed",
+            "cost": "0",
+            "cost_bound": "0",
+            "price_snapshot": {},
+            "currency": "USD",
+            "cost_kind": "configured_zero",
+            "transport": "local",
+            "cost_scope": "api",
+            "duration_ms": 47
+          }
+        ],
+        "provider_payload": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "{\"telefono\":\"[[REGULAI_PHONE]]\",\"tarjeta\":\"[[REGULAI_CARD]]\"}"
+            }
+          ],
+          "model": "synthetic-v1",
+          "max_tokens": 1000,
+          "temperature": 0.6
+        }
+      },
+      {
+        "entry": "/api/chat/send/",
+        "http_status": 200,
+        "status": "completed",
+        "calls": [
+          {
+            "purpose": "obfuscation",
+            "provider": "obfuscation:1",
+            "model": null,
+            "status": "completed",
+            "cost": "0",
+            "cost_bound": "0",
+            "price_snapshot": {},
+            "currency": "USD",
+            "cost_kind": "configured_zero",
+            "transport": "local",
+            "cost_scope": "api",
+            "duration_ms": 63
+          },
+          {
+            "purpose": "generation",
+            "provider": "engine:1",
+            "model": "synthetic-v1",
+            "status": "completed",
+            "cost": null,
+            "cost_bound": null,
+            "price_snapshot": {
+              "input_price": null,
+              "output_price": null,
+              "currency": "USD",
+              "price_date": null
+            },
+            "currency": "USD",
+            "cost_kind": "unknown",
+            "transport": "http",
+            "duration_ms": 0,
+            "model_effective": "synthetic-v1",
+            "input_tokens": 20,
+            "output_tokens": 10,
+            "provider_request_id": "security-synthetic",
+            "usage": {
+              "completion_tokens": 10,
+              "prompt_tokens": 20,
+              "total_tokens": 30
+            },
+            "verification": {
+              "status": "passed",
+              "local_status": "passed",
+              "finish_reason": "complete",
+              "checks": [
+                {
+                  "code": "nonempty",
+                  "status": "passed"
+                },
+                {
+                  "code": "completion",
+                  "status": "passed",
+                  "reason": "complete"
+                }
+              ],
+              "mode": "local",
+              "rubric_version": "verification-v1",
+              "scope": "format_and_completion",
+              "attempt": 1
+            }
+          },
+          {
+            "purpose": "obfuscation",
+            "provider": "obfuscation:1",
+            "model": null,
+            "status": "completed",
+            "cost": "0",
+            "cost_bound": "0",
+            "price_snapshot": {},
+            "currency": "USD",
+            "cost_kind": "configured_zero",
+            "transport": "local",
+            "cost_scope": "api",
+            "duration_ms": 63
+          }
+        ],
+        "provider_payload": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "{\"telefono\":\"[[REGULAI_PHONE]]\",\"tarjeta\":\"[[REGULAI_CARD]]\"}"
+            }
+          ],
+          "model": "synthetic-v1",
+          "max_tokens": 1000,
+          "temperature": 0.6
+        }
+      },
+      {
+        "entry": "/chat/",
+        "http_status": 302,
+        "status": "completed",
+        "calls": [
+          {
+            "purpose": "obfuscation",
+            "provider": "obfuscation:1",
+            "model": null,
+            "status": "completed",
+            "cost": "0",
+            "cost_bound": "0",
+            "price_snapshot": {},
+            "currency": "USD",
+            "cost_kind": "configured_zero",
+            "transport": "local",
+            "cost_scope": "api",
+            "duration_ms": 63
+          },
+          {
+            "purpose": "generation",
+            "provider": "engine:1",
+            "model": "synthetic-v1",
+            "status": "completed",
+            "cost": null,
+            "cost_bound": null,
+            "price_snapshot": {
+              "input_price": null,
+              "output_price": null,
+              "currency": "USD",
+              "price_date": null
+            },
+            "currency": "USD",
+            "cost_kind": "unknown",
+            "transport": "http",
+            "duration_ms": 0,
+            "model_effective": "synthetic-v1",
+            "input_tokens": 20,
+            "output_tokens": 10,
+            "provider_request_id": "security-synthetic",
+            "usage": {
+              "completion_tokens": 10,
+              "prompt_tokens": 20,
+              "total_tokens": 30
+            },
+            "verification": {
+              "status": "passed",
+              "local_status": "passed",
+              "finish_reason": "complete",
+              "checks": [
+                {
+                  "code": "nonempty",
+                  "status": "passed"
+                },
+                {
+                  "code": "completion",
+                  "status": "passed",
+                  "reason": "complete"
+                }
+              ],
+              "mode": "local",
+              "rubric_version": "verification-v1",
+              "scope": "format_and_completion",
+              "attempt": 1
+            }
+          },
+          {
+            "purpose": "obfuscation",
+            "provider": "obfuscation:1",
+            "model": null,
+            "status": "completed",
+            "cost": "0",
+            "cost_bound": "0",
+            "price_snapshot": {},
+            "currency": "USD",
+            "cost_kind": "configured_zero",
+            "transport": "local",
+            "cost_scope": "api",
+            "duration_ms": 47
+          }
+        ],
+        "provider_payload": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "{\"telefono\":\"[[REGULAI_PHONE]]\",\"tarjeta\":\"[[REGULAI_CARD]]\"}"
+            }
+          ],
+          "model": "synthetic-v1",
+          "max_tokens": 1000,
+          "temperature": 0.6
+        }
+      }
+    ]
+  },
+  {
+    "name": "markers_and_structural_fields",
+    "outputs": [
+      "[[REGULAI_EMAIL [[REGULAI_EMAIL]]]]",
+      "[[REGULAI_EMAIL]] [[REGULAI_EMAIL]] [[REGULAI_SECRET]]",
+      "{\"id\":\"[[REGULAI_EMAIL]]\",\"source_id\":\"[[REGULAI_ID]]\",\"alias\":\"S1\"}",
+      "{\"password\":\"[[REGULAI_SECRET]]\",\"access_token\":\"[[REGULAI_SECRET]]\"}"
+    ]
+  },
+  {
+    "name": "numeric_json",
+    "inputs": [
+      "Telefono: 612345678; Tarjeta: 4111111111111111",
+      "{\"telefono\":612345678,\"tarjeta\":4111111111111111}",
+      "{\"telefono\":\"612345678\",\"tarjeta\":\"4111111111111111\"}",
+      "[612345678,4111111111111111]"
+    ],
+    "outputs": [
+      "Telefono: [[REGULAI_PHONE]]; [[REGULAI_LOCATION]]: [[REGULAI_CARD]]",
+      "{\"telefono\":\"[[REGULAI_PHONE]]\",\"tarjeta\":\"[[REGULAI_CARD]]\"}",
+      "{\"telefono\":\"[[REGULAI_PHONE]]\",\"tarjeta\":\"[[REGULAI_CARD]]\"}",
+      "[\"[[REGULAI_PHONE]]\",\"[[REGULAI_CARD]]\"]"
+    ]
+  }
+]

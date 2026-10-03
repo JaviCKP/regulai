@@ -1,0 +1,260 @@
+[
+  {
+    "name": "backend_mutation",
+    "status": "validation_error",
+    "code": "authorization_changed",
+    "calls": [
+      {
+        "purpose": "obfuscation",
+        "provider": "obfuscation:1",
+        "model": null,
+        "status": "completed",
+        "cost": "0",
+        "cost_bound": "0",
+        "price_snapshot": {},
+        "currency": "USD",
+        "cost_kind": "configured_zero",
+        "transport": "local",
+        "cost_scope": "api",
+        "duration_ms": 1781
+      }
+    ]
+  },
+  {
+    "name": "sanitized_detector_error",
+    "status": "failed",
+    "logs": [
+      "ERROR:front.chat_service:Chat failed\nRuntimeError: provider_failed"
+    ],
+    "calls": [
+      {
+        "purpose": "obfuscation",
+        "provider": "obfuscation:1",
+        "model": null,
+        "status": "failed",
+        "cost": "0",
+        "cost_bound": "0",
+        "price_snapshot": {},
+        "currency": "USD",
+        "cost_kind": "configured_zero",
+        "transport": "local",
+        "cost_scope": "api",
+        "duration_ms": 0
+      }
+    ]
+  },
+  {
+    "name": "citation_collision",
+    "status": "failed",
+    "verification": {
+      "status": "failed",
+      "local_status": "failed",
+      "finish_reason": "complete",
+      "checks": [
+        {
+          "code": "nonempty",
+          "status": "passed"
+        },
+        {
+          "code": "completion",
+          "status": "passed",
+          "reason": "complete"
+        },
+        {
+          "code": "citations",
+          "status": "failed",
+          "reason": "quote_not_found"
+        },
+        {
+          "code": "semantic",
+          "status": "not_verified"
+        }
+      ],
+      "mode": "enforce",
+      "rubric_version": "verification-v1",
+      "scope": "document_evidence",
+      "attempt": 1
+    },
+    "calls": [
+      {
+        "purpose": "obfuscation",
+        "provider": "obfuscation:1",
+        "model": null,
+        "status": "completed",
+        "cost": "0",
+        "cost_bound": "0",
+        "price_snapshot": {},
+        "currency": "USD",
+        "cost_kind": "configured_zero",
+        "transport": "local",
+        "cost_scope": "api",
+        "duration_ms": 62
+      },
+      {
+        "purpose": "classification",
+        "provider": "jev",
+        "model": "typesafe-ai/jev",
+        "status": "completed",
+        "cost": "0.00014",
+        "cost_bound": "0.01",
+        "price_snapshot": {
+          "input_price": "1",
+          "output_price": "2",
+          "currency": "USD",
+          "price_date": null
+        },
+        "currency": "USD",
+        "cost_kind": "tariff_estimate",
+        "transport": "http",
+        "duration_ms": 0,
+        "model_effective": "typesafe-ai/jev",
+        "input_tokens": 100,
+        "output_tokens": 20,
+        "provider_request_id": "synthetic",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 20
+        },
+        "signals": {
+          "category": {
+            "probabilities": {
+              "public": 0.0,
+              "internal": 1.0,
+              "confidential": 0.0,
+              "restricted": 0.0,
+              "unknown": 0.0
+            },
+            "confidence": 1.0,
+            "type": "choice",
+            "choice": "internal"
+          },
+          "credentials": {
+            "type": "noul",
+            "noul": 0.0
+          },
+          "personal_data": {
+            "type": "noul",
+            "noul": 0.0
+          },
+          "business_confidential": {
+            "type": "noul",
+            "noul": 0.0
+          },
+          "manipulation": {
+            "type": "noul",
+            "noul": 0.0
+          },
+          "task": {
+            "probabilities": {
+              "extraction": 0.0,
+              "summary": 0.0,
+              "document_question": 1.0,
+              "general": 0.0
+            },
+            "confidence": 1.0,
+            "type": "choice",
+            "choice": "document_question"
+          },
+          "difficulty": {
+            "probabilities": {
+              "economy": 1.0,
+              "balanced": 0.0,
+              "strong": 0.0
+            },
+            "confidence": 1.0,
+            "type": "choice",
+            "choice": "economy"
+          },
+          "ambiguous": {
+            "type": "noul",
+            "noul": 0.0
+          },
+          "insufficient_evidence": {
+            "type": "noul",
+            "noul": 0.0
+          }
+        },
+        "threshold": 0.8,
+        "rubric_version": "sensitivity-v2",
+        "task_rubric_version": "task-v2"
+      },
+      {
+        "purpose": "generation",
+        "provider": "engine:1",
+        "model": "synthetic-v1",
+        "status": "completed",
+        "cost": "0.00004000",
+        "cost_bound": "0.00288900",
+        "price_snapshot": {
+          "input_price": "1.00000000",
+          "output_price": "2.00000000",
+          "currency": "USD",
+          "price_date": null
+        },
+        "currency": "USD",
+        "cost_kind": "tariff_estimate",
+        "transport": "http",
+        "duration_ms": 375,
+        "model_effective": "synthetic-v1",
+        "input_tokens": 20,
+        "output_tokens": 10,
+        "provider_request_id": "security-synthetic",
+        "usage": {
+          "completion_tokens": 10,
+          "prompt_tokens": 20,
+          "total_tokens": 30
+        },
+        "verification": {
+          "status": "failed",
+          "local_status": "failed",
+          "finish_reason": "complete",
+          "checks": [
+            {
+              "code": "nonempty",
+              "status": "passed"
+            },
+            {
+              "code": "completion",
+              "status": "passed",
+              "reason": "complete"
+            },
+            {
+              "code": "citations",
+              "status": "failed",
+              "reason": "quote_not_found"
+            },
+            {
+              "code": "semantic",
+              "status": "not_verified"
+            }
+          ],
+          "mode": "enforce",
+          "rubric_version": "verification-v1",
+          "scope": "document_evidence",
+          "attempt": 1
+        }
+      },
+      {
+        "purpose": "obfuscation",
+        "provider": "obfuscation:1",
+        "model": null,
+        "status": "completed",
+        "cost": "0",
+        "cost_bound": "0",
+        "price_snapshot": {},
+        "currency": "USD",
+        "cost_kind": "configured_zero",
+        "transport": "local",
+        "cost_scope": "api",
+        "duration_ms": 47
+      }
+    ],
+    "captured": [
+      {
+        "source": "El contacto para este servicio es [[REGULAI_EMAIL]] durante todo el periodo.",
+        "invented_quote": "El contacto para este servicio es bob@example.invalid durante todo el periodo."
+      }
+    ],
+    "judge_requests": 1
+  }
+]
