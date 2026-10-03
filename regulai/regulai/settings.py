@@ -41,6 +41,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'front.middleware.ExceptionAuditMiddleware',
+    'front.middleware.ContentSecurityPolicyMiddleware',
 ]
 
 ROOT_URLCONF = 'regulai.urls'

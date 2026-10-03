@@ -207,7 +207,6 @@ class ReviewRegressionTests(ChatFixture):
         self.assertEqual(self.provider.call_count, 1)
         self.assertEqual(completed['user_message']['id'], first['user_message']['id'])
 
-    @unittest.expectedFailure
     def test_b10_chat_can_submit_without_crypto_random_uuid(self):
         node = shutil.which('node')
         self.assertIsNotNone(node, 'Node is required to exercise browser JavaScript without dependencies.')
