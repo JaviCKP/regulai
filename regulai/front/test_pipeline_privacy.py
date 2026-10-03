@@ -68,6 +68,38 @@ class PipelinePrivacyTests(ChatFixture):
                 self.assertEqual(receipt['total']['attempts'], 0)
                 self.assertTrue(receipt['total']['complete'])
 
+    def test_unknown_floor_matches_chat_and_semantic_simulation(self):
+        self.profile.role = Role.objects.create(name='Admin')
+        self.profile.save()
+        self.configure(local_sensitivity='unknown', destinations={
+            'confidential': [f'engine:{self.credential.pk}', 'jev']},
+            routing={'mode': 'auto', 'candidates': [{'company_engine_id': self.credential.pk,
+                'model_id': self.model.pk, 'level': 'economy', 'quality': {'general': 1.0}}]})
+        self.http.side_effect = test_pipeline.jev_http(choices={'category': 'public'})
+        for path in ('/api/chat/send/', '/chat/send/', '/chat/'):
+            with self.subTest(path=path):
+                response = self.send(path, 'Synthetic report')
+                self.assertEqual(response.status_code, 302 if path == '/chat/' else 200)
+                if path != '/chat/':
+                    result = response.json()
+                    self.assertEqual(result['status'], 'completed')
+                    self.assertEqual(result['receipt']['policy']['sensitivity'], 'confidential')
+                    self.assertEqual(Decimal(result['receipt']['total']['cost']), Decimal('0.00032'))
+        self.http.reset_mock()
+        self.provider.reset_mock()
+        response = self.client.post(reverse('front:policy_simulator'), {'mode': 'semantic',
+            'sample': 'Synthetic report', 'proposed_config': json.dumps(self.company.ai_config)})
+        comparison = response.context['comparison']
+        self.assertEqual(comparison['semantic']['status'], 'completed')
+        for name in ('current', 'proposed'):
+            self.assertEqual(comparison[name]['policy']['sensitivity'], 'confidential')
+            self.assertEqual(comparison[name]['policy']['status'], 'allow')
+            self.assertEqual(comparison[name]['route']['status'], 'selected')
+        self.assertEqual(self.http.call_count, 1)
+        self.provider.assert_not_called()
+        self.assertEqual(comparison['calls'][0]['purpose'], 'simulation_classification')
+        self.assertEqual(Decimal(comparison['calls'][0]['cost']), Decimal('0.00014'))
+
     def mask(self, *, bound='0', malformed=False):
         config = ObfuscationConfig.objects.create(company=self.company, name='Batch mask', api_url='https://mask.invalid')
         self.company.ai_config['destinations']['internal'].append(f'obfuscation:{config.pk}')

@@ -252,8 +252,7 @@ def send_chat_message(actor, command):
     policy_texts = [('prompts', text)] + [('prompts', m.content) for m in system + history]
     if document:
         policy_texts.append(('files', document.text))
-    local = evaluate_policy(actor, policy_texts, sensitivity=(cfg.classification_policy.unknown_level
-        if cfg.local_sensitivity == 'unknown' else cfg.local_sensitivity))
+    local = evaluate_policy(actor, policy_texts)
     prompt.decision['policy'] = local.as_dict()
     if local.status in ('block', 'unavailable'):
         for rule in local.rules:

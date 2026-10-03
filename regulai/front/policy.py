@@ -247,6 +247,8 @@ def evaluate_policy(actor, texts, *, config=None, destinations=(), sensitivity=N
         sensitivity = sensitivity or cfg.local_sensitivity
         if sensitivity not in ('public', 'internal', 'confidential', 'restricted', 'unknown'):
             raise ValueError('Invalid sensitivity')
+        if sensitivity == 'unknown':
+            sensitivity = cfg.classification_policy.unknown_level
         allowed = sorted(set(cfg.destinations.get(sensitivity, [])))
         result = PolicyDecision('allow', ['local_policy_allowed'], sensitivity, allowed, matched, fingerprint)
         if sensitivity == 'restricted':
