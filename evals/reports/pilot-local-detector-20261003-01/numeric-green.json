@@ -1,0 +1,21 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_local_masking",
+    "front.test_local_masking_integration",
+    "--settings=regulai.test_settings"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-10-03T15:07:13.622501+00:00",
+  "seconds": 9.953,
+  "log_sha256": "b1f188aea329eb3c66aa4846badd9ecc369e5d3719e83295c64beb51142367be",
+  "source_sha256": {
+    "regulai/front/local_masking.py": "02ed047f71633eee74e7d5b99ff4f0381c46292c205b9ddf9e6929a090cda7cb",
+    "regulai/front/test_local_masking.py": "efac2ab43e5dfa7db851234cc781a7f408ea708431db42928649d79b1e0f0d22",
+    "requirements.txt": "947e437b58acb8d09f6e5e6d10e36b3dd63cf57b46d4441e5497249aca5aa10c"
+  }
+}

@@ -1,0 +1,32 @@
+Found 1 test(s).
+System check identified no issues (0 silenced).
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+FFF
+======================================================================
+FAIL: test_json_numeric_pii_and_equivalent_exponents_are_transformed (front.test_local_masking.LocalMaskingTests.test_json_numeric_pii_and_equivalent_exponents_are_transformed) (value='{"telefono":612345678,"tarjeta":4111111111111111}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_local_masking.py", line 63, in test_json_numeric_pii_and_equivalent_exponents_are_transformed
+    self.assertTrue(all(isinstance(item, str) and item.startswith('[[REGULAI_') for item in items), items)
+AssertionError: False is not true : [612345678, 4111111111111111]
+
+======================================================================
+FAIL: test_json_numeric_pii_and_equivalent_exponents_are_transformed (front.test_local_masking.LocalMaskingTests.test_json_numeric_pii_and_equivalent_exponents_are_transformed) (value='[612345678,4111111111111111]')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_local_masking.py", line 63, in test_json_numeric_pii_and_equivalent_exponents_are_transformed
+    self.assertTrue(all(isinstance(item, str) and item.startswith('[[REGULAI_') for item in items), items)
+AssertionError: False is not true : [612345678, 4111111111111111]
+
+======================================================================
+FAIL: test_json_numeric_pii_and_equivalent_exponents_are_transformed (front.test_local_masking.LocalMaskingTests.test_json_numeric_pii_and_equivalent_exponents_are_transformed) (value='{"telefono":6.12345678e8,"tarjeta":4.111111111111111e15}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\test_local_masking.py", line 63, in test_json_numeric_pii_and_equivalent_exponents_are_transformed
+    self.assertTrue(all(isinstance(item, str) and item.startswith('[[REGULAI_') for item in items), items)
+AssertionError: False is not true : [612345678.0, 4111111111111111.0]
+
+----------------------------------------------------------------------
+Ran 1 test in 1.645s
+
+FAILED (failures=3)

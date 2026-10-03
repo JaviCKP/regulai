@@ -50,6 +50,25 @@ class LocalMaskingTests(SimpleTestCase):
         self.assertTrue(result.startswith('Tarjeta: '))
         self.assertNotIn('4111', result)
 
+    def test_json_numeric_pii_and_equivalent_exponents_are_transformed(self):
+        cases = ['{"telefono":612345678,"tarjeta":4111111111111111}',
+                 '[612345678,4111111111111111]',
+                 '{"telefono":6.12345678e8,"tarjeta":4.111111111111111e15}',
+                 '{"telefono":612345678.0,"tarjeta":4111111111111111.00}']
+        for value in cases:
+            with self.subTest(value=value):
+                masked = local_masking.mask_local_texts([value], timeout=30)[0]
+                payload = json.loads(masked)
+                items = list(payload.values()) if isinstance(payload, dict) else payload
+                self.assertEqual(len(items), 2)
+                self.assertTrue(all(isinstance(item, str) and item.startswith('[[REGULAI_') for item in items), items)
+                self.assertNotIn('612345678', masked)
+                self.assertNotIn('4111111111111111', masked)
+
+    def test_non_sensitive_json_numbers_keep_exact_precision_and_bounded_exponents(self):
+        value = '[0,-7,17.005,1.234567890123456789,1e100000000,1e-100000000]'
+        self.assertEqual(local_masking.mask_local_texts([value], timeout=30)[0], value)
+
     def test_model_unavailable_changed_or_failed_never_returns_original(self):
         for error in (RuntimeError('Missing model'), OSError('Unreadable model')):
             with self.subTest(error=type(error).__name__), patch.object(local_masking, '_load_model', side_effect=error):

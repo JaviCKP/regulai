@@ -1,5 +1,6 @@
 """Offline CPU masking. Detection is bounded and fallible; never downloads a model."""
 from functools import lru_cache
+from decimal import Decimal, InvalidOperation
 from hashlib import sha256
 from importlib import metadata, util
 import json
@@ -8,7 +9,7 @@ import re
 import threading
 import time
 
-DETECTOR_VERSION = 'regulai-local-v1'
+DETECTOR_VERSION = 'regulai-local-v2'
 SPACY_VERSION = '3.8.16'
 MODEL_NAME = 'xx_ent_wiki_sm'
 MODEL_VERSION = '3.8.0'
@@ -158,6 +159,26 @@ def _mask_segment(text, nlp, deadline):
                 pairs.append(json.dumps(masked_key, ensure_ascii=False) + ':' + encoded)
             return '{' + ','.join(pairs) + '}'
         if isinstance(value, _Number):
+            # JSON type is not a privacy exemption. Inspect the exact token and
+            # its integer value so exponent notation cannot hide a phone/card.
+            # Bound normalization before formatting; 1e100000000 must not expand.
+            candidates = [str(value)]
+            try:
+                number = Decimal(value)
+                if (0 <= number.adjusted() <= 30
+                        and number == number.to_integral_value()):
+                    candidates.append(format(number.to_integral_value(), 'f'))
+            except InvalidOperation as error:
+                raise ValueError('Unsupported JSON numeric token for local masking.') from error
+            for candidate in dict.fromkeys(candidates):
+                masked = _mask_plain(candidate, nlp, deadline)
+                if masked != candidate:
+                    # A sensitive number becomes a JSON marker string. Partial
+                    # replacement would leave an invalid or misleading number.
+                    marker = _PLACEHOLDER.search(masked)
+                    if marker is None:
+                        raise ValueError('Invalid local masking numeric result.')
+                    return json.dumps(marker.group())
             return str(value)
         if isinstance(value, str):
             return json.dumps(_mask_plain(value, nlp, deadline), ensure_ascii=False)

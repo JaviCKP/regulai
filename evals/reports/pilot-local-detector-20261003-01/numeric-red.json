@@ -1,0 +1,20 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_local_masking.LocalMaskingTests.test_json_numeric_pii_and_equivalent_exponents_are_transformed",
+    "--settings=regulai.test_settings"
+  ],
+  "exit_code": 1,
+  "finished_utc": "2026-10-03T15:03:02.076415+00:00",
+  "seconds": 3.234,
+  "log_sha256": "009746fa6c1ef49a65f2f652e2c661394a7d30aa686478a26191c3ebe277412f",
+  "source_sha256": {
+    "regulai/front/local_masking.py": "118be433eb4a3ef71063654b71c7047b66e3bd55482e1f9ed3bc00832c035dbe",
+    "regulai/front/test_local_masking.py": "a6e1bde5bf326d434618609ab1ca737f67e158aad4ae7c7b800b24e55cac4309",
+    "requirements.txt": "947e437b58acb8d09f6e5e6d10e36b3dd63cf57b46d4441e5497249aca5aa10c"
+  }
+}
