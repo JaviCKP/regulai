@@ -1,7 +1,7 @@
 # 15: Política inicial e histórico reversible
 
-**Status:** blocked
-**Blocked by:** 09, 12, 13
+**Status:** in-progress
+**Blocked by:** none
 
 ## Entrega y aceptación
 
@@ -12,4 +12,3 @@ Especificación y propiedad: [contratos de correcciones](../correcciones-communi
 ## Verificación observada
 
 Pendiente de ejecución; no se atribuyen resultados aún.
-

@@ -1,7 +1,7 @@
 # 16: Interfaz y recursos locales
 
-**Status:** ready-for-agent
-**Blocked by:** 09, 10
+**Status:** in-progress
+**Blocked by:** none
 
 ## Entrega y aceptación
 
@@ -12,4 +12,3 @@ Especificación y propiedad: [contratos de correcciones](../correcciones-communi
 ## Verificación observada
 
 Pendiente de ejecución; no se atribuyen resultados aún.
-
