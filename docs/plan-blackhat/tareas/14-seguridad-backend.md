@@ -20,7 +20,7 @@ La rotación se probó solo sobre bases de test, incluyendo dry-run, lotes, ciph
 
 ## Actualización — 3 de octubre de 2026
 
-Revisión S cerrada técnicamente en `e7311bf`: toggle máscara POST/CSRF (GET405, POST sin token403, POST válido302, empresa ajena404). [Rotación de claves](../rotacion-claves.md) documentada; solo test DB, sin recifrado del usuario. La revisión documental independiente sigue en tarea19.
+Revisión S cerrada técnicamente en `e7311bf`: toggle máscara POST/CSRF (GET405, POST sin token403, POST válido302, empresa ajena404). [Rotación de claves](../rotacion-claves.md) documentada; solo test DB, sin recifrado del usuario. La revisión documental independiente se cerró en [tarea 19](19-revision-final.md).
 
 [Resultado técnico actual y pendientes](../informe-correcciones-community.md); [registro consolidado](../estado-ejecucion.md).
 

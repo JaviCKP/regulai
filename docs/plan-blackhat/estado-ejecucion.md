@@ -2,7 +2,7 @@
 
 ## Estado de las correcciones — 3 de octubre de 2026
 
-Código técnico recibido: `51f4ee5`; original `6a0f667`; inicio `4400f0b` (mismo código que `4b10778`). D1–D7 aprobadas. B1–B10/C1–C2 y hallazgos técnicos adversariales resueltos; tareas 11–18 done con pendientes externos explícitos. [Tabla de pruebas y commits](informe-correcciones-community.md); [revisiones originales Standards y Spec](revisiones-correcciones/README.md). Tarea 19 in-review hasta revisión R y gates finales de ASTRA.
+Código técnico recibido: `51f4ee5`; original `6a0f667`; inicio `4400f0b` (mismo código que `4b10778`). D1–D7 aprobadas. B1–B10/C1–C2 y hallazgos adversariales resueltos; tareas 09–19 done con pendientes externos explícitos. [Tabla de pruebas y commits](informe-correcciones-community.md); [revisiones originales Standards y Spec](revisiones-correcciones/README.md). R cerrada: Spec sin hallazgos y condición de máscara activa corregida en `52bdc8d`, con verificación independiente. Las [cinco puertas posteriores a la documentación](../../evals/reports/community-fixes-docs-verification-20261003/README.md) terminaron con exit0: **302 tests OK en 62,428 s**, check sin incidencias, migraciones sin cambios, 150 offline/0 fallos/0 llamadas reales y pip-audit sin vulnerabilidades conocidas.
 
 | Integración observada | Suite front/api | Otras cuatro puertas |
 | --- | --- | --- |

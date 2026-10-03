@@ -1,6 +1,6 @@
 # regulAI Community: plan de implementación para Black Hat
 
-**Estado: correcciones técnicas integradas y revisadas; documentación final en revisión.** Revisión: 3 de octubre de 2026. Base original: [Regulai/platform, commit 6a0f667](https://github.com/Regulai/platform/tree/6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda); inicio de correcciones `4400f0b`; código técnico recibido `51f4ee5`. Las especificaciones originales se conservan; cada plan distingue implementación y límites reales.
+**Estado: correcciones técnicas y documentación integradas y revisadas; validación externa pendiente.** Revisión: 3 de octubre de 2026. Base original: [Regulai/platform, commit 6a0f667](https://github.com/Regulai/platform/tree/6a0f667c4fb02ec5a93b9eb9e2335385df7e2bda); inicio de correcciones `4400f0b`; código técnico recibido `51f4ee5`. Las especificaciones originales se conservan; cada plan distingue implementación y límites reales.
 
 ## Resumen ejecutivo
 
@@ -20,7 +20,7 @@ Sin servicios de enmascarado activos, una política válida puede permitir envia
 
 ## Problemas conocidos y corregidos
 
-B1–B10/C1–C2 y los hallazgos posteriores de revisión tienen comportamiento, pruebas y commits en el [informe de correcciones](informe-correcciones-community.md). Los [informes Standards y Spec](revisiones-correcciones/README.md) permanecen íntegros sobre su checkout original. D1–D7 están aprobadas. La [tarea 19](tareas/19-revision-final.md) continúa in-review hasta la revisión documental y los gates finales de ASTRA.
+B1–B10/C1–C2 y los hallazgos posteriores de revisión tienen comportamiento, pruebas y commits en el [informe de correcciones](informe-correcciones-community.md). Los [informes Standards y Spec](revisiones-correcciones/README.md) permanecen íntegros sobre su checkout original. D1–D7 están aprobadas. La [tarea 19](tareas/19-revision-final.md) está cerrada: revisión R verificada y [cinco puertas repetidas tras integrar la documentación](../../evals/reports/community-fixes-docs-verification-20261003/README.md), con 302 tests OK en 62,428 s.
 
 ## Qué queremos enseñar
 

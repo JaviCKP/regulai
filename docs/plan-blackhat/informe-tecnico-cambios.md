@@ -18,7 +18,7 @@
 
 ## Problemas conocidos y corregidos
 
-La [tabla de correcciones Community](informe-correcciones-community.md) registra B1–B10/C1–C2, mejoras de diseño, hallazgos adversariales, pruebas y commits integrados. Los [ejes Standards y Spec](revisiones-correcciones/README.md) conservan sus informes originales. Las decisiones D1–D7 están aprobadas. Consulta [arranque](arranque-y-demo.md), [rotación de claves](rotacion-claves.md) y [estado observado](estado-ejecucion.md) para operación y gates; la documentación final sigue en revisión.
+La [tabla de correcciones Community](informe-correcciones-community.md) registra B1–B10/C1–C2, mejoras de diseño, hallazgos adversariales, pruebas y commits integrados. Los [ejes Standards y Spec](revisiones-correcciones/README.md) conservan sus informes originales y la verificación de la corrección documental. Las decisiones D1–D7 están aprobadas. Consulta [arranque](arranque-y-demo.md), [rotación de claves](rotacion-claves.md) y [estado observado](estado-ejecucion.md) para operación y gates; la revisión documental está cerrada.
 
 Este documento explica cambios existentes en el repositorio. Distingue la lectura del código original, la implementación actual y las comprobaciones conservadas. No presenta como terminado todo el plan: faltan calibración, evaluación comparativa real y parte de la validación final.
 
@@ -270,7 +270,7 @@ El informe offline final identifica `023c7ef` como HEAD en el momento de ejecuci
 
 ## 15. Cosas pendientes y orden de trabajo
 
-**Los criterios externos del plan Black Hat siguen abiertos.** Las correcciones técnicas están integradas; falta calibración, evidencia de aplicaciones Office reales, ensayos humanos y validación con proveedores vivos. La tarea 19 conserva in-review hasta revisión documental y gates finales.
+**Los criterios externos del plan Black Hat siguen abiertos.** Las correcciones técnicas y su documentación están integradas y revisadas; falta calibración, evidencia de aplicaciones Office reales, ensayos humanos y validación con proveedores vivos. La tarea 19 está cerrada con los [cinco gates posteriores a la documentación](../../evals/reports/community-fixes-docs-verification-20261003/README.md): 302 tests OK en 62,428 s y las otras cuatro puertas correctas.
 
 | Orden | Pendiente | Trabajo concreto | Criterio para cerrarlo |
 | --- | --- | --- | --- |
