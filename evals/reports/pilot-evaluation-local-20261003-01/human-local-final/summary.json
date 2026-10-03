@@ -1,0 +1,659 @@
+[
+  {
+    "configuration": "economy",
+    "split": "development",
+    "n": 12,
+    "controls_passed": 12,
+    "delivered": 10,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 50,
+    "provider_calls": 30,
+    "local_transformations": 20,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 10,
+      "generation": 10,
+      "verification": 10
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00058200",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 398.5,
+    "p95_latency_ms": 593.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "economy",
+    "split": "reserved",
+    "n": 12,
+    "controls_passed": 12,
+    "delivered": 10,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 50,
+    "provider_calls": 30,
+    "local_transformations": 20,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 10,
+      "generation": 10,
+      "verification": 10
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00058200",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 398.5,
+    "p95_latency_ms": 484.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "economy",
+    "split": "all",
+    "n": 24,
+    "controls_passed": 24,
+    "delivered": 20,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 100,
+    "provider_calls": 60,
+    "local_transformations": 40,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 20,
+      "generation": 20,
+      "verification": 20
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00116400",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 398.5,
+    "p95_latency_ms": 563.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "strong",
+    "split": "development",
+    "n": 12,
+    "controls_passed": 12,
+    "delivered": 10,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 50,
+    "provider_calls": 30,
+    "local_transformations": 20,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 10,
+      "generation": 10,
+      "verification": 10
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00215400",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 422.0,
+    "p95_latency_ms": 829.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "strong",
+    "split": "reserved",
+    "n": 12,
+    "controls_passed": 12,
+    "delivered": 10,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 50,
+    "provider_calls": 30,
+    "local_transformations": 20,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 10,
+      "generation": 10,
+      "verification": 10
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00215400",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 398.5,
+    "p95_latency_ms": 2844.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "strong",
+    "split": "all",
+    "n": 24,
+    "controls_passed": 24,
+    "delivered": 20,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 100,
+    "provider_calls": 60,
+    "local_transformations": 40,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 20,
+      "generation": 20,
+      "verification": 20
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00430800",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 406.0,
+    "p95_latency_ms": 829.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "router",
+    "split": "development",
+    "n": 12,
+    "controls_passed": 12,
+    "delivered": 10,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 50,
+    "provider_calls": 30,
+    "local_transformations": 20,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 10,
+      "generation": 10,
+      "verification": 10
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00058200",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 430.0,
+    "p95_latency_ms": 547.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "router",
+    "split": "reserved",
+    "n": 12,
+    "controls_passed": 12,
+    "delivered": 10,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 50,
+    "provider_calls": 30,
+    "local_transformations": 20,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 10,
+      "generation": 10,
+      "verification": 10
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00058200",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 429.5,
+    "p95_latency_ms": 766.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  },
+  {
+    "configuration": "router",
+    "split": "all",
+    "n": 24,
+    "controls_passed": 24,
+    "delivered": 20,
+    "coverage": 0.8333333333333334,
+    "human_reviewed_n": 0,
+    "human_review_complete": false,
+    "correct_answers": null,
+    "correct_abstention": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "requirements_met": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_correct": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_negative": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "sensitivity_false_positive": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "citations_supported": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_corrected": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempt_introduced": {
+      "positive": 0,
+      "negative": 0,
+      "n": 0
+    },
+    "second_attempts": 0,
+    "accounting_entries": 100,
+    "provider_calls": 60,
+    "local_transformations": 40,
+    "local_api_cost_usd": "0",
+    "calls_by_purpose": {
+      "obfuscation": 0,
+      "classification": 20,
+      "generation": 20,
+      "verification": 20
+    },
+    "provider_reported_usd": "0",
+    "tariff_estimated_usd": "0.00116400",
+    "uncertain_reserved_usd": "0",
+    "unknown_cost_calls": 0,
+    "cost_per_correct_estimated_usd": null,
+    "cost_per_correct_reported_usd": null,
+    "p50_latency_ms": 429.5,
+    "p95_latency_ms": 578.0,
+    "real_provider_cases": 0,
+    "quality_claim": null,
+    "savings_claim": null
+  }
+]

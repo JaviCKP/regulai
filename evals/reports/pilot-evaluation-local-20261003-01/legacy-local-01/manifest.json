@@ -1,0 +1,731 @@
+{
+  "version": 1,
+  "mode": "offline",
+  "policy_version": "synthetic-policy-v1",
+  "dataset": "cases.jsonl",
+  "seed": 20261002,
+  "configurations": [
+    "economy",
+    "strong",
+    "router"
+  ],
+  "model_versions": {
+    "economy": "synthetic-economy-v1",
+    "strong": "synthetic-strong-v1",
+    "judge": "jev-1.13.0"
+  },
+  "prices_per_million": {
+    "economy": {
+      "input": "1",
+      "output": "2"
+    },
+    "strong": {
+      "input": "5",
+      "output": "10"
+    },
+    "judge": {
+      "input": "1",
+      "output": "1"
+    }
+  },
+  "price_date": "2026-10-02",
+  "currency": "USD",
+  "thresholds": {
+    "classification": 0.8,
+    "verification": 0.8
+  },
+  "jev_max_call_cost": "0.02",
+  "context_window": 131072,
+  "max_generation_attempts": {
+    "economy": 1,
+    "strong": 1,
+    "router": 2
+  },
+  "verification_mode": "enforce",
+  "classification_mode": "required",
+  "quality_by_task": {
+    "economy": 0.6,
+    "strong": 0.95
+  },
+  "minimum_quality": {
+    "economy": 0.5,
+    "balanced": 0.6,
+    "strong": 0.9
+  },
+  "rubrics": {
+    "classification": "sensitivity-v2",
+    "task": "task-v2",
+    "verification": "verification-v1",
+    "exact_labels": "human-synthetic-v1"
+  },
+  "limits": {
+    "budget": "0.50",
+    "deadline_seconds": 90,
+    "max_output_tokens": 1000
+  },
+  "synthetic_usage": {
+    "generation_input_tokens": 100,
+    "generation_output_tokens": 20,
+    "judge_input_tokens": 50,
+    "judge_output_tokens": 10
+  },
+  "group_counts": {
+    "task": 12,
+    "document": 10,
+    "sensitivity": 10,
+    "adversarial": 8,
+    "state": 10
+  },
+  "split_counts": {
+    "development": 30,
+    "reserved": 20
+  },
+  "scope": "Preprogrammed provider and judge responses exercise real control flow. They do not measure model precision, factual accuracy or real savings. Live execution is disabled.",
+  "dataset_hash": "809604b712cda2e21a8d66a911003b1bd93d3a22b4c88f0d774f9bbbc60a44bc",
+  "document_hashes": {
+    "documents/late-evidence.txt": "a4b48a8e33e527f8aa9dbf70b64bf475beb5905981f15d9c59479b5e4473bc99"
+  },
+  "masking_observed": {
+    "backend": "local",
+    "detector_version": "regulai-local-v1",
+    "spacy_version": "3.8.16",
+    "model_name": "xx_ent_wiki_sm",
+    "model_version": "3.8.0",
+    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
+    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a",
+    "detect": "both",
+    "language": ""
+  },
+  "runtime_versions_observed": {
+    "python": "3.12.11",
+    "Django": "5.2.17",
+    "djangorestframework": "3.18.1",
+    "openai": "1.102.0",
+    "pydantic": "2.11.7",
+    "requests": "2.33.0",
+    "pypdf": "6.19.0",
+    "python-docx": "1.2.0",
+    "spacy": "3.8.16",
+    "xx-ent-wiki-sm": "3.8.0"
+  },
+  "manifest_template_hash": "c312551d9a585a87dada6ce421262473c976cfe2ad41341c2ffff57bf2808444",
+  "evaluator_source_hash": "aa9d896e29f38e1281307fccb232911e3287d780a4741f85bf780f510dc5bed1",
+  "commit": "2c147f40951dc4744a640b268699c1ec941488d8",
+  "run_id": "6708e782f68743ea91448d83e51a34d0",
+  "created_at": "2026-10-03T14:56:06.699766+00:00",
+  "selected_split": "all",
+  "execution_order": [
+    [
+      "simple-es",
+      "strong"
+    ],
+    [
+      "simple-es",
+      "router"
+    ],
+    [
+      "simple-es",
+      "economy"
+    ],
+    [
+      "complex-en",
+      "router"
+    ],
+    [
+      "complex-en",
+      "economy"
+    ],
+    [
+      "complex-en",
+      "strong"
+    ],
+    [
+      "ambiguous-es",
+      "economy"
+    ],
+    [
+      "ambiguous-es",
+      "strong"
+    ],
+    [
+      "ambiguous-es",
+      "router"
+    ],
+    [
+      "sum-es",
+      "strong"
+    ],
+    [
+      "sum-es",
+      "router"
+    ],
+    [
+      "sum-es",
+      "economy"
+    ],
+    [
+      "extract-date-es",
+      "router"
+    ],
+    [
+      "extract-date-es",
+      "economy"
+    ],
+    [
+      "extract-date-es",
+      "strong"
+    ],
+    [
+      "rewrite-en",
+      "economy"
+    ],
+    [
+      "rewrite-en",
+      "strong"
+    ],
+    [
+      "rewrite-en",
+      "router"
+    ],
+    [
+      "multi-constraint-es",
+      "strong"
+    ],
+    [
+      "multi-constraint-es",
+      "router"
+    ],
+    [
+      "multi-constraint-es",
+      "economy"
+    ],
+    [
+      "compound-interest-es",
+      "router"
+    ],
+    [
+      "compound-interest-es",
+      "economy"
+    ],
+    [
+      "compound-interest-es",
+      "strong"
+    ],
+    [
+      "logic-en",
+      "economy"
+    ],
+    [
+      "logic-en",
+      "strong"
+    ],
+    [
+      "logic-en",
+      "router"
+    ],
+    [
+      "summary-es",
+      "strong"
+    ],
+    [
+      "summary-es",
+      "router"
+    ],
+    [
+      "summary-es",
+      "economy"
+    ],
+    [
+      "units-es",
+      "router"
+    ],
+    [
+      "units-es",
+      "economy"
+    ],
+    [
+      "units-es",
+      "strong"
+    ],
+    [
+      "negative-number-en",
+      "economy"
+    ],
+    [
+      "negative-number-en",
+      "strong"
+    ],
+    [
+      "negative-number-en",
+      "router"
+    ],
+    [
+      "public-document",
+      "strong"
+    ],
+    [
+      "public-document",
+      "router"
+    ],
+    [
+      "public-document",
+      "economy"
+    ],
+    [
+      "late-evidence",
+      "router"
+    ],
+    [
+      "late-evidence",
+      "economy"
+    ],
+    [
+      "late-evidence",
+      "strong"
+    ],
+    [
+      "document-false-id",
+      "economy"
+    ],
+    [
+      "document-false-id",
+      "strong"
+    ],
+    [
+      "document-false-id",
+      "router"
+    ],
+    [
+      "document-contradiction",
+      "strong"
+    ],
+    [
+      "document-contradiction",
+      "router"
+    ],
+    [
+      "document-contradiction",
+      "economy"
+    ],
+    [
+      "document-missing-answer",
+      "router"
+    ],
+    [
+      "document-missing-answer",
+      "economy"
+    ],
+    [
+      "document-missing-answer",
+      "strong"
+    ],
+    [
+      "document-malformed-json",
+      "economy"
+    ],
+    [
+      "document-malformed-json",
+      "strong"
+    ],
+    [
+      "document-malformed-json",
+      "router"
+    ],
+    [
+      "document-html-literal",
+      "strong"
+    ],
+    [
+      "document-html-literal",
+      "router"
+    ],
+    [
+      "document-html-literal",
+      "economy"
+    ],
+    [
+      "document-whitespace",
+      "router"
+    ],
+    [
+      "document-whitespace",
+      "economy"
+    ],
+    [
+      "document-whitespace",
+      "strong"
+    ],
+    [
+      "document-omission-en",
+      "economy"
+    ],
+    [
+      "document-omission-en",
+      "strong"
+    ],
+    [
+      "document-omission-en",
+      "router"
+    ],
+    [
+      "document-unreadable",
+      "strong"
+    ],
+    [
+      "document-unreadable",
+      "router"
+    ],
+    [
+      "document-unreadable",
+      "economy"
+    ],
+    [
+      "fake-secret",
+      "router"
+    ],
+    [
+      "fake-secret",
+      "economy"
+    ],
+    [
+      "fake-secret",
+      "strong"
+    ],
+    [
+      "public-credential-word",
+      "economy"
+    ],
+    [
+      "public-credential-word",
+      "strong"
+    ],
+    [
+      "public-credential-word",
+      "router"
+    ],
+    [
+      "personal-authorized",
+      "strong"
+    ],
+    [
+      "personal-authorized",
+      "router"
+    ],
+    [
+      "personal-authorized",
+      "economy"
+    ],
+    [
+      "business-authorized",
+      "router"
+    ],
+    [
+      "business-authorized",
+      "economy"
+    ],
+    [
+      "business-authorized",
+      "strong"
+    ],
+    [
+      "restricted-classification",
+      "economy"
+    ],
+    [
+      "restricted-classification",
+      "strong"
+    ],
+    [
+      "restricted-classification",
+      "router"
+    ],
+    [
+      "unknown-sensitivity",
+      "strong"
+    ],
+    [
+      "unknown-sensitivity",
+      "router"
+    ],
+    [
+      "unknown-sensitivity",
+      "economy"
+    ],
+    [
+      "destination-not-authorized",
+      "router"
+    ],
+    [
+      "destination-not-authorized",
+      "economy"
+    ],
+    [
+      "destination-not-authorized",
+      "strong"
+    ],
+    [
+      "consent-required",
+      "economy"
+    ],
+    [
+      "consent-required",
+      "strong"
+    ],
+    [
+      "consent-required",
+      "router"
+    ],
+    [
+      "consent-accepted",
+      "strong"
+    ],
+    [
+      "consent-accepted",
+      "router"
+    ],
+    [
+      "consent-accepted",
+      "economy"
+    ],
+    [
+      "secret-in-file",
+      "router"
+    ],
+    [
+      "secret-in-file",
+      "economy"
+    ],
+    [
+      "secret-in-file",
+      "strong"
+    ],
+    [
+      "attack-local-override",
+      "economy"
+    ],
+    [
+      "attack-local-override",
+      "strong"
+    ],
+    [
+      "attack-local-override",
+      "router"
+    ],
+    [
+      "attack-document-override",
+      "strong"
+    ],
+    [
+      "attack-document-override",
+      "router"
+    ],
+    [
+      "attack-document-override",
+      "economy"
+    ],
+    [
+      "attack-html-source-id",
+      "router"
+    ],
+    [
+      "attack-html-source-id",
+      "economy"
+    ],
+    [
+      "attack-html-source-id",
+      "strong"
+    ],
+    [
+      "attack-foreign-citation",
+      "economy"
+    ],
+    [
+      "attack-foreign-citation",
+      "strong"
+    ],
+    [
+      "attack-foreign-citation",
+      "router"
+    ],
+    [
+      "attack-path-citation",
+      "strong"
+    ],
+    [
+      "attack-path-citation",
+      "router"
+    ],
+    [
+      "attack-path-citation",
+      "economy"
+    ],
+    [
+      "attack-quote-edited",
+      "router"
+    ],
+    [
+      "attack-quote-edited",
+      "economy"
+    ],
+    [
+      "attack-quote-edited",
+      "strong"
+    ],
+    [
+      "attack-history-leak",
+      "economy"
+    ],
+    [
+      "attack-history-leak",
+      "strong"
+    ],
+    [
+      "attack-history-leak",
+      "router"
+    ],
+    [
+      "attack-consent-content-change",
+      "strong"
+    ],
+    [
+      "attack-consent-content-change",
+      "router"
+    ],
+    [
+      "attack-consent-content-change",
+      "economy"
+    ],
+    [
+      "provider-timeout",
+      "router"
+    ],
+    [
+      "provider-timeout",
+      "economy"
+    ],
+    [
+      "provider-timeout",
+      "strong"
+    ],
+    [
+      "invalid-rule",
+      "economy"
+    ],
+    [
+      "invalid-rule",
+      "strong"
+    ],
+    [
+      "invalid-rule",
+      "router"
+    ],
+    [
+      "empty-response",
+      "strong"
+    ],
+    [
+      "empty-response",
+      "router"
+    ],
+    [
+      "empty-response",
+      "economy"
+    ],
+    [
+      "truncated-response",
+      "router"
+    ],
+    [
+      "truncated-response",
+      "economy"
+    ],
+    [
+      "truncated-response",
+      "strong"
+    ],
+    [
+      "provider-refusal",
+      "economy"
+    ],
+    [
+      "provider-refusal",
+      "strong"
+    ],
+    [
+      "provider-refusal",
+      "router"
+    ],
+    [
+      "duplicate-request",
+      "strong"
+    ],
+    [
+      "duplicate-request",
+      "router"
+    ],
+    [
+      "duplicate-request",
+      "economy"
+    ],
+    [
+      "cancel-consent",
+      "router"
+    ],
+    [
+      "cancel-consent",
+      "economy"
+    ],
+    [
+      "cancel-consent",
+      "strong"
+    ],
+    [
+      "missing-price-budget",
+      "economy"
+    ],
+    [
+      "missing-price-budget",
+      "strong"
+    ],
+    [
+      "missing-price-budget",
+      "router"
+    ],
+    [
+      "context-overflow",
+      "strong"
+    ],
+    [
+      "context-overflow",
+      "router"
+    ],
+    [
+      "context-overflow",
+      "economy"
+    ],
+    [
+      "judge-invalid-json",
+      "router"
+    ],
+    [
+      "judge-invalid-json",
+      "economy"
+    ],
+    [
+      "judge-invalid-json",
+      "strong"
+    ]
+  ],
+  "source_hashes": {
+    "chat_service.py": "7efe1302823e9d9a356f5bda67a3e3eab7b9d9e105a5dc2cd229e543bd6ec602",
+    "policy.py": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
+    "routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1",
+    "verification.py": "0342cd9c8825930ee9365386bad0479156b10fce4476c5648835587c08ecacc1",
+    "jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
+    "documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
+    "masking.py": "eda1eeb98c0604da08e48052bc58d19fbfd926c40d5b94d2a01377a5dedce313",
+    "local_masking.py": "118be433eb4a3ef71063654b71c7047b66e3bd55482e1f9ed3bc00832c035dbe"
+  },
+  "outcomes_hash": "4e7d7ff69945037514712edb5483463baaff916b58b84931283c7b78dfec0705",
+  "label_normalization": "Execution state is retained. Clarification error=>clarification; unavailable authorized routes=>blocked; rejected local/semantic checks and failed judge=>not_verified. Fixed economy below the shared strong floor correctly abstains."
+}

@@ -1,0 +1,142 @@
+{
+  "checks_passed": true,
+  "reports": {
+    "smoke-local-final": {
+      "runs": 24,
+      "controls_passed": 24,
+      "local_transformations": 38,
+      "simulated_external_calls": 54,
+      "human_reviews_completed": 0,
+      "real_provider_cases": 0,
+      "actual_api_spend_usd": "0",
+      "budget_simulated": {
+        "cap_usd": "1.00",
+        "known_cost_usd": "0.00240900",
+        "provider_reported_usd": "0",
+        "tariff_estimated_usd": "0.00240900",
+        "budget_exposure_usd": "0.13905828",
+        "remaining_usd": "0.86094172",
+        "uncertain_reservations_usd": "0"
+      },
+      "manifest_sha256": "dc2e447ab545a21516b11e6bb0089277dcbd3e473a1d83c41a03d34748302b53",
+      "report_manifest_sha256": "a088769acf48da6396e2ac93dcbcc64ac57668d8c3912001e5769b00b5e7a9ef",
+      "results_sha256": "d5847ba1059d16893c057d4f26fa9602a1619acae3a95d0198bbb1de0112e77c",
+      "declared_and_observed_sources_runtime_masking_match": true,
+      "latencies": [
+        {
+          "configuration": "economy",
+          "n": 8,
+          "p50_latency_ms": 390.5,
+          "p95_latency_ms": 453.0
+        },
+        {
+          "configuration": "strong",
+          "n": 8,
+          "p50_latency_ms": 414.0,
+          "p95_latency_ms": 453.0
+        },
+        {
+          "configuration": "router",
+          "n": 8,
+          "p50_latency_ms": 460.5,
+          "p95_latency_ms": 3094.0
+        }
+      ]
+    },
+    "human-local-final": {
+      "runs": 72,
+      "controls_passed": 72,
+      "local_transformations": 120,
+      "simulated_external_calls": 180,
+      "human_reviews_completed": 0,
+      "real_provider_cases": 0,
+      "actual_api_spend_usd": "0",
+      "budget_simulated": {
+        "cap_usd": "1.00",
+        "known_cost_usd": "0.00663600",
+        "provider_reported_usd": "0",
+        "tariff_estimated_usd": "0.00663600",
+        "budget_exposure_usd": "0.45566592",
+        "remaining_usd": "0.54433408",
+        "uncertain_reservations_usd": "0"
+      },
+      "manifest_sha256": "3be74f5468c33978eaa7d35b9d1e040d1df0fa963800f1ba7d355c117e8914f0",
+      "report_manifest_sha256": "c6663dfd9fb41a29394e105f35495c2da55fe7f7e0eacd4b18e77e4fe4750387",
+      "results_sha256": "3b02867cf62984152c19c680c4ac11653f18a8ad71270972b43b2e5bc05f3e28",
+      "declared_and_observed_sources_runtime_masking_match": true,
+      "latencies": [
+        {
+          "configuration": "economy",
+          "n": 24,
+          "p50_latency_ms": 398.5,
+          "p95_latency_ms": 563.0
+        },
+        {
+          "configuration": "strong",
+          "n": 24,
+          "p50_latency_ms": 406.0,
+          "p95_latency_ms": 829.0
+        },
+        {
+          "configuration": "router",
+          "n": 24,
+          "p50_latency_ms": 429.5,
+          "p95_latency_ms": 578.0
+        }
+      ]
+    }
+  },
+  "approval_status": "pending",
+  "approval_sha256": "8f1cedba3835802fce9af6f66092e3abcb2d466cb39e5357cff5dfd05b59a3cf",
+  "artifacts_sha256": {
+    "audit_final.py": "c81fc575f2f6a09c662a1b3cdb2a21449a073093eab19467dd36bf5179e26e43",
+    "checkpoint.md": "73f53ce50c2e03246907b007ec16d03ad5e1a7eba639eede9f7b7e4a4fca0529",
+    "gates.json": "9faa518a6992d8070b0ed32cbffed77adac9c6750bedc1face9b62280afff0c4",
+    "human-local-final/budget.json": "44db9dc2411ef6bc4bf89fc3525583a3220411f66043869ddd0d3dd7b13d93ee",
+    "human-local-final/cases.executed.jsonl": "38efefef17d07ba94db25c32186ca238b7521e35d34b3562cf51163ec7b3c075",
+    "human-local-final/completed-cases.jsonl": "3b02867cf62984152c19c680c4ac11653f18a8ad71270972b43b2e5bc05f3e28",
+    "human-local-final/human-review.pending.json": "2248370f76f913d48d6d5159750a8a03928cd83bf104b4630708ff0e4cdff425",
+    "human-local-final/manifest.json": "c6663dfd9fb41a29394e105f35495c2da55fe7f7e0eacd4b18e77e4fe4750387",
+    "human-local-final/plan.json": "7bcd3f6c1e0ce929ac242a0b5852616736bb6b99c7b12dc5e0d2e70e4c226c25",
+    "human-local-final/report.md": "21b4bfaa5e80260dbe1d17093e3548c4ead8bbab0b4f5b47154f18d75c9af127",
+    "human-local-final/results.jsonl": "3b02867cf62984152c19c680c4ac11653f18a8ad71270972b43b2e5bc05f3e28",
+    "human-local-final/rubric.md": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+    "human-local-final/summary.csv": "907a51ef3f142210f2fa2e7d7eab0f95501249abe9824b7df74b5322662f014e",
+    "human-local-final/summary.json": "a4c07f860305737459fd7180e7fd0fa8afb7699019ea710dd60150db3346fc23",
+    "human-preflight-final.json": "a55e3a1c869958ee37b82a687a0fbb7218402772e03d5293a9bd81adc3fdaeee",
+    "legacy-local-01/manifest.json": "7d542c71acbe3fe2881768d093b4890849a9ff8884adddf0d705b112793ff954",
+    "legacy-local-01/report.md": "fa8c946442d4ca87a4cdc91d2e25f4b37a2e75b6ff248c64183fe44a8e1220cd",
+    "legacy-local-01/results.jsonl": "8ffcebdb3e73b8e4c00daece97015e0d0f9d1d04429b7a4d3fdccff32c092afe",
+    "legacy-local-01/summary.csv": "8ba298cb2476ddf767efaafe50a906c630d38c3bd525487b4e7cac9ba15d4787",
+    "legacy-local-01/summary.json": "e0eb127a41798811f8ec18d4c39dce0d8e5d7375f431670662ddefde066f3155",
+    "legacy-ner-diagnosis.json": "ab0a2b90655092ebf3dd683a7bf498539873871014510db92b83d974f8b55bdc",
+    "owned-files.json": "14c4aec77ee1d08a144b585424cc952ec6cf83e900e31d27486dd6451d3e9a57",
+    "preflight-final.json": "edcc13399ef48179ebc71d12bd6a639956e036a1df53d1c606c3b5c66637ab0e",
+    "README.md": "bcc9e9f97fe6f3de664dcf4dc5f192753f28312527b2bf7ed3f6569606339b66",
+    "smoke-local-01/budget.json": "692483bcc25e49d23b2b39b420ec66bdffcde7d14bb2edee00cdb70bac81f6b9",
+    "smoke-local-01/cases.executed.jsonl": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+    "smoke-local-01/completed-cases.jsonl": "b25a9b23cbb4260aad32abffa56a0935497a3f5f1bb21dd01b07acaf44eb3eab",
+    "smoke-local-01/human-review.pending.json": "a91bd10cbeee11336949f5b869fe307284f891b6c00126a21ee3c6e34c7f3d1d",
+    "smoke-local-01/manifest.json": "2850f0ffd46c0269df118622b29500c3f65b51a783adc760a86733d738fc117d",
+    "smoke-local-01/plan.json": "3bc10d5fb67ac5f8edd04a3d92b5092c39a862c9f081418c4a6211d3b1c68a4e",
+    "smoke-local-01/report.md": "8e30991e24897c5923168ff76ab8b0cdd8d73bd7a91aabd92c2412bc054d3ee3",
+    "smoke-local-01/results.jsonl": "b25a9b23cbb4260aad32abffa56a0935497a3f5f1bb21dd01b07acaf44eb3eab",
+    "smoke-local-01/rubric.md": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+    "smoke-local-01/summary.csv": "8941ec37fc6252f5e3e94b3dab6cc8a9f6fc6f3ae05cf351ff8414b0a190164e",
+    "smoke-local-01/summary.json": "43c4c121684627e8a4e115cd5a35b0e036fdade5089ec55598a1b5cfc073349b",
+    "smoke-local-final/budget.json": "967593bdc34d253cf5dc066efbd3bc938f0ab15e1e8fd37e35045a79ffb5c257",
+    "smoke-local-final/cases.executed.jsonl": "0103033f79de4dbf0025a2ed1721069e59f7b0b26b8dcc485ae71447f7080c3f",
+    "smoke-local-final/completed-cases.jsonl": "d5847ba1059d16893c057d4f26fa9602a1619acae3a95d0198bbb1de0112e77c",
+    "smoke-local-final/human-review.pending.json": "e9238c088077607454ce033ac279ffc33dea4564b5b96e44473e55f0869c4ce1",
+    "smoke-local-final/manifest.json": "a088769acf48da6396e2ac93dcbcc64ac57668d8c3912001e5769b00b5e7a9ef",
+    "smoke-local-final/plan.json": "ca641cc6e9581a100686acab1cfbf78080c3a01a1afa5db31abe7eca28a3ec52",
+    "smoke-local-final/report.md": "6ee30b98a69f67efee5774da740fd3095c9a0b8c0bd5e4f4e077f279ba34c0c8",
+    "smoke-local-final/results.jsonl": "d5847ba1059d16893c057d4f26fa9602a1619acae3a95d0198bbb1de0112e77c",
+    "smoke-local-final/rubric.md": "d5882386bef2210f16d8794c51fb16181d875e84f59081a4bd83d4ab212a4f7c",
+    "smoke-local-final/summary.csv": "3a9bdce5c1aff51c331c55776da72b77f6e1d219189749d496338c62a88aef9f",
+    "smoke-local-final/summary.json": "4a09d6c26116d36816b58f05f3ef195731469751b27c1234e3243e9aabf1ff2f",
+    "tests-focal-01.log": "2468e60c784147b88718775aaaf86b79201902da44e2873236b465cf9739dfc5",
+    "tests-focal-02.log": "8c38e9476a1153cbffdb761df3832bf82b25a2e949a2fabbf88b603df0b0770d",
+    "tests-focal-final.log": "3a2b0210ac08e695d1b934283730eaea212994b9479200264d3e5aa82c6cac1e"
+  }
+}

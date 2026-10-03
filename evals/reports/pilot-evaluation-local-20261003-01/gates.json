@@ -1,0 +1,87 @@
+{
+  "scope": "Local preparation only. All product provider transports simulated or blocked; no live paid execution.",
+  "baseline_commit": "700389c",
+  "final_report_commit": "ac9eb745cf201fd3378799a8a7bb6fab68ab5cb6",
+  "commands": [
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py test front.test_evaluation_budget front.test_smoke front.test_evaluation_pilot front.test_evaluation front.test_demo --settings=regulai.test_settings --noinput",
+      "capture": "rtk proxy powershell -NoProfile -Command '& .venv/Scripts/python.exe regulai/manage.py test front.test_evaluation_budget front.test_smoke front.test_evaluation_pilot front.test_evaluation front.test_demo --settings=regulai.test_settings --noinput 2>&1 | Tee-Object -FilePath \"evals/reports/pilot-evaluation-local-20261003-01/tests-focal-final.log\"; exit $LASTEXITCODE'",
+      "exit_code": 0,
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "test_seconds": 76.796,
+      "log": "tests-focal-final.log"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py smoke_ai --settings=regulai.test_settings --output evals/reports/pilot-evaluation-local-20261003-01/smoke-local-final",
+      "exit_code": 0,
+      "runs": 24,
+      "failed_controls": 0,
+      "real_calls": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py evaluate_ai --settings=regulai.test_settings --manifest evals/pilot-human/manifest.json --output evals/reports/pilot-evaluation-local-20261003-01/human-local-final",
+      "exit_code": 0,
+      "runs": 72,
+      "failed_controls": 0,
+      "real_calls": 0
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py smoke_ai --settings=regulai.test_settings --preflight --authorization evals/pilot-real/authorization.pending.json --output evals/reports/pilot-evaluation-local-20261003-01/preflight-must-not-exist",
+      "exit_code": 0,
+      "ready_for_real": false,
+      "network_calls": 0,
+      "report": "preflight-final.json"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py evaluate_ai --settings=regulai.test_settings --manifest evals/pilot-human/manifest.json --preflight --authorization evals/pilot-real/authorization.pending.json --output evals/reports/pilot-evaluation-local-20261003-01/human-preflight-must-not-exist",
+      "exit_code": 0,
+      "ready_for_real": false,
+      "network_calls": 0,
+      "report": "human-preflight-final.json"
+    },
+    {
+      "command": "rtk git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "preserved_intermediate": [
+    {
+      "log": "tests-focal-01.log",
+      "exit_code": 1,
+      "tests": 38,
+      "failures": 2,
+      "errors": 3,
+      "reason": "Loaded intermediate detector before citation-ID protocol fix."
+    },
+    {
+      "log": "tests-focal-02.log",
+      "exit_code": 1,
+      "tests": 40,
+      "failures": 1,
+      "errors": 1,
+      "reason": "Two development cases changed literal answers under NER; three configurations each."
+    },
+    {
+      "report": "legacy-local-01",
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py evaluate_ai --settings=regulai.test_settings --output evals/reports/pilot-evaluation-local-20261003-01/legacy-local-01",
+      "exit_code": 1,
+      "runs": 150,
+      "failed_controls": 6,
+      "real_calls": 0
+    },
+    {
+      "report": "smoke-local-01",
+      "exit_code": 0,
+      "runs": 24,
+      "failed_controls": 0,
+      "real_calls": 0
+    }
+  ],
+  "actual_api_spend_usd": "0",
+  "human_reviews_completed": 0,
+  "prohibited_actions_performed": [],
+  "datasets_rubrics_labels_thresholds_changed": false,
+  "decision": "Legacy bank retains its explicit identity HTTP fixture and unchanged tests. New pilot banks and demo use the actual local detector. No detector word exceptions or label edits."
+}

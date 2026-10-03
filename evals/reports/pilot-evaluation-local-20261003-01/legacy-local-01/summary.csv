@@ -1,0 +1,10 @@
+configuration,split,cases,control_passes,delivered,exact_answers,correct_abstentions,forbidden_egress,invalid_displayed_citations,calls,provider_calls,local_transformations,generation_calls,escalations,errors_corrected,errors_introduced,security_false_negatives,security_false_positives,failed_cases,unverified_cases,input_tokens,output_tokens,unknown_usage_calls,known_cost,unknown_cost_calls,total_cost,cost_per_exact_answer,currency,median_latency_ms,p95_latency_ms,real_provider_cases,real_quality,real_savings
+economy,development,30,28,15,10,15,0,0,119,68,51,25,0,0,0,0,0,12,10,4550,910,1,0.00594000,1,,,USD,203.0,328.0,0,,
+economy,reserved,20,20,8,8,12,0,0,56,33,23,11,0,0,0,0,0,9,4,2150,430,1,0.00280000,1,,,USD,195.0,375.0,0,,
+economy,all,50,48,23,18,27,0,0,175,101,74,36,0,0,0,0,0,21,14,6700,1340,2,0.00874000,2,,,USD,203.0,375.0,0,,
+strong,development,30,28,17,12,13,0,0,122,70,52,26,0,0,0,0,0,10,8,4700,940,1,0.02014000,1,,,USD,210.5,390.0,0,,
+strong,reserved,20,20,10,10,10,0,0,59,35,24,12,0,0,0,0,0,7,2,2300,460,1,0.00972000,1,,,USD,195.5,328.0,0,,
+strong,all,50,48,27,22,23,0,0,181,105,76,38,0,0,0,0,0,17,10,7000,1400,2,0.02986000,2,,,USD,203.0,344.0,0,,
+router,development,30,28,17,12,13,0,0,141,80,61,35,9,1,0,0,0,10,8,5650,1130,1,0.01306000,1,,,USD,242.0,437.0,0,,
+router,reserved,20,20,10,10,10,0,0,64,38,26,14,2,1,0,0,0,7,2,2550,510,1,0.00502000,1,,,USD,203.0,360.0,0,,
+router,all,50,48,27,22,23,0,0,205,118,87,49,11,2,0,0,0,17,10,8200,1640,2,0.01808000,2,,,USD,219.0,390.0,0,,
