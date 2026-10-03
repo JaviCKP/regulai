@@ -68,10 +68,10 @@
               <iconify-icon icon="solar:filter-bold" class="me-1"></iconify-icon>
               View Similar
             </a>
-            <a href="{% url 'front:auditlog_delete' log.pk %}" class="btn btn-outline-danger">
+            {% if not log.historical %}<a href="{% url 'front:auditlog_delete' log.pk %}" class="btn btn-outline-danger">
               <iconify-icon icon="solar:trash-bin-trash-bold" class="me-1"></iconify-icon>
               Delete
-            </a>
+            </a>{% endif %}
           </div>
         </div>
       </div>

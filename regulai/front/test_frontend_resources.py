@@ -125,6 +125,19 @@ assert.ok(collections.find(c => c.prefix === 'simple-icons').icons.openai);
 
 
 class BrowserPolicyTests(ChatFixture):
+    def test_historical_audit_logs_show_label_without_delete_action(self):
+        log = {'pk': 91, 'id': 91, 'historical': True, 'company_id': None,
+               'action': 'Historical synthetic', 'details': '{}', 'user': None}
+        url = reverse('front:auditlog_delete', args=[91])
+        for template, context in [('auditlogs/list.html', {'logs': [log]}),
+                                  ('auditlogs/detail.html', {'log': log})]:
+            html = render_to_string(template, {'user': self.user, **context})
+            self.assertIn('Histórico', html)
+            self.assertTrue(url not in html, template + ' offers deletion of a historical record')
+        log.update(historical=False, company_id=self.company.pk)
+        html = render_to_string('auditlogs/detail.html', {'user': self.user, 'log': log})
+        self.assertIn(url, html)
+
     def test_initial_policy_generation_is_a_separate_csrf_draft_action(self):
         html = render_to_string('policy_simulator.html', {'user': self.user,
             'can_manage_company_policy': True, 'csrf_token': 'synthetic-csrf'})

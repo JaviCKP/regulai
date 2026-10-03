@@ -218,9 +218,9 @@
                     <a href="{% url 'front:auditlog_detail' log.pk %}" class="btn btn-sm btn-outline-primary" title="View details">
                       <iconify-icon icon="solar:eye-bold"></iconify-icon>
                     </a>
-                    <a href="{% url 'front:auditlog_delete' log.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                    {% if not log.historical %}<a href="{% url 'front:auditlog_delete' log.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
                       <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon>
-                    </a>
+                    </a>{% endif %}
                   </div>
                 </td>
               </tr>
