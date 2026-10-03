@@ -647,6 +647,11 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 'input_tokens_bound': selection.input_tokens_bound}
             prompt.model_used = model.model_id
             prompt.save(update_fields=['decision', 'model_used', 'updated_at'])
+            # Check every known mandatory response destination before incurring
+            # generation cost. Response-specific YARA checks still run afterwards.
+            required_destinations = (['jev'] if semantic else []) + [f'obfuscation:{mask.pk}' for mask in masks]
+            for destination in required_destinations:
+                preflight(destination, policy_texts + [('prompts', m.content) for m in messages])
             call, started = start_call('generation', f'engine:{engine.pk}', model.model_id,
                 policy_texts + [('prompts', m.content) for m in messages], selection.estimated_cost,
                 selection.price_snapshot, verify_reserve)

@@ -21,6 +21,53 @@ from front.models import CompanyEngine, Engine, EngineModel, Role
 class PipelinePrivacyTests(ChatFixture):
     configure = test_pipeline.PipelineTests.configure
 
+    def test_reclassification_cannot_generate_without_the_mandatory_judge(self):
+        self.configure()
+        self.company.ai_config['destinations']['confidential'] = [f'engine:{self.credential.pk}']
+        self.company.save()
+        self.http.side_effect = test_pipeline.jev_http(choices={'category': 'confidential'})
+        for path in ('/api/chat/send/', '/chat/send/', '/chat/'):
+            with self.subTest(path=path):
+                self.provider.reset_mock()
+                self.http.reset_mock()
+                response = self.send(path, 'Synthetic report')
+                self.assertEqual(response.json()['error_type'], 'security_check_failed')
+                self.provider.assert_not_called()
+                self.assertEqual(self.http.call_count, 1)
+                receipt = response.json()['receipt']
+                self.assertEqual([call['purpose'] for call in receipt['calls']], ['classification'])
+                self.assertEqual(receipt['calls'][0]['status'], 'completed')
+                self.assertEqual(Decimal(receipt['total']['cost']), Decimal('0.00014'))
+                self.assertEqual(receipt['total']['attempts'], 0)
+                self.assertTrue(receipt['total']['complete'])
+
+    def test_reclassification_cannot_generate_without_the_response_mask(self):
+        self.configure(verification={'mode': 'local'})
+        self.mask()
+        self.company.ai_config['destinations']['confidential'] = [f'engine:{self.credential.pk}', 'jev']
+        self.company.save()
+        evaluator = test_pipeline.jev_http(choices={'category': 'confidential'})
+        def post(url, **kwargs):
+            if url.endswith('/api/mask'):
+                return SimpleNamespace(raise_for_status=lambda: None,
+                    json=lambda: {'masked': kwargs['json']['text']})
+            return evaluator(url, **kwargs)
+        self.http.side_effect = post
+        for path in ('/api/chat/send/', '/chat/send/', '/chat/'):
+            with self.subTest(path=path):
+                self.provider.reset_mock()
+                self.http.reset_mock()
+                response = self.send(path, 'Synthetic report')
+                self.assertEqual(response.json()['error_type'], 'security_check_failed')
+                self.provider.assert_not_called()
+                self.assertEqual(self.http.call_count, 2)
+                receipt = response.json()['receipt']
+                self.assertEqual([call['purpose'] for call in receipt['calls']], ['obfuscation', 'classification'])
+                self.assertTrue(all(call['status'] == 'completed' for call in receipt['calls']))
+                self.assertEqual(Decimal(receipt['total']['cost']), Decimal('0.00014'))
+                self.assertEqual(receipt['total']['attempts'], 0)
+                self.assertTrue(receipt['total']['complete'])
+
     def mask(self, *, bound='0', malformed=False):
         config = ObfuscationConfig.objects.create(company=self.company, name='Batch mask', api_url='https://mask.invalid')
         self.company.ai_config['destinations']['internal'].append(f'obfuscation:{config.pk}')
