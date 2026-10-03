@@ -37,7 +37,8 @@ class VerificationTests(SimpleTestCase):
                                  fragments=self.fragments)
         self.assertEqual(result["local_status"], "passed")
         self.assertEqual(result["status"], "not_verified")
-        self.assertEqual(result["evidence"], [{"claim_index": 0, "id": "current-document:1",
+        self.assertEqual(result["evidence"], [{"claim_index": 1, "alias": "S1",
+                                              "fragment_id": "current-document:1", "id": "current-document:1",
                                               "locator": "paragraph:1",
                                               "excerpt": "revenue is 10 euros."}])
 
@@ -119,4 +120,72 @@ class VerificationTests(SimpleTestCase):
         for limit in (0, True, "12"):
             result = verify_response(self.document(), "stop", fragments=self.fragments,
                                      min_quote_chars=limit)
-            self.assertEqual(result["checks"][-2]["reason"], "invalid_quote_limits")
+        self.assertEqual(result["checks"][-2]["reason"], "invalid_quote_limits")
+
+    def test_source_aliases_hide_stable_ids_and_resolve_server_evidence(self):
+        from .sources import build_sources
+        sources = build_sources(self.fragments)
+        self.assertEqual(json.loads(sources.prompt_json), [{"id": "S1", "locator": "paragraph:1",
+                                                          "text": self.fragments[0]["text"]}])
+        self.assertEqual(sources.alias_to_id, {"S1": "current-document:1"})
+        self.assertNotIn("current-document:1", sources.prompt_json)
+        result = verify_response(self.document(identifier="S1"), "stop", fragments=self.fragments,
+                                 alias_to_id=sources.alias_to_id)
+        self.assertEqual(result["local_status"], "passed")
+        self.assertEqual(result["evidence"], [{"claim_index": 1, "alias": "S1",
+            "fragment_id": "current-document:1", "id": "current-document:1", "locator": "paragraph:1",
+            "excerpt": "revenue is 10 euros."}])
+
+    def test_thirty_claims_fit_the_judge_limit_and_more_are_rejected(self):
+        claim = json.loads(self.document())["claims"][0]
+        for count, expected in ((30, "passed"), (31, "failed"), (32, "failed")):
+            with self.subTest(count=count):
+                result = verify_response(json.dumps({"claims": [claim] * count}), "stop",
+                                         fragments=self.fragments)
+                self.assertEqual(result["local_status"], expected)
+                if count == 30:
+                    self.assertEqual(result["evidence"][-1]["claim_index"], 30)
+                else:
+                    self.assertEqual(result["checks"][-2]["reason"], "invalid_claims")
+
+    def test_alias_mode_rejects_stable_ids_and_forged_alias_maps(self):
+        for identifier in ("current-document:1", "S2", "https://example.test/source"):
+            result = verify_response(self.document(identifier=identifier), "stop", fragments=self.fragments,
+                                     alias_to_id={"S1": "current-document:1"})
+            self.assertEqual(result["checks"][-2]["reason"], "unknown_citation")
+            self.assertEqual(result["evidence"], [])
+        for aliases in ({"S1": "previous-document:1"}, {"S1": 1}, {"unsafe": "current-document:1"},
+                        {"S1": "current-document:1", "S2": "current-document:1"}, []):
+            result = verify_response(self.document(identifier="S1"), "stop", fragments=self.fragments,
+                                     alias_to_id=aliases)
+            self.assertEqual(result["checks"][-2]["reason"], "invalid_source_aliases")
+
+    def test_sources_preserve_masked_text_locators_and_reject_duplicate_ids(self):
+        from .sources import build_sources
+        fragments = [{"id": "stable-sha", "locator": "lines:1-3", "text": "Code: <NUM_1> is valid."},
+                     {"id": "second-sha", "locator": "paragraph:2", "text": "No refund is available."}]
+        sources = build_sources(fragments)
+        self.assertEqual(sources.alias_to_id, {"S1": "stable-sha", "S2": "second-sha"})
+        result = verify_response(self.document(identifier="S1", quote="Code: <NUM_1> is valid."), "stop",
+                                 fragments=fragments, alias_to_id=sources.alias_to_id)
+        self.assertEqual(result["evidence"][0]["excerpt"], "Code: <NUM_1> is valid.")
+        self.assertEqual(result["evidence"][0]["locator"], "lines:1-3")
+        for invalid in ([fragments[0], fragments[0]], [{"id": "bad", "text": "No locator"}]):
+            with self.assertRaisesRegex(ValueError, "invalid_sources"):
+                build_sources(invalid)
+
+    def test_exactly_one_outer_json_fence_and_no_surrounding_prose_is_allowed(self):
+        raw = self.document()
+        for content in (raw, "```json\n" + raw + "\n```", " \r\n```json\r\n" + raw + "\r\n```\r\n "):
+            self.assertEqual(verify_response(content, "stop", fragments=self.fragments)["local_status"], "passed")
+        for content in ("Prefix\n```json\n" + raw + "\n```", "```json\n" + raw + "\n```\nSuffix",
+                        "```\n" + raw + "\n```", "```json\n" + raw + "\n```\n```json\n{}\n```",
+                        raw.replace('"quote":', '"quote": "e", "quote":')):
+            result = verify_response(content, "stop", fragments=self.fragments)
+            self.assertEqual(result["checks"][-2]["reason"], "invalid_document_json")
+
+    def test_missing_finish_reason_keeps_completeness_unknown(self):
+        result = verify_response(self.document(), None, fragments=self.fragments)
+        self.assertEqual(result["finish_reason"], "unknown")
+        self.assertEqual(result["local_status"], "failed")
+        self.assertEqual(result["evidence"], [])

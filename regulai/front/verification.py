@@ -3,6 +3,9 @@ import json
 import re
 
 
+MAX_CLAIMS = 30
+
+
 def normalize_finish_reason(finish_reason):
     if not isinstance(finish_reason, str):
         return "unknown"
@@ -30,7 +33,7 @@ def _unique_fields(pairs):
     return fields
 
 
-def _document_claims(content, fragments, min_quote_chars, min_quote_words):
+def _document_claims(content, fragments, alias_to_id, min_quote_chars, min_quote_words):
     """Resolve only request-supplied fragment IDs; no URL/path/HTML interpretation."""
     sources = {}
     for fragment in fragments:
@@ -39,6 +42,14 @@ def _document_claims(content, fragments, min_quote_chars, min_quote_words):
                 or not fragment["id"] or fragment["id"] in sources):
             raise ValueError("invalid_sources")
         sources[fragment["id"]] = fragment
+    aliases = alias_to_id if alias_to_id is not None else {
+        f"S{index}": identifier for index, identifier in enumerate(sources, 1)}
+    if (not isinstance(aliases, dict) or any(
+            not isinstance(alias, str) or not re.fullmatch(r"S[1-9][0-9]*", alias)
+            or not isinstance(identifier, str) or identifier not in sources
+            for alias, identifier in aliases.items()) or len(set(aliases.values())) != len(aliases)):
+        raise ValueError("invalid_source_aliases")
+    source_aliases = {identifier: alias for alias, identifier in aliases.items()}
     try:
         fence = re.fullmatch(r"```json[ \t]*\r?\n([\s\S]*?)\r?\n```", content.strip())
         if fence:
@@ -49,10 +60,10 @@ def _document_claims(content, fragments, min_quote_chars, min_quote_words):
     if not isinstance(document, dict) or set(document) != {"claims"}:
         raise ValueError("invalid_document_structure")
     claims = document["claims"]
-    if not isinstance(claims, list) or not 1 <= len(claims) <= 32:
+    if not isinstance(claims, list) or not 1 <= len(claims) <= MAX_CLAIMS:
         raise ValueError("invalid_claims")
     evidence, evidence_chars = [], 0
-    for index, claim in enumerate(claims):
+    for index, claim in enumerate(claims, 1):
         if (not isinstance(claim, dict) or set(claim) != {"text", "citations"}
                 or not isinstance(claim["text"], str) or not claim["text"].strip()
                 or len(claim["text"]) > 4000):
@@ -65,7 +76,8 @@ def _document_claims(content, fragments, min_quote_chars, min_quote_words):
                     or not isinstance(citation["id"], str)
                     or not isinstance(citation["quote"], str)):
                 raise ValueError("invalid_citation")
-            source = sources.get(citation["id"])
+            identifier = aliases.get(citation["id"]) if alias_to_id is not None else citation["id"]
+            source = sources.get(identifier)
             if source is None:
                 raise ValueError("unknown_citation")
             quote = _normalize_quote(citation["quote"])
@@ -83,18 +95,22 @@ def _document_claims(content, fragments, min_quote_chars, min_quote_words):
             evidence_chars += len(excerpt)
             if evidence_chars > 16000:
                 raise ValueError("evidence_limit")
-            evidence.append({"claim_index": index, "id": source["id"],
+            evidence.append({"claim_index": index, "alias": source_aliases[source["id"]],
+                             "fragment_id": source["id"], "id": source["id"],
                              "locator": source["locator"], "excerpt": excerpt})
     return claims, evidence
 
 
 def verify_response(content, finish_reason, *, fragments=None, require_semantic=True,
-                    min_quote_chars=12, min_quote_words=3):
+                    alias_to_id=None, min_quote_chars=12, min_quote_words=3):
     """Return serializable checks. A semantic judge is required by default.
 
     fragments=None checks prose; a list requires the exact document JSON contract.
     Document mode always needs semantic judgment. Returned strings are plain
     text and must be escaped/textContent in the UI.
+    alias_to_id resolves only this request's server-owned source aliases; None
+    keeps compatibility with callers still sending stable IDs. Missing provider
+    finish reasons cannot prove completeness and remain unknown.
     """
     checks, claims, evidence = [], [], []
     valid_content = isinstance(content, str) and bool(content.strip())
@@ -112,7 +128,7 @@ def verify_response(content, finish_reason, *, fragments=None, require_semantic=
         try:
             if any(type(value) is not int or value < 1 for value in (min_quote_chars, min_quote_words)):
                 raise ValueError("invalid_quote_limits")
-            claims, evidence = _document_claims(content, fragments, min_quote_chars, min_quote_words)
+            claims, evidence = _document_claims(content, fragments, alias_to_id, min_quote_chars, min_quote_words)
             checks.append({"code": "citations", "status": "passed"})
         except ValueError as error:
             checks.append({"code": "citations", "status": "failed", "reason": str(error)})
