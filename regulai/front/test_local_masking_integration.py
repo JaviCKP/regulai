@@ -415,6 +415,57 @@ class LocalMaskingConfigurationTests(test_chat_flow.ChatFixture):
 
 
 class LocalMaskingMigrationTests(TransactionTestCase):
+    def test_downgrade_requires_reauthorization_of_local_masks_and_preserves_http_state(self):
+        from .forms import ObfuscationConfigForm
+        company = Company.objects.create(name='Local rollback company')
+        other = Company.objects.create(name='Other rollback company')
+        converted = ObfuscationConfig.objects.create(company=company, name='Former remote', backend='http',
+            api_url='https://former-mask.example.invalid', detect='both', active=True)
+        form = ObfuscationConfigForm({'name': converted.name, 'backend': 'local', 'api_url': converted.api_url,
+            'detect': 'both', 'language': 'es', 'active': 'on'}, instance=converted)
+        self.assertTrue(form.is_valid(), form.errors)
+        converted = form.save()
+        self.assertTrue(converted.active)
+        self.assertEqual(converted.api_url, 'https://former-mask.example.invalid')
+        blank = ObfuscationConfig.objects.create(company=company, name='New local', backend='local', active=True)
+        inactive = ObfuscationConfig.objects.create(company=other, name='Inactive local', backend='local',
+            api_url='https://inactive.example.invalid', active=False)
+        other_local = ObfuscationConfig.objects.create(company=other, name='Other active local', backend='local',
+            api_url='https://other-former.example.invalid', active=True)
+        remote = ObfuscationConfig.objects.create(company=other, name='Still remote', backend='http',
+            api_url='https://authorized.example.invalid', active=True)
+        ObfuscationConfig.objects.create(company=other, name='Inactive remote', backend='http',
+            api_url='https://inactive-http.example.invalid', active=False)
+        company.ai_config = {'version': 1, 'local_sensitivity': 'internal', 'allow_empty_rules': True,
+            'masking': {'max_call_cost': '0'}, 'destinations': {'internal': [f'obfuscation:{converted.pk}']}}
+        company.save()
+        audit = AuditLog.objects.create(company=company, action='historical', details='Preserve original privacy audit')
+        fields = ('pk', 'company_id', 'name', 'api_url', 'detect', 'language', 'active', 'created_at')
+        before = list(ObfuscationConfig.objects.order_by('pk').values(*fields))
+        local_ids = {converted.pk, blank.pk, inactive.pk, other_local.pk}
+        expected = [{**row, 'active': False} if row['pk'] in local_ids else row for row in before]
+        executor = MigrationExecutor(connection)
+        latest = executor.loader.graph.leaf_nodes()
+        old_target = [('front', '0031_infer_historical_prompt_company')]
+        try:
+            executor.migrate(old_target)
+            old = executor.loader.project_state(old_target).apps
+            downgraded = old.get_model('front', 'ObfuscationConfig')
+            self.assertEqual(list(downgraded.objects.order_by('pk').values(*fields)), expected)
+            # The former HTTP endpoint is retained as data, never as authority:
+            # old application code finds no active barrier for this local company.
+            self.assertFalse(downgraded.objects.filter(company_id=company.pk, active=True).exists())
+            self.assertTrue(downgraded.objects.get(pk=remote.pk).active)
+            self.assertEqual(old.get_model('front', 'Company').objects.get(pk=company.pk).ai_config, company.ai_config)
+            self.assertEqual(old.get_model('front', 'AuditLog').objects.get(pk=audit.pk).details, 'Preserve original privacy audit')
+            MigrationExecutor(connection).migrate(old_target)
+            self.assertEqual(list(downgraded.objects.order_by('pk').values(*fields)), expected)
+            MigrationExecutor(connection).migrate(latest)
+            self.assertFalse(ObfuscationConfig.objects.filter(pk__in=local_ids, active=True).exists())
+            self.assertTrue(ObfuscationConfig.objects.get(pk=remote.pk).active)
+        finally:
+            MigrationExecutor(connection).migrate(latest)
+
     def test_forward_reverse_preserve_remote_configuration_policies_and_audit(self):
         executor = MigrationExecutor(connection)
         latest = executor.loader.graph.leaf_nodes()
