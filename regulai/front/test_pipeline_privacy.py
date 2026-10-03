@@ -15,7 +15,7 @@ from front.models import AuditLog, Conversation, Message, ObfuscationConfig, Pro
 from front.test_chat_flow import ChatFixture
 from front import test_pipeline
 from front.connectors import ChatResponse, DOCUMENT_RESPONSE_SCHEMA
-from front.models import CompanyEngine, Engine, EngineModel
+from front.models import CompanyEngine, Engine, EngineModel, Role
 
 
 class PipelinePrivacyTests(ChatFixture):
@@ -325,3 +325,33 @@ class PipelinePrivacyTests(ChatFixture):
         result = self.send('/api/chat/send/').json()
         self.assertEqual(result['status'], 'outcome_unknown', result)
         self.assertEqual(self.provider.call_count, 1)
+
+    def test_receipts_identify_actual_classification_rubrics_despite_legacy_config_label(self):
+        self.configure()
+        self.company.ai_config['jev']['rubric_version'] = 'sensitivity-v1'
+        self.company.save()
+        result = self.send('/api/chat/send/').json()
+        self.assertEqual(result['status'], 'completed', result)
+        self.assertEqual(result['receipt']['calls'][0]['rubric_version'], 'sensitivity-v2')
+        self.assertEqual(result['receipt']['calls'][0]['task_rubric_version'], 'task-v2')
+        self.assertEqual(result['decision']['rubric_version'], 'sensitivity-v2')
+
+    def test_company_admin_can_run_masked_semantics_without_global_flags(self):
+        self.configure()
+        self.mask()
+        self.profile.role = Role.objects.create(name='Admin')
+        self.profile.save()
+        evaluator = test_pipeline.jev_http()
+        def post(url, **kwargs):
+            if url.endswith('/api/mask'):
+                return SimpleNamespace(raise_for_status=lambda: None,
+                    json=lambda: {'masked': kwargs['json']['text']})
+            return evaluator(url, **kwargs)
+        self.http.side_effect = post
+        response = self.client.post(reverse('front:policy_simulator'), {'mode': 'semantic',
+            'sample': 'Synthetic text', 'proposed_config': json.dumps(self.company.ai_config)})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['comparison']['semantic']['status'], 'completed')
+        self.assertEqual(response.context['comparison']['calls'][-1]['rubric_version'], 'sensitivity-v2')
+        self.assertFalse(self.user.is_superuser)
+        self.assertFalse(self.user.is_staff)

@@ -334,6 +334,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             return finish(prompt, 'validation_error', 'model_not_allowed')
     elif manual:
         rows[(selected_engine.pk, selected_model.pk)] = (selected_engine, selected_model, None)
+    if manual and not cfg.routing.allow_cross_engine_fallback:
+        rows = {key: row for key, row in rows.items() if row[0].pk == selected_engine.pk}
     if not rows:
         return finish(prompt, 'validation_error', 'no_authorized_candidates')
     semantic = cfg.verification.mode != 'local' or document is not None
@@ -566,7 +568,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if classify:
             answers = evaluate('classification', state, {**jev.classification_questions(), **jev.task_questions()})
             prompt.decision['calls'][-1].update(signals=answers, threshold=cfg.jev.threshold,
-                rubric_version=cfg.jev.rubric_version, task_rubric_version=jev.TASK_RUBRIC_VERSION)
+                rubric_version=jev.CLASSIFICATION_RUBRIC_VERSION, task_rubric_version=jev.TASK_RUBRIC_VERSION)
             classification = decide(answers, cfg, local.sensitivity)
             sensitivity, task, difficulty = classification.sensitivity, classification.task, classification.difficulty
             plausible_tasks = classification.plausible_tasks
@@ -576,7 +578,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             classified = evaluate_policy(actor, policy_texts, sensitivity=sensitivity)
             classified.allowed_destinations = sorted(set(classified.allowed_destinations) & set(local.allowed_destinations))
             prompt.decision['policy'] = classified.as_dict()
-            prompt.decision['policy'].update(rubric_version=cfg.jev.rubric_version, model=cfg.jev.model)
+            prompt.decision['policy'].update(rubric_version=jev.CLASSIFICATION_RUBRIC_VERSION, model=cfg.jev.model)
             if classified.status not in ('allow', 'consent_required'):
                 raise PipelineStop(classified.reason_codes[0], 'blocked')
             destinations = sorted(set(destinations) & set(classified.allowed_destinations))

@@ -226,7 +226,7 @@ def _semantic(actor, company, sample, rules):
     fresh = Profile.objects.select_related('company', 'user').get(user=actor)
     actor.profile = fresh
     check = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)], destinations=['jev'])
-    if (not fresh.user.is_active or not fresh.user.is_superuser or fresh.company_id != company.pk
+    if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
             or digest(fresh.company.ai_config) != digest(company.ai_config)
             or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)
             or check.status != 'allow' or check.fingerprint != decision.fingerprint):
@@ -248,7 +248,7 @@ def _semantic(actor, company, sample, rules):
         active = {item.pk: digest([item.api_url, item.detect, item.language]) for item in
             ObfuscationConfig.objects.filter(company_id=company.pk, active=True)}
         check = evaluate_policy(actor, [('prompts', sample), ('prompts', value)], destinations=[f'obfuscation:{mask.pk}'])
-        if (not fresh.user.is_active or not fresh.user.is_superuser or fresh.company_id != company.pk
+        if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
                 or active != mask_identities or check.fingerprint != decision.fingerprint or check.status != 'allow'
                 or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)):
             raise PipelineStop('authorization_changed')
@@ -281,7 +281,7 @@ def _semantic(actor, company, sample, rules):
         check = evaluate_policy(actor, [('prompts', sample), ('prompts', serialized)], destinations=['jev'])
         active = {item.pk: digest([item.api_url, item.detect, item.language]) for item in
             ObfuscationConfig.objects.filter(company_id=company.pk, active=True)}
-        if (not fresh.user.is_active or not fresh.user.is_superuser or fresh.company_id != company.pk
+        if (not can_manage_company_policy(fresh.user) or fresh.company_id != company.pk
                 or active != mask_identities or check.fingerprint != decision.fingerprint or check.status != 'allow'
                 or digest(fresh.company.jev_api_key) != digest(company.jev_api_key)):
             raise PipelineStop('authorization_changed')
@@ -298,7 +298,7 @@ def _semantic(actor, company, sample, rules):
     prices = {key: getattr(cfg.jev, key) for key in ('input_price', 'output_price', 'currency', 'price_date')}
     call = {'purpose': 'simulation_classification', 'provider': 'jev', 'model': cfg.jev.model,
         'status': 'started', 'cost': None, 'cost_bound': str(bound), 'currency': cfg.jev.currency,
-        'price_snapshot': prices, 'threshold': cfg.jev.threshold, 'rubric_version': cfg.jev.rubric_version,
+        'price_snapshot': prices, 'threshold': cfg.jev.threshold, 'rubric_version': jev.CLASSIFICATION_RUBRIC_VERSION,
         'task_rubric_version': jev.TASK_RUBRIC_VERSION}
     # Persist an attempt before crossing the provider boundary; a timeout is never free.
     audit = AuditLog.objects.create(user=actor, company=company, action='policy_simulate',
