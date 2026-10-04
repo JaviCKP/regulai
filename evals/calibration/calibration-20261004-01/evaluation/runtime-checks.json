@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "initial_runtime_commit": "3cbbf19",
+  "followup_commit": "See repository history for the credential-reflection and final wrapper correction",
+  "network_calls": 0,
+  "persistent_ledger_mutations_by_agent_c": 0,
+  "observations": [
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py test front.test_calibration_budget front.test_calibration_evaluation front.test_evaluation_budget front.test_evaluation_authorization_extension front.test_smoke front.test_evaluation_pilot --settings=regulai.test_settings --verbosity 1",
+      "tests": 66,
+      "duration_seconds": 36.428,
+      "exit_code": 0,
+      "scope": "Compatibility after budget/capture changes; before final contains and validation-partition regressions"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py test front.test_calibration_evaluation front.test_calibration_budget --settings=regulai.test_settings --verbosity 0",
+      "tests": 22,
+      "duration_seconds": 0.594,
+      "exit_code": 0,
+      "scope": "After final runtime changes: contains is presence only, validation retained, unknown retry hashes not equivalent"
+    },
+    {
+      "command": "rtk git diff --check -- regulai/front/evaluation.py regulai/front/evaluation_budget.py regulai/front/test_calibration_evaluation.py regulai/front/test_calibration_budget.py scripts/calibration_local_checks.py",
+      "exit_code": 0,
+      "scope": "Whitespace verification"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py test front.test_calibration_evaluation front.test_calibration_budget --settings=regulai.test_settings --verbosity 0",
+      "tests": 27,
+      "duration_seconds": 2.806,
+      "exit_code": 0,
+      "scope": "Credential reflection blocks before SDK/parser in both transports, request-ID reflection, full-flow retained response/ledger absence, positive uncertain reservation, holdout default rejection, family/category selection and budget races"
+    },
+    {
+      "command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py test front.test_calibration_evaluation.CalibrationMetricsTests --settings=regulai.test_settings --verbosity 0",
+      "tests": 6,
+      "duration_seconds": 0.013,
+      "exit_code": 0,
+      "scope": "Final additive corpus oracle compatibility: contains scalar/list is presence only, never correctness or evaluable cost denominator"
+    }
+  ],
+  "prior_failed_checks": [
+    "Initial budget test cleanup kept a SQLite connection open on Windows; fixed with contextlib.closing.",
+    "An intermediate smoke run failed while source hashes changed during active edits; the later quiet 66-test run passed."
+  ],
+  "limits": [
+    "These are offline tests and do not measure provider quality.",
+    "Final full front/api gates are the orchestrator's integration responsibility.",
+    "Corpus product measurements and reserved evaluation are separate from these focal tests."
+  ]
+}

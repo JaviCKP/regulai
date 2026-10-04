@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "split": "development",
+  "seed": 20261004,
+  "cases_n": 2397,
+  "corpus_integrity": {
+    "ok": true,
+    "failures": [],
+    "corpus_id": "calibration-20261004-01",
+    "cases": 4000,
+    "families": 2067,
+    "partitions": {
+      "development": {
+        "cases": 2397,
+        "sha256": "1bda0437c719c447e16b21f29459993ecd14512ef4294ae8634b5a7089568d8a"
+      },
+      "validation": {
+        "cases": 794,
+        "sha256": "dc631ef88b19d4f18fb459ccfc6d253eab31293e2fcf20f77e7a75965514fc80"
+      },
+      "reserved": {
+        "cases": 809,
+        "sha256": "0fd7dbe06ff280349ea69f9fca35d75ccf53013a881a123824d63535561c1a53"
+      }
+    }
+  },
+  "selected_http_cases": [
+    "D0728",
+    "I0975",
+    "L0600",
+    "P0700",
+    "R0075"
+  ],
+  "http_endpoints": [
+    "/chat/send/",
+    "/api/chat/send/",
+    "/chat/"
+  ],
+  "http_profiles": [
+    "neutral",
+    "adversarial"
+  ],
+  "partition_sha256": "e078400d86e90b2f999dd3606aefc519e23a4783c03555fec4c472d6b2744336",
+  "harness_sha256": {
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\calibration\\calibration-20261004-01\\corpus\\api.py": "ddc6171dfc80498e7fca8b274ca1c1e8b52be6b8d81d6d2b5764342f4655a920",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\calibration\\calibration-20261004-01\\corpus\\manifest.json": "1fb99eb7f41857fc97d2538519aa53ad1a13bb2a492df81bb81e85c88af407b4",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\scripts\\calibration_local_checks.py": "449588ecf9b80c45d403cad389e0df089cd5ea78273f01623c88f19470c8d25f"
+  },
+  "semantic_quality_measured": false,
+  "reserved_cases_loaded": false,
+  "started_at": "2026-10-03T23:46:48.054735+00:00",
+  "source_sha256": {
+    "regulai/front/chat_service.py": "791b0d7a441fd918f763bc2986fb74dce5061f72c1529a015356ab2e1e7a4ccb",
+    "regulai/front/policy.py": "4b95e7af709a56899220a15da4fca63db5342f4a7bb01c41d28c24746e6c5eb7",
+    "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1",
+    "regulai/front/verification.py": "0342cd9c8825930ee9365386bad0479156b10fce4476c5648835587c08ecacc1",
+    "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
+    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
+    "regulai/front/masking.py": "eda1eeb98c0604da08e48052bc58d19fbfd926c40d5b94d2a01377a5dedce313",
+    "regulai/front/local_masking.py": "5d6eaa792de291c96b0d2c94c8e1697136f42594e4ef8d9344106255f2e965b6",
+    "regulai/front/classification.py": "37bd1c1f55bdf6813faf0a21964a87dd1bc9f737ac2c2bb8b1f4a65aec26a9c9",
+    "regulai/front/sources.py": "207892d7b8249a94334acd52d62d8e950995998c6f94cdfe6e744f0a57883e8b",
+    "regulai/front/connectors.py": "51ddd25977f81d2a81169aa3c797fd2a39f0d1034de9fc83ffb631b83ceb9eac",
+    "regulai/front/views.py": "41913cf4aaad75020cec0b0172d9e15d803c32c5f5218dd5aef7f6d50200a095",
+    "regulai/front/models.py": "59d22103dfd5edf36282acfcc86ef22a88d7df94238cff74918e01a0248a0300",
+    "regulai/front/evaluation.py": "458b6c12e1b873da6267ab6ba078fb8ebe48dc1db1c1db0e3a4c93343e1d0f84",
+    "regulai/front/evaluation_budget.py": "249713b5d8daa09d59bc13bf4b3dd4229df255f00078839194a3d1192c1982ee",
+    "regulai/front/management/commands/evaluate_ai.py": "dd8e21d2dfaa058ec17741d48aff537cda148c826c9c4f12d0541c663dc40e05",
+    "regulai/front/management/commands/smoke_ai.py": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7",
+    "regulai/front/management/commands/extend_pilot_authorization.py": "e4b69daa0c4570a8fe6ed44caf95cfa3388876259776c1fefc29aa67b86a7baa",
+    "requirements.txt": "947e437b58acb8d09f6e5e6d10e36b3dd63cf57b46d4441e5497249aca5aa10c"
+  },
+  "runtime_versions": {
+    "python": "3.12.11",
+    "Django": "5.2.17",
+    "djangorestframework": "3.18.1",
+    "openai": "1.102.0",
+    "pydantic": "2.11.7",
+    "requests": "2.33.0",
+    "pypdf": "6.19.0",
+    "python-docx": "1.2.0",
+    "spacy": "3.8.16",
+    "xx-ent-wiki-sm": "3.8.0"
+  },
+  "detector": {
+    "backend": "local",
+    "detector_version": "regulai-local-v5",
+    "spacy_version": "3.8.16",
+    "model_name": "xx_ent_wiki_sm",
+    "model_version": "3.8.0",
+    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
+    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a"
+  },
+  "wrapper_sha256": "449588ecf9b80c45d403cad389e0df089cd5ea78273f01623c88f19470c8d25f"
+}

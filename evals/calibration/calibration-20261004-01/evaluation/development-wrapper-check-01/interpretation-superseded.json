@@ -1,0 +1,26 @@
+{
+  "status": "superseded_for_candidate_selection",
+  "purpose": "Instrumentation smoke only; original observations and hashes are preserved",
+  "original_corpus_manifest_sha256": "1fb99eb7f41857fc97d2538519aa53ad1a13bb2a492df81bb81e85c88af407b4",
+  "reason": "Custodian identified semantic template overlap despite distinct IDs and will revise partitions before selection/payment.",
+  "cases_measured_local": 2397,
+  "cases_with_annotations": 1544,
+  "annotated_cases_all_checks_passed": 1369,
+  "cases_without_annotations": 853,
+  "legacy_summary_count_note": "local_annotation_passed=2222 in the original summary includes 853 unannotated cases through vacuous all(); it is not a detector success denominator. Future wrapper runs use null for unannotated cases.",
+  "http_runs": 30,
+  "http_controls_passed": 27,
+  "http_control_failures": {
+    "case_id": "D0728",
+    "profile": "neutral",
+    "endpoints": ["/chat/send/", "/api/chat/send/", "/chat/"],
+    "observed": "verification_failed / quote_not_found; no answer delivered",
+    "document_coverage": "complete Markdown extraction reported; failed citation was rejected locally"
+  },
+  "sockets_and_dns_attempts": 0,
+  "real_provider_calls": 0,
+  "real_api_cost_usd": "0",
+  "reserved_cases_loaded": false,
+  "provider_quality_claim": null,
+  "original_artifact_hashes_note": "This interpretation was appended after artifact-hashes.json sealed the original run; original files were not rewritten."
+}
