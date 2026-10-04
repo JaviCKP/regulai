@@ -1,0 +1,361 @@
+{
+  "local_cases": 44,
+  "local_expectations_met": 40,
+  "local_redaction_annotations": 32,
+  "local_redaction_annotations_removed": 31,
+  "local_preservation_annotations": 66,
+  "local_preservation_annotations_retained": 61,
+  "local_sensitive_values_retained": [
+    "SECRET-06"
+  ],
+  "local_required_content_lost": [
+    "DOC-05",
+    "DOC-08",
+    "BENIGN-06"
+  ],
+  "local_errors": [],
+  "http_runs": 264,
+  "control_runs_passed": 258,
+  "failed_control_runs": [
+    {
+      "case_id": "INJ-05",
+      "endpoint": "/chat/send/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 200,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    },
+    {
+      "case_id": "INJ-05",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 200,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    },
+    {
+      "case_id": "INJ-05",
+      "endpoint": "/chat/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 302,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    },
+    {
+      "case_id": "DOC-03",
+      "endpoint": "/chat/send/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 200,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    },
+    {
+      "case_id": "DOC-03",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 200,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    },
+    {
+      "case_id": "DOC-03",
+      "endpoint": "/chat/",
+      "profile": "neutral",
+      "failed_assertions": [
+        {
+          "name": "terminal_status",
+          "expected": "completed",
+          "observed": "failed",
+          "passed": false
+        },
+        {
+          "name": "http_status",
+          "expected": 302,
+          "observed": 502,
+          "passed": false
+        },
+        {
+          "name": "terminal_error",
+          "expected": null,
+          "observed": "verification_failed",
+          "passed": false
+        }
+      ],
+      "harness_error": null
+    }
+  ],
+  "wire_runs_with_sensitive_values_retained": [
+    {
+      "case_id": "SECRET-06",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "SECRET-06",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "SECRET-06",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "SECRET-06",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "SECRET-06",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "SECRET-06",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    }
+  ],
+  "wire_runs_with_required_content_lost": [
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "PII-12",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-05",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-05",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-05",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-05",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-05",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-05",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "DOC-08",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "BENIGN-06",
+      "endpoint": "/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "BENIGN-06",
+      "endpoint": "/api/chat/send/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "BENIGN-06",
+      "endpoint": "/chat/",
+      "profile": "neutral"
+    },
+    {
+      "case_id": "BENIGN-06",
+      "endpoint": "/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "BENIGN-06",
+      "endpoint": "/api/chat/send/",
+      "profile": "adversarial"
+    },
+    {
+      "case_id": "BENIGN-06",
+      "endpoint": "/chat/",
+      "profile": "adversarial"
+    }
+  ],
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.gethostbyname": 0,
+    "socket.gethostbyname_ex": 0,
+    "socket.gethostbyaddr": 0,
+    "socket.socket.sendto": 0,
+    "socket.socket.sendall": 0,
+    "socket.socket.send": 0
+  },
+  "parser_network_attempts": 0,
+  "real_api_calls": 0,
+  "real_api_cost_usd": "0",
+  "model_semantic_quality": null,
+  "classification_accuracy": null,
+  "llm_prompt_injection_resistance": null,
+  "limits": [
+    "All prompts, documents, credentials, users and responses are synthetic.",
+    "Classifier and semantic judge outputs are injected static fixtures; classifications are not measured.",
+    "Neutral/adversarial responses are transport fixtures, not answers produced by a live model.",
+    "Exact-string annotations do not establish entity-level recall, anonymity or complete PII detection.",
+    "HTTP uses Django Client in-process, with real adapters/services and SDK/requests serialization.",
+    "Prepared requests are captured before offline transports; no external sockets or DNS are allowed.",
+    "Reported application costs use synthetic usage; actual external cost is zero.",
+    "Only synthetic in-memory SQLite is used; private settings and persistent budget ledgers are not loaded."
+  ],
+  "harness_integrity_passed": true,
+  "sources_unchanged_during_execution": true
+}

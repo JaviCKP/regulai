@@ -1,0 +1,38 @@
+{
+  "cases_n": 2813,
+  "families_n": 1250,
+  "split": "development",
+  "categories": {
+    "reasoning": 240,
+    "injection": 600,
+    "documentary": 800,
+    "legitimate": 599,
+    "pii": 574
+  },
+  "local_errors": 0,
+  "annotated_cases_n": 1960,
+  "unannotated_cases_n": 853,
+  "local_annotation_passed": 1770,
+  "component_computed_segments": 2357,
+  "component_replayed_segments": 1854,
+  "http_runs": 60,
+  "http_controls_passed": 51,
+  "network_attempts": {
+    "socket.socket.connect": 0,
+    "socket.socket.connect_ex": 0,
+    "socket.create_connection": 0,
+    "socket.getaddrinfo": 0,
+    "socket.gethostbyname": 0,
+    "socket.gethostbyname_ex": 0,
+    "socket.gethostbyaddr": 0,
+    "socket.socket.sendto": 0,
+    "socket.socket.sendall": 0,
+    "socket.socket.send": 0
+  },
+  "real_api_cost_usd": "0",
+  "semantic_quality_measured": false,
+  "changed_sources_during_execution": [],
+  "reserved_cases_loaded": false,
+  "exit_code": 0,
+  "exit_code_meaning": "Harness integrity only; observed detector/control failures remain in the report"
+}

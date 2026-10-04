@@ -1,0 +1,88 @@
+{
+  "authorization_id": "calibration-20261004-01-baseline-smoke-02",
+  "status": "approved",
+  "approved": true,
+  "approved_by": "User in current Codex conversation",
+  "approval_reference": "Explicit attached calibration request of 2026-10-04; concrete conforming batches authorized without reconfirmation.",
+  "manifest_sha256s": [
+    "140b78da56b9fccf0307fe6612a0d9b1ce2826fad6a65bd21ef9e900bafd1fe5"
+  ],
+  "maximum_usd": "1.66",
+  "valid_from": "2026-10-03T23:12:23+00:00",
+  "valid_until": "2026-10-04T23:12:23+00:00",
+  "campaign_budget": {
+    "approved_ceiling_usd": "1.66",
+    "approved_ceiling_eur": "2.00",
+    "starts_at": "2026-10-03T23:12:23+00:00",
+    "expires_at": "2026-10-04T23:12:23+00:00",
+    "margin": "0.35",
+    "fx_provenance": {
+      "date": "2026-10-02",
+      "source_url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+      "sha256": "d16ef240d4d97a953b925cbf81451c812c559cd33f2ebe07b08b51e4085709e2",
+      "rate_usd_per_eur": "1.1225"
+    },
+    "price_provenance": [
+      {
+        "date": "2026-10-04",
+        "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "sha256": "210f102275ccf1a6542f08a3bc9e4b4c7c83278cb74b35217bffa112df6363b2"
+      },
+      {
+        "date": "2026-10-04",
+        "source_url": "https://ai-gateway.vercel.sh/v1/models",
+        "sha256": "9ff24b810d6f6a3810beba6a0c06ad26edafb79ffdacb898dc5392dc9115d5b1"
+      }
+    ]
+  },
+  "extends": {
+    "authorization_id": "adversarial-four-additional-vercel-extension-v1",
+    "authorization_digest": "23d7d344b5195ae4b87e126c912fa399f4abdaeedab0070bbf7727deaa90ad1f"
+  },
+  "retain_existing_costs": true,
+  "data_scope": "versioned_synthetic_cases_only",
+  "reserved_evaluation": false,
+  "mutable_alias_acknowledged": true,
+  "pricing_reviewed_on": "2026-10-04",
+  "destinations": {
+    "generation": "https://api.deepseek.com",
+    "judge": "https://ai-gateway.vercel.sh/typesafe/v1/systemone"
+  },
+  "actions": [
+    "create_disposable_synthetic_tenants",
+    "mask_original_locally_on_cpu",
+    "classify_masked_content",
+    "generate_masked_content",
+    "verify_masked_answer",
+    "at_most_one_second_generation",
+    "persist_all_attempts_and_costs"
+  ],
+  "masking": {
+    "backend": "local",
+    "detector_version": "regulai-local-v2",
+    "spacy_version": "3.8.16",
+    "model_name": "xx_ent_wiki_sm",
+    "model_version": "3.8.0",
+    "model_artifact_sha256": "6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a",
+    "model_files_sha256": "4f5b7a5c5baf29c9e940befeb1f02a3021acc22806e3c1cbcef48e2078a2477a",
+    "detect": "both",
+    "language": ""
+  },
+  "execution_scope": {
+    "case_ids": [
+      "L0545",
+      "P0619",
+      "D0452",
+      "I0975"
+    ],
+    "configurations": [
+      "economy",
+      "strong",
+      "router"
+    ],
+    "max_runs": 1,
+    "max_combinations": 12,
+    "max_external_calls": 44,
+    "repeat_uncertain_calls": false
+  }
+}
