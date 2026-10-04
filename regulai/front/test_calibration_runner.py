@@ -14,6 +14,16 @@ SPEC.loader.exec_module(runner)
 
 
 class CalibrationRunnerTests(SimpleTestCase):
+    def test_transport_guard_rechecks_revocation_after_client_construction(self):
+        from unittest.mock import Mock
+        authorize = Mock(side_effect=ValueError('Authorization revoked'))
+        guard = runner.make_guard({'campaign_frozen_files': {}}, [], authorize=authorize)
+        body = {'model': 'deepseek-flash', 'max_tokens': 512, 'thinking': {'type': 'disabled'},
+                'messages': [{'role': 'user', 'content': 'public'}]}
+        with self.assertRaisesRegex(ValueError, 'revoked'):
+            guard({'purpose': 'generation', 'body_utf8': json.dumps(body)})
+        authorize.assert_called_once_with()
+
     def test_frozen_sample_resolves_only_reviewed_ids_and_provider_input(self):
         from tempfile import TemporaryDirectory
         with TemporaryDirectory() as directory, patch.object(runner, 'CAMPAIGN', Path(directory)):

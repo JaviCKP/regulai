@@ -213,7 +213,7 @@ def phase_check(ledger, manifest):
         raise ValueError('Complete frozen batch does not fit; protect final confirmation allocation.')
 
 
-def make_guard(manifest, sensitive):
+def make_guard(manifest, sensitive, authorize=None):
     def guard(event):
         frozen_check(manifest)
         body = event['body_utf8']
@@ -225,6 +225,10 @@ def make_guard(manifest, sensitive):
                 or payload.get('max_tokens') != 512 or payload.get('thinking') != {'type': 'disabled'}
                 or payload.get('model') not in {'deepseek-flash', 'deepseek-v4-pro'}):
             raise ValueError('Frozen generation payload limit/options changed.')
+        # Client construction can occur after the atomic reservation. Recheck
+        # revocation, the ledger head and expiry at the last transport boundary.
+        if authorize:
+            authorize()
     return guard
 
 
@@ -262,12 +266,19 @@ def execute_child(options):
         raise ValueError('Use a new output directory inside the campaign.')
     oracles = read(pack / 'oracles.json')
     sensitive = [item['value'] for oracle in oracles.values() for item in oracle.get('expected_redactions') or []]
-    guard = make_guard(manifest, sensitive)
+    authorize_transport = None
     if options.real:
         from front.evaluation_budget import EvaluationBudget
         ledger = EvaluationBudget(LEDGER, manifest['maximum_usd'], authorization_id=approval['authorization_id'],
             authorization_digest=evaluation.digest(approval))
         phase_check(ledger, manifest)
+        def authorize_transport():
+            check, current = evaluation.preflight(pack / 'manifest.json', approval_path)
+            if not check['ready_for_real'] or evaluation.digest(current) != evaluation.digest(approval):
+                raise ValueError('Authorization changed before transport.')
+            with sqlite3.connect(LEDGER.as_uri() + '?mode=ro', uri=True) as db:
+                ledger.check_active(db)
+    guard = make_guard(manifest, sensitive, authorize=authorize_transport)
     recorder = evaluation.SyntheticPayloadRecorder(synthetic=True, configuration=manifest, request_guard=guard,
         forbidden_secrets=tuple(value for value in (os.environ.get('REGULAI_EVAL_GENERATOR_KEY'),
             os.environ.get('REGULAI_EVAL_JEV_KEY')) if value))
