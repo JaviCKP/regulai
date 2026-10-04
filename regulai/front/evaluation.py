@@ -59,8 +59,9 @@ def digest(value):
 class SyntheticPayloadRecorder:
     """Opt-in test capture at the actual HTTP boundaries, never ordinary logs.
 
-    Only bodies and public transport metadata are retained. Headers, client
-    objects, exceptions' messages and environment credentials are never read.
+    Only bodies and public transport metadata are retained. Authorization
+    headers, client objects and exceptions' messages are never read. The single
+    public response request-ID header is checked for credential reflection.
     The request guard sees final serialized bytes before either transport runs.
     """
     version = 'synthetic-wire-v1'
@@ -80,6 +81,30 @@ class SyntheticPayloadRecorder:
         self.events, self.labels = [], {}
         self._wire = threading.Lock()
 
+    def contains_forbidden(self, raw):
+        """Check JSON string values as well as wire spelling, without logging them."""
+        if not self._forbidden:
+            return False
+        if any(secret in raw for secret in self._forbidden):
+            return True
+        try:
+            pending = [json.loads(raw)]
+        except (ValueError, UnicodeError, RecursionError):
+            # Incomplete/non-JSON error bodies cannot be checked reliably for
+            # escaped credentials; retain their digest but no readable content.
+            return True
+        secrets = tuple(secret.decode('utf-8') for secret in self._forbidden)
+        while pending:
+            value = pending.pop()
+            if isinstance(value, str) and any(secret in value for secret in secrets):
+                return True
+            if isinstance(value, dict):
+                pending.extend(value.keys())
+                pending.extend(value.values())
+            elif isinstance(value, list):
+                pending.extend(value)
+        return False
+
     @contextmanager
     def scope(self, *, case_id, configuration):
         previous = self.labels
@@ -97,7 +122,7 @@ class SyntheticPayloadRecorder:
         body = body.encode('utf-8') if isinstance(body, str) else body
         if not isinstance(body, bytes) or len(body) > self.max_request_bytes:
             raise BudgetExceeded('The complete serialized request exceeds the synthetic capture bound.')
-        if any(secret in body for secret in self._forbidden):
+        if self.contains_forbidden(body):
             raise BudgetExceeded('A credential appeared in the serialized request; capture refused.')
         payload = json.loads(body)
         generation = url.hostname == 'api.deepseek.com'
@@ -138,10 +163,12 @@ class SyntheticPayloadRecorder:
         event['response_sha256'] = digest(raw)
         event['response_complete'] = complete
         event['response_omitted_over_limit'] = len(raw) > self.max_response_bytes
-        reflected_secret = any(secret in raw for secret in self._forbidden)
+        reflected_secret = self.contains_forbidden(raw)
         event['response_omitted_credential_reflection'] = reflected_secret
         if len(raw) <= self.max_response_bytes and not reflected_secret:
             event['response_body_utf8'] = raw.decode('utf-8', errors='replace')
+        if reflected_secret:
+            raise BudgetExceeded('Provider credential reflection or unverifiable response body; stop the synthetic run.')
 
     def __enter__(self):
         if type(self)._installed:
@@ -155,6 +182,11 @@ class SyntheticPayloadRecorder:
             event, started = recorder.begin(request, request.body or b'', 'requests.HTTPAdapter.send')
             try:
                 response = adapter_send(adapter, request, **kwargs)
+                request_id = response.headers.get('x-request-id')
+                if request_id and recorder.contains_forbidden(json.dumps(request_id).encode('utf-8')):
+                    event['response_omitted_credential_reflection'] = True
+                    response.close()
+                    raise BudgetExceeded('Provider request-ID reflected a credential; stop the synthetic run.')
             except BaseException as error:
                 event['error_type'] = type(error).__name__
                 event['latency_ms'] = round((time.monotonic() - started) * 1000, 3)
@@ -177,13 +209,16 @@ class SyntheticPayloadRecorder:
                             retained.extend(raw)
                         yield chunk
                     complete = True
+                    if recorder.contains_forbidden(bytes(retained)):
+                        event['error_type'] = 'BudgetExceeded'
+                        raise BudgetExceeded('Provider credential reflection or unverifiable response body; stop the synthetic run.')
                 finally:
+                    reflected_secret = recorder.contains_forbidden(bytes(retained))
                     event.update(response_bytes_observed=count, response_sha256=hasher.hexdigest(),
                         response_complete=complete, response_omitted_over_limit=count > recorder.max_response_bytes,
-                        response_omitted_credential_reflection=any(secret in retained for secret in recorder._forbidden),
+                        response_omitted_credential_reflection=reflected_secret,
                         response_body_utf8=retained.decode('utf-8', errors='replace')
-                            if count <= recorder.max_response_bytes and not any(secret in retained
-                                for secret in recorder._forbidden) else None)
+                            if count <= recorder.max_response_bytes and not reflected_secret else None)
 
             def close():
                 nonlocal closed
@@ -202,6 +237,11 @@ class SyntheticPayloadRecorder:
             try:
                 response = client_send(client, request, **kwargs)
                 event['status_code'] = response.status_code
+                request_id = response.headers.get('x-request-id')
+                if request_id and recorder.contains_forbidden(json.dumps(request_id).encode('utf-8')):
+                    event['response_omitted_credential_reflection'] = True
+                    response.close()
+                    raise BudgetExceeded('Provider request-ID reflected a credential; stop the synthetic run.')
                 if response.is_stream_consumed:
                     recorder.finish_response(event, response.content, complete=True)
                 return response
@@ -697,7 +737,8 @@ def calibration_case_metrics(case, row):
     answer = row.get('answer', row.get('assistant_content'))
     oracle = case.get('oracle', {})
     reference_evaluable = oracle.get('kind') in {'exact', 'numeric'}
-    required = oracle.get('required', oracle.get('values'))
+    required = oracle.get('required', oracle.get('values', oracle.get('expected_answer')))
+    required = [required] if isinstance(required, str) and required else required
     required_content_present = (all(value in answer for value in required)
         if isinstance(answer, str) and oracle.get('kind') == 'contains' and isinstance(required, list)
         and required and all(isinstance(value, str) and value for value in required) else None)

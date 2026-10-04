@@ -1,14 +1,19 @@
 """Synthetic capture/metric contracts without a provider connection."""
 import json
+import importlib.util
 from pathlib import Path
+import sys
+from datetime import date
+from decimal import Decimal
+import os
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
 from .evaluation import (SyntheticPayloadRecorder, adjudicate_calibration_answer,
                          calibration_case_metrics, digest, load_pilot, summarize_calibration)
-from .evaluation_budget import BudgetExceeded
+from .evaluation_budget import BudgetExceeded, EvaluationBudget
 
 
 class CalibrationCaptureTests(SimpleTestCase):
@@ -96,13 +101,70 @@ class CalibrationCaptureTests(SimpleTestCase):
         with httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(200,
                 json={'error': secret}))) as client:
             with SyntheticPayloadRecorder(synthetic=True, configuration={}, forbidden_secrets=(secret,)) as recorder:
-                client.post('https://api.deepseek.com/chat/completions', json={'model': 'a', 'messages': []})
+                with self.assertRaises(BudgetExceeded):
+                    client.post('https://api.deepseek.com/chat/completions', json={'model': 'a', 'messages': []})
                 with self.assertRaises(BudgetExceeded):
                     client.post('https://api.deepseek.com/chat/completions', json={'model': 'a',
                         'messages': [{'role': 'user', 'content': secret}]})
         self.assertNotIn(secret, json.dumps(recorder.events))
         self.assertTrue(recorder.events[0]['response_omitted_credential_reflection'])
         self.assertIsNone(recorder.events[0]['response_body_utf8'])
+
+    def test_json_escaped_credentials_are_blocked_in_request_and_omitted_in_both_responses(self):
+        import httpx
+        import requests
+        secret = 'synthetic-escaped-credential'
+        escaped = ''.join('\\u%04x' % ord(char) for char in secret)
+        reply = ('{"error":"' + escaped + '"}').encode()
+        sent = []
+        def httpx_reply(request):
+            sent.append(request.content)
+            return httpx.Response(200, content=reply)
+        def requests_reply(adapter, request, **kwargs):
+            response = requests.Response()
+            response.status_code, response._content, response._content_consumed = 200, reply, True
+            return response
+        with patch('requests.adapters.HTTPAdapter.send', requests_reply), \
+                httpx.Client(transport=httpx.MockTransport(httpx_reply)) as client:
+            with SyntheticPayloadRecorder(synthetic=True, configuration={}, forbidden_secrets=(secret,)) as recorder:
+                with self.assertRaises(BudgetExceeded):
+                    client.post('https://api.deepseek.com/chat/completions', json={'model': 'a', 'messages': []})
+                response = requests.post('https://ai-gateway.vercel.sh/typesafe/v1/systemone',
+                    json={'model': 'jev', 'state': 'synthetic', 'questions': {}}, stream=True)
+                with self.assertRaises(BudgetExceeded):
+                    b''.join(response.iter_content(8192))
+                response.close()
+                with self.assertRaises(BudgetExceeded):
+                    client.post('https://api.deepseek.com/chat/completions', content=(
+                        '{"model":"a","messages":[{"role":"user","content":"' + escaped + '"}]}').encode())
+        self.assertEqual(len(sent), 1)
+        self.assertEqual(len(recorder.events), 2)
+        for event in recorder.events:
+            self.assertIsNone(event['response_body_utf8'])
+            self.assertTrue(event['response_omitted_credential_reflection'])
+        self.assertNotIn(secret, json.dumps(recorder.events))
+        self.assertNotIn(escaped, json.dumps(recorder.events))
+
+    def test_reflected_request_id_is_stopped_before_service_metadata_in_both_transports(self):
+        import httpx
+        import requests
+        secret = 'synthetic-header-reflection'
+        def requests_reply(adapter, request, **kwargs):
+            response = requests.Response()
+            response.status_code, response._content, response._content_consumed = 200, b'{}', True
+            response.headers['x-request-id'] = secret
+            return response
+        with patch('requests.adapters.HTTPAdapter.send', requests_reply), \
+                httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(
+                    200, json={}, headers={'x-request-id': secret}))) as client:
+            with SyntheticPayloadRecorder(synthetic=True, configuration={}, forbidden_secrets=(secret,)) as recorder:
+                with self.assertRaises(BudgetExceeded):
+                    client.post('https://api.deepseek.com/chat/completions', json={'model': 'a', 'messages': []})
+                with self.assertRaises(BudgetExceeded):
+                    requests.post('https://ai-gateway.vercel.sh/typesafe/v1/systemone',
+                        json={'model': 'jev', 'state': 'synthetic', 'questions': {}}, stream=True)
+        self.assertNotIn(secret, json.dumps(recorder.events))
+        self.assertTrue(all(event['error_type'] == 'BudgetExceeded' for event in recorder.events))
 
     def test_unknown_fields_and_unapproved_destinations_fail_before_capture(self):
         import httpx
@@ -200,6 +262,14 @@ class CalibrationMetricsTests(SimpleTestCase):
             self.assertIsNone(metrics['correct_delivered'])
             self.assertFalse(metrics['reference_evaluable'])
             self.assertIsNone(summarize_calibration([metrics])[0]['cost_per_correct_estimated_usd'])
+        corpus_shape = {**case, 'oracle': {'kind': 'contains', 'expected_answer': ['23', '99']}}
+        observed = calibration_case_metrics(corpus_shape, self.row(answer='no 23 sino 99'))
+        self.assertTrue(observed['required_content_present'])
+        self.assertIsNone(observed['correct_delivered'])
+        scalar_shape = {**case, 'oracle': {'kind': 'contains', 'expected_answer': '29'}}
+        scalar = calibration_case_metrics(scalar_shape, self.row(answer='329'))
+        self.assertTrue(scalar['required_content_present'])
+        self.assertIsNone(scalar['correct_delivered'])
 
     def test_numeric_oracle_has_no_eval_or_tolerance_and_p95_reports_n(self):
         oracle = {'kind': 'numeric', 'value': '0.3'}
@@ -210,3 +280,86 @@ class CalibrationMetricsTests(SimpleTestCase):
         metrics = [calibration_case_metrics(self.case(str(index)), self.row(latency_ms=index)) for index in range(1, 21)]
         summary = summarize_calibration(metrics)[0]
         self.assertEqual((summary['latency_n'], summary['p50_latency_ms'], summary['p95_latency_ms']), (20, 10.5, 19))
+
+
+class CalibrationSelectionTests(SimpleTestCase):
+    def test_small_sample_balances_categories_before_many_internal_strata(self):
+        scripts = Path(__file__).resolve().parents[2] / 'scripts'
+        spec = importlib.util.spec_from_file_location('calibration_local_checks_test', scripts / 'calibration_local_checks.py')
+        module = importlib.util.module_from_spec(spec)
+        with patch.object(sys, 'path', [str(scripts), *sys.path]):
+            spec.loader.exec_module(module)
+        cases = [{'id': f'{category}-{index}', 'family_id': f'{category}-{index}',
+            'category': category, 'language': f'language-{index}', 'difficulty': 'hard',
+            'length': {'band': 'long'}} for category in ('documentary', 'injection', 'legitimate', 'pii', 'reasoning')
+            for index in range(12)]
+        selected = module.stratified_selection(cases, 10, 20261004)
+        self.assertEqual({category: sum(case['category'] == category for case in selected)
+            for category in ('documentary', 'injection', 'legitimate', 'pii', 'reasoning')},
+            {category: 2 for category in ('documentary', 'injection', 'legitimate', 'pii', 'reasoning')})
+        self.assertEqual(selected, module.stratified_selection(list(reversed(cases)), 10, 20261004))
+        missing = module.measure_annotations({'id': 'no-annotations'}, {'prompt': 'text'}, {'prompt': 'text'})
+        self.assertIsNone(missing['passed'])
+        with patch.object(sys, 'argv', ['calibration_local_checks', '--split', 'reserved', '--output', 'unused']), \
+                self.assertRaisesRegex(ValueError, 'explicit custodian release'):
+            module.main()
+
+
+class CalibrationReflectionFlowTests(TestCase):
+    def test_reflection_never_enters_retained_responses_or_ledger_and_keeps_reservation(self):
+        import httpx
+        import requests
+        from . import evaluation
+        from .models import Engine, EngineModel
+        manifest = json.loads((evaluation.ROOT / 'evals/adversarial-live/community-additional-20261003/manifest.json'
+                               ).read_text(encoding='utf-8'))
+        manifest['price_date'] = date.today().isoformat()
+        secret = 'sk-syntheticcredentialreflection12345'
+        case = {'id': 'synthetic-reflection', 'input': 'Calcula 2 + 2.', 'task': 'general',
+            'difficulty': 'economy', 'split': 'development', 'group': 'arithmetic', 'must_block': False}
+        engine = Engine.objects.create(name='Synthetic reflection', connector_type='openai_compatible',
+                                       base_url=manifest['destinations']['generation'])
+        models = {level: EngineModel.objects.create(engine=engine, name=level,
+            model_id=manifest['model_versions'][level], context_window=manifest['context_window'],
+            max_tokens=512, supports_json=True,
+            input_price=Decimal(manifest['prices_per_million'][level]['input']),
+            output_price=Decimal(manifest['prices_per_million'][level]['output']), price_date=date.today())
+            for level in ('economy', 'strong')}
+        def judge_send(adapter, request, **kwargs):
+            body = json.loads(request.body)
+            answers = {}
+            for key, question in body['questions'].items():
+                if question['type'] == 'choice':
+                    chosen = {'category': 'public', 'task': 'general', 'difficulty': 'economy'}[key]
+                    answers[key] = {'type': 'choice', 'choice': chosen, 'confidence': 1.0,
+                        'probabilities': {option: float(option == chosen) for option in question['criteria']}}
+                else:
+                    answers[key] = {'type': 'noul', 'noul': 0.0}
+            response = requests.Response()
+            response.status_code, response._content_consumed = 200, True
+            response._content = json.dumps({'model': body['model'], 'answers': answers,
+                'usage': {'input_tokens': 100, 'output_tokens': 20}}).encode()
+            return response
+        def generator_send(request):
+            body = json.loads(request.content)
+            return httpx.Response(200, json={'id': secret, 'object': 'chat.completion', 'created': 0,
+                'model': body['model'], 'choices': [{'index': 0,
+                    'message': {'role': 'assistant', 'content': secret}, 'finish_reason': 'stop'}],
+                'usage': {'prompt_tokens': 20, 'completion_tokens': 10, 'total_tokens': 30}})
+        with TemporaryDirectory() as directory, patch.dict(os.environ, {
+                'REGULAI_EVAL_GENERATOR_KEY': secret, 'REGULAI_EVAL_JEV_KEY': 'synthetic-judge'}), \
+                patch('socket.socket.connect', side_effect=AssertionError('No real network')), \
+                patch('requests.adapters.HTTPAdapter.send', judge_send), \
+                patch('openai.DefaultHttpxClient', side_effect=lambda **kwargs:
+                    httpx.Client(transport=httpx.MockTransport(generator_send), **kwargs)):
+            ledger = EvaluationBudget(Path(directory) / 'synthetic-ledger.sqlite3', '1')
+            with SyntheticPayloadRecorder(synthetic=True, configuration={}, forbidden_secrets=(secret,)) as recorder:
+                row = evaluation.exercise_case(case, 'economy', manifest, engine, models, ledger, real=True)
+            self.assertNotIn(secret, json.dumps(row))
+            self.assertNotIn(secret, json.dumps(ledger.snapshot()))
+            self.assertNotIn(secret, json.dumps(recorder.events))
+            self.assertEqual(row['generation_responses'], [])
+            self.assertFalse(row['delivered'])
+            generation = next(call for call in ledger.snapshot()['calls'] if call['purpose'] == 'generation')
+            self.assertIsNone(generation['cost'])
+            self.assertGreater(Decimal(generation['reserved']), 0)

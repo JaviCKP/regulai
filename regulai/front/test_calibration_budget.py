@@ -163,6 +163,33 @@ class CalibrationBudgetTests(SimpleTestCase):
         with self.assertRaises(ValueError):
             fresh.reserve('generation', '.01')
 
+    def test_window_expiring_while_waiting_for_writer_lock_prevents_reservation(self):
+        ledger = self.claimed()
+        blocker = sqlite3.connect(self.path)
+        blocker.execute('BEGIN IMMEDIATE')
+        connecting, clock = Event(), [self.now]
+        real_connect = sqlite3.connect
+        class AdvancingDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return clock[0]
+        def connect(*args, **kwargs):
+            connecting.set()
+            return real_connect(*args, **kwargs)
+        with ThreadPoolExecutor(max_workers=1) as pool, \
+                patch('front.evaluation_budget.sqlite3.connect', side_effect=connect), \
+                patch('front.evaluation_budget.datetime', AdvancingDateTime):
+            future = pool.submit(ledger.reserve, 'verification', '.01')
+            try:
+                self.assertTrue(connecting.wait(timeout=5))
+                clock[0] = datetime.fromisoformat(self.args['expires_at'])
+            finally:
+                blocker.rollback()
+                blocker.close()
+            with self.assertRaises(BudgetExceeded):
+                future.result(timeout=10)
+        self.assertEqual(ledger.snapshot()['calls'], self.before)
+
     def test_callback_interrupt_rolls_back_but_interrupted_transport_retains_exposure(self):
         ledger = self.claimed()
         def interrupt():
