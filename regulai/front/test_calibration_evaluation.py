@@ -166,6 +166,21 @@ class CalibrationCaptureTests(SimpleTestCase):
         self.assertNotIn(secret, json.dumps(recorder.events))
         self.assertTrue(all(event['error_type'] == 'BudgetExceeded' for event in recorder.events))
 
+    def test_duplicate_json_members_cannot_hide_escaped_credentials(self):
+        import httpx
+        secret = 'synthetic-duplicate-credential'
+        escaped = ''.join('\\u%04x' % ord(char) for char in secret)
+        reply = ('{"error":"' + escaped + '","error":"public"}').encode()
+        with httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(200, content=reply))) as client:
+            with SyntheticPayloadRecorder(synthetic=True, configuration={}, forbidden_secrets=(secret,)) as recorder:
+                with self.assertRaises(BudgetExceeded):
+                    client.post('https://api.deepseek.com/chat/completions', json={'model': 'a', 'messages': []})
+                with self.assertRaises(BudgetExceeded):
+                    client.post('https://api.deepseek.com/chat/completions', content=(
+                        '{"model":"a","messages":[{"role":"user","content":"' + escaped + '","content":"public"}]}').encode())
+        self.assertEqual(len(recorder.events), 1)
+        self.assertIsNone(recorder.events[0]['response_body_utf8'])
+
     def test_unknown_fields_and_unapproved_destinations_fail_before_capture(self):
         import httpx
         with httpx.Client(transport=httpx.MockTransport(lambda request: self.fail('No transport expected'))) as client:

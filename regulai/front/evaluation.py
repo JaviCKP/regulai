@@ -88,7 +88,9 @@ class SyntheticPayloadRecorder:
         if any(secret in raw for secret in self._forbidden):
             return True
         try:
-            pending = [json.loads(raw)]
+            # Preserve every key/value, including overwritten duplicate members.
+            # A normal dict parser would hide earlier escaped credentials.
+            pending = [json.loads(raw, object_pairs_hook=lambda pairs: [value for pair in pairs for value in pair])]
         except (ValueError, UnicodeError, RecursionError):
             # Incomplete/non-JSON error bodies cannot be checked reliably for
             # escaped credentials; retain their digest but no readable content.
