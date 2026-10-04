@@ -1,0 +1,16 @@
+Found 3 test(s).
+Skipping setup of unused database(s): default.
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory 'C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\snapshot-4fdbe1a\regulai\static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+test_direct_typesafe_destination_never_reaches_transport (security_probes.TransportControlProbes.test_direct_typesafe_destination_never_reaches_transport) ... ok
+test_openai_sdk_503_causes_one_transport_attempt (security_probes.TransportControlProbes.test_openai_sdk_503_causes_one_transport_attempt) ... ok
+test_second_concurrent_httpx_transport_is_rejected (security_probes.TransportControlProbes.test_second_concurrent_httpx_transport_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.598s
+
+OK

@@ -1,0 +1,17 @@
+Found 4 test(s).
+Skipping setup of unused database(s): default.
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory 'C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security-final\snapshot-b3fea6a\regulai\static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+test_invalid_provider_evidence_fails_closed_even_at_high_override (r4_independent_probes.IndependentManipulationReview.test_invalid_provider_evidence_fails_closed_even_at_high_override) ... ok
+test_legacy_omitted_and_null_configs_equal_old_classifier_for_signal_pairs (r4_independent_probes.IndependentManipulationReview.test_legacy_omitted_and_null_configs_equal_old_classifier_for_signal_pairs) ... ok
+test_mixed_non_manipulation_signals_match_old_result_when_manipulation_is_below_both (r4_independent_probes.IndependentManipulationReview.test_mixed_non_manipulation_signals_match_old_result_when_manipulation_is_below_both) ... ok
+test_overridden_manipulation_does_not_allow_credentials_or_restricted_floor (r4_independent_probes.IndependentManipulationReview.test_overridden_manipulation_does_not_allow_credentials_or_restricted_floor) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.367s
+
+OK

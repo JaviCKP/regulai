@@ -1,0 +1,6 @@
+{
+  "superseded_file": "live-baseline-review.json",
+  "replacement": "live-baseline-review-02.json",
+  "reason": "Initial reviewer probe looked for request_body_utf8 but the recorder uses body_utf8. Its empty leak list was unmeasured; the corrected probe requires every body to be present and records N. Other case observations are unaffected. No product was executed.",
+  "new_provider_calls": 0
+}

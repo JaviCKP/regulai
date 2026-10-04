@@ -1,0 +1,21 @@
+{
+  "fixed_commit": "b3fea6a63761c06ef66695fee26377d23786c347",
+  "comparison_commit": "3940fdc",
+  "source_sha256": {
+    "b3fea6a63761c06ef66695fee26377d23786c347:regulai/front/policy.py": "bc132a133bfb0ce0fe51c5d57bf93b6891cc653088bfd89aea062556df69136f",
+    "3940fdc:regulai/front/classification.py": "31aa7d93fe1d039834e0e9fe07150f71e6292d7d70a918c7ead593b00112cd42",
+    "b3fea6a63761c06ef66695fee26377d23786c347:regulai/front/classification.py": "91382758c540eff3c20bf319ab3200756c29fc9eb5c6e10ea04149cfedd7abe2",
+    "b3fea6a63761c06ef66695fee26377d23786c347:regulai/front/evaluation.py": "fd3f7172124239455bedb38ff080928abfbed9d39110a98276b62d657730a21f"
+  },
+  "kind": "independent_pinned_function_probe",
+  "legacy_decision_comparisons": 500,
+  "preregistered_threshold_boundaries": 9,
+  "unchanged_other_signal_boundaries": 45,
+  "invalid_policy_values_rejected": 7,
+  "retained_and_delivered_aggregate_checks": 4,
+  "u1": "closed_on_pinned_source",
+  "new_provider_calls": 0,
+  "database_opened": false,
+  "reserved_opened": false,
+  "limitation": "Synthetic function checks establish compatibility and metric behavior, not a safe or useful real manipulation threshold."
+}

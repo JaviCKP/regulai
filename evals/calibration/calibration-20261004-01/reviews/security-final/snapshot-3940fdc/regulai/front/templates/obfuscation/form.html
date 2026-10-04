@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Edit Obfuscation Config{% else %}Add Obfuscation Config{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title fw-semibold mb-4">
+          <iconify-icon icon="solar:shield-keyhole-line-duotone" class="text-primary me-2"></iconify-icon>
+          {% if is_edit %}Edit Obfuscation Configuration{% else %}Add New Obfuscation Configuration{% endif %}
+        </h5>
+
+        <!-- Messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+
+          <div class="mb-3">
+            <label for="id_name" class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+            {{ form.name }}{{ form.name.errors }}
+            <div class="form-text">A descriptive name for this obfuscation configuration.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_backend" class="form-label fw-semibold">Processing location <span class="text-danger">*</span></label>
+            {{ form.backend }}{{ form.backend.errors }}
+            <div class="form-text">Local detects PII and secrets on this server, before any external AI call. HTTP sends the original content to your authorized PasteGuard service.</div>
+          </div>
+
+          <div class="mb-3" id="http-url-field">
+            <label for="id_api_url" class="form-label fw-semibold">PasteGuard API URL (HTTP only)</label>
+            {{ form.api_url }}{{ form.api_url.errors }}
+            <div class="form-text">Required for HTTP. The <code>/api/mask</code> endpoint is appended automatically. Local processing does not use this URL.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_detect" class="form-label fw-semibold">Detection Type</label>
+            {{ form.detect }}{{ form.detect.errors }}
+            <div class="form-text">Both PII and secrets are required by the chat privacy barrier. Partial detection blocks sending.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_language" class="form-label fw-semibold">Language</label>
+            {{ form.language }}{{ form.language.errors }}
+            <div class="form-text">Local processing supports Spanish and English: <code>es</code>, <code>en</code> or empty for both.</div>
+          </div>
+
+          <div class="mb-4">
+            <div class="form-check form-switch">
+              {{ form.active }}{{ form.active.errors }}
+              <label class="form-check-label" for="id_active">Active</label>
+            </div>
+            <div class="form-text">Only active configurations are applied to outgoing prompts.</div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <iconify-icon icon="solar:diskette-bold" class="me-1"></iconify-icon>
+              {% if is_edit %}Update Configuration{% else %}Add Configuration{% endif %}
+            </button>
+            <a href="{% url 'front:obfuscation_list' %}" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Sidebar -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h6 class="fw-semibold mb-3">
+          <iconify-icon icon="solar:info-circle-bold" class="text-info me-2"></iconify-icon>
+          About Obfuscation
+        </h6>
+        <p class="text-muted small mb-3">
+          Obfuscation masks detected personal data and secrets in prompts, context, documents and responses. Choose local processing to keep originals on this server.
+        </p>
+        <hr>
+        <h6 class="fw-semibold mb-2">How it works:</h6>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">
+            <iconify-icon icon="solar:shield-check-bold" class="text-success me-1"></iconify-icon>
+            Detects PII (names, emails, phones, etc.)
+          </li>
+          <li class="mb-2">
+            <iconify-icon icon="solar:shield-check-bold" class="text-success me-1"></iconify-icon>
+            Detects secrets (API keys, tokens, etc.)
+          </li>
+          <li class="mb-2">
+            <iconify-icon icon="solar:shield-check-bold" class="text-success me-1"></iconify-icon>
+            Replaces detected data with stable placeholders
+          </li>
+          <li class="mb-2">
+            <iconify-icon icon="solar:shield-check-bold" class="text-success me-1"></iconify-icon>
+            Multiple configs are chained in sequence
+          </li>
+        </ul>
+        <hr>
+        <p class="text-muted small mb-0">
+          Local processing needs the detector model installed on the server. Its incremental API cost is zero: set the policy's masking maximum call cost to <code>0</code> for a local-only chain. HTTP configurations require their own contractual call bound. Detection can miss sensitive data; YARA and the company policy still apply.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

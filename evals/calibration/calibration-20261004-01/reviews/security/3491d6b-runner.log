@@ -1,0 +1,17 @@
+Found 4 test(s).
+Skipping setup of unused database(s): default.
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory 'C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\snapshot-3491d6b\regulai\static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+test_boundary_rejects_unicode_escaped_sensitive_value_and_extra_generation (front.test_calibration_runner.CalibrationRunnerTests.test_boundary_rejects_unicode_escaped_sensitive_value_and_extra_generation) ... ok
+test_complete_batch_must_fit_without_spending_confirmation_reserve (front.test_calibration_runner.CalibrationRunnerTests.test_complete_batch_must_fit_without_spending_confirmation_reserve) ... ok
+test_frozen_sample_resolves_only_reviewed_ids_and_provider_input (front.test_calibration_runner.CalibrationRunnerTests.test_frozen_sample_resolves_only_reviewed_ids_and_provider_input) ... ok
+test_pinned_source_change_prevents_transport (front.test_calibration_runner.CalibrationRunnerTests.test_pinned_source_change_prevents_transport) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.011s
+
+OK

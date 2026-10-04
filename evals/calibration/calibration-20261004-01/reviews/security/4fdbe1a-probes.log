@@ -1,0 +1,41 @@
+Found 4 test(s).
+Skipping setup of unused database(s): default.
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory 'C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\snapshot-4fdbe1a\regulai\static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+test_guard_does_not_persist_a_unicode_escaped_request_credential (security_probes.CredentialCaptureProbes.test_guard_does_not_persist_a_unicode_escaped_request_credential) ... FAIL
+test_httpx_unescaped_reflection_is_omitted_control (security_probes.CredentialCaptureProbes.test_httpx_unescaped_reflection_is_omitted_control) ... ok
+test_httpx_unicode_escaped_reflection_is_not_persisted (security_probes.CredentialCaptureProbes.test_httpx_unicode_escaped_reflection_is_not_persisted) ... FAIL
+test_requests_unicode_escaped_reflection_is_not_persisted (security_probes.CredentialCaptureProbes.test_requests_unicode_escaped_reflection_is_not_persisted) ... FAIL
+
+======================================================================
+FAIL: test_guard_does_not_persist_a_unicode_escaped_request_credential (security_probes.CredentialCaptureProbes.test_guard_does_not_persist_a_unicode_escaped_request_credential)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\security_probes.py", line 66, in test_guard_does_not_persist_a_unicode_escaped_request_credential
+    self.assertEqual(len(reached), 0, 'Escaped credential reached provider despite forbidden_secrets')
+AssertionError: 1 != 0 : Escaped credential reached provider despite forbidden_secrets
+
+======================================================================
+FAIL: test_httpx_unicode_escaped_reflection_is_not_persisted (security_probes.CredentialCaptureProbes.test_httpx_unicode_escaped_reflection_is_not_persisted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\security_probes.py", line 35, in test_httpx_unicode_escaped_reflection_is_not_persisted
+    self.assertIsNone(event['response_body_utf8'], 'Reflected credential survives reversible JSON escaping')
+AssertionError: '{"error":"\\u0072\\u0065\\u0076\\u0069\\u0065\\u0077\\u002d\\u006f\\u006e\\u006c\\u0079\\u002d\\u0064\\u006f\\u002d\\u006e\\u006f\\u0074\\u002d\\u0070\\u0065\\u0072\\u0073\\u0069\\u0073\\u0074\\u002d\\u0063\\u0072\\u0065\\u0064\\u0065\\u006e\\u0074\\u0069\\u0061\\u006c"}' is not None : Reflected credential survives reversible JSON escaping
+
+======================================================================
+FAIL: test_requests_unicode_escaped_reflection_is_not_persisted (security_probes.CredentialCaptureProbes.test_requests_unicode_escaped_reflection_is_not_persisted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\security_probes.py", line 51, in test_requests_unicode_escaped_reflection_is_not_persisted
+    self.assertIsNone(recorder.events[0]['response_body_utf8'],
+AssertionError: '{"error":"\\u0072\\u0065\\u0076\\u0069\\u0065\\u0077\\u002d\\u006f\\u006e\\u006c\\u0079\\u002d\\u0064\\u006f\\u002d\\u006e\\u006f\\u0074\\u002d\\u0070\\u0065\\u0072\\u0073\\u0069\\u0073\\u0074\\u002d\\u0063\\u0072\\u0065\\u0064\\u0065\\u006e\\u0074\\u0069\\u0061\\u006c"}' is not None : Reflected credential survives reversible JSON escaping at requests boundary
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.005s
+
+FAILED (failures=3)

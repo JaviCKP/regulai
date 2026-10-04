@@ -1,5 +1,34 @@
 # Checkpoint — calibration-20261004-01
 
+## Cierre vigente 2026-10-04
+
+Campaña cerrada a nuevos pagos por `failed_or_uncertain_provider_call` en R4, P0619/router. HTTP 200 con distribución de categoría sumando 0,99, rechazada antes del umbral. Se conserva la reserva; no se reintenta ni se ejecuta ningún lote posterior. No volver a iniciar llamadas automáticamente.
+
+Runtime final `b3fea6a63761c06ef66695fee26377d23786c347`; evidencia local/real/ledger guardada en `85ca5a9`. Configuración final `privacy-v5-legacy-policy`, umbral de manipulación omitido/None. R4 0,40 NO adoptado. `final_selection.json` SHA a33dad5bcb906f0bf26b55dfab04aa90be2f299faa4780216f157c68282d72a5 fue fijado antes del release único de A, SHA 4e8828c907eb19bccfe221f6a3ec68b3f75de23a4f9037d99b434be6c8eb085b.
+
+Corpus completo de 4.004 casos evaluado localmente por brazo: valores sensibles 1.872→1.905/2.418, preservados 2.187/2.243 ambos. Las 33 ganancias son de una familia de desarrollo; validación y reservado empatan. Reservado 571 casos/372 grupos, 248/323 ocultados, 225/243 preservados; 120 HTTP por brazo con 114 controles aprobados, cero red y fuentes intactas. No hubo ajuste posterior. El reservado ya fue usado y no sirve como no visto en otra campaña.
+
+Pago: base y v5 12 combinaciones cada uno y cero entregas. R4 5/12 combinaciones, una entrega «29 días» (presencia, no corrección automática completa), una llamada incierta. En conjunto, 49 HTTP (29 clasificación, 11 generación, nueve juez) y 40 máscaras locales de coste cero. Ledger reconciliado RO: comunicado 0,002794596 USD; estimado 0,00961932; exposición 0,076271376; reservas inciertas 0,006 incluidas en la exposición; remanente 1,583728624. Los 110 asientos históricos están intactos. Exposición total con conversión/margen: 0,091729495 EUR. No gastar el remanente tras esta parada.
+
+Cinco puertas finales `gates-02` sobre b3fea6a: exit 0; 452 tests (450 OK y dos expectedFailure NER), 150 simulaciones con cero fallos de control/cero pagos, migraciones y ambas auditorías de dependencias verdes. Revisores finales Astra Max nuevos, seguridad y utilidad, verifican el commit fijo y adendas de cierre. Ningún agente cambia runtime/oráculos durante el cierre.
+
+Limitaciones: 2.043 grupos operativos no acreditan 1.500 familias semánticamente independientes; validación/reservado tienen un caso documental y ninguno muy largo cada uno. Muestra real estratificada y confirmación remota no ejecutadas por la parada. Precisión/recobrado exhaustivos y referencias semánticas siguen incompletos. La configuración semántica base se conserva, sin ganador confirmado. Informe principal: `docs/plan-blackhat/informe-calibracion-community-20261004.md`.
+
+Informes independientes y documentación de cierre finalizados. Seguridad reconcilia 40/40 comprobaciones; utilidad comprueba el informe principal y los límites. Las 444 fuentes de las puertas finales conservan sus hashes. Los artefactos y la documentación se guardan en commits locales, con índice de cierre `closure.json`. Sin push, despliegue, publicación, nuevos contactos, modificación de DB usuario ni participantes humanos. Archivos ajenos preservados; no hay procesos de ensayo en ejecución ni lock del piloto. La campaña no se reanuda automáticamente.
+
+## Hito histórico 2026-10-04T08:32Z
+
+- Runtime b3fea6a63761c06ef66695fee26377d23786c347; reservado CERRADO, manifiesto corpus9d9b0951e754cb544032e6743d736bd1dfc8696066a977652b596a61520b0e50. No leer reservado ni builder hasta final_selection y liberación A.
+- Corpus4004/2043grupos operativos/1181documentos; no acreditadas1500familias independientes. Dev2813/val620/res571; val/res sólo1documental y0muy largos. Dev1201→1234/1572 ocultados,1716/1742 preservados; val423/523 y246/258 ambos.33ganancias de UNA familia,0pérdidas anotadas.
+- baseline-smoke-02 y candidate-smoke-01 completados: cada uno12combinaciones/4familias,19HTTPexternos,0entregas,9bloqueos+3fallos. No incertidumbre nueva/DBusuario RO inalterada. V5 no mejora entrega en este smoke.
+- Ledger acumulado: comunicado0.002561412; estimado0.00844158; conocido0.011002992; exposición0.065225712; incierto0.003histórico; restante1.594774288USD. Histórico inicial comunicado0.001461138/estimado0.00475530/conocido0.006216438/exposición0.038440878.
+- R4 preregistrado08:17Z; override sólo manipulación .35/.40/.50, None conserva legacy. GREEN5tests/12HTTP/24eventos sintéticos sin red;66pruebas anteriores OK. Contrafactual v5: .40 mínimo elimina6/6bloqueos benignos y conserva3/3ataques, sin inferir entrega. Demás señales siguen.2. Agregados de entrega/reintentos U1 corregidos.
+- r4-smoke-01 preparado con .40, manifest07c306ebf6e5ad258b3ad4a282cb34476e4d6f370d07d7a47fddb0fc19ed56d6, peor.308USD, offline12exit0,preflightreadytrue. Próximo activar/real centralizado. Después muestra validación estratificada6 (corto/largo,fácil/difícil) base/candidato con confirmación protegida.
+- Revisores NUEVOS security_final/utility_final revisaron3940 y revisanb3fea6a; seguridad80tests independientes OK. r4_tests terminó, archivos quietos. A preparado para una liberación cuando selección fija. gates-01 sobre3940 cincoexit0/446tests/150offline; gates-02 sobreb3fea6a sesión27252 en curso.
+- Próximo final: fijar configuración+SHA+selección, liberar A, reservado completo local y muestra real emparejada UNA fase sin ajuste posterior; revisores y reconciliación; informe/tareas/commits locales. Sin push/deploy ni DBusuario escrita. No agotar saldo porque sí.
+
+## Notas históricas (no estado vigente)
+
 Inicio 2026-10-03T23:12:23Z (4 octubre en Madrid); ventana de nuevas llamadas hasta 2026-10-04T23:12:23Z. Techo conjunto 2 EUR incluyendo exposición histórica. Sin nuevas llamadas hasta reconciliar ledger, FX, tarifas, manifiestos y pruebas.
 
 Base observada `9d7f942`, runtime anterior `1af809f`; Git tracked limpio. Preservar MESAS_RETIRO.pdf, plantilla.pdf, plantillaInformeTecnica.pdf, docs/brainstorming-regulae-vigia13-2026-10-02.md, docs/plan-blackhat/prompt-validacion-piloto-astra-max.md. No parar procesos ajenos. No escribir DB usuario ni mostrar secretos. Todos comandos shell con rtk.
@@ -41,3 +70,9 @@ Interfaz corpus acordada: JSONL v2 por development/validation/reserved; campos c
 ## Próximo paso
 
 Terminar correcciones A/C y commits serializados. Medir base y candidato desarrollo con wrapper final, ejecutar smoke pagado emparejado sólo tras preflight/activación auditada, seleccionar con validación. Fijar selección antes de que A libere reservado una sola vez. Confirmación protegida. Refrescar precios en NUEVO snapshot si cambia día UTC, sin sobrescribir evidencia anterior. Cinco puertas tras último código; dos revisores nuevos sobre commit fijo final. No push/deploy ni cambios en DB usuario.
+
+## Continuación 2026-10-04T08:03Z
+
+Tras interrupción del runtime de agentes, no se habían iniciado nuevas llamadas. HEAD3940fdc; root conserva0pagos y ventana hasta23:12:23Z. Nuevos revisores security_final/utility_final AstraMax aceptados; el revisoranterior quedóinterrumpido paraevitarduplicación. CustodiaA pendiente reanudación. Dev2813 base/candidato y validation620 concluyeron conhashesestables/red0. Dev1201→1234/1572valoresocultos,1716/1742preservesambos; validationempate. Históricoactual40/44,31/32redactions,61/66preserve,258/264HTTP; fuenteintacta.
+
+Baseline-smoke-01 se preserva superseded(sinactivar/pagar) trasfixJSONduplicado; baseline-smoke-02 manifest140b78da56b9fccf0307fe6612a0d9b1ce2826fad6a65bd21ef9e900bafd1fe5 preflight08:03UTC readytrue, DBROunchanged; offline12exit0. Cinco puertasgates-01encurso. Próximo: cierreprobesrevisor,activarledgerauditado+únicorealsmokebase, parearcandidate, final_selection inmutable yreleaseA, holdoutbase/candidateuna fasefinal, informeycommits.

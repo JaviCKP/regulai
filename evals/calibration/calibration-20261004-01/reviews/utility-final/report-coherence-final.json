@@ -1,0 +1,16 @@
+{
+  "kind": "independent_agent_document_consistency_review",
+  "report": "docs\\plan-blackhat\\informe-calibracion-community-20261004.md",
+  "report_sha256": "9bd95963b4ba7f4840340d2163b1691e44b85f7f6d0fecd6b8baa5bb2af52345",
+  "code_revision": "b3fea6a63761c06ef66695fee26377d23786c347",
+  "status": "Reviewed corrected report; no remaining material utility-number discrepancy identified",
+  "corrected_items": [
+    "R4 three thresholds explored locally; only .40 attempted live",
+    "I0975 counts are configurations of one attack case/family",
+    "Human study removed from incomplete requested deliverables",
+    "Internal rounding mechanism not claimed proven"
+  ],
+  "scope": "Utility, references, selection, denominators, corpus integrity and published gate/cost artifacts; security assertions separately reviewed",
+  "human_review": false,
+  "new_provider_calls": 0
+}

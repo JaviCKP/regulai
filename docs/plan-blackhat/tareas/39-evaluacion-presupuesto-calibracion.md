@@ -1,7 +1,7 @@
 # 39 — Evaluación y presupuesto de la campaña de calibración
 
-**Status:** implemented — runtime, arnés y smoke local verificados; comparación de selección sobre la partición definitiva pendiente de orquestación.
-**Blocked by:** nueva congelación semántica de particiones por el custodio; apertura del reservado solo después de fijar el candidato final.
+**Status:** implemented and verified — corpus local completo, frontera real observada y ledger reconciliado sin borrar reservas.
+**Blocked by:** comparación remota estratificada y confirmación final interrumpidas por outcome_unknown; métricas semánticas sin referencia suficiente siguen sin medir.
 **Propietario:** C, evaluación/presupuesto; el orquestador centraliza toda llamada real y toda mutación del ledger compartido.
 **Especificación:** [11](../11-evaluacion-reproducible.md), [12](../12-demo-y-salida.md),
 [32](32-banco-adversarial-y-datos-personales.md), [33](33-limites-del-detector-adversarial.md),
@@ -23,9 +23,9 @@
 - [x] Referencias exactas y números con gramática acotada distinguen corrección retenida de utilidad entregada.
   Coincidencias `contains` solo miden presencia, nunca corrección. Los costes por correcta incluyen casos evaluables retenidos/fallidos.
 - [x] `validation` conserva su identidad en el motor existente. Historial sintético completo usa los modelos y selección de historial del producto.
-- [ ] Corpus de desarrollo y validación medido con hashes estables; comparación local base/candidato.
-- [ ] Selección estratificada y regresiones críticas por las tres entradas HTTP con frontera de transporte simulada.
-- [ ] Una sola apertura final del reservado, autorizada por el orquestador y custodiada por A.
+- [x] Corpus de desarrollo y validación medido con hashes estables; comparación local base/candidato.
+- [x] Selección estratificada local y regresiones críticas por las tres entradas HTTP con frontera de transporte simulada.
+- [x] Una sola apertura final local del reservado, selección fija y liberación custodiada por A; 571 casos y 120 recorridos HTTP por comparador, sin ajustes posteriores.
 
 ## Evidencia observada
 
@@ -67,3 +67,9 @@ sin medir. Las métricas locales sí cuentan desaparición de valores anotados y
 Documentos cuyo texto de corpus sea un extracto esperado requieren la extracción real para afirmar cobertura del archivo.
 La integración usa los lectores reales; no se afirma lectura completa de formatos por disponer de un texto de referencia.
 La latencia informa N, mediana y p95 por rango más próximo, sin significación estadística basada en variantes correlacionadas.
+
+## Cierre de orquestación
+
+Se hicieron 49 llamadas externas nuevas y 40 operaciones locales de máscara con coste API cero. La última clasificación HTTP 200 tenía probabilidades sumando 0,99: se rechazó y conservó 0,003 USD inciertos; no hubo llamadas posteriores. Base y v5 completaron doce combinaciones cada uno; R4 sólo 5/12.
+
+Exposición total incluido histórico: 0,076271376 USD, de ella 0,006 USD inciertos; comunicado 0,002794596 USD, estimado 0,00961932 USD. La [reconciliación RO y cadena](../../../evals/calibration/calibration-20261004-01/economics/final-reconciliation-01/summary.json) prueba que los 110 asientos históricos permanecen intactos. El [informe](../informe-calibracion-community-20261004.md) separa casos sin anotar, retención/entrega y costes. U1, el agregado de beneficio entregado, queda corregido; revisión independiente sobre b3fea6a y cinco puertas con 452 tests y 150 simulaciones verdes.

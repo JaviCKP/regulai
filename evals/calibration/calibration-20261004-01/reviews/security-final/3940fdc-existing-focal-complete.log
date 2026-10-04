@@ -1,0 +1,116 @@
+Found 42 test(s).
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, messages, rest_framework, staticfiles
+  Apply all migrations: admin, auth, authtoken, contenttypes, front, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
+  Applying authtoken.0003_tokenproxy... OK
+  Applying authtoken.0004_alter_tokenproxy_options... OK
+  Applying front.0001_initial... OK
+  Applying front.0002_engine_companyengine... OK
+  Applying front.0003_add_severity_to_rule... OK
+  Applying front.0004_add_conversation_and_message... OK
+  Applying front.0005_add_applies_to_rule... OK
+  Applying front.0006_add_file_to_message... OK
+  Applying front.0007_add_department_model... OK
+  Applying front.0008_add_avatar_to_profile... OK
+  Applying front.0009_add_default_engine_to_profile... OK
+  Applying front.0010_add_engine_models... OK
+  Applying front.0011_add_connector_type_to_engine... OK
+  Applying front.0012_seed_default_engines... OK
+  Applying front.0013_add_name_to_companyengine... OK
+  Applying front.0015_add_file_hashes_to_prompt... OK
+  Applying front.0016_encrypt_api_keys... OK
+  Applying front.0017_alter_companyengine_api_key... OK
+  Applying front.0018_remove_companyengine_unique_together... OK
+  Applying front.0019_add_rule_action_field... OK
+  Applying front.0020_seed_default_rules_groups... OK
+  Applying front.0021_obfuscationconfig... OK
+  Applying front.0022_alert_source... OK
+  Applying front.0023_company_department_system_prompt... OK
+  Applying front.0024_seed_mistral_engine... OK
+  Applying front.0025_message_response_file... OK
+  Applying front.0026_authorized_chat_state... OK
+  Applying front.0027_enginemodel_context_window_enginemodel_currency_and_more... OK
+  Applying front.0028_auditlog_company... OK
+  Applying front.0029_model_price_units... OK
+  Applying front.0030_enginemodel_reasoning... OK
+  Applying front.0031_infer_historical_prompt_company... OK
+  Applying front.0032_obfuscationconfig_backend... OK
+  Applying sessions.0001_initial... OK
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory 'C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security-final\snapshot-3940fdc\regulai\static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+test_reflection_never_enters_retained_responses_or_ledger_and_keeps_reservation (front.test_calibration_evaluation.CalibrationReflectionFlowTests.test_reflection_never_enters_retained_responses_or_ledger_and_keeps_reservation) ... ok
+test_minimal_pairs_capture_classifier_generator_and_judge_bodies (front.test_calibration_privacy.CalibrationClassifierCaptureTests.test_minimal_pairs_capture_classifier_generator_and_judge_bodies) ... ok
+test_authorization_callback_runs_with_writer_lock_held (front.test_calibration_budget.CalibrationBudgetTests.test_authorization_callback_runs_with_writer_lock_held) ... ok
+test_callback_interrupt_rolls_back_but_interrupted_transport_retains_exposure (front.test_calibration_budget.CalibrationBudgetTests.test_callback_interrupt_rolls_back_but_interrupted_transport_retains_exposure) ... ok
+test_constructor_and_legacy_scope_cannot_enlarge_or_remove_campaign_terms (front.test_calibration_budget.CalibrationBudgetTests.test_constructor_and_legacy_scope_cannot_enlarge_or_remove_campaign_terms) ... ok
+test_expiry_is_rechecked_after_wait_and_settlement_remains_possible (front.test_calibration_budget.CalibrationBudgetTests.test_expiry_is_rechecked_after_wait_and_settlement_remains_possible) ... ok
+test_explicit_extension_preserves_anchor_history_and_uncertain_reservation (front.test_calibration_budget.CalibrationBudgetTests.test_explicit_extension_preserves_anchor_history_and_uncertain_reservation) ... ok
+test_invalid_caps_windows_sources_and_missing_ledger_are_rejected (front.test_calibration_budget.CalibrationBudgetTests.test_invalid_caps_windows_sources_and_missing_ledger_are_rejected) ... ok
+test_revocation_while_waiting_for_lock_creates_no_reservation (front.test_calibration_budget.CalibrationBudgetTests.test_revocation_while_waiting_for_lock_creates_no_reservation) ... ok
+test_two_competing_reservations_cannot_overspend_shared_cap (front.test_calibration_budget.CalibrationBudgetTests.test_two_competing_reservations_cannot_overspend_shared_cap) ... ok
+test_window_expiring_while_waiting_for_writer_lock_prevents_reservation (front.test_calibration_budget.CalibrationBudgetTests.test_window_expiring_while_waiting_for_writer_lock_prevents_reservation) ... ok
+test_capture_requires_explicit_synthetic_scope (front.test_calibration_evaluation.CalibrationCaptureTests.test_capture_requires_explicit_synthetic_scope) ... ok
+test_duplicate_json_members_cannot_hide_escaped_credentials (front.test_calibration_evaluation.CalibrationCaptureTests.test_duplicate_json_members_cannot_hide_escaped_credentials) ... ok
+test_guard_applies_to_each_generation_and_runs_before_transport (front.test_calibration_evaluation.CalibrationCaptureTests.test_guard_applies_to_each_generation_and_runs_before_transport) ... ok
+test_httpx_records_final_body_roles_response_and_key_without_headers (front.test_calibration_evaluation.CalibrationCaptureTests.test_httpx_records_final_body_roles_response_and_key_without_headers) ... ok
+test_json_escaped_credentials_are_blocked_in_request_and_omitted_in_both_responses (front.test_calibration_evaluation.CalibrationCaptureTests.test_json_escaped_credentials_are_blocked_in_request_and_omitted_in_both_responses) ... ok
+test_reflected_credentials_are_omitted_and_never_serialized (front.test_calibration_evaluation.CalibrationCaptureTests.test_reflected_credentials_are_omitted_and_never_serialized) ... ok
+test_reflected_request_id_is_stopped_before_service_metadata_in_both_transports (front.test_calibration_evaluation.CalibrationCaptureTests.test_reflected_request_id_is_stopped_before_service_metadata_in_both_transports) ... ok
+test_replay_key_changes_for_context_rubric_and_configuration (front.test_calibration_evaluation.CalibrationCaptureTests.test_replay_key_changes_for_context_rubric_and_configuration) ... ok
+test_requests_stream_capture_keeps_judge_rubric_and_does_not_read_ahead (front.test_calibration_evaluation.CalibrationCaptureTests.test_requests_stream_capture_keeps_judge_rubric_and_does_not_read_ahead) ... ok
+test_response_over_limit_is_hashed_and_omitted_without_truncation_claim (front.test_calibration_evaluation.CalibrationCaptureTests.test_response_over_limit_is_hashed_and_omitted_without_truncation_claim) ... ok
+test_unknown_fields_and_unapproved_destinations_fail_before_capture (front.test_calibration_evaluation.CalibrationCaptureTests.test_unknown_fields_and_unapproved_destinations_fail_before_capture) ... ok
+test_contains_reference_is_presence_only_and_cannot_certify_correctness (front.test_calibration_evaluation.CalibrationMetricsTests.test_contains_reference_is_presence_only_and_cannot_certify_correctness) ... ok
+test_numeric_oracle_has_no_eval_or_tolerance_and_p95_reports_n (front.test_calibration_evaluation.CalibrationMetricsTests.test_numeric_oracle_has_no_eval_or_tolerance_and_p95_reports_n) ... ok
+test_offline_fixtures_never_measure_semantics_and_empty_aggregates_are_valid (front.test_calibration_evaluation.CalibrationMetricsTests.test_offline_fixtures_never_measure_semantics_and_empty_aggregates_are_valid) ... ok
+test_unknown_cost_and_unresolved_oracles_are_not_zero_or_correct (front.test_calibration_evaluation.CalibrationMetricsTests.test_unknown_cost_and_unresolved_oracles_are_not_zero_or_correct) ... ok
+test_validation_partition_is_preserved_by_existing_pilot_loader (front.test_calibration_evaluation.CalibrationMetricsTests.test_validation_partition_is_preserved_by_existing_pilot_loader) ... ok
+test_withheld_correct_generation_is_not_correct_delivered_and_its_cost_counts (front.test_calibration_evaluation.CalibrationMetricsTests.test_withheld_correct_generation_is_not_correct_delivered_and_its_cost_counts) ... ok
+test_small_sample_balances_categories_before_many_internal_strata (front.test_calibration_evaluation.CalibrationSelectionTests.test_small_sample_balances_categories_before_many_internal_strata) ... ok
+test_known_ner_limit_common_unicode_letters_are_not_an_organization (front.test_calibration_privacy.CalibrationNormalizationTests.test_known_ner_limit_common_unicode_letters_are_not_an_organization) ... expected failure
+test_known_ner_limit_overlapping_identifier_does_not_remove_field_label (front.test_calibration_privacy.CalibrationNormalizationTests.test_known_ner_limit_overlapping_identifier_does_not_remove_field_label) ... expected failure
+test_original_secret_extent_is_not_shortened_by_unicode_normalization (front.test_calibration_privacy.CalibrationNormalizationTests.test_original_secret_extent_is_not_shortened_by_unicode_normalization) ... ok
+test_spaced_and_unicode_identifiers_are_removed_without_rewriting_task (front.test_calibration_privacy.CalibrationNormalizationTests.test_spaced_and_unicode_identifiers_are_removed_without_rewriting_task) ... ok
+test_unicode_email_is_fully_removed_and_benign_unicode_keeps_exact_bytes (front.test_calibration_privacy.CalibrationNormalizationTests.test_unicode_email_is_fully_removed_and_benign_unicode_keeps_exact_bytes) ... ok
+test_definitions_and_non_address_uses_of_at_and_dot_are_preserved (front.test_calibration_privacy.CalibrationWordEmailTests.test_definitions_and_non_address_uses_of_at_and_dot_are_preserved) ... ok
+test_labelled_word_addresses_are_removed_in_es_and_en (front.test_calibration_privacy.CalibrationWordEmailTests.test_labelled_word_addresses_are_removed_in_es_and_en) ... ok
+test_labelled_word_email_inside_json_stays_valid_and_idempotent (front.test_calibration_privacy.CalibrationWordEmailTests.test_labelled_word_email_inside_json_stays_valid_and_idempotent) ... ok
+test_boundary_rejects_unicode_escaped_sensitive_value_and_extra_generation (front.test_calibration_runner.CalibrationRunnerTests.test_boundary_rejects_unicode_escaped_sensitive_value_and_extra_generation) ... ok
+test_complete_batch_must_fit_without_spending_confirmation_reserve (front.test_calibration_runner.CalibrationRunnerTests.test_complete_batch_must_fit_without_spending_confirmation_reserve) ... ok
+test_frozen_sample_resolves_only_reviewed_ids_and_provider_input (front.test_calibration_runner.CalibrationRunnerTests.test_frozen_sample_resolves_only_reviewed_ids_and_provider_input) ... ok
+test_pinned_source_change_prevents_transport (front.test_calibration_runner.CalibrationRunnerTests.test_pinned_source_change_prevents_transport) ... ok
+test_transport_guard_rechecks_revocation_after_client_construction (front.test_calibration_runner.CalibrationRunnerTests.test_transport_guard_rechecks_revocation_after_client_construction) ... ok
+
+----------------------------------------------------------------------
+Ran 42 tests in 7.857s
+
+OK (expected failures=2)
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

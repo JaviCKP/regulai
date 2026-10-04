@@ -1,0 +1,52 @@
+{
+  "reviewed_at_utc": "2026-10-04T08:38:16.562071+00:00",
+  "commit": "b3fea6a63761c06ef66695fee26377d23786c347",
+  "checks": {
+    "all_preceding_ledger_rows_preserved": true,
+    "totals_recompute_exactly": true,
+    "known_separates_reported_estimated": true,
+    "remaining_recomputes": true,
+    "under_global_cap": true,
+    "bridge_failed_and_user_db_preserved": true,
+    "exact_scope_identity": true,
+    "stopped_on_uncertainty": true,
+    "five_prefix_combinations": true,
+    "eleven_real_transports_and_ledger_calls": true,
+    "single_new_unknown_reservation_retained": true,
+    "invalid_last_call": true,
+    "no_generation_after_unknown_classification": true,
+    "unknown_total_includes_both_reservations": true,
+    "per_call_caps_preserved": true,
+    "max_generation_attempts_preserved": true,
+    "inside_original_window": true,
+    "gates_fixed_revision": true,
+    "gate_logs_and_exits": true,
+    "gate_runtime_matches_pack": true
+  },
+  "all_passed": true,
+  "recomputed_totals": {
+    "known_cost_usd": "0.012413916",
+    "provider_reported_usd": "0.002794596",
+    "tariff_estimated_usd": "0.00961932",
+    "uncertain_reservations_usd": "0.006",
+    "budget_exposure_usd": "0.076271376"
+  },
+  "campaign_external_calls_by_scope": {
+    "calibration-20261004-01-baseline-smoke-02": 19,
+    "calibration-20261004-01-candidate-smoke-01": 19,
+    "calibration-20261004-01-r4-smoke-01": 11
+  },
+  "r4_external_by_purpose": {
+    "classification": 5,
+    "generation": 3,
+    "verification": 3
+  },
+  "margin_adjusted_exposure_eur": "0.09172949452115812917594654788",
+  "new_unknown_reservation_usd": ".003",
+  "new_payments_permitted": false,
+  "budget_json_sha256": "bdf26d430f6420e477fab132365842dda210ee51a33fa3842625872923ca34ec",
+  "gates_manifest_sha256": "87c992525975f86af98db031f9afac7af666e6da7954af861d7e7813e723035e",
+  "new_provider_calls": 0,
+  "ledger_opened_or_modified": false,
+  "exit_code": 0
+}

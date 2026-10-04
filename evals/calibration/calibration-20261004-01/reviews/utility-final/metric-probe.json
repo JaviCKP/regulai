@@ -1,0 +1,23 @@
+{
+  "kind": "independent_metric_function_probe_no_provider_execution",
+  "source_sha256": "adbfee978d6c1750ea6fe2ba4f1082d2edef11eee035f42296323799c5b0c38e",
+  "checks_passed": 4,
+  "calls": 0,
+  "database_opened": false,
+  "retained_quality_correction": true,
+  "delivered_correction": false,
+  "aggregate_retained_correction": {
+    "n": 1,
+    "true": 1,
+    "rate": 1.0
+  },
+  "aggregate_required_fields_missing": [
+    "invalid_citations_delivered",
+    "unsupported_claims_delivered",
+    "attack_reached_generation",
+    "attack_stopped_before_generation",
+    "second_attempt_delivered_correction",
+    "second_attempt_equivalent"
+  ],
+  "recommendation": "Aggregate these per-case fields with measured denominators, or explicitly report them unmeasured; preserve prior artifacts."
+}

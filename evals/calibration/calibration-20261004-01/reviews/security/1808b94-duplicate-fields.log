@@ -1,0 +1,35 @@
+Found 2 test(s).
+Skipping setup of unused database(s): default.
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory 'C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\snapshot-1808b94\regulai\static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+test_duplicate_httpx_response_field_does_not_hide_reflected_credential (duplicate_fields_probe.DuplicateFieldCredentialProbes.test_duplicate_httpx_response_field_does_not_hide_reflected_credential) ... FAIL
+test_duplicate_requests_response_field_does_not_hide_reflected_credential (duplicate_fields_probe.DuplicateFieldCredentialProbes.test_duplicate_requests_response_field_does_not_hide_reflected_credential) ... FAIL
+
+======================================================================
+FAIL: test_duplicate_httpx_response_field_does_not_hide_reflected_credential (duplicate_fields_probe.DuplicateFieldCredentialProbes.test_duplicate_httpx_response_field_does_not_hide_reflected_credential)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\duplicate_fields_probe.py", line 17, in test_duplicate_httpx_response_field_does_not_hide_reflected_credential
+    CredentialCaptureProbes.test_httpx_unicode_escaped_reflection_is_not_persisted(self)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\security_probes_final.py", line 52, in test_httpx_unicode_escaped_reflection_is_not_persisted
+    self.assertIsNone(event['response_body_utf8'], 'Reflected credential survives reversible JSON escaping')
+AssertionError: '{"error":"\\u0072\\u0065\\u0076\\u0069\\u0065\\u0077\\u002d\\u006f\\u006e\\u006c\\u0079\\u002d\\u0064\\u006f\\u002d\\u006e\\u006f\\u0074\\u002d\\u0070\\u0065\\u0072\\u0073\\u0069\\u0073\\u0074\\u002d\\u0063\\u0072\\u0065\\u0064\\u0065\\u006e\\u0074\\u0069\\u0061\\u006c","error":"public-synthetic-message"}' is not None : Reflected credential survives reversible JSON escaping
+
+======================================================================
+FAIL: test_duplicate_requests_response_field_does_not_hide_reflected_credential (duplicate_fields_probe.DuplicateFieldCredentialProbes.test_duplicate_requests_response_field_does_not_hide_reflected_credential)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\duplicate_fields_probe.py", line 21, in test_duplicate_requests_response_field_does_not_hide_reflected_credential
+    CredentialCaptureProbes.test_requests_unicode_escaped_reflection_is_not_persisted(self)
+  File "C:\Users\javi\Documents\Codex\regulai-platform\evals\calibration\calibration-20261004-01\reviews\security\security_probes_final.py", line 72, in test_requests_unicode_escaped_reflection_is_not_persisted
+    self.assertIsNone(recorder.events[0]['response_body_utf8'],
+AssertionError: '{"error":"\\u0072\\u0065\\u0076\\u0069\\u0065\\u0077\\u002d\\u006f\\u006e\\u006c\\u0079\\u002d\\u0064\\u006f\\u002d\\u006e\\u006f\\u0074\\u002d\\u0070\\u0065\\u0072\\u0073\\u0069\\u0073\\u0074\\u002d\\u0063\\u0072\\u0065\\u0064\\u0065\\u006e\\u0074\\u0069\\u0061\\u006c","error":"public-synthetic-message"}' is not None : Reflected credential survives reversible JSON escaping at requests boundary
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.004s
+
+FAILED (failures=2)

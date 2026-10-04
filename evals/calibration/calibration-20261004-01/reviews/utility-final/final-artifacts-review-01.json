@@ -1,0 +1,264 @@
+{
+  "kind": "independent_agent_final_artifact_review",
+  "fixed_commit": "b3fea6a63761c06ef66695fee26377d23786c347",
+  "release_before_runs": true,
+  "corpus_ids_complete": true,
+  "source_matches_pinned_git_after_only_line_ending_normalization": true,
+  "artifact_hashes_match": true,
+  "identical_http_cells": true,
+  "runs": {
+    "base": {
+      "counts": {
+        "redactions": {
+          "n": 323,
+          "passed": 248
+        },
+        "preservations": {
+          "n": 243,
+          "passed": 225
+        }
+      },
+      "annotated_cases": 290,
+      "annotation_passed": 239,
+      "unannotated_cases": 281,
+      "http_cases": 20,
+      "http_runs": 120,
+      "http_passed": 114,
+      "http_categories": {
+        "reasoning": 4,
+        "pii": 5,
+        "legitimate": 5,
+        "documentary": 1,
+        "injection": 5
+      },
+      "http_families": 20,
+      "failed_http": [
+        {
+          "case_id": "I0965",
+          "endpoint": "/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0965",
+          "endpoint": "/api/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0965",
+          "endpoint": "/chat/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0944",
+          "endpoint": "/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0944",
+          "endpoint": "/api/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0944",
+          "endpoint": "/chat/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        }
+      ],
+      "network_attempts": 0,
+      "detector": "regulai-local-v2"
+    },
+    "candidate": {
+      "counts": {
+        "redactions": {
+          "n": 323,
+          "passed": 248
+        },
+        "preservations": {
+          "n": 243,
+          "passed": 225
+        }
+      },
+      "annotated_cases": 290,
+      "annotation_passed": 239,
+      "unannotated_cases": 281,
+      "http_cases": 20,
+      "http_runs": 120,
+      "http_passed": 114,
+      "http_categories": {
+        "reasoning": 4,
+        "pii": 5,
+        "legitimate": 5,
+        "documentary": 1,
+        "injection": 5
+      },
+      "http_families": 20,
+      "failed_http": [
+        {
+          "case_id": "I0965",
+          "endpoint": "/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0965",
+          "endpoint": "/api/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0965",
+          "endpoint": "/chat/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0944",
+          "endpoint": "/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0944",
+          "endpoint": "/api/chat/send/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        },
+        {
+          "case_id": "I0944",
+          "endpoint": "/chat/",
+          "provider_profile": "neutral",
+          "observed_control": {
+            "status": "failed",
+            "error_type": "verification_failed",
+            "generation_calls": 1
+          }
+        }
+      ],
+      "network_attempts": 0,
+      "detector": "regulai-local-v5"
+    }
+  },
+  "local_interpretation": "Tie on all held-out annotated privacy outcomes; 281 unannotated cases are not successes. Simulated HTTP controls do not measure provider semantic quality.",
+  "selection": "Privacy-v5 with legacy None policy is provisional; no general semantic winner. R4 .40 is not adopted.",
+  "mandatory_real_stratified_confirmation": "Not executed: new paid calls stopped after uncertain Jev classification. Local reserved comparison is separate evidence, not a substitute for this objective.",
+  "economics_artifact_arithmetic_checked": true,
+  "campaign_captured_external_http": 49,
+  "request_response_body_hash_checks": 98,
+  "request_marker_findings": [],
+  "total_budget_exposure_usd": "0.076271376",
+  "total_uncertain_reservations_usd": "0.006",
+  "economics_scope": "Cross-check of JSON arithmetic and captures; reviewer did not open ledger or user database.",
+  "inputs_sha256": {
+    "evals/calibration/calibration-20261004-01/corpus/reserved-release.json": "4e8828c907eb19bccfe221f6a3ec68b3f75de23a4f9037d99b434be6c8eb085b",
+    "evals/calibration/calibration-20261004-01/final_selection.json": "a33dad5bcb906f0bf26b55dfab04aa90be2f299faa4780216f157c68282d72a5",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-comparison-01.json": "51a6bb30b08deb83d354016cf8891bda89f87030999b4e95331e03e4e2d11bf9",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/local-results.jsonl": "de3e93a4856cc5cb346eca0b5660c2edf4e4495e7eb884ea9dd82bbb62639ca0",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/local-results.jsonl": "ff8d08a7fbde7fdda4f0fe55d76dd9461b15aa88fcf37ea79ae0e3d9e9c47b28",
+    "evals/calibration/calibration-20261004-01/corpus/reserved/cases.jsonl": "f6b1a31c70ba0c1b333d44e436f26770cd32d274ccd573f9e2e2505e450be58f",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/artifact-hashes.json": "e4a20c127d327f8a37b3af94c2db73711b7c96cb815f3c7d98d7f4b0eff48347",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/http-results.jsonl": "c195858afbbd26d0e292595125eca1c4c5532b4dcc8513b85e9d5b8381d9924d",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/metrics.json": "25f5aa0a54d1b55002a402c6260d77111b4a636f59d777976850fe7484ede3c1",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/parser-commands.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/plan.json": "23ebfc22b7f01787500d775ed3eee62579a99a2e0f8906728c48ecd00eebf2ab",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/run.log": "078d21d808a6476cb81c8049a995ab27b53c8aa7e0149d0701f112c8066267bd",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-base-01/summary.json": "6aa8042dfca5309504764c868c1f1a762383d79d4eecdaa6d5f841c4665d7de7",
+    "evals/calibration/calibration-20261004-01/corpus/api.py": "d1bdad511838ef26531f43a07827f88e3b29b4d999aa509ea231b00e5c6581e5",
+    "evals/calibration/calibration-20261004-01/corpus/manifest.json": "9d9b0951e754cb544032e6743d736bd1dfc8696066a977652b596a61520b0e50",
+    "scripts/calibration_local_checks.py": "5d598b974c91119f0c88d59cf5b1212bc29a4310d37eaa1d6b2235ce5f64a8eb",
+    "regulai/front/chat_service.py": "791b0d7a441fd918f763bc2986fb74dce5061f72c1529a015356ab2e1e7a4ccb",
+    "regulai/front/policy.py": "bbbac0d57093ec475cba78901f5101241ac100fca36427301b6cf4dcb5543d0a",
+    "regulai/front/routing.py": "1a99ebec629a274df56678a9b21809de0c84ab978793a85646cf0c6beb7ef7f1",
+    "regulai/front/verification.py": "0342cd9c8825930ee9365386bad0479156b10fce4476c5648835587c08ecacc1",
+    "regulai/front/jev.py": "ccb0c492e402c0f987d9b27c15a8efcd2870e45b835c80e9699bda960a373cad",
+    "regulai/front/documents.py": "df74899d7adb36806a4909ea97c20ec8a5b08e96e051570314b27d798700ed26",
+    "regulai/front/masking.py": "eda1eeb98c0604da08e48052bc58d19fbfd926c40d5b94d2a01377a5dedce313",
+    "regulai/front/local_masking.py": "5d6eaa792de291c96b0d2c94c8e1697136f42594e4ef8d9344106255f2e965b6",
+    "regulai/front/classification.py": "0af6ace9a97894c584675c4a3e2209ba3d64ae70378c4ace2df02fe3c4d6da95",
+    "regulai/front/sources.py": "207892d7b8249a94334acd52d62d8e950995998c6f94cdfe6e744f0a57883e8b",
+    "regulai/front/connectors.py": "51ddd25977f81d2a81169aa3c797fd2a39f0d1034de9fc83ffb631b83ceb9eac",
+    "regulai/front/views.py": "41913cf4aaad75020cec0b0172d9e15d803c32c5f5218dd5aef7f6d50200a095",
+    "regulai/front/models.py": "59d22103dfd5edf36282acfcc86ef22a88d7df94238cff74918e01a0248a0300",
+    "regulai/front/evaluation.py": "fd3f7172124239455bedb38ff080928abfbed9d39110a98276b62d657730a21f",
+    "regulai/front/evaluation_budget.py": "249713b5d8daa09d59bc13bf4b3dd4229df255f00078839194a3d1192c1982ee",
+    "regulai/front/management/commands/evaluate_ai.py": "fbb8132ba850393811744011d45ce23363e19ddd94eb50be096fc446c1e9d5b1",
+    "regulai/front/management/commands/smoke_ai.py": "e5dd46a8c5c2f0c2cce37bf09e575cf1e57b760ff08716d6e031e61ae2b113a7",
+    "regulai/front/management/commands/extend_pilot_authorization.py": "e4b69daa0c4570a8fe6ed44caf95cfa3388876259776c1fefc29aa67b86a7baa",
+    "requirements.txt": "947e437b58acb8d09f6e5e6d10e36b3dd63cf57b46d4441e5497249aca5aa10c",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/artifact-hashes.json": "ddab5ef1505f3311e6330a34fe063e74fcaee36a735a17a3b379206ce912a924",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/http-results.jsonl": "ffd1a4ef155a376b8f4da9da0ed0fb0ae8d0d1ad58f2125e512e3cd6dcfd2072",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/metrics.json": "629876a916e9cf2ccc200cbb8d0cca704e1ce824bb302415de0431433c050d41",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/parser-commands.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/plan.json": "22685f61d7882d063ca8174d1dc75f216b7aff58ef5c9f505296a823e708209a",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/run.log": "f3b8148d150c959539b1bbf74c1352c3701f978e3eafffaed6f4909c964fdcf0",
+    "evals/calibration/calibration-20261004-01/evaluation/reserved-candidate-01/summary.json": "6aa8042dfca5309504764c868c1f1a762383d79d4eecdaa6d5f841c4665d7de7",
+    "evals/calibration/calibration-20261004-01/economics/final-reconciliation-01/summary.json": "47c41b5cfc7180ad09fe9688ef17933afc81770191e15c6f8bebb91c46e03168",
+    "evals/calibration/calibration-20261004-01/batches/baseline-smoke-02/metrics-01.json": "7aa7d109a5c628014799dbf085a09b4b9a80ad9366ed66d240d56aa36947a070",
+    "evals/calibration/calibration-20261004-01/batches/baseline-smoke-02/live-run-01/synthetic-payloads.json": "9210e7a72f98553b7e5ddd04cae50a0ea61dd9f1f1223016efa483e557c759d2",
+    "evals/calibration/calibration-20261004-01/batches/baseline-smoke-02/cases.jsonl": "e755a253f183d189476a03d6c9ffbad2e29fb63322a71c2403da962ea5f2becb",
+    "evals/calibration/calibration-20261004-01/batches/baseline-smoke-02/oracles.json": "681330e696c2eabde293a76caf0c464b3a1311e8f9d6a31ebe7dfac779e982df",
+    "evals/calibration/calibration-20261004-01/batches/candidate-smoke-01/metrics-01.json": "7714bf4b19bfdd88f627f30e6e690652b5f86c3bb232c295e960da2d1101578f",
+    "evals/calibration/calibration-20261004-01/batches/candidate-smoke-01/live-run-01/synthetic-payloads.json": "8f0ace4060160468afe93252af7724426ad5a38087823f4bd1f629bee8e1e39d",
+    "evals/calibration/calibration-20261004-01/batches/candidate-smoke-01/cases.jsonl": "e755a253f183d189476a03d6c9ffbad2e29fb63322a71c2403da962ea5f2becb",
+    "evals/calibration/calibration-20261004-01/batches/candidate-smoke-01/oracles.json": "681330e696c2eabde293a76caf0c464b3a1311e8f9d6a31ebe7dfac779e982df",
+    "evals/calibration/calibration-20261004-01/batches/r4-smoke-01/metrics-01.json": "409f4c6d95ca728d49442aaa0aad1f736a53cd7d73ef4114e0c88e179d88bd25",
+    "evals/calibration/calibration-20261004-01/batches/r4-smoke-01/live-run-01/synthetic-payloads.json": "2b13360daf3486797871f29da56f64c5a7c3c8fe8711f2c7d19169793d3f86b5",
+    "evals/calibration/calibration-20261004-01/batches/r4-smoke-01/cases.jsonl": "e755a253f183d189476a03d6c9ffbad2e29fb63322a71c2403da962ea5f2becb",
+    "evals/calibration/calibration-20261004-01/batches/r4-smoke-01/oracles.json": "681330e696c2eabde293a76caf0c464b3a1311e8f9d6a31ebe7dfac779e982df"
+  },
+  "product_calls": 0,
+  "new_provider_calls": 0,
+  "database_opened": false,
+  "post_holdout_tuning": false,
+  "oracle_changes": false,
+  "human_review": false
+}
