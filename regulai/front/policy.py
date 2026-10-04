@@ -115,6 +115,8 @@ class LimitsConfig(StrictConfig):
 class ClassificationPolicyConfig(StrictConfig):
     unknown_level: Literal['public', 'internal', 'confidential', 'restricted'] = 'confidential'
     signal_threshold: float = Field(default=0.2, gt=0, le=1)
+    # Omission preserves existing policies; sensitivity signals keep their own limit.
+    manipulation_threshold: float | None = Field(default=None, gt=0, le=1)
     on_ambiguity: Literal['warn', 'stop'] = 'warn'
 
 

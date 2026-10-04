@@ -64,8 +64,11 @@ def decide(answers, cfg: AIConfig, local_floor):
         return decision
     threshold = cfg.jev.threshold
     signal_threshold = cfg.classification_policy.signal_threshold
+    manipulation_threshold = cfg.classification_policy.manipulation_threshold
+    if manipulation_threshold is None:
+        manipulation_threshold = signal_threshold
     present = lambda key: answers[key]['noul'] >= signal_threshold
-    if present('manipulation'):
+    if answers['manipulation']['noul'] >= manipulation_threshold:
         decision.stop_code, decision.stop_status = 'classification_manipulation', 'blocked'
         return decision
     # Sum decimal probabilities before comparing the inclusive tail limit.

@@ -110,6 +110,8 @@ def prepare(options, evaluation):
     if (sample.get('synthetic_reviewed') is not True or not cases
             or any(c.get('history') or c.get('instructions') for c in cases)):
         raise ValueError('This paid adapter requires reviewed synthetic cases without omitted history/instructions.')
+    if options.variant == 'base' and options.manipulation_threshold is not None:
+        raise ValueError('The frozen baseline cannot receive an experimental policy override.')
     pack = Path(options.pack).resolve()
     if not pack.is_relative_to(CAMPAIGN):
         raise ValueError('Campaign packs must remain in this campaign directory.')
@@ -168,6 +170,9 @@ def prepare(options, evaluation):
         bank_purpose='synthetic_adversarial_calibration', scope='User-authorized 2 EUR TOTAL including historical exposure; one frozen pass.',
         call_caps_usd={'generation': '.014', 'classification': '.003', 'verification': '.003', 'obfuscation': '0'},
         campaign_variant=options.variant, campaign_phase=options.phase, synthetic_data_only=True,
+        policy_revision=2 if options.manipulation_threshold is not None else 1,
+        classification_policy_override=({'manipulation_threshold': float(options.manipulation_threshold)}
+                                        if options.manipulation_threshold is not None else {}),
         campaign_frozen_files={p.relative_to(ROOT).as_posix(): sha(p) for p in frozen_paths},
         wire_generation_max_bytes=8000, campaign_sample_sha256=sha(options.sample),
         maximum_additional_exposure_usd=str(Decimal('.077') * len(cases)),
@@ -331,6 +336,8 @@ def main():
     parser.add_argument('--sample')
     parser.add_argument('--sample-group', choices=('smoke', 'stratified'), default='smoke')
     parser.add_argument('--holdout-release', help='Custodian release tied to a fixed final selection; never used for tuning')
+    parser.add_argument('--manipulation-threshold', choices=('0.35', '0.40', '0.50'),
+                        help='Explicit preregistered experimental policy override; default preserves legacy behavior')
     parser.add_argument('--pricing-sources', default=str(CAMPAIGN / 'economics/sources.json'))
     parser.add_argument('--output')
     parser.add_argument('--variant', choices=('base', 'candidate'), default='candidate')

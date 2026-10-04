@@ -24,6 +24,10 @@ La decisión humana D2 anterior se conserva. Para obtener esa protección debe h
 
 ## Propiedad y secuencia
 
+### Ampliación compatible del 4 de octubre de 2026
+
+`classification_policy.manipulation_threshold` admite un número finito en `(0, 1]` o `null`. Omitirlo o usar `null` conserva el umbral compartido existente, incluso cuando un administrador había configurado otro `signal_threshold`. Sólo la señal `manipulation` usa el valor explícito; PII, credenciales, confidencialidad, ambigüedad y evidencia insuficiente conservan `signal_threshold`. La comparación sigue siendo inclusiva. El esquema sigue en versión 1; las configuraciones experimentales del ensayo llevan `revision: 2`. No hay migración ni modificación de políticas guardadas. Para revertir la configuración basta omitir el campo y volver a la revisión previa. El valor experimental 0,40 no es un nuevo valor predeterminado ni una recomendación general acreditada.
+
 Cada carril trabaja en un worktree/branch independiente con commits pequeños. Todos leen AGENTS y referencias TDD. Las únicas fronteras de prueba autorizadas son HTTP, proveedor/requests.post, documentos públicos e invariantes de estado, migración y dinero. No se prueban privados.
 
 - REG: exclusivamente `regulai/front/test_review_regressions.py`; B1–B10 y C1–C2 con expectedFailure, verificando AssertionError esperado en base. La propiedad de cada método pasa al carril responsable tras integrar.

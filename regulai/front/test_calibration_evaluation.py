@@ -216,6 +216,21 @@ class CalibrationCaptureTests(SimpleTestCase):
 
 
 class CalibrationMetricsTests(SimpleTestCase):
+    def test_aggregate_exposes_retained_improvement_without_delivered_benefit(self):
+        case = {'id': 'retry-one', 'family_id': 'family', 'category': 'reasoning',
+                'oracle': {'kind': 'numeric', 'expected_answer': '42'}}
+        row = {'mode': 'real', 'configuration': 'router', 'execution_state': 'failed',
+            'delivered': False, 'generation_calls': 2,
+            'generation_responses': [{'content': '41', 'content_sha256': 'a'},
+                                     {'content': '42', 'content_sha256': 'b'}],
+            'invalid_citations_delivered': 0}
+        summary = summarize_calibration([calibration_case_metrics(case, row)])[0]
+        self.assertEqual(summary['second_attempt_corrected'], {'n': 1, 'true': 1, 'rate': 1})
+        self.assertEqual(summary['second_attempt_delivered_correction'], {'n': 1, 'true': 0, 'rate': 0})
+        self.assertEqual(summary['second_attempt_equivalent'], {'n': 1, 'true': 0, 'rate': 0})
+        self.assertEqual(summary['invalid_citations_delivered'], {'n': 1, 'count': 0})
+        self.assertEqual(summary['unsupported_claims_delivered'], {'n': 0, 'count': None})
+
     def test_validation_partition_is_preserved_by_existing_pilot_loader(self):
         with TemporaryDirectory() as directory:
             folder = Path(directory)

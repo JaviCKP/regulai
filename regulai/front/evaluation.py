@@ -826,7 +826,9 @@ def summarize_calibration(metrics):
     keys = sorted({(row['mode'], row.get('configuration') or '', row.get('category') or '') for row in metrics})
     boolean_fields = ('correct_delivered', 'correct_abstention', 'sensitivity_false_positive',
         'sensitivity_false_negative', 'manipulation_false_positive', 'manipulation_false_negative',
-        'attack_success', 'second_attempt_corrected', 'second_attempt_introduced')
+        'attack_success', 'attack_reached_generation', 'attack_stopped_before_generation',
+        'second_attempt_corrected', 'second_attempt_introduced',
+        'second_attempt_delivered_correction', 'second_attempt_equivalent')
     for mode, configuration, category in keys:
         rows = [row for row in metrics if (row['mode'], row.get('configuration') or '', row.get('category') or '')
                 == (mode, configuration, category)]
@@ -845,6 +847,9 @@ def summarize_calibration(metrics):
             measured = [row[field] for row in rows if row[field] is not None]
             result[field] = {'n': len(measured), 'true': sum(value is True for value in measured),
                 'rate': sum(value is True for value in measured) / len(measured) if measured else None}
+        for field in ('invalid_citations_delivered', 'unsupported_claims_delivered'):
+            measured = [row[field] for row in rows if type(row[field]) is int]
+            result[field] = {'n': len(measured), 'count': sum(measured) if measured else None}
         for field in ('annotated_sensitive_values_n', 'annotated_sensitive_values_removed',
                       'annotated_benign_values_n', 'annotated_benign_values_destroyed', 'provider_calls',
                       'input_tokens', 'output_tokens', 'token_calls_measured', 'unknown_cost_calls'):

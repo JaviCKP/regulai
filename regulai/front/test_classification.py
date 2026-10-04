@@ -118,7 +118,8 @@ class ClassificationConfigTests(SimpleTestCase):
     def test_shared_configuration_has_conservative_defaults(self):
         config = AIConfig.model_validate({}).model_dump()
         self.assertEqual(config['classification_policy'], {
-            'unknown_level': 'confidential', 'signal_threshold': 0.2, 'on_ambiguity': 'warn'})
+            'unknown_level': 'confidential', 'signal_threshold': 0.2,
+            'manipulation_threshold': None, 'on_ambiguity': 'warn'})
         self.assertEqual(config['masking'], {'max_call_cost': None})
         self.assertEqual(config['history'], {'max_turns': 20, 'max_bytes': 32768})
         self.assertFalse(config['routing']['allow_cross_engine_fallback'])

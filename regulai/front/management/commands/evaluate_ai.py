@@ -232,6 +232,8 @@ def policy_config(case, configuration, manifest, credential, models, mask=None):
     generator_destinations = [] if case.get('deny_generation') else [f'engine:{credential.pk}']
     return {
         'version': 1, 'classification': manifest['classification_mode'], 'local_sensitivity': 'public', 'allow_empty_rules': False,
+        'revision': manifest.get('policy_revision', 1),
+        'classification_policy': manifest.get('classification_policy_override', {}),
         'destinations': {level: generator_destinations + ['jev'] + ([f'obfuscation:{mask.pk}'] if mask else [])
                          for level in ('public', 'internal', 'confidential')},
         'masking': {'max_call_cost': '0'},
