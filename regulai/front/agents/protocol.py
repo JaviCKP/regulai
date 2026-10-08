@@ -76,6 +76,11 @@ class ToolResultRequest(Strict):
 # Minimal initial contract. This catalogue is owned by Regulay, never by a model,
 # dynamic tool schema, skill, or MCP server. Additional views require reviewed code.
 TOOL_PARAMETERS = {
+    'build_document': {'input_reference': {'type': 'string'}, 'format': {'type': 'string'},
+                       'title': {'type': 'string'}, 'section': {'type': 'string'}},
+    'edit_document': {'logical_id': {'type': 'string'}, 'base_revision': {'type': 'string'},
+                      'field': {'type': 'string'}, 'value': {'type': 'string'}},
+    'export_pdf': {'logical_id': {'type': 'string'}, 'base_revision': {'type': 'string'}},
     'build_excel': {'input_reference': {'type': 'string'}, 'title': {'type': 'string'}},
     'rename_excel': {'logical_id': {'type': 'string'}, 'base_revision': {'type': 'string'}, 'title': {'type': 'string'}},
     'csv_totals': {'input_path': {'type': 'string'}},
@@ -90,6 +95,9 @@ TOOL_PARAMETERS = {
     'write_todos': {'todos': {'type': 'array', 'items': {'type': 'object'}}},
 }
 REQUIRED = {'execute': ['command'], 'read_file': ['file_path'], 'ls': ['path'],
+    'build_document': ['input_reference', 'format', 'title', 'section'],
+    'edit_document': ['logical_id', 'base_revision', 'field', 'value'],
+    'export_pdf': ['logical_id', 'base_revision'],
     'build_excel': ['input_reference', 'title'], 'rename_excel': ['logical_id', 'base_revision', 'title'],
     'glob': ['pattern'], 'grep': ['pattern'], 'write_file': ['file_path', 'content'],
     'edit_file': ['file_path', 'old_string', 'new_string'], 'write_todos': ['todos'],

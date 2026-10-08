@@ -1,0 +1,49 @@
+{
+  "schema_version": "generation-report-1",
+  "kind": "docx",
+  "profile_name": "synthetic",
+  "document": ".candidate.wl6ez8sk.docx",
+  "verdict": "failed",
+  "shell_sha256": "7cd795becbe0e1c4529ac018389c37a252386855a794d1ce6dc8a0e4f1acb850",
+  "content_sha256": "6c81708ea39c24b3f6b1e770f3b19fc9ff4de8b559cfa5e4458dac2f086ceb52",
+  "output_sha256": "34506bde38b6cb8be2c1c95ed8b857c9b03ecfd42663e81ef0d6af7073e4d88c",
+  "findings": [
+    {
+      "check": "no_residual_template_text",
+      "severity": "ERROR",
+      "message": "residual template text: 'Resumen ejecutivo'",
+      "location": "Resumen ejecutivo"
+    },
+    {
+      "check": "cover_degraded",
+      "severity": "WARNING",
+      "message": "no cover anchor in shell; title paragraph appended before the first toc/body child",
+      "location": null
+    },
+    {
+      "check": "cover_degraded",
+      "severity": "INFO",
+      "message": "deterministic cover fill placed only the title; authored cover slot(s) not placed: subtitle (comprehension fills the multi-slot cover in place)",
+      "location": null
+    },
+    {
+      "check": "visual.unavailable",
+      "severity": "INFO",
+      "message": "visual QA unavailable (soffice/pdftoppm absent); L0 only",
+      "location": null
+    },
+    {
+      "check": "visual.strict_unavailable",
+      "severity": "ERROR",
+      "message": "strict visual QA requires full render proof, but renderers are unavailable",
+      "location": null
+    },
+    {
+      "check": "visual.manifest",
+      "severity": "INFO",
+      "message": "degraded visual audit manifest written: C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\task51-word-pdf-20261008\\branddocs-windows\\candidate.docx.visual\\visual_manifest.json",
+      "location": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\task51-word-pdf-20261008\\branddocs-windows\\candidate.docx.visual\\visual_manifest.json"
+    }
+  ],
+  "generated_at": "2026-10-08T15:41:45Z"
+}

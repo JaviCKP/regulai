@@ -1,0 +1,10 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "<stdin>", line 20, in <module>
+  File "/app/regulai/front/agents/document_contract.py", line 174, in verify_bundle
+    count = verify_pdf(pdf, expected, rows)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/regulai/front/agents/document_contract.py", line 134, in verify_pdf
+    raise ValueError('pdf_active_content')
+ValueError: pdf_active_content
+PDF root keys: ['/Type', '/Pages', '/PageMode', '/OpenAction', '/Outlines', '/StructTreeRoot', '/Lang', '/MarkInfo', '/Metadata'] OpenAction: [IndirectObject(1, 0, 129662034933088), '/XYZ', NullObject, NullObject, 0]

@@ -17,7 +17,15 @@ def _operation(request, handler):
     attempt = request.headers.get('X-Regulay-Attempt', '')
     try:
         authenticate(token, attempt, allow_uncertain=handler is infer)
-        payload = json.loads(request.body)
+        # The large private candidate is authenticated before its bounded read.
+        # Other operations retain Django's usual body-size limit.
+        if request.path.endswith('/run/candidate/'):
+            raw = request.read(40_500_001)
+            if len(raw) > 40_500_000:
+                raise ValueError('Candidate request too large')
+            payload = json.loads(raw)
+        else:
+            payload = json.loads(request.body)
         result = handler(token, attempt, payload)
         response = JsonResponse(result, status=200)
     except AgentDenied as error:
@@ -72,26 +80,30 @@ def worker_claim(request):
 @require_POST
 def execution_operation(request, operation):
     from . import jobs
+    from .document_jobs import review_status
     handlers = {'renew': jobs.renew, 'bootstrap': jobs.bootstrap, 'step': jobs.step,
         'candidate': jobs.candidate, 'local-fields': jobs.local_fields,
-        'complete': jobs.complete, 'fail': jobs.fail}
+        'complete': jobs.complete, 'fail': jobs.fail, 'review-status': review_status}
     if operation not in handlers:
         return JsonResponse({'status': 'rejected'}, status=404)
     return _operation(request, handlers[operation])
 
 
 def _snapshot(actor, run_id, cursor=None):
-    from .jobs import reap, authorized_run, artifact_data, run_data
+    from .jobs import reap, authorized_run, artifact_data, run_data, latest
     reap()
     run = authorized_run(actor, run_id)
     if cursor is not None:
         events = list(run.events.filter(pk__gt=cursor).values('id', 'kind', 'data')[:100])
         return {'run': run_data(run), 'events': events}
     from front.chat_service import request_result
+    current = latest(run.conversation, run.job['logical_id'])
     return {'run': run_data(run), 'result': request_result(run.prompt).data,
+        'current_revision': artifact_data(current) if current else None,
         'events': list(run.events.values('id', 'kind', 'data')),
-        'artifacts': [artifact_data(row) for row in run.artifacts.filter(status='verified')]
-            if run.status == 'completed' else []}
+        'artifacts': [artifact_data(row) for row in run.artifacts.order_by('revision')
+            if (run.status == 'completed' and row.status == 'verified') or
+               (run.status == 'active' and row.verification.get('automated_passed'))]}
 
 
 @login_required
@@ -163,10 +175,41 @@ def download(request, artifact_id):
         artifact = AgentArtifact.objects.select_related('execution').get(pk=artifact_id,
             status='verified', execution__status='completed')
         authorized_run(request.user, artifact.execution_id)
-        response = HttpResponse(_bytes(artifact), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename="excel-{artifact.logical_id}-r{artifact.revision}.xlsx"'
+        types = {'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                 'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'pdf': 'application/pdf'}
+        response = HttpResponse(_bytes(artifact), content_type=types[artifact.format])
+        response['Content-Disposition'] = f'attachment; filename="document-{artifact.logical_id}-r{artifact.revision}.{artifact.format}"'
     except (AgentDenied, AgentArtifact.DoesNotExist, ValueError):
         return HttpResponse(status=404)
     response['X-Content-Type-Options'] = 'nosniff'
+    response['Cache-Control'] = 'private, no-store'
+    return response
+
+
+@login_required
+def document_page(request, artifact_id, number):
+    from front.models import AgentArtifact
+    from .jobs import authorized_run
+    from .document_jobs import render_page
+    try:
+        artifact = AgentArtifact.objects.get(pk=artifact_id)
+        authorized_run(request.user, artifact.execution_id)
+        response = HttpResponse(render_page(artifact, number), content_type='image/png')
+    except (AgentDenied, AgentArtifact.DoesNotExist, ValueError, KeyError):
+        response = HttpResponse(status=404)
+    response['Cache-Control'] = 'private, no-store'
+    response['X-Content-Type-Options'] = 'nosniff'
+    return response
+
+
+@login_required
+@require_POST
+def document_review(request, artifact_id):
+    from front.models import AgentArtifact
+    from .document_jobs import review
+    try:
+        response = JsonResponse(review(request.user, artifact_id, json.loads(request.body)))
+    except (AgentDenied, AgentArtifact.DoesNotExist, ValueError, KeyError, TypeError):
+        response = JsonResponse({'error': 'visual_review_not_authorized'}, status=409)
     response['Cache-Control'] = 'private, no-store'
     return response

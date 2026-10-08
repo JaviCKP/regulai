@@ -1,0 +1,127 @@
+{
+  "schema_version": "visual-manifest-2",
+  "kind": "docx",
+  "profile_name": "synthetic",
+  "document": ".candidate.wl6ez8sk.docx",
+  "shell_sha256": "7cd795becbe0e1c4529ac018389c37a252386855a794d1ce6dc8a0e4f1acb850",
+  "content_sha256": "6c81708ea39c24b3f6b1e770f3b19fc9ff4de8b559cfa5e4458dac2f086ceb52",
+  "renderers_available": false,
+  "qa_mode": "strict",
+  "dpi": 100,
+  "pages": [],
+  "l1_findings": [
+    {
+      "check": "visual.unavailable",
+      "severity": "INFO",
+      "message": "visual QA unavailable (soffice/pdftoppm absent); L0 only",
+      "location": null
+    },
+    {
+      "check": "visual.strict_unavailable",
+      "severity": "ERROR",
+      "message": "strict visual QA requires full render proof, but renderers are unavailable",
+      "location": null
+    }
+  ],
+  "ocr": {
+    "engine": "tesseract",
+    "available": false,
+    "status": "not_run",
+    "terms_checked": [
+      "Resumen ejecutivo",
+      "{{TITLE}}",
+      "España · Informe económico"
+    ],
+    "pages": [],
+    "hits": [],
+    "errors": [],
+    "reason": "no rendered pages"
+  },
+  "checklist": [
+    {
+      "id": "regions_present",
+      "what": "Each expected region appears in the expected order: ['cover', 'body']",
+      "derived_from": "structure.skeleton[*].region + order",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "cover_correct",
+      "what": "The cover shows the bound title, no duplicate title, no residual demo prompt",
+      "derived_from": "anchors.cover + comprehension.cover_slots",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_residual_placeholder",
+      "what": "No template placeholder/demo text is visible in the rendered output",
+      "derived_from": "surface.<kind>.demo_region + comprehension.cover_slots[*].demo_value",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "palette_on_brand",
+      "what": "On-screen colors belong to the brand palette",
+      "derived_from": "theme.colors + theme.palette_roles",
+      "severity_hint": "INFO"
+    },
+    {
+      "id": "roles_styled",
+      "what": "Semantic blocks (heading/list/callout/table/quote/caption) appear with the brand style, not 'Normal'",
+      "derived_from": "roles._index",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_overlap",
+      "what": "No overlapping or clipped text/shapes",
+      "derived_from": "constant; reinforced by l1_findings visual.edge_bleed",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_blank_pages",
+      "what": "No unexpected blank/broken pages",
+      "derived_from": "constant; reinforced by l1_findings visual.blank_page",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "overflow_clean",
+      "what": "No content beyond the printable margins",
+      "derived_from": "qa.overflow_capability=render",
+      "severity_hint": "WARNING"
+    }
+  ],
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.11",
+    "visual_qa": false,
+    "degraded": true,
+    "renderers": {
+      "soffice": {
+        "available": false,
+        "path": null,
+        "error": "not found on PATH"
+      },
+      "pdftoppm": {
+        "available": true,
+        "path": "C:\\Users\\javi\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE"
+      }
+    },
+    "optional_python": {
+      "fitz": {
+        "available": false,
+        "purpose": "PyMuPDF PDF raster fallback"
+      }
+    },
+    "ocr": {
+      "tesseract": {
+        "available": false,
+        "path": null,
+        "purpose": "optional OCR visible-text audit",
+        "error": "not found on PATH"
+      }
+    },
+    "install_hints": [
+      "install:soffice: macOS: brew install --cask libreoffice; if installed but unusable, open LibreOffice once and approve any macOS security prompt; Debian/Ubuntu: sudo apt-get install -y libreoffice; Fedora: sudo dnf install -y libreoffice; Windows: winget install TheDocumentFoundation.LibreOffice",
+      "install:tesseract: macOS: brew install tesseract; Debian/Ubuntu: sudo apt-get install -y tesseract-ocr; Fedora: sudo dnf install -y tesseract; Windows: winget install UB-Mannheim.TesseractOCR"
+    ]
+  },
+  "instructions": "Open each PNG. For each checklist item, judge PASS/FAIL against the rendered pages, taking l1_findings into account. If any item FAILS, repair the IntermediateDocument/content and regenerate, then re-run the audit. Do NOT call any model from the engine; this judgment is yours.",
+  "degraded": true
+}

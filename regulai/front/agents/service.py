@@ -51,7 +51,7 @@ def _context(prompt, profile_id):
     if not agent or not isinstance(agent.tools, list) or any(t not in TOOL_PARAMETERS for t in agent.tools):
         raise AgentDenied('agent_profile_unavailable')
     if prompt.conversation and prompt.conversation.mode == 'agent' and (
-            not agent.tools or set(agent.tools) - {'build_excel', 'rename_excel'}):
+            not agent.tools or set(agent.tools) - {'build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf'}):
         raise AgentDenied('agent_profile_unavailable')
     if not 2 <= agent.min_group_size <= 1000:
         raise AgentDenied('agent_profile_unavailable')

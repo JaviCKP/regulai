@@ -1,0 +1,20 @@
+test_async_native_roundtrip (test_probe.ProbeTests.test_async_native_roundtrip) ... ok
+test_bad_or_extra_output_fields_fail_closed (test_probe.ProbeTests.test_bad_or_extra_output_fields_fail_closed) ... ok
+test_compaction_reaches_model_boundary_sync_and_async (test_probe.ProbeTests.test_compaction_reaches_model_boundary_sync_and_async) ... ok
+test_compaction_retries_cannot_bypass_rejection (test_probe.ProbeTests.test_compaction_retries_cannot_bypass_rejection) ... ok
+test_every_effective_tool_passes_result_hook (test_probe.ProbeTests.test_every_effective_tool_passes_result_hook) ... ok
+test_exception_diagnostic_is_not_forwarded (test_probe.ProbeTests.test_exception_diagnostic_is_not_forwarded) ... ok
+test_large_result_is_checked_before_sdk_offloads_it (test_probe.ProbeTests.test_large_result_is_checked_before_sdk_offloads_it) ... ok
+test_model_multimodal_and_metadata_surfaces_are_checked (test_probe.ProbeTests.test_model_multimodal_and_metadata_surfaces_are_checked) ... ok
+test_native_roundtrip_official_adapter (test_probe.ProbeTests.test_native_roundtrip_official_adapter) ... ok
+test_real_e2b_sdk_serializes_denied_network_with_mock_http_transport (test_probe.ProbeTests.test_real_e2b_sdk_serializes_denied_network_with_mock_http_transport) ... ok
+test_result_content_artifact_command_and_arguments_rejected (test_probe.ProbeTests.test_result_content_artifact_command_and_arguments_rejected) ... ok
+test_self_hosted_runner_rejects_cloud_defaults (test_probe.ProbeTests.test_self_hosted_runner_rejects_cloud_defaults) ... ok
+test_socket_errors_cannot_masquerade_as_network_denial (test_probe.ProbeTests.test_socket_errors_cannot_masquerade_as_network_denial) ... ok
+test_streaming_fallback_cannot_skip_model_boundary (test_probe.ProbeTests.test_streaming_fallback_cannot_skip_model_boundary) ... ok
+test_validation_errors_and_unknown_tools_are_intercepted (test_probe.ProbeTests.test_validation_errors_and_unknown_tools_are_intercepted) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 5.380s
+
+OK

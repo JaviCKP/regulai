@@ -19,10 +19,12 @@ from .adapter import InternalClient, InternalOperationError, build_agent
 from .sandbox_pool import CleanPool, create_clean
 
 
-def runtime_prompt():
+def runtime_prompt(tools=()):
     root = Path(__file__).with_name('runtime')
-    return '\n\n'.join((root / name).read_text(encoding='utf-8') for name in (
-        'system.md', 'documents.md', 'skills/excel/SKILL.md'))
+    names = ['system.md', 'documents.md', 'skills/excel/SKILL.md']
+    if any(name in tools for name in ('build_document', 'edit_document', 'export_pdf')):
+        names += ['skills/docx/SKILL.md', 'skills/pdf/SKILL.md']
+    return '\n\n'.join((root / name).read_text(encoding='utf-8') for name in names)
 
 
 class Lease:
@@ -62,7 +64,9 @@ def run_job(internal, sandbox):
         # This administrative grant is outside the model and graph state.
         sandbox.files.write(granted['input']['path'], data, user='root')
         if granted['base']:
-            sandbox.files.write('/workspace/input/base.xlsx', base64.b64decode(granted['base']), user='root')
+            sandbox.files.write('/workspace/input/base.' + granted.get('base_format', 'xlsx'), base64.b64decode(granted['base']), user='root')
+        if granted.get('base_docx'):
+            sandbox.files.write('/workspace/input/document.docx', base64.b64decode(granted['base_docx']), user='root')
         sandbox.commands.run('chmod 0444 /workspace/input/* && chmod 0555 /workspace/input && '
             'mount --bind /workspace/input /workspace/input && mount -o remount,bind,ro /workspace/input',
             user='root', timeout=10)
@@ -89,6 +93,33 @@ def run_job(internal, sandbox):
 
                 execute('input', 'mkdir -p ' + work)
                 sandbox.files.write(work + '/fields.json', json.dumps({'title': fields['title']}).encode())
+                if name in ('build_document', 'edit_document', 'export_pdf'):
+                    sandbox.files.write(work + '/fields.json', json.dumps(fields).encode())
+                    final_dir = work + '/final'
+                    program = 'python -I /skills/document_program.py '
+                    common = ' --output ' + final_dir
+                    if name == 'export_pdf':
+                        execute('compose', 'mkdir -p ' + final_dir + ' && cp /workspace/input/document.docx ' + final_dir + '/final.docx')
+                    else:
+                        source = ('/workspace/input/document.docx' if name == 'edit_document' else
+                            '/workspace/input/base.xlsx' if granted.get('base_format') == 'xlsx' else granted['input']['path'])
+                        execute('compose', program + ('edit' if name == 'edit_document' else 'build') + common +
+                            ' --source ' + shlex.quote(source) + ' --template /skills/corporate.docx --fields ' + work + '/fields.json')
+                    try:
+                        execute('render', program + 'render' + common)
+                        execute('verify', program + 'seal' + common)
+                        downloaded = backend.download_files([final_dir + '/candidate.zip'])[0]
+                    except RuntimeError:
+                        # Preserve the produced DOCX even when conversion fails.
+                        downloaded = backend.download_files([final_dir + '/final.docx'])[0]
+                    if downloaded.error or not downloaded.content:
+                        raise RuntimeError('Document candidate unavailable')
+                    lease.check()
+                    result = internal.operation('run/candidate', {'operation_id': str(uuid.uuid4()), 'call': call,
+                        'document_bundle': base64.b64encode(downloaded.content).decode()})
+                    from langchain_core.messages import ToolMessage
+                    return ToolMessage(content=json.dumps({'reference': result['reference']}),
+                        tool_call_id=call['id'], name=name, artifact={'raw_logs': logs})
                 source = '/workspace/input/base.xlsx' if name == 'rename_excel' else granted['input']['path']
                 mode = 'rename' if name == 'rename_excel' else 'build'
                 final = work + '/final/candidate.xlsx'
@@ -129,13 +160,33 @@ def run_job(internal, sandbox):
             """Change only the title of the current immutable Excel revision."""
             return operate('rename_excel', {'logical_id': logical_id, 'base_revision': base_revision, 'title': title}, runtime)
 
-        graph = build_agent(backend, internal, tools=[build_excel, rename_excel],
+        @tool
+        def build_document(input_reference: str, format: str, title: str, section: str, runtime: ToolRuntime):
+            """Create DOCX or PDF from the corporate template and authorized local data."""
+            return operate('build_document', {'input_reference': input_reference, 'format': format,
+                'title': title, 'section': section}, runtime)
+
+        @tool
+        def edit_document(logical_id: str, base_revision: str, field: str, value: str, runtime: ToolRuntime):
+            """Edit only title or summary section, preserving the current document."""
+            return operate('edit_document', {'logical_id': logical_id, 'base_revision': base_revision,
+                'field': field, 'value': value}, runtime)
+
+        @tool
+        def export_pdf(logical_id: str, base_revision: str, runtime: ToolRuntime):
+            """Convert the current verified document to PDF, preserving its content."""
+            return operate('export_pdf', {'logical_id': logical_id, 'base_revision': base_revision}, runtime)
+
+        graph = build_agent(backend, internal, tools=[build_excel, rename_excel, build_document, edit_document, export_pdf],
             model_profile={'max_input_tokens': 200000, 'max_output_tokens': 8000},
-            allowed_tools=granted['tools'], system_prompt=runtime_prompt())
+            allowed_tools=granted['tools'], system_prompt=runtime_prompt(granted['tools']))
         result = graph.invoke({'messages': [HumanMessage(content=granted['message']),
             HumanMessage(content='Referencias autorizadas del servidor: ' + json.dumps(granted['model_context']))]},
             config={'recursion_limit': 12})
         lease.check()
+        while internal.operation('run/review-status', {})['pending']:
+            lease.check()
+            time.sleep(1)
         internal.operation('run/complete', {})
         return {'status': 'completed', 'message_count': len(result['messages'])}
 

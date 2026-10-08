@@ -40,7 +40,7 @@ class InternalClient:
 
     def operation(self, name, payload):
         if name not in ('inference', 'tool-results', 'authorize-tool', 'run/renew', 'run/bootstrap',
-                'run/step', 'run/candidate', 'run/local-fields', 'run/complete', 'run/fail'):
+                'run/step', 'run/candidate', 'run/local-fields', 'run/complete', 'run/fail', 'run/review-status'):
             raise InternalOperationError('Unknown internal operation')
         # Retry only the SAME identified application operation after a transport
         # failure. The durable server record decides whether inference ever ran.

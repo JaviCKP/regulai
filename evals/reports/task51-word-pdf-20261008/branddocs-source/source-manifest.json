@@ -1,0 +1,297 @@
+{
+  "commit": "97a6e384cb0664cd44ba8113c0b80c9761700670",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "8fa7dc21601d4f071a7872efc6ed4e92c7acd53fd560fa22a56d4fb51b886974"
+    },
+    {
+      "path": "NOTICE",
+      "sha256": "c83cec6d2d46f48197028297320532a5f1347c1cad4fd0e20f59e8db8eb75eb1"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "4e2f03d7b6062963d280c8307fad64c84e470aac318a50975a0c423d3eed9586"
+    },
+    {
+      "path": "scripts/brandkit/README.md",
+      "sha256": "96f038f2338be31a477f89e4ad005ce370dc4b2801b278990f27af11c808e06d"
+    },
+    {
+      "path": "scripts/brandkit/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/cli.py",
+      "sha256": "b08ccbb388bf1777eeb5814daa4ede8e13d23146306b8e0c7341b3fa3062a614"
+    },
+    {
+      "path": "scripts/brandkit/common/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/common/appearance.py",
+      "sha256": "c8008192c9475631302881f46b946b3d1eacf72f80239e0cacd18276e4cb6a8b"
+    },
+    {
+      "path": "scripts/brandkit/common/color.py",
+      "sha256": "f216919e4c626cfdf9b125ae8b1748618706ec1eaf8f9aa906357173b789192e"
+    },
+    {
+      "path": "scripts/brandkit/common/links.py",
+      "sha256": "4b7c6ea379f3e262ee9e1d09b982eae1efacdfa7a23adc22e2b27216f0b915ca"
+    },
+    {
+      "path": "scripts/brandkit/common/profilemd.py",
+      "sha256": "268339643f3189636246c1e9ad28f13681aa2a66d0ea7d737e8a93c0ceba81ff"
+    },
+    {
+      "path": "scripts/brandkit/common/text.py",
+      "sha256": "bee3c6820d31b5739a0b1112659c124e43bf9c2579e53217a1c6f34c4b181187"
+    },
+    {
+      "path": "scripts/brandkit/common/typography.py",
+      "sha256": "f5a638603432ce97f20407c28a0212d9ce66a62d2eb1bfd01784a44d7722bfe4"
+    },
+    {
+      "path": "scripts/brandkit/doctor.py",
+      "sha256": "bd402be632b0e6c256b84665b7a11bcdef7647995d554e8113dccb5de185c494"
+    },
+    {
+      "path": "scripts/brandkit/formats/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/formats/catalog.py",
+      "sha256": "3cedc9e848b7af4a35ccaf0161e8df2d01d397bdd34f45224a87ee30c7686d40"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/cover.py",
+      "sha256": "e7369a052f0efc82b495e350a66f4bbc5a91ba1ea717c63ed6cc930b30447ed1"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/extract.py",
+      "sha256": "75649174656faa94e4e7cce880496e24d1357f3884f0963d0c0dd1b2a345e92c"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/generate.py",
+      "sha256": "89ffba8ce371c690e06bba44432d7f76a55f6a4e928f3791ac38a328dd641d6f"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/roles.py",
+      "sha256": "ea7faafa7f53fb0feaca39500ffbc2ef8e01068671344c22aba362d5b64d228d"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/structure.py",
+      "sha256": "617ac49d1aaee7d501c3cb43deb3996d2c96257b7d6db8cb4b872b03bf0347d0"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/styles.py",
+      "sha256": "f1b06089392b41608378301feb0b7c1ce1fffed588641a3f31cdb7c93054353d"
+    },
+    {
+      "path": "scripts/brandkit/formats/docx/typography.py",
+      "sha256": "1189040c321874255c191f761787a322f996e7b8fc21f36399c23cf803ecfce1"
+    },
+    {
+      "path": "scripts/brandkit/formats/pptx/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/formats/pptx/extract.py",
+      "sha256": "9f46fdc888b0b235880f6c73c58c7f5606b64692c72e42c42c33322eb205584d"
+    },
+    {
+      "path": "scripts/brandkit/formats/pptx/generate.py",
+      "sha256": "c856f964645ca32a8ef6d6c6986f9c7d0ffdc221622439b2dedbcf4eab70a7f0"
+    },
+    {
+      "path": "scripts/brandkit/formats/pptx/structure.py",
+      "sha256": "e7c9db8fa1831b17de2b2084a8c2e22abba30dc759884161c2441ddf3eac29c7"
+    },
+    {
+      "path": "scripts/brandkit/formats/pptx/typography.py",
+      "sha256": "bc92580d82dea7697207fd1e94bee713ee52d2b630aac4e77a1a11db855bb436"
+    },
+    {
+      "path": "scripts/brandkit/formats/xlsx/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/formats/xlsx/extract.py",
+      "sha256": "62b5bd79fd22dd5cdf35e0db36fa11291c65753c8a7351c7df14f13eef3f9031"
+    },
+    {
+      "path": "scripts/brandkit/formats/xlsx/generate.py",
+      "sha256": "6b1d8ba99bed539b565618ad9c10d05beb17e407a67e29fb7ca9371bcc22a903"
+    },
+    {
+      "path": "scripts/brandkit/formats/xlsx/package.py",
+      "sha256": "c785fb2b2517f514a7b5033a4eba7f9f17560eaabf0dc24f9974147019f0f189"
+    },
+    {
+      "path": "scripts/brandkit/formats/xlsx/structure.py",
+      "sha256": "9016d6c1e65439510d5181be9c14544ec521c83998dab4b0f14937c8abec3967"
+    },
+    {
+      "path": "scripts/brandkit/formats/xlsx/typography.py",
+      "sha256": "9d90449fe2636be72af4d647ce79e8a20c1aebc11b6ef376cdf996d2342dea0e"
+    },
+    {
+      "path": "scripts/brandkit/grid/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/grid/model.py",
+      "sha256": "44d103271d42691c6ef851e848982f14a60aae9a9dd1945b209d2eaf398cad81"
+    },
+    {
+      "path": "scripts/brandkit/ir/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/ir/components.py",
+      "sha256": "a589de29c8010aee7a020165f71040b5884a57ba8e69ed98067a5082a4ca1297"
+    },
+    {
+      "path": "scripts/brandkit/ir/model.py",
+      "sha256": "b37d7a86358450bce0871b5c989994c6c118f36c7135361ec2e6118a45854e00"
+    },
+    {
+      "path": "scripts/brandkit/ooxml/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/ooxml/chart.py",
+      "sha256": "1ff2648d672ab791e6c8af35932f5fc3acef98254b9eeaf37d0ff0d11ed1dcf2"
+    },
+    {
+      "path": "scripts/brandkit/ooxml/fields.py",
+      "sha256": "7ffebbab398bee15db6666a32a6d8ec47f92d2f661550821b5cc3f3caf6a9a61"
+    },
+    {
+      "path": "scripts/brandkit/ooxml/idempotency.py",
+      "sha256": "a255bfe2a0b0af26d1893c86202a462375b3013b8fcad3696f532f83f7287087"
+    },
+    {
+      "path": "scripts/brandkit/ooxml/names.py",
+      "sha256": "e8f733b6ffe1eb6ddf16a0c3bbed341d0b21970d06cda192aa3733095edce0fc"
+    },
+    {
+      "path": "scripts/brandkit/ooxml/pack.py",
+      "sha256": "53bd15eb3975b60438525ae976c2e472e9ebcf9b9916cdd6abbb6239e153c103"
+    },
+    {
+      "path": "scripts/brandkit/profile/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/profile/blend.py",
+      "sha256": "c3258df97e3b26a204b75da98f19e84164c444e4744f11dc745a97a980c9ccc5"
+    },
+    {
+      "path": "scripts/brandkit/profile/compare.py",
+      "sha256": "86b2b93087318e4ce919e3719a8b68fa347c37c5727a6c904a2380c04900b5f1"
+    },
+    {
+      "path": "scripts/brandkit/profile/comprehension.py",
+      "sha256": "4c339bde1ee8da4cea8979b4c9e904cc0c9674f0360680df6c8695ac4ff554ee"
+    },
+    {
+      "path": "scripts/brandkit/profile/overrides.py",
+      "sha256": "9cc0ae9655876bdf918ddd6f56d9315bdf359f2664a7e867496b3ad86a195ede"
+    },
+    {
+      "path": "scripts/brandkit/profile/reconcile.py",
+      "sha256": "f1b55fe8f6ab19854e9cc89c296f25740e7a731a133c156c99a9c4678ac6a138"
+    },
+    {
+      "path": "scripts/brandkit/profile/resolver.py",
+      "sha256": "618a26a627580ef2e51acc43852630874c73f7a9ce63533cef89025e20f52d92"
+    },
+    {
+      "path": "scripts/brandkit/profile/schema.py",
+      "sha256": "39219893bb15341a87deda5ec7783c1ada9065d08f386e7ab1c0da2d350614af"
+    },
+    {
+      "path": "scripts/brandkit/profile/store.py",
+      "sha256": "c7b9fe9d8521ca7b3a9cbf1688860893d80f1796811b22bc7910c1b2076d6d55"
+    },
+    {
+      "path": "scripts/brandkit/qa/__init__.py",
+      "sha256": "445bd8f23a209dbdd17f180976eb494e3639bda383ae36edd8e46ef898a605dc"
+    },
+    {
+      "path": "scripts/brandkit/qa/checker.py",
+      "sha256": "d7afc30a660264b0e2c729aa0e65ca63f2fa6ff6fc56b04ac8c120705396add2"
+    },
+    {
+      "path": "scripts/brandkit/qa/checks_deterministic.py",
+      "sha256": "8ea4946c3a0ba1fd564b3231e8e3875c6d77c4bd114e36ebdd2fc96a086439e1"
+    },
+    {
+      "path": "scripts/brandkit/qa/gate.py",
+      "sha256": "809b47eecba411f2cbaf08404b0739bd27c1552bff3389cb8f47bdc70e7e8d61"
+    },
+    {
+      "path": "scripts/brandkit/qa/model.py",
+      "sha256": "16a39ee584c9e11caca484985a59d47411568430ae770b59d06a58e1dea7b8ac"
+    },
+    {
+      "path": "scripts/brandkit/qa/report.py",
+      "sha256": "2cef388dcc0ba799905ab179a9ff7c5c2f60ff941b6469fcf21870bc714ad7fb"
+    },
+    {
+      "path": "scripts/brandkit/qa/visual.py",
+      "sha256": "951f53cd93d3db1663a0e7974c012beb3980d1567dcb0aae32d9a2210138b7b2"
+    },
+    {
+      "path": "skills/brand-docx/SKILL.md",
+      "sha256": "22c0be6ceabebb50b4bd3f92c4c6d583b3e11c6e0033a5bbdb2e825170f56c74"
+    },
+    {
+      "path": "skills/brand-docx/examples/intermediate-document.example.json",
+      "sha256": "e1d953cfc6c8e8870f182585ad9676c694bf15c6f9395f42687f5be3cf37da9c"
+    },
+    {
+      "path": "skills/brand-docx/reference/block-catalog.md",
+      "sha256": "f0b86578d27bed9913f7ad70c1ea6d46427d8a242cb66d93b2578bf0379b41ad"
+    },
+    {
+      "path": "skills/brand-docx/reference/comprehension.md",
+      "sha256": "60f5f022d755285d2edfb38ccf100df1f294d19f7a3dbbe2309b4188281f70e6"
+    },
+    {
+      "path": "skills/brand-docx/reference/extraction.md",
+      "sha256": "627b0788b83307f26112812facddda648275238a8cbe2157b6dacb08a3bcf5cd"
+    },
+    {
+      "path": "skills/brand-docx/reference/generation.md",
+      "sha256": "a817cbc278ef38129d359889b9e79b4ff7b55073158edc6239a296bfb9b0bd0e"
+    },
+    {
+      "path": "skills/brand-docx/reference/idoc.schema.json",
+      "sha256": "52885e1be9041eed99da0b76eabe8d0d07f05b71b9eb2e44c38f581a6ed183df"
+    },
+    {
+      "path": "skills/brand-docx/reference/profile-schema.md",
+      "sha256": "412c5d9de107db60d6254d46b091a34b88ecddcbc5b1436a0727658d43d6451c"
+    },
+    {
+      "path": "skills/brand-docx/reference/qa.md",
+      "sha256": "02c146d0e60ed83b13eafe77b0c506ee26963926988d70c179027fce5bf568d2"
+    },
+    {
+      "path": "skills/brand-docx/reference/visual-audit.md",
+      "sha256": "4fb55f0af962297b60da2d1282fa57ad6c7d8bef3e8ddf78e80514625969da84"
+    },
+    {
+      "path": "skills/brand-docx/scripts/cli.py",
+      "sha256": "16343b2ba395f233560afcaba04bec1a77f71573d228caf261f5a2a531fc525f"
+    }
+  ]
+}

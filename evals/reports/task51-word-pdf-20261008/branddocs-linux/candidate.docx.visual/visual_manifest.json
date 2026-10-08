@@ -1,0 +1,225 @@
+{
+  "schema_version": "visual-manifest-2",
+  "kind": "docx",
+  "profile_name": "synthetic",
+  "document": ".candidate.tm2zvhji.docx",
+  "shell_sha256": "c59bb79ea7c6d5627a9f0d42d84f86a4bf7f9209d7aba0e191de2ee9742238d0",
+  "content_sha256": "6c81708ea39c24b3f6b1e770f3b19fc9ff4de8b559cfa5e4458dac2f086ceb52",
+  "renderers_available": true,
+  "qa_mode": "strict",
+  "dpi": 100,
+  "pages": [
+    {
+      "index": 1,
+      "png": "page-1.png",
+      "width": 827,
+      "height": 1170,
+      "orientation": "portrait"
+    },
+    {
+      "index": 2,
+      "png": "page-2.png",
+      "width": 827,
+      "height": 1170,
+      "orientation": "portrait"
+    },
+    {
+      "index": 3,
+      "png": "page-3.png",
+      "width": 827,
+      "height": 1170,
+      "orientation": "portrait"
+    },
+    {
+      "index": 4,
+      "png": "page-4.png",
+      "width": 827,
+      "height": 1170,
+      "orientation": "portrait"
+    },
+    {
+      "index": 5,
+      "png": "page-5.png",
+      "width": 827,
+      "height": 1170,
+      "orientation": "portrait"
+    }
+  ],
+  "l1_findings": [
+    {
+      "check": "visual.blank_page",
+      "severity": "WARNING",
+      "message": "page 2 renders blank/near-blank (mean luma 254.7, ink 0.0014)",
+      "location": "page:2"
+    },
+    {
+      "check": "visual.ocr_residual_text",
+      "severity": "WARNING",
+      "message": "OCR saw captured template text still visible: '{{TITLE}}'",
+      "location": "page:1"
+    },
+    {
+      "check": "visual.ocr_residual_text",
+      "severity": "WARNING",
+      "message": "OCR saw captured template text still visible: 'Resumen ejecutivo'",
+      "location": "page:3"
+    },
+    {
+      "check": "visual.strict",
+      "severity": "ERROR",
+      "message": "strict visual QA blocks on visual.blank_page: page 2 renders blank/near-blank (mean luma 254.7, ink 0.0014)",
+      "location": "page:2"
+    },
+    {
+      "check": "visual.strict",
+      "severity": "ERROR",
+      "message": "strict visual QA blocks on visual.ocr_residual_text: OCR saw captured template text still visible: '{{TITLE}}'",
+      "location": "page:1"
+    },
+    {
+      "check": "visual.strict",
+      "severity": "ERROR",
+      "message": "strict visual QA blocks on visual.ocr_residual_text: OCR saw captured template text still visible: 'Resumen ejecutivo'",
+      "location": "page:3"
+    }
+  ],
+  "ocr": {
+    "engine": "tesseract",
+    "available": true,
+    "status": "ok",
+    "terms_checked": [
+      "Resumen ejecutivo",
+      "{{TITLE}}",
+      "España · Informe económico"
+    ],
+    "pages": [
+      {
+        "index": 1,
+        "text": "REGULAY - AREA TECNICA, Informe econdémico de Espafia {{TITLE}} Espafia - Informe econémico Pagina 1 - Informe interno",
+        "text_truncated": false,
+        "hits": [
+          {
+            "term": "{{TITLE}}"
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "text": "REGULAY - AREA TECNICA Pagina 2 - Informe interno",
+        "text_truncated": false
+      },
+      {
+        "index": 3,
+        "text": "REGULAY - AREA TECNICA Resumen ejecutivo Andlisis sintético con tildes, fi y simbolos: 1.250,00 €, £ y $. 1. Comprobar los importes originales. 2. Conservar la trazabilidad de las revisiones. Concepto Importe (€) Concepto espajiol 01: afio, accién, pifion 1,25€ Concepto espajiol 02: afio, accién, pifion 2,25€ Concepto espajiol 03: afio, accién, pifion 3,25€ Concepto espajiol 04: afio, accién, pifion 425€ Concepto espajiol 05: afio, accién, pifion 5,25€ Concepto espajiol 06: afio, accién, pifion 6,25€ Concepto espajiol 07: afio, accién, pifion 7.25€ Concepto espajiol 08: afio, accién, pifion 825€ Concepto espajiol 09: afio, accién, pifion 9.25€ Concepto espajiol 10: afio, accién, pifion 10,25 € Concepto espajiol 11: afio, accién, pifion 11,25€ Concepto espajiol 12: afio, accién, pifion 12,25€ Concepto espajiol 13: afio, accién, pifion 13,25€ Concepto espajiol 14: afio, accién, pifion 14,25 € Concepto espajiol 15: afio, accién, pifion 15,25 € Concepto espajiol 16: afio, accién, pifion 16,25 € Concepto espajiol 17: afio, accién, pifion 17,25€ Concepto espajiol 18: afio, accién, pifion 18,25 € Concepto espajiol 19: afio, accién, pifion 19,25 € Concepto espajiol 20: afio, accién, pifion 20,25€ Concepto espafiol 21: afio, accién, pifion 21,25€ Concepto espafiol 22: afio, accién, pifion 22,25€ Concepto espajiol 23: afio, accién, pifion 23,25€ Concepto espajiol 24: afio, accién, pifion 24,25 € Concepto espajiol 25: afio, accién, pifion 25,25€ Pagina 3 - Informe interno",
+        "text_truncated": false,
+        "hits": [
+          {
+            "term": "Resumen ejecutivo"
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "text": "REGULAY - AREA TECNICA Concepto espajiol 26: afio, accién, pifion 26,25€ Concepto espafiol 27: afio, accién, pifion 27,25€ Concepto espajiol 28: afio, accién, pifion 28,25€ Concepto espajiol 29: afio, accién, pifion 29,25€ Concepto espajiol 30: afio, accién, pifion 30,25 € Concepto espafiol 31: afio, accién, pifion 31,25€ Concepto espafiol 32: afio, accién, pifion 32,25 € Concepto espafiol 33: afio, accién, pifion 33,25 € Concepto espajiol 34: afio, accién, pifton 34,25 € Concepto espajiol 35: afio, accién, pifion 35,25 € Concepto espajiol 36: afio, accién, pifion 36,25 € Concepto espafiol 37: afio, accién, pifion 37,25€ Concepto espajiol 38: afio, accién, pifion 38,25 € Concepto espajiol 39: afio, accién, pifion 39,25 € Concepto espajiol 40: afio, accién, pifion 40,25 € Concepto espajiol 41: afio, accién, pifion 41,25€ Concepto espajiol 42: afio, accién, pifion 42,25 € Concepto espajiol 43: afio, accién, pifion 43,25 € Concepto espajiol 44: afio, accién, pifion 44,25 € Concepto espajiol 45: afio, accién, pifion 45,25 € Concepto espajiol 46: afio, accién, pifion 46,25 € Concepto espajiol 47: afio, accién, pifion 47,25€ Concepto espajiol 48: afio, accién, pifion 48,25 € Concepto espajiol 49: afio, accién, pifion 49,25 € Concepto espajiol 50: afio, accién, pifion 50,25 € Concepto espajiol 51: afio, accién, pifion 51,25€ Concepto espajiol 52: afio, accién, pifion 52,25€ Concepto espajiol 53: afio, accién, pifton 53,25 € Concepto espajiol 54: afio, accién, pifion 54,25 € Pagina 4 - Informe interno",
+        "text_truncated": false
+      },
+      {
+        "index": 5,
+        "text": "REGULAY - AREA TECNICA Concepto espajiol 55: afio, accién, pifion 55,25 € Concepto espajiol 56: afio, accién, pifton 56,25 € Concepto espajiol 57: afio, accién, pifion 57,25€ Concepto espajiol 58: afio, accién, pifion 58,25 € Concepto espajiol 59: afio, accién, pifion 59,25€ Concepto espajiol 60: afio, accién, pifion 60,25€ Concepto espajiol 61: afio, accién, pifion 61,25€ Concepto espajiol 62: afio, accién, pifion 62,25€ Concepto espajiol 63: afio, accién, pifion 63,25€ Concepto espajiol 64: afio, accién, pifion 64,25 € Concepto espajiol 65: afio, accién, pifion 65,25€ Notas de revision Los importes se expresan en euros. Afio 2026; revisién técnica. Pagina 5 - Informe interno",
+        "text_truncated": false
+      }
+    ],
+    "hits": [
+      {
+        "page": 1,
+        "term": "{{TITLE}}"
+      },
+      {
+        "page": 3,
+        "term": "Resumen ejecutivo"
+      }
+    ],
+    "errors": []
+  },
+  "checklist": [
+    {
+      "id": "regions_present",
+      "what": "Each expected region appears in the expected order: ['cover', 'body']",
+      "derived_from": "structure.skeleton[*].region + order",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "cover_correct",
+      "what": "The cover shows the bound title, no duplicate title, no residual demo prompt",
+      "derived_from": "anchors.cover + comprehension.cover_slots",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_residual_placeholder",
+      "what": "No template placeholder/demo text is visible in the rendered output",
+      "derived_from": "surface.<kind>.demo_region + comprehension.cover_slots[*].demo_value",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "palette_on_brand",
+      "what": "On-screen colors belong to the brand palette",
+      "derived_from": "theme.colors + theme.palette_roles",
+      "severity_hint": "INFO"
+    },
+    {
+      "id": "roles_styled",
+      "what": "Semantic blocks (heading/list/callout/table/quote/caption) appear with the brand style, not 'Normal'",
+      "derived_from": "roles._index",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_overlap",
+      "what": "No overlapping or clipped text/shapes",
+      "derived_from": "constant; reinforced by l1_findings visual.edge_bleed",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_blank_pages",
+      "what": "No unexpected blank/broken pages",
+      "derived_from": "constant; reinforced by l1_findings visual.blank_page",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "overflow_clean",
+      "what": "No content beyond the printable margins",
+      "derived_from": "qa.overflow_capability=render",
+      "severity_hint": "WARNING"
+    }
+  ],
+  "environment": {
+    "platform": "Linux-6.8.0-142-generic-x86_64-with-glibc2.41",
+    "python": "3.12.11",
+    "visual_qa": true,
+    "degraded": false,
+    "renderers": {
+      "soffice": {
+        "available": true,
+        "path": "/usr/bin/soffice"
+      },
+      "pdftoppm": {
+        "available": true,
+        "path": "/usr/bin/pdftoppm"
+      }
+    },
+    "optional_python": {
+      "fitz": {
+        "available": false,
+        "purpose": "PyMuPDF PDF raster fallback"
+      }
+    },
+    "ocr": {
+      "tesseract": {
+        "available": true,
+        "path": "/usr/bin/tesseract",
+        "purpose": "optional OCR visible-text audit"
+      }
+    },
+    "install_hints": []
+  },
+  "instructions": "Open each PNG. For each checklist item, judge PASS/FAIL against the rendered pages, taking l1_findings into account. If any item FAILS, repair the IntermediateDocument/content and regenerate, then re-run the audit. Do NOT call any model from the engine; this judgment is yours."
+}

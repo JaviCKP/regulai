@@ -1,0 +1,14 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "ops/agent_probe/.venv/Scripts/python.exe",
+    "-m",
+    "unittest",
+    "ops.agent_probe.test_governed_adapter",
+    "ops.agent_chat.test_runtime",
+    "-v"
+  ],
+  "exit_code": 1,
+  "seconds": 3.438
+}

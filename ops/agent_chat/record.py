@@ -8,11 +8,12 @@ import time
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--output-dir', type=Path)
     parser.add_argument('name')
     parser.add_argument('command', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
-    output = root / 'evals/reports/task50-chat-excel-20261007'
+    output = args.output_dir or root / 'evals/reports/task50-chat-excel-20261007'
     output.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
     with (output / (args.name + '.log')).open('xb') as log:

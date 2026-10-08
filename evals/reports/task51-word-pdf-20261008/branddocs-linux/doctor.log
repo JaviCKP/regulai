@@ -1,0 +1,11 @@
+python:docx: ok
+python:pptx: ok
+python:openpyxl: ok
+python:lxml: ok
+python:PIL: ok
+python:fitz: missing (PyMuPDF PDF raster fallback)
+binary:soffice: ok (visual DOCX/PPTX/XLSX render)
+binary:pdftoppm: ok (PDF to PNG visual proof)
+ocr:tesseract: ok (optional OCR visible-text audit)
+visual QA: L1 proxy + L2 manifest available
+OCR QA: optional visible-text scan available

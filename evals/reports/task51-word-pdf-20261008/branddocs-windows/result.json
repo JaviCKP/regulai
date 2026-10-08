@@ -1,0 +1,46 @@
+{
+  "commit": "97a6e384cb0664cd44ba8113c0b80c9761700670",
+  "commands": [
+    {
+      "command": [
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.task51-docvenv\\Scripts\\python.exe",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.task51-branddocs-source\\scripts\\brandkit\\cli.py",
+        "doctor"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.task51-docvenv\\Scripts\\python.exe",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.task51-branddocs-source\\scripts\\brandkit\\cli.py",
+        "extract",
+        "--name",
+        "synthetic",
+        "--template",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\task51-word-pdf-20261008\\branddocs-windows\\template.docx",
+        "--scope",
+        "project"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.task51-docvenv\\Scripts\\python.exe",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.task51-branddocs-source\\scripts\\brandkit\\cli.py",
+        "generate",
+        "--name",
+        "synthetic",
+        "--scope",
+        "project",
+        "--qa",
+        "strict",
+        "--input",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\task51-word-pdf-20261008\\branddocs-windows\\content.json",
+        "--output",
+        "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\evals\\reports\\task51-word-pdf-20261008\\branddocs-windows\\candidate.docx"
+      ],
+      "exit_code": 1
+    }
+  ],
+  "template_sha256": "7cd795becbe0e1c4529ac018389c37a252386855a794d1ce6dc8a0e4f1acb850"
+}

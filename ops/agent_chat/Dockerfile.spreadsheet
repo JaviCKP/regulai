@@ -1,9 +1,11 @@
 FROM python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
-# Build-time installation only. Calc, not the Writer/Impress suite.
-RUN apt-get update && apt-get install -y --no-install-recommends libreoffice-calc=4:25.2.3-2+deb13u8 fonts-liberation && rm -rf /var/lib/apt/lists/*
+# Single document image. Build-time installation; no downloads in conversations.
+RUN apt-get update && apt-get install -y --no-install-recommends libreoffice-calc=4:25.2.3-2+deb13u8 libreoffice-writer=4:25.2.3-2+deb13u8 poppler-utils=25.03.0-5+deb13u4 fonts-liberation=1:2.1.5-3 && rm -rf /var/lib/apt/lists/*
 COPY ops/agent_chat/requirements.txt /tmp/spreadsheet-requirements.txt
 RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/spreadsheet-requirements.txt && python -m pip check
 RUN useradd --uid 1000 --create-home user && mkdir -p /skills /workspace/input /workspace/work /workspace/output /conversation_history /large_tool_results && chown user:user /workspace/work /workspace/output /conversation_history /large_tool_results
 COPY --chmod=0444 regulai/front/agents/spreadsheet_program.py /skills/spreadsheet_program.py
+COPY --chmod=0444 regulai/front/agents/document_program.py /skills/document_program.py
+COPY --chmod=0444 regulai/front/agents/runtime/templates/corporate.docx /skills/corporate.docx
 RUN chmod 0555 /skills
 WORKDIR /workspace/work

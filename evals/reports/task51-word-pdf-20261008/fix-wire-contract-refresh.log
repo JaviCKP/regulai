@@ -1,0 +1,103 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.executor
+#1 transferring dockerfile: 757B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/regulay-task48-executor:local
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 10.47kB 0.0s done
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0
+#5 resolve docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0 0.0s done
+#5 CACHED
+
+#6 [2/6] COPY regulai/front/agents/adapter.py regulai/front/agents/protocol.py regulai/front/agents/worker.py regulai/front/agents/sandbox_pool.py /app/regulai/front/agents/
+#6 DONE 0.5s
+
+#7 [3/6] COPY regulai/front/agents/runtime /app/regulai/front/agents/runtime
+#7 DONE 0.3s
+
+#8 [4/6] COPY regulai/front/agents/spreadsheet_program.py /app/regulai/front/agents/spreadsheet_program.py
+#8 DONE 0.1s
+
+#9 [5/6] COPY ops/agent_chat/requirements.txt ops/agent_chat/build_template.py /app/ops/agent_chat/
+#9 DONE 0.1s
+
+#10 [6/6] COPY ops/agent_chat/network_probe.py /app/ops/agent_chat/
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.5s done
+#11 exporting manifest sha256:3ba0cf0d5158560af940886d6eb5f5b2c02c549cc211c3ef4f43e6fe276a4445 0.0s done
+#11 exporting config sha256:12b0cd6287161c22f7560bc2c205295070d46b30f940385fe1ced40d933ad451 0.0s done
+#11 exporting attestation manifest sha256:e91ddf37f0317e9bbbf4b24c1c519e2b1868bf39f26e48eb6f13150e611934d6 0.1s done
+#11 exporting manifest list sha256:ea9365727ca8a2aad89d926ae49ec33886744850b5c4a34c15a6ea26c88f3b2c 0.0s done
+#11 naming to docker.io/library/regulay-task50-executor:local done
+#11 unpacking to docker.io/library/regulay-task50-executor:local
+#11 unpacking to docker.io/library/regulay-task50-executor:local 0.2s done
+#11 DONE 0.9s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.web
+#1 transferring dockerfile: 529B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#5 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#5 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#5 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 14.36MB 0.1s done
+#4 DONE 0.1s
+
+#6 [2/6] COPY ops/agent_chat/web-requirements.txt /tmp/requirements.txt
+#6 CACHED
+
+#7 [3/6] RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt && python -m pip check
+#7 CACHED
+
+#8 [4/6] COPY regulai /app/regulai
+#8 DONE 0.2s
+
+#9 [5/6] COPY ops/agent_chat /app/ops/agent_chat
+#9 DONE 0.1s
+
+#10 [6/6] WORKDIR /app
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.6s done
+#11 exporting manifest sha256:55f9ceff1e3f8d39cbdff8eb88e3fce41ef00ccb2400933eb49e989680566cb5 0.0s done
+#11 exporting config sha256:e13dc0f338b260574d8097eb935b4c9c8591983b66a1ea7845a5ed59e9fcb1bc 0.0s done
+#11 exporting attestation manifest sha256:e9c7134a7bb147930d910ca446154bf299759454aeb29ec41c71ed5a58259e54 0.1s done
+#11 exporting manifest list sha256:8396b9a89b27d70023a33018af71692b48da2e180d2716cdcaa8174b0d95b2fd 0.0s done
+#11 naming to docker.io/library/regulay-task50-web:local done
+#11 unpacking to docker.io/library/regulay-task50-web:local
+#11 unpacking to docker.io/library/regulay-task50-web:local 0.2s done
+#11 DONE 1.0s
+task50-worker
+task50-web
+4fd13fdbbf0e143fa81d5b32469c0375405b0e189aaf20804c1e6197075837db
+069fa6d42a8fb7f1e0c52b14010749107206836616bdb443ee11295331a476d8

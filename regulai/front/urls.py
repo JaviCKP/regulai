@@ -33,6 +33,8 @@ urlpatterns = [
     path('chat/agent/runs/<uuid:run_id>/events/', agent_views.events, name='agent_events'),
     path('chat/agent/runs/<uuid:run_id>/cancel/', agent_views.cancel_run, name='agent_cancel'),
     path('chat/agent/artifacts/<uuid:artifact_id>/download/', agent_views.download, name='agent_download'),
+    path('chat/agent/artifacts/<uuid:artifact_id>/pages/<int:number>/', agent_views.document_page, name='agent_document_page'),
+    path('chat/agent/artifacts/<uuid:artifact_id>/review/', agent_views.document_review, name='agent_document_review'),
     # Home
     path("", home_view, name="home"),
 

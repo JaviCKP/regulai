@@ -6,7 +6,7 @@ import tarfile
 
 root = Path(__file__).resolve().parents[2]
 files = [p for folder in ('regulai/front', 'regulai/api', 'regulai/regulai', 'ops/agent_chat')
-    for p in (root / folder).rglob('*') if p.is_file() and p.suffix in ('.py', '.html', '.md', '.txt', '.in', '.sh')
+    for p in (root / folder).rglob('*') if p.is_file() and p.suffix in ('.py', '.html', '.md', '.txt', '.in', '.sh', '.docx')
     and '__pycache__' not in p.parts and p.name != 'local_settings.py']
 files += [root / 'regulai/manage.py', root / 'ops/agent_chat/Dockerfile.web', root / 'ops/agent_chat/Dockerfile.executor',
           root / 'ops/agent_chat/Dockerfile.spreadsheet',

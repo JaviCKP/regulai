@@ -519,14 +519,14 @@
             <label for="conversationMode" class="form-label small">Modo del nuevo chat</label>
             <select id="conversationMode" class="form-select form-select-sm" aria-label="Modo del nuevo chat">
               <option value="chat">Chat</option>
-              <option value="agent">Agente Excel · laboratorio sintético</option>
+              <option value="agent">Agente documentos · laboratorio sintético</option>
             </select>
           </div>
           {% endif %}
           {% if agent_available or agent_mode %}
           <section id="agentActivity" class="border rounded p-3 mb-3 d-none" aria-label="Actividad del agente" style="max-height: 70vh; overflow: auto;">
             <div class="d-flex justify-content-between gap-2 align-items-start">
-              <strong>Agente Excel</strong><button type="button" id="agentCancel" class="btn btn-outline-danger btn-sm">Cancelar ejecución</button>
+              <strong>Agente documentos</strong><button type="button" id="agentCancel" class="btn btn-outline-danger btn-sm">Cancelar ejecución</button>
             </div>
             <p id="agentProgress" role="status" aria-live="polite" class="small my-2"></p>
             <details><summary class="small">Actividad de la ejecución</summary><ol id="agentEvents" class="small mb-2"></ol></details>

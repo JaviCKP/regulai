@@ -18,6 +18,46 @@
     card.className = 'border-top pt-2 mt-2';
     const heading = node('strong', artifact.preview.title, card);
     heading.style.overflowWrap = 'anywhere';
+    if (artifact.format && artifact.format !== 'xlsx') {
+      const pending = artifact.status !== 'verified';
+      node('p', `Revisión ${artifact.revision} · ${artifact.format.toUpperCase()} · ${pending ? 'Pendiente de revisión visual' : 'Verificado y revisado'}`, card).className = 'small text-muted';
+      let loaded = 0;
+      const pages = node('div', null, card);
+      pages.className = 'agent-document-pages';
+      let button;
+      artifact.preview.pages.forEach((url, index) => {
+        if (!/^\/chat\/agent\/artifacts\/[0-9a-f-]+\/pages\/\d+\/$/.test(url)) return;
+        const figure = node('figure', null, pages);
+        node('figcaption', `Página ${index + 1} de ${artifact.preview.pages.length}`, figure).className = 'small';
+        const img = node('img', null, figure);
+        img.alt = `Página ${index + 1} del documento para revisión visual`;
+        img.style.cssText = 'width:100%;height:auto;border:1px solid #d9d9d9';
+        img.onload = () => { loaded++; if (button) button.disabled = loaded !== artifact.preview.pages.length; };
+        img.src = url;
+        const full = node('a', 'Abrir página a tamaño completo', figure);
+        full.href = url; full.target = '_blank'; full.rel = 'noopener';
+      });
+      if (pending) {
+        node('p', 'Revisa todas las páginas: texto legible, tablas completas, tildes y símbolos correctos, sin cortes, solapamientos ni restos de plantilla.', card).className = 'small';
+        button = node('button', 'He revisado todas las páginas: publicar esta revisión', card);
+        button.type = 'button'; button.className = 'btn btn-primary btn-sm'; button.disabled = true;
+        button.onclick = async () => {
+          button.disabled = true;
+          try {
+            const response = await fetch(artifact.review_url, {method: 'POST',
+              headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()},
+              body: JSON.stringify({sha256: artifact.sha256, page_sha256: artifact.page_sha256, checks: artifact.review_checks})});
+            if (!response.ok) throw new Error('Review unavailable');
+            text('Revisión visual registrada. Finalizando la entrega.');
+          } catch (_) { text('No se pudo registrar la revisión. Comprueba que la ejecución siga activa.'); }
+        };
+      } else {
+        const link = node('a', `Descargar ${artifact.format.toUpperCase()} verificado`, card);
+        link.href = artifact.download_url; link.className = 'btn btn-primary btn-sm'; link.setAttribute('download', '');
+        node('p', 'En el siguiente mensaje puedes cambiar el título o el resumen, o pedir la versión PDF.', card).className = 'small mt-2';
+      }
+      return;
+    }
     node('p', `Revisión ${artifact.revision} · Fórmulas y totales verificados`, card).className = 'small text-muted mb-1';
     const area = node('div', null, card);
     area.className = 'table-responsive';
@@ -55,11 +95,12 @@
     if (run.id !== expected) return;
     data.events.forEach(progress);
     byId('agentCancel').hidden = !live(data.run.status);
-    if (data.artifacts.length) {
+    revision = data.current_revision || null;
+    const visible = data.artifacts.length ? data.artifacts : (revision ? [revision] : []);
+    if (visible.length) {
       const artifacts = byId('agentArtifacts');
       artifacts.replaceChildren();
-      data.artifacts.forEach(artifact => showArtifact(artifact, artifacts));
-      revision = data.artifacts[data.artifacts.length - 1];
+      visible.forEach(artifact => showArtifact(artifact, artifacts));
     }
     if (!live(data.run.status)) {
       stream?.close();
@@ -91,7 +132,11 @@
       const state = await snapshot();
       if (!state || !live(state.status)) return;
       stream = new EventSource(run.events_url + '?cursor=' + cursor);
-      stream.addEventListener('progress', message => progress(JSON.parse(message.data)));
+      stream.addEventListener('progress', message => {
+        const event = JSON.parse(message.data);
+        progress(event);
+        if (event.kind === 'visual_pending') snapshot().catch(unavailable);
+      });
       stream.addEventListener('terminal', () => { stream?.close(); snapshot().catch(unavailable); });
       stream.addEventListener('revoked', unavailable);
       stream.onerror = () => text('Conexión de actividad interrumpida. Reconectando desde el último evento; el trabajo no se repite.');

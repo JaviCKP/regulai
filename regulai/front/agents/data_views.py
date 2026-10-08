@@ -32,6 +32,26 @@ def authorize_tool(token, attempt, payload):
                 or call.args['logical_id'] != job.get('logical_id')
                 or call.args['base_revision'] != job.get('base')))):
             raise AgentDenied('artifact_reference_denied')
+    elif call.name in ('build_document', 'edit_document', 'export_pdf'):
+        from .document_contract import valid_section
+        from .excel_contract import valid_title
+        job = execution.job
+        if call.name == 'build_document':
+            valid_title(call.args['title'])
+            valid_section(call.args['section'])
+            if call.args['format'] not in ('docx', 'pdf') or call.args['input_reference'] != job.get('source'):
+                raise AgentDenied('artifact_reference_denied')
+        else:
+            if (not job.get('base') or call.args['logical_id'] != job.get('logical_id')
+                    or call.args['base_revision'] != job['base']):
+                raise AgentDenied('artifact_reference_denied')
+            base = AgentArtifact.objects.get(pk=job['base'])
+            if base.format not in ('docx', 'pdf'):
+                raise AgentDenied('document_base_required')
+            if call.name == 'edit_document':
+                if call.args['field'] not in ('title', 'section'):
+                    raise AgentDenied('document_field_denied')
+                (valid_title if call.args['field'] == 'title' else valid_section)(call.args['value'])
     for key in ('input_path', 'file_path', 'path'):
         if key not in call.args:
             continue
@@ -125,16 +145,18 @@ def tool_result(token, attempt, payload):
             view = _csv_view(execution, context[2], call, request.raw)
         except (ValueError, TypeError, KeyError, csv.Error):
             view = {'status': 'withheld', 'code': 'aggregate_not_verified'}
-    elif call.name in ('build_excel', 'rename_excel'):
+    elif call.name in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf'):
         # The executor returns an opaque candidate reference. Approval and the
         # aggregate come only from the independent application verifier.
         try:
             reference = json.loads(request.raw['content'])['reference']
-            artifact = AgentArtifact.objects.get(pk=reference, execution=execution,
-                status='verified', verification__call_id=call.id)
+            artifact = AgentArtifact.objects.get(pk=reference, execution=execution, verification__call_id=call.id)
             from .jobs import _bytes
             _bytes(artifact)
-            view = {'status': 'approved', 'reference': str(artifact.pk),
+            if artifact.status != 'verified':
+                view = {'status': 'withheld', 'code': 'visual_review_required' if artifact.verification.get('automated_passed') else 'document_not_verified'}
+            else:
+                view = {'status': 'approved', 'reference': str(artifact.pk),
                 'logical_id': str(artifact.logical_id), 'revision': artifact.revision,
                 'rows': artifact.verification['rows'], 'total_cents': artifact.verification['total_cents']}
         except (ValueError, TypeError, KeyError, AgentArtifact.DoesNotExist):

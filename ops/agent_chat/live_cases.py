@@ -5,6 +5,7 @@ transport, Docker socket or database credential is given to that executor.
 """
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import time
@@ -22,7 +23,7 @@ def main():
     prepare()
     from django.contrib.auth.models import User
     from front.models import AgentExecution, AgentArtifact, Profile, AgentModelProfile
-    root = Path('/evidence')
+    root = Path(os.environ.get('REGULAY_LIVE_EVIDENCE_DIR', '/evidence'))
     client = httpx.Client(base_url='http://127.0.0.1:31049', follow_redirects=True, timeout=90)
     def login(target, username='agent-synthetic-ui'):
         target.get('/login/').raise_for_status()

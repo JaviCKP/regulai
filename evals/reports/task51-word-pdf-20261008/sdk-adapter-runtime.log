@@ -1,0 +1,22 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+test_governed_adapter (unittest.loader._FailedTest.test_governed_adapter) ... ERROR
+test_exclusive_clean_slot_destroyed_then_replaced (ops.agent_chat.test_runtime.PoolTests.test_exclusive_clean_slot_destroyed_then_replaced) ... ok
+test_runtime_has_only_the_excel_procedure_and_its_notices (ops.agent_chat.test_runtime.PoolTests.test_runtime_has_only_the_excel_procedure_and_its_notices) ... ok
+
+======================================================================
+ERROR: test_governed_adapter (unittest.loader._FailedTest.test_governed_adapter)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_governed_adapter
+Traceback (most recent call last):
+  File "C:\Users\javi\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\unittest\loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\javi\Documents\Codex\regulai-platform\ops\agent_probe\test_governed_adapter.py", line 12, in <module>
+    from test_probe import simulated_backend
+ModuleNotFoundError: No module named 'test_probe'
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+FAILED (errors=1)

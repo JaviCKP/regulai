@@ -54,10 +54,12 @@ def prepare(*, database_host='127.0.0.1', database_port='55450', evidence=None):
                 f'engine:{credential.pk}', f'obfuscation:{mask.pk}']}, 'limits': {'provider_managed': True}}
         company.save()
         agent = AgentModelProfile.objects.create(company=company, name='Task50 synthetic', enabled=True,
-            connection=credential, model=model, tools=['build_excel', 'rename_excel'])
+            connection=credential, model=model, tools=['build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf'])
     else:
         company = user.profile.company
         agent = AgentModelProfile.objects.get(company=company, name='Task50 synthetic')
+        agent.tools = ['build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf']
+        agent.save(update_fields=['tools'])
     settings.REGULAY_AGENT_ENABLED = True
     settings.REGULAY_AGENT_DEVELOPMENT = True
     settings.REGULAY_AGENT_DEV_ACCOUNTS = {str(user.pk): {'company_id': company.pk, 'profile_id': agent.pk}}
@@ -76,13 +78,28 @@ def prepare(*, database_host='127.0.0.1', database_port='55450', evidence=None):
             and m['content'].startswith('Referencias autorizadas del servidor: '))
         context = json.loads(resources.split(': ', 1)[1])
         tool_messages = [m for m in messages if m['role'] == 'tool']
-        success = tool_messages and json.loads(tool_messages[-1]['content']).get('status') == 'approved'
+        last_result = json.loads(tool_messages[-1]['content']) if tool_messages else {}
+        success = last_result.get('status') == 'approved' or last_result.get('code') == 'visual_review_required'
         call = None
         if not success and len(tool_messages) < 2:
             name = 'rename_excel' if context['operation'] == 'rename' else 'build_excel'
             title = 'Ventas revisadas' if name == 'rename_excel' else 'Ventas sintéticas'
             args = {'title': title, **({'logical_id': context['logical_id'], 'base_revision': context['base_revision']}
                 if name == 'rename_excel' else {'input_reference': context['input_reference']})}
+            instruction = next((m['content'] for m in messages if m['role'] == 'user' and
+                not m['content'].startswith('Referencias autorizadas del servidor: ')), '').lower()
+            identity = {'logical_id': context['logical_id'], 'base_revision': context['base_revision']}
+            if context.get('base_format') in ('docx', 'pdf'):
+                if 'pdf' in instruction and context['base_format'] == 'docx':
+                    name, args = 'export_pdf', identity
+                else:
+                    field = 'section' if 'resumen' in instruction or 'sección' in instruction else 'title'
+                    name, args = 'edit_document', {**identity, 'field': field,
+                        'value': 'Resumen revisado: análisis económico de España, año 2026.' if field == 'section' else 'Informe técnico revisado'}
+            elif 'docx' in instruction or 'informe' in instruction or 'pdf' in instruction:
+                name, args = 'build_document', {'input_reference': context['input_reference'],
+                    'format': 'pdf' if 'pdf' in instruction else 'docx', 'title': 'Informe económico de España',
+                    'section': 'Análisis de importes en euros. Año 2026; revisión técnica con tildes, ñ y símbolos: €, £ y $.'}
             call = {'id': 'synthetic-' + uuid.uuid4().hex, 'type': 'function',
                     'function': {'name': name, 'arguments': json.dumps(args)}}
         message = {'role': 'assistant', 'content': None if call else 'El servidor conserva el resultado de la comprobación.'}

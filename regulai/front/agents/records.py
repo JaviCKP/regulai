@@ -127,6 +127,9 @@ class AgentArtifact(models.Model):
     status = models.CharField(max_length=12, default='draft')
     content = EncryptedTextField()
     sha256 = models.CharField(max_length=64)
+    format = models.CharField(max_length=8, default='xlsx')
+    # Private document, rendered PDF and PNGs. Never model/tool-result content.
+    render_bundle = EncryptedTextField(default='')
     verification = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
 

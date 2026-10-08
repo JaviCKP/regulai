@@ -1,0 +1,46 @@
+{
+  "commit": "97a6e384cb0664cd44ba8113c0b80c9761700670",
+  "commands": [
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "/app/.task51-branddocs-source/scripts/brandkit/cli.py",
+        "doctor"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "/app/.task51-branddocs-source/scripts/brandkit/cli.py",
+        "extract",
+        "--name",
+        "synthetic",
+        "--template",
+        "/evidence/branddocs/template.docx",
+        "--scope",
+        "project"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "/app/.task51-branddocs-source/scripts/brandkit/cli.py",
+        "generate",
+        "--name",
+        "synthetic",
+        "--scope",
+        "project",
+        "--qa",
+        "strict",
+        "--input",
+        "/evidence/branddocs/content.json",
+        "--output",
+        "/evidence/branddocs/candidate.docx"
+      ],
+      "exit_code": 1
+    }
+  ],
+  "template_sha256": "c59bb79ea7c6d5627a9f0d42d84f86a4bf7f9209d7aba0e191de2ee9742238d0"
+}

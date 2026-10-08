@@ -33,13 +33,17 @@ EVENT_TEXT = {
     'calculate': 'Python está calculando y preparando las fórmulas del Excel.',
     'rename': 'Actualizando el título de la revisión actual.',
     'recalculate': 'LibreOffice está recalculando las fórmulas.',
-    'verify': 'Comprobando fórmulas, resultados y totales de los bytes finales.',
+    'verify': 'Reabriendo y comprobando los bytes finales y sus resultados.',
+    'compose': 'Preparando el informe sobre la plantilla corporativa.',
+    'render': 'Convirtiendo y renderizando todas las páginas de la revisión final.',
+    'visual_pending': 'Comprobaciones automáticas completadas. Revisa todas las páginas antes de publicar.',
+    'visual_reviewed': 'Revisión visual registrada para estos bytes y estas páginas.',
     'draft': 'La comprobación ha fallado. Se conserva el borrador para reparación local.',
     'verified': 'El Excel ha superado las comprobaciones independientes.',
-    'completed': 'Excel verificado disponible para previsualizar y descargar.',
+    'completed': 'Archivo verificado disponible para previsualizar y descargar.',
     'cancelled': 'Ejecución cancelada. No se iniciarán nuevos pasos.',
     'interrupted': 'Ejecución interrumpida. No se repetirán automáticamente operaciones de resultado incierto.',
-    'failed': 'No se pudo completar un Excel verificado. Los borradores se conservan.',
+    'failed': 'No se pudo completar un archivo verificado. Los borradores se conservan.',
 }
 
 
@@ -295,20 +299,27 @@ def bootstrap(token, attempt, payload):
             'columns': [alias_value(run, 'FIELD', name) for name in ('item', 'amount_cents')],
             'synthetic_example': {'item': 'Ejemplo', 'amount_cents': 125}}
         base = _base(run.conversation, run.job['logical_id'], run.job['base']) if run.job['base'] else None
+        model_context['base_format'] = base.format if base else None
+        companion = None
+        if base and base.render_bundle:
+            from .document_jobs import source_document
+            companion = base64.b64encode(source_document(base)).decode()
         return {'status': 'authorized', 'input': {'path': asset.path, 'base64': asset.original,
             'sha256': asset.digest, 'kind': asset.kind},
             'base': base64.b64encode(_bytes(base)).decode() if base else None,
+            'base_format': base.format if base else None, 'base_docx': companion,
             'model_context': model_context, 'message': alias_text(run, run.prompt.content),
-            'tools': [name for name in context[2].tools if name in ('build_excel', 'rename_excel')]}
+            'tools': [name for name in context[2].tools if name in ('build_excel', 'rename_excel',
+                'build_document', 'edit_document', 'export_pdf')]}
 
 
 def step(token, attempt, payload):
     from .data_views import authorize_tool
-    if set(payload) != {'call', 'phase'} or payload['phase'] not in ('input', 'calculate', 'rename', 'recalculate', 'verify'):
+    if set(payload) != {'call', 'phase'} or payload['phase'] not in ('input', 'calculate', 'rename', 'recalculate', 'verify', 'compose', 'render'):
         raise ValueError('Invalid step')
     with locked(token, attempt) as (run, _):
         _, _, call = authorize_tool(token, attempt, payload['call'])
-        if call.name not in ('build_excel', 'rename_excel'):
+        if call.name not in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf'):
             raise AgentDenied('tool_not_allowed')
         if run.events.filter(kind=payload['phase'], data__call_id=call.id).exists():
             raise AgentDenied('step_already_started')
@@ -319,6 +330,9 @@ def step(token, attempt, payload):
 def candidate(token, attempt, payload):
     from .data_views import authorize_tool
     from .aliases import resolve_for_operation, TOKEN as TOKEN_RE
+    if 'document_bundle' in payload:
+        from .document_jobs import candidate as document_candidate
+        return document_candidate(token, attempt, payload)
     if set(payload) != {'operation_id', 'call', 'base64'}:
         raise ValueError('Invalid candidate')
     operation_id = uuid.UUID(payload['operation_id'])
@@ -362,6 +376,9 @@ def local_fields(token, attempt, payload):
     from .data_views import authorize_tool
     from .aliases import resolve_for_operation, TOKEN as TOKEN_RE
     run, _, call = authorize_tool(token, attempt, payload)
+    if call.name in ('build_document', 'edit_document', 'export_pdf'):
+        from .document_jobs import local_fields as document_fields
+        return document_fields(run, call)
     title = call.args.get('title')
     valid_title(title)
     aliases = [m.group(0) for m in TOKEN_RE.finditer(title)]
@@ -375,14 +392,15 @@ def complete(token, attempt, payload):
     if payload:
         raise ValueError('Invalid completion')
     with locked(token, attempt) as (run, _):
-        artifact = run.artifacts.filter(status='verified').order_by('-revision').first()
-        if not artifact or run.active_call:
+        artifact = run.artifacts.order_by('-revision').first()
+        if not artifact or artifact.status != 'verified' or run.active_call:
             raise AgentDenied('verified_artifact_required')
         _bytes(artifact)
         if run.job['base']:
             _base(run.conversation, run.job['logical_id'], run.job['base'])
         message = Message.objects.create(conversation=run.conversation, role='assistant',
-            content='Excel verificado. Fórmulas y totales comprobados; preview y descarga disponibles.')
+            content=('Excel verificado. Fórmulas y totales comprobados; preview y descarga disponibles.'
+                if artifact.format == 'xlsx' else 'Documento verificado y revisado visualmente. Preview y descarga disponibles.'))
         Response.objects.create(prompt=run.prompt, assistant_message=message, content=message.content,
             evidence={'artifact': str(artifact.pk), 'sha256': artifact.sha256})
         prompt = run.prompt
@@ -421,6 +439,9 @@ def cancel(actor, run_id):
 
 
 def artifact_data(artifact):
+    if artifact.format != 'xlsx':
+        from .document_jobs import artifact_data as document_data
+        return document_data(artifact)
     raw = _bytes(artifact)
     from .excel_contract import workbook
     book = workbook(raw)
@@ -428,5 +449,5 @@ def artifact_data(artifact):
     book.close()
     _, preview = verify(raw, _decode(artifact.source), artifact.source.kind, title=title)
     return {'id': str(artifact.pk), 'logical_id': str(artifact.logical_id), 'revision': artifact.revision,
-        'sha256': artifact.sha256, 'preview': preview,
+        'sha256': artifact.sha256, 'format': 'xlsx', 'status': artifact.status, 'preview': preview,
         'download_url': f'/chat/agent/artifacts/{artifact.pk}/download/'}

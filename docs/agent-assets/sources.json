@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-07",
-  "status": "preparation_only_not_loaded_by_chat",
+  "reviewed_on": "2026-10-08",
+  "status": "scoped_synthetic_runtime_excel_docx_pdf_default_off",
   "harness": "Deep Agents",
   "validation": {
     "source_and_license_review": true,
-    "runtime_integration_tested": false,
-    "skills_executed": false,
+    "runtime_integration_tested": true,
+    "skills_executed": true,
     "quality_parity_with_claude_demonstrated": false,
-    "paid_model_calls_made": false
+    "paid_model_calls_made": false,
+    "runtime_scope": "Tasks 48-51; real SDK/E2B with simulated model. PPTX candidates not yet evaluated."
   },
   "original_assets": [
     {
@@ -71,8 +72,9 @@
         "skills/brand-xlsx/SKILL.md",
         "skills/brand-pptx/SKILL.md"
       ],
-      "decision": "Evaluate first for corporate templates; alpha; shared engine required",
-      "installed": false
+      "decision": "Task 51 strict DOCX evaluation rejected: template residue, duplicate title, blank page. Bounded python-docx/template procedure selected; not loaded in runtime.",
+      "installed": false,
+      "evaluation_evidence": "evals/reports/task51-word-pdf-20261008/branddocs-linux/result.json"
     },
     {
       "id": "officecli",
@@ -103,8 +105,9 @@
       "skill_paths": [
         "skills/.curated/pdf/SKILL.md"
       ],
-      "decision": "Reference copy included; adapt runtime paths and privacy before activation",
-      "installed": false
+      "decision": "Adapted and verified in task 51; single runtime source, offline converters and private hash-bound visual review.",
+      "installed": true,
+      "runtime_path": "regulai/front/agents/runtime/skills/pdf/SKILL.md"
     },
     {
       "id": "dom-to-pptx",
@@ -184,5 +187,5 @@
       "sha256": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9"
     }
   ],
-  "scope_note": "A declared license and inspected examples do not certify every dependency, provenance or Office compatibility. No third-party installers were executed."
+  "scope_note": "Only reviewed offline procedures are active for synthetic development profiles. BrandDocs evaluated locally; no installers run during conversations. No real-model quality comparison, paid calls or existing-account activation."
 }
