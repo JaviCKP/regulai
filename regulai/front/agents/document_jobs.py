@@ -33,6 +33,24 @@ def local_fields(run, call):
             for alias, original in resolve_for_operation(run, aliases, operation='local_document_fields').items():
                 value = value.replace(alias, original)
         return value
+    if call.name in ('build_presentation', 'edit_presentation'):
+        from . import presentation_contract as pptx
+        asset = AgentInput.objects.get(pk=run.job['source'], execution=run)
+        pptx.source_rows(jobs._decode(asset), asset.kind)
+        if call.name == 'build_presentation':
+            title = pptx.valid_text(resolve(call.args['title']), 'title')
+            section = pptx.valid_text(resolve(call.args['section']), 'body')
+            return {'status': 'authorized', 'format': 'pptx', 'title': title, 'section': section,
+                    'template': call.args['template'], 'texts': pptx.expected_fields(title, section)}
+        base = jobs._base(run.conversation, run.job['logical_id'], run.job['base'])
+        texts = pptx.fields(jobs._bytes(base))
+        slide, field = call.args['slide'], call.args['field']
+        value = pptx.valid_text(resolve(call.args['value']), field)
+        if field == 'body' and len(value) > {1: 140, 2: 65, 3: 340}[slide]:
+            raise ValueError('presentation_text_capacity')
+        texts[slide-1][field] = value
+        return {'status': 'authorized', 'format': 'pptx', 'title': texts[0]['title'], 'texts': texts,
+                'slide': slide, 'field': field, 'value': value}
     if call.name == 'build_document':
         return {'status': 'authorized', 'title': valid_title(resolve(call.args['title'])),
                 'section': valid_section(resolve(call.args['section'])), 'format': call.args['format']}
@@ -55,21 +73,27 @@ def candidate(token, attempt, payload):
         raise ValueError('Invalid document candidate')
     operation = uuid.UUID(payload['operation_id'])
     run, _, call = authorize_tool(token, attempt, payload['call'])
-    if call.name not in ('build_document', 'edit_document', 'export_pdf'):
+    if call.name not in ('build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
         raise AgentDenied('candidate_denied')
     content = local_fields(run, call)
     asset = AgentInput.objects.get(pk=run.job['source'], execution=run)
     base = jobs._base(run.conversation, run.job['logical_id'], run.job['base']) if run.job['base'] else None
-    previous = (source_document(base)
-                if base and base.render_bundle else None)
+    previous = (source_document(base) if base and base.format in ('docx', 'pdf') else None)
     encoded = payload['document_bundle']
     if not isinstance(encoded, str) or len(encoded) > 40_000_000:
         raise ValueError('Document candidate too large')
     submitted = base64.b64decode(encoded, validate=True)
     try:
-        raw, proof, bundle = verify_bundle(encoded, jobs._decode(asset), asset.kind,
-            {key: content[key] for key in ('title', 'section')}, format=content['format'],
-            base=previous if call.name != 'build_document' else None, changed=content.get('field'))
+        if content['format'] == 'pptx':
+            from .presentation_contract import verify_bundle as verify_presentation
+            editing = call.name == 'edit_presentation'
+            raw, proof, bundle = verify_presentation(encoded, jobs._decode(asset), asset.kind, content['texts'],
+                base=jobs._bytes(base) if editing else None,
+                changed=(content['slide'], content['field']) if editing else None, template=content.get('template', 'new'))
+        else:
+            raw, proof, bundle = verify_bundle(encoded, jobs._decode(asset), asset.kind,
+                {key: content[key] for key in ('title', 'section')}, format=content['format'],
+                base=previous if call.name != 'build_document' else None, changed=content.get('field'))
     except Exception:
         # Retain the failed package encrypted as a draft, never preview or deliver it.
         raw, bundle = submitted, ''
@@ -149,11 +173,15 @@ def review(actor, artifact_id, payload):
 
 def artifact_data(artifact):
     jobs._bytes(artifact)
-    docx = source_document(artifact)
+    if artifact.format == 'pptx':
+        from .presentation_contract import fields as presentation_fields
+        title = presentation_fields(jobs._bytes(artifact))[0]['title']
+    else:
+        title = fields(source_document(artifact))['title']
     proof = artifact.verification
     return {'id': str(artifact.pk), 'logical_id': str(artifact.logical_id), 'revision': artifact.revision,
         'sha256': artifact.sha256, 'format': artifact.format, 'status': artifact.status,
-        'preview': {'title': fields(docx)['title'], 'pages': [
+        'preview': {'title': title, 'pages': [
             f'/chat/agent/artifacts/{artifact.pk}/pages/{n}/' for n in range(1, proof['pages'] + 1)]},
         'page_sha256': proof['page_sha256'], 'review_checks': VISUAL_CHECKS,
         'review_url': f'/chat/agent/artifacts/{artifact.pk}/review/',

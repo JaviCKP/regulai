@@ -301,7 +301,7 @@ def bootstrap(token, attempt, payload):
         base = _base(run.conversation, run.job['logical_id'], run.job['base']) if run.job['base'] else None
         model_context['base_format'] = base.format if base else None
         companion = None
-        if base and base.render_bundle:
+        if base and base.format in ('docx', 'pdf') and base.render_bundle:
             from .document_jobs import source_document
             companion = base64.b64encode(source_document(base)).decode()
         return {'status': 'authorized', 'input': {'path': asset.path, 'base64': asset.original,
@@ -310,7 +310,7 @@ def bootstrap(token, attempt, payload):
             'base_format': base.format if base else None, 'base_docx': companion,
             'model_context': model_context, 'message': alias_text(run, run.prompt.content),
             'tools': [name for name in context[2].tools if name in ('build_excel', 'rename_excel',
-                'build_document', 'edit_document', 'export_pdf')]}
+                'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation')]}
 
 
 def step(token, attempt, payload):
@@ -319,7 +319,7 @@ def step(token, attempt, payload):
         raise ValueError('Invalid step')
     with locked(token, attempt) as (run, _):
         _, _, call = authorize_tool(token, attempt, payload['call'])
-        if call.name not in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf'):
+        if call.name not in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
             raise AgentDenied('tool_not_allowed')
         if run.events.filter(kind=payload['phase'], data__call_id=call.id).exists():
             raise AgentDenied('step_already_started')
@@ -376,7 +376,7 @@ def local_fields(token, attempt, payload):
     from .data_views import authorize_tool
     from .aliases import resolve_for_operation, TOKEN as TOKEN_RE
     run, _, call = authorize_tool(token, attempt, payload)
-    if call.name in ('build_document', 'edit_document', 'export_pdf'):
+    if call.name in ('build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
         from .document_jobs import local_fields as document_fields
         return document_fields(run, call)
     title = call.args.get('title')

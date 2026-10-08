@@ -563,6 +563,7 @@ lxml==6.1.0 \
     # via
     #   -r ops/agent_chat/web-requirements.in
     #   python-docx
+    #   python-pptx
 openai==1.102.0 \
     --hash=sha256:2e0153bcd64a6523071e90211cbfca1f2bbc5ceedd0993ba932a5869f93b7fc9 \
     --hash=sha256:d751a7e95e222b5325306362ad02a7aa96e1fab3ed05b5888ce1c7ca63451345
@@ -659,7 +660,9 @@ pillow==12.3.0 \
     --hash=sha256:fdafc9cce40277e0f7a0feabce0ee50dd2fa1800f3b38015e51296b5e814048d \
     --hash=sha256:fe3cca2e4e8a592be0f269a1ca4835c25199d9f3ce815c8491048f785b0a0198 \
     --hash=sha256:ffd0c5368496f41b0944be820fcb7a838aa6e623d250b01acf2643939c3f99d7
-    # via -r ops/agent_chat/web-requirements.in
+    # via
+    #   -r ops/agent_chat/web-requirements.in
+    #   python-pptx
 psycopg==3.3.6 \
     --hash=sha256:a1db9f7148b06a28606767efaca51fa6f9398c5c0a3810519be69d7000bdb631 \
     --hash=sha256:c081f2250df751a943036e42db6df4571c66cd0aabe8291a7a506512b12007d2
@@ -860,6 +863,10 @@ python-dotenv==1.2.2 \
     --hash=sha256:1d8214789a24de455a8b8bd8ae6fe3c6b69a5e3d64aa8a8e5d68e694bbcb285a \
     --hash=sha256:2c371a91fbd7ba082c2c1dc1f8bf89ca22564a087c2c287cd9b662adde799cf3
     # via -r ops/agent_chat/web-requirements.in
+python-pptx==1.0.2 \
+    --hash=sha256:160838e0b8565a8b1f67947675886e9fea18aa5e795db7ae531606d68e785cba \
+    --hash=sha256:479a8af0eaf0f0d76b6f00b0887732874ad2e3188230315290cd1f9dd9cc7095
+    # via -r ops/agent_chat/web-requirements.in
 requests==2.33.0 \
     --hash=sha256:3324635456fa185245e24865e810cecec7b4caf933d7eb133dcde67d48cee69b \
     --hash=sha256:c7ebc5e8b0f21837386ad0e1c8fe8b829fa5f544d8df3b2253bff14ef29d7652
@@ -889,6 +896,7 @@ typing-extensions==4.15.0 \
     #   pydantic
     #   pydantic-core
     #   python-docx
+    #   python-pptx
     #   typing-inspection
 typing-inspection==0.4.1 \
     --hash=sha256:389055682238f53b04f7badcb49b989835495a96700ced5dab2d8feae4b26f51 \
@@ -908,6 +916,12 @@ uvicorn==0.35.0 \
     --hash=sha256:197535216b25ff9b785e29a0b79199f55222193d47f820816e7da751e9bc8d4a \
     --hash=sha256:bc662f087f7cf2ce11a1d7fd70b90c9f98ef2e2831556dd078d131b96cc94a01
     # via -r ops/agent_chat/web-requirements.in
+xlsxwriter==3.2.9 \
+    --hash=sha256:254b1c37a368c444eac6e2f867405cc9e461b0ed97a3233b2ac1e574efb4140c \
+    --hash=sha256:9a5db42bc5dff014806c58a20b9eae7322a134abb6fce3c92c181bfb275ec5b3
+    # via
+    #   -r ops/agent_chat/web-requirements.in
+    #   python-pptx
 yara-python==4.5.4 \
     --hash=sha256:0b9de86fbe8a646c0644df9e1396d6941dc6ed0f89be2807e6c52ab39161fd9f \
     --hash=sha256:0e762e6c5b47ddf30b0128ba723da46fcc2aa7959a252748497492cb452d1c84 \

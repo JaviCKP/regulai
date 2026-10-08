@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "reviewed_on": "2026-10-08",
-  "status": "scoped_synthetic_runtime_excel_docx_pdf_default_off",
+  "status": "scoped_synthetic_runtime_excel_docx_pdf_pptx_default_off",
   "harness": "Deep Agents",
   "validation": {
     "source_and_license_review": true,
@@ -9,7 +9,7 @@
     "skills_executed": true,
     "quality_parity_with_claude_demonstrated": false,
     "paid_model_calls_made": false,
-    "runtime_scope": "Tasks 48-51; real SDK/E2B with simulated model. PPTX candidates not yet evaluated."
+    "runtime_scope": "Tasks 48-52; real SDK/E2B with simulated model. Four PPTX corpus cases, native editable data and final-byte visual review. No real-model quality comparison."
   },
   "original_assets": [
     {
@@ -72,7 +72,7 @@
         "skills/brand-xlsx/SKILL.md",
         "skills/brand-pptx/SKILL.md"
       ],
-      "decision": "Task 51 strict DOCX evaluation rejected: template residue, duplicate title, blank page. Bounded python-docx/template procedure selected; not loaded in runtime.",
+      "decision": "Task 51 strict DOCX evaluation rejected: template residue, duplicate title, blank page. Bounded python-docx/template procedure selected; not loaded in runtime. Task 52 comparison only for native editable chart: embedded workbook succeeds; remains evaluation-only because the selected OfficeCLI adapter covers this bounded gap and preserves localized edits.",
       "installed": false,
       "evaluation_evidence": "evals/reports/task51-word-pdf-20261008/branddocs-linux/result.json"
     },
@@ -91,8 +91,12 @@
         "skills/officecli-xlsx/SKILL.md",
         "skills/officecli-pptx/SKILL.md"
       ],
-      "decision": "Evaluate for editable PPTX and general Office edits; independent formula/render checks required",
-      "installed": false
+      "decision": "Selected for bounded PPTX creation and localized edits. Adapter preserves immutable ZIP parts and completes native chart with embedded XLSX; final PPTX is reopened, rendered and independently verified. No resident process, plugins or runtime installation.",
+      "installed": true,
+      "version": "1.0.155",
+      "binary_sha256": "1a5da5cb7e9d995db7a6560beb7466760c79617648f72e65f4ce55897c407f67",
+      "runtime_path": "regulai/front/agents/runtime/skills/pptx/SKILL.md",
+      "evaluation_evidence": "evals/reports/task52-powerpoint-20261008/"
     },
     {
       "id": "openai-pdf",
@@ -167,6 +171,21 @@
       ],
       "decision": "Reference only; no files copied",
       "installed": false
+    },
+    {
+      "id": "docx-report-design",
+      "repo": "drharunyuksel/docx-report-skill",
+      "sha": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "url": "https://github.com/drharunyuksel/docx-report-skill/commit/efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "license_declared": "MIT",
+      "license_path": "LICENSE",
+      "skill_paths": [
+        "SKILL.md"
+      ],
+      "installed": false,
+      "decision": "Reference criteria for typography, restrained colors and table layout. Original bounded python-docx procedure and versioned templates implement the design; upstream Node helpers are not executed or loaded.",
+      "runtime_path": "regulai/front/agents/runtime/design.md",
+      "source_manifest": "docs/agent-assets/upstream/docx-report-design/source-manifest.json"
     }
   ],
   "imported_files": [
@@ -185,7 +204,111 @@
       "source_path": "skills/.curated/pdf/LICENSE.txt",
       "modified": false,
       "sha256": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9"
+    },
+    {
+      "path": "upstream/officecli-pptx/SKILL.md",
+      "repo": "iOfficeAI/OfficeCLI",
+      "ref": "8d079c777ed6bea35b922c3d893758d3c2081137",
+      "source_path": "SKILL.md",
+      "modified": false,
+      "sha256": "c950d285ce60021712b4753fb2d9f592308d5622bab776229061dfecb1ce55d4"
+    },
+    {
+      "path": "upstream/officecli-pptx/skills/officecli-pptx/SKILL.md",
+      "repo": "iOfficeAI/OfficeCLI",
+      "ref": "8d079c777ed6bea35b922c3d893758d3c2081137",
+      "source_path": "skills/officecli-pptx/SKILL.md",
+      "modified": false,
+      "sha256": "0d53192751d5770984f16f3c34f9923377651555c667150d7f96e16e8c9757b3"
+    },
+    {
+      "path": "upstream/officecli-pptx/LICENSE",
+      "repo": "iOfficeAI/OfficeCLI",
+      "ref": "8d079c777ed6bea35b922c3d893758d3c2081137",
+      "source_path": "LICENSE",
+      "modified": false,
+      "sha256": "7e282402a5a6db33995fe638bb3fe79013f9884d8f7d15a42e481c1e86aadda1"
+    },
+    {
+      "path": "upstream/officecli-pptx/THIRD-PARTY-NOTICES.txt",
+      "repo": "iOfficeAI/OfficeCLI",
+      "ref": "8d079c777ed6bea35b922c3d893758d3c2081137",
+      "source_path": "THIRD-PARTY-NOTICES.txt",
+      "modified": false,
+      "sha256": "7e79e54cddf05f25681198429eb42e1401c1c53a3b29bf63744dc09411c029d8"
+    },
+    {
+      "path": "upstream/officecli-pptx/SHA256SUMS",
+      "repo": "iOfficeAI/OfficeCLI",
+      "ref": "8d079c777ed6bea35b922c3d893758d3c2081137",
+      "source_path": "SHA256SUMS",
+      "modified": false,
+      "sha256": "61dd1e51f7e316b946f53dd8aae221734c84947bc3cc4f559552facdc77cb377"
+    },
+    {
+      "path": "upstream/docx-report-design/LICENSE",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "LICENSE",
+      "modified": false,
+      "sha256": "99b5b2993404ad1542f1e5bbbf32e204df3b1afab18289f11dab280bae351d92"
+    },
+    {
+      "path": "upstream/docx-report-design/README.md",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "README.md",
+      "modified": false,
+      "sha256": "3dc5b518432998021bd301eb62a977e8a4238a906741b803a5f92dca5c44cc8f"
+    },
+    {
+      "path": "upstream/docx-report-design/SKILL.md",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "SKILL.md",
+      "modified": false,
+      "sha256": "b035866fd1f57b9d602e1cf2e7c99d90fbc7f62a90efece4110efd06b1ed5bb9"
+    },
+    {
+      "path": "upstream/docx-report-design/references/brand-config.js",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "references/brand-config.js",
+      "modified": false,
+      "sha256": "016d0d511e44874bb5d799cdcc78de374e3e8c7e60698d236aea884815a178a2"
+    },
+    {
+      "path": "upstream/docx-report-design/references/color-palette.md",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "references/color-palette.md",
+      "modified": false,
+      "sha256": "2ff1a4d6c162bc8cfb64ae0f088d33daca50b9f09cd8992cb91f3c793b6e671d"
+    },
+    {
+      "path": "upstream/docx-report-design/references/page-setup.js",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "references/page-setup.js",
+      "modified": false,
+      "sha256": "16497c805942be733ffc5c9f49496e19cf7f041bf09ba312b0101c16ae691043"
+    },
+    {
+      "path": "upstream/docx-report-design/references/table-templates.js",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "references/table-templates.js",
+      "modified": false,
+      "sha256": "69cd207dea4324351790ec62cbbe75b8d992a4a63b7a26445bf63e17f7c10e37"
+    },
+    {
+      "path": "upstream/docx-report-design/references/typography.js",
+      "repo": "drharunyuksel/docx-report-skill",
+      "ref": "efbd76eecad7e1aa070a8ca17dffc51a685833d7",
+      "source_path": "references/typography.js",
+      "modified": false,
+      "sha256": "6e90532068d5eaa986d6baf8d5f10da936169e2cce610368c88223e363ff6b2b"
     }
   ],
-  "scope_note": "Only reviewed offline procedures are active for synthetic development profiles. BrandDocs evaluated locally; no installers run during conversations. No real-model quality comparison, paid calls or existing-account activation."
+  "scope_note": "Only reviewed offline procedures are active for explicit synthetic development profiles. BrandDocs remains evaluation-only; docx-report-skill is design reference-only. No installers run during conversations. No real-model quality comparison, paid calls, connectors from task 53 or existing-account activation."
 }

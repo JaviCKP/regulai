@@ -92,10 +92,12 @@ def _body_shape(data, *, clear_table=False, field=None):
 
 
 def verify_docx(data, source, kind, expected, *, base=None, changed=None):
-    parts, template = package(data), package(TEMPLATE.read_bytes())
-    if set(parts) != set(template):
-        raise ValueError('document_parts')
-    if any(parts[name] != template[name] for name in parts if name != 'word/document.xml'):
+    parts = package(data)
+    # Versioned templates keep earlier immutable revisions editable after redesign.
+    candidates = [package(path.read_bytes()) for path in (TEMPLATE, TEMPLATE.with_name('corporate-v1.docx'))]
+    template = next((candidate for candidate in candidates if set(parts) == set(candidate) and
+        all(parts[name] == candidate[name] for name in parts if name != 'word/document.xml')), None)
+    if template is None:
         raise ValueError('document_template_parts_changed')
     if fields(data) != expected:
         raise ValueError('document_fields')
@@ -110,7 +112,7 @@ def verify_docx(data, source, kind, expected, *, base=None, changed=None):
     expected_table += [['Total', money(sum(cents for _, cents in rows))]]
     if [[c.text for c in row.cells] for row in table.rows] != expected_table:
         raise ValueError('document_table_values')
-    if len(doc.sections) != 3 or len(doc.tables) != 1:
+    if len(doc.sections) != len(list(etree.fromstring(template['word/document.xml']).iter(W + 'sectPr'))) or len(doc.tables) != 1:
         raise ValueError('document_sections')
     xml_text = ''.join(etree.fromstring(parts['word/document.xml']).itertext())
     if '{{' in xml_text or '}}' in xml_text:
@@ -127,7 +129,7 @@ def verify_pdf(data, expected, rows):
     if not data or len(data) > MAX_DOCUMENT_BYTES:
         raise ValueError('pdf_size')
     reader = PdfReader(io.BytesIO(data), strict=True)
-    if reader.is_encrypted or not 3 <= len(reader.pages) <= MAX_PAGES:
+    if reader.is_encrypted or not 2 <= len(reader.pages) <= MAX_PAGES:
         raise ValueError('pdf_pages')
     root = reader.trailer['/Root']
     opening = root.get('/OpenAction')

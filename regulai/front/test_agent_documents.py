@@ -46,6 +46,14 @@ class DocumentContractTests(SimpleTestCase):
                 contract.verify_docx(output.read_bytes(), CSV, 'csv', {**self.expected, field: value},
                                      base=self.raw, changed='title' if field == 'section' else 'section')
 
+    def test_legacy_template_revisions_survive_design_upgrade(self):
+        build(contract.TEMPLATE.with_name('corporate-v1.docx'), contract.input_rows(CSV, 'csv'), self.expected, self.output)
+        previous = self.output.read_bytes()
+        changed = Path(self.folder.name)/'legacy-edit.docx'
+        edit(self.output, 'title', 'Título anterior revisado', changed)
+        contract.verify_docx(changed.read_bytes(), CSV, 'csv', {**self.expected, 'title': 'Título anterior revisado'},
+                             base=previous, changed='title')
+
     def test_long_table_spans_rows_without_changing_template_structure(self):
         source = ('item,amount_cents\n' + '\n'.join(f'Piñón español {n},125' for n in range(65))).encode()
         build(contract.TEMPLATE, contract.input_rows(source, 'csv'), self.expected, self.output)

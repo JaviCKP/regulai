@@ -1,0 +1,4538 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.pptx-evaluation
+#1 transferring dockerfile: 438B done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/regulay-task51-docx-evaluation:local
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 35.45MB 0.1s done
+#4 DONE 0.2s
+
+#5 [1/3] FROM docker.io/library/regulay-task51-docx-evaluation:local@sha256:38c44e2902f78adf039e01c3c79b93295e4bfb8d41bd8a42ca4afdfc852f8de8
+#5 resolve docker.io/library/regulay-task51-docx-evaluation:local@sha256:38c44e2902f78adf039e01c3c79b93295e4bfb8d41bd8a42ca4afdfc852f8de8 0.1s done
+#5 DONE 0.3s
+
+#6 [2/3] COPY --chmod=0555 .task52-officecli-source/officecli-linux-x64 /usr/local/bin/officecli
+#6 DONE 0.4s
+
+#7 [3/3] COPY .task52-officecli-source/LICENSE .task52-officecli-source/THIRD-PARTY-NOTICES.txt /usr/local/share/officecli/
+#7 DONE 0.1s
+
+#8 exporting to image
+#8 exporting layers
+#8 exporting layers 1.2s done
+#8 exporting manifest sha256:554eb16c39d40b1511edfe945cdd3585de1a75767a7d0ef4b07168a35a4f12fe 0.0s done
+#8 exporting config sha256:13869b3ec3e1c7eb8ffc89b461c2c8d4ec66a2ea28cb29557788f01b7a793ea3 0.0s done
+#8 exporting attestation manifest sha256:b46fa6ed7b6c09d0166d9530b015c6a99f32eaf4a4f62e16be2e611d3b7ef50c 0.1s done
+#8 exporting manifest list sha256:90379ebc83c784fd9264cc4b4da9b17ba4f96e9d1c3d361f4e3946fac50be1e0 0.0s done
+#8 naming to docker.io/library/regulay-task52-pptx-evaluation:local done
+#8 unpacking to docker.io/library/regulay-task52-pptx-evaluation:local
+#8 unpacking to docker.io/library/regulay-task52-pptx-evaluation:local 0.2s done
+#8 DONE 1.6s
+1.0.155
+{
+  "$schema": "../_schema.json",
+  "element": "shape",
+  "properties": {
+    "size": {
+      "type": "font-size",
+      "description": "font size \u2014 Add/Set forwards to the first run; Get returns the bare size when every run shares the same explicit FontSize (non-mixed). When sizes are mixed or no run carries an explicit size, bare size is suppressed and the inheritance-resolved effective.size is emitted instead.",
+      "aliases": [
+        "fontSize",
+        "fontsize",
+        "font.size"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop size=14",
+        "--prop size=14pt",
+        "--prop size=10.5pt"
+      ],
+      "readback": "unit-qualified pt (e.g. \u002232pt\u0022) when all runs share one explicit FontSize; suppressed when sizes are mixed (read per-run size on the inner run) or absent (read effective.size)",
+      "enforcement": "report"
+    },
+    "evaluated": {
+      "type": "bool",
+      "description": "cross-handler protocol flag \u2014 emitted on shapes whose body contains an \u003Ca:fld\u003E dynamic field (slide number, date-time, footer, etc.). True when every dynamic field has cached text the renderer can show; false when at least one is empty (view text substitutes #OCLI_NOTEVAL!{type}; view issues emits subtype slide_field_not_evaluated). PowerPoint always re-renders fields on open, so there is no cache_stale equivalent. Read this via get --json instead of pattern-matching the sentinel.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true|false (true \u21D2 all \u003Ca:fld\u003E shapes on this node carry display text)",
+      "enforcement": "report"
+    },
+    "isTitle": {
+      "type": "bool",
+      "description": "true when this shape is the slide title placeholder (or a content placeholder configured as title). Always emitted on every shape so query selectors like \u0060shape[isTitle=true]\u0060 and \u0060shape[isTitle=false]\u0060 resolve uniformly. Read-only \u2014 title-ness is determined by placeholder type at Add time, not as a settable property.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true|false (always present)",
+      "enforcement": "report"
+    },
+    "opacity": {
+      "type": "number",
+      "description": "fill opacity (0.0 - 1.0). Requires a fill to attach to \u2014 opacity alone (without fill/gradient/pattern) has no effect in OOXML.",
+      "requires": [
+        "fill"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop opacity=0.5 --prop fill=FF0000"
+      ],
+      "readback": "number in [0, 1]",
+      "enforcement": "strict"
+    },
+    "geometry": {
+      "type": "string",
+      "description": "Preset shape geometry (default: rect). The values list below is illustrative, not exhaustive \u2014 many more OOXML presets are accepted (handler-as-truth): pie, arc, chord, the directional arrows (leftArrow, upArrow, downArrow), star4/star6/star8/star10, hexagon/heptagon/octagon/decagon/dodecagon, cloud, plus the callout* family, etc. Any preset the handler recognizes round-trips.",
+      "aliases": [
+        "preset",
+        "shape"
+      ],
+      "values": [
+        "rect",
+        "roundRect",
+        "ellipse",
+        "triangle",
+        "diamond",
+        "parallelogram",
+        "rightArrow",
+        "star5"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop geometry=ellipse",
+        "--prop preset=roundRect"
+      ],
+      "readback": "preset name (e.g. \u0022ellipse\u0022, \u0022roundRect\u0022)",
+      "enforcement": "strict"
+    },
+    "adj": {
+      "type": "string",
+      "description": "Preset adjust handles (a:prstGeom/a:avLst/a:gd). Controls the parametric proportions of a preset (arrow tail/head size, roundRect corner radius, star inner ratio, etc.). Format is \u0022name:formula\u0022 where formula is an OOXML guide formula such as \u0022val 6000\u0022. Multiple handles are comma-separated. Handle names are defined by the geometry: a preset with one handle names it \u0022adj\u0022 (roundRect, triangle, chevron; a lone \u0022adj1\u0022 there is renamed to \u0022adj\u0022), multi-handle presets use their own names (leftArrow: adj1, adj2), and presets such as rect/ellipse have none. A name the geometry does not declare is rejected, because PowerPoint refuses such a file. Changing geometry drops the handles the new preset does not declare.",
+      "aliases": [],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop geometry=leftArrow --prop adj=adj1:val 80000",
+        "--prop geometry=roundRect --prop adj=adj:val 16667",
+        "--prop geometry=rightArrow --prop adj=\u0022adj1:val 60000,adj2:val 40000\u0022"
+      ],
+      "readback": "comma-separated name:formula handles (e.g. \u0022adj1:val 80000\u0022)",
+      "enforcement": "lenient"
+    },
+    "textFill": {
+      "type": "string",
+      "description": "Fill applied to the text glyphs (a:rPr fill). Accepts a color (solid glyph fill) or round-trips a gradient. The legacy alias \u0027textGradient\u0027 canonicalizes to \u0027textFill\u0027 on readback.",
+      "aliases": [
+        "textGradient"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textFill=FF0000"
+      ],
+      "readback": "canonical textFill value",
+      "enforcement": "lenient"
+    },
+    "textWarp": {
+      "type": "string",
+      "description": "WordArt text warp preset applied to the shape\u0027s text body (a:bodyPr/a:prstTxWarp @prst). Use \u0027none\u0027 to remove. The HTML preview surfaces the active warp as a data-textwarp attribute \u002B a \u0027text-warp\u0027 marker class on the shape; real PowerPoint renders the per-glyph warp path.",
+      "values": [
+        "none",
+        "textNoShape",
+        "textPlain",
+        "textArchUp",
+        "textArchDown",
+        "textCircle",
+        "textWave1",
+        "textWave2",
+        "textInflate",
+        "textDeflate",
+        "textCanUp",
+        "textCanDown"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textWarp=textArchUp",
+        "--prop textWarp=textWave1"
+      ],
+      "readback": "warp preset name (e.g. \u0022textArchUp\u0022)",
+      "enforcement": "report"
+    },
+    "font.latin": {
+      "type": "string",
+      "description": "Latin-script font slot only (a:latin). Use to target ASCII/European text without overwriting CJK / complex-script slots.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.latin=Calibri"
+      ],
+      "readback": "typeface (only emitted when it differs from the bare \u0027font\u0027 slot)",
+      "enforcement": "report"
+    },
+    "font.ea": {
+      "type": "string",
+      "description": "East-Asian font slot (a:ea) \u2014 Chinese / Japanese / Korean text.",
+      "aliases": [
+        "font.eastasia",
+        "font.eastasian"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.ea=\u0022\u30E1\u30A4\u30EA\u30AA\u0022"
+      ],
+      "readback": "typeface (only emitted when it differs from the bare \u0027font\u0027 slot)",
+      "enforcement": "report"
+    },
+    "font.cs": {
+      "type": "string",
+      "description": "Complex-script font slot (a:cs) \u2014 Arabic / Hebrew / Thai etc.",
+      "aliases": [
+        "font.complexscript",
+        "font.complex"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.cs=\u0022Arabic Typesetting\u0022"
+      ],
+      "readback": "typeface",
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "enum",
+      "values": [
+        "ltr",
+        "rtl"
+      ],
+      "description": "paragraph reading direction (a:pPr rtl). Use \u0027rtl\u0027 for Arabic / Hebrew layouts.",
+      "aliases": [
+        "dir",
+        "rtl"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl, or ltr. Set direction=ltr pins ltr explicitly by writing rtl=\u00220\u0022 so the paragraph overrides any inherited master/layout RTL; Add omits rtl when ltr (relies on the default). Clearing direction removes the attribute.",
+      "enforcement": "report"
+    },
+    "margin": {
+      "type": "length",
+      "description": "uniform internal padding (text inset) for shape body (a:bodyPr lIns/tIns/rIns/bIns). Also accepts a 4-value \u0027l,t,r,b\u0027 form on Set.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop margin=4",
+        "--prop margin=0.1in"
+      ],
+      "readback": "unit-qualified length (e.g. \u002714.4pt\u0027 / \u00270.36cm\u0027) when all four insets are equal; otherwise \u0027l,t,r,b\u0027 with \u0027-\u0027 for unset sides",
+      "enforcement": "report"
+    },
+    "textDirection": {
+      "type": "string",
+      "description": "shape text rotation (a:bodyPr @vert) \u2014 works on shapes/textboxes, not just table cells. horizontal|vertical90|vertical270|eaVert|stacked. Round-trips through the same canonical vocabulary as table-cell textDirection. Note: the Get readback key is lowercase \u0027textdirection\u0027.",
+      "aliases": [
+        "textdir",
+        "vert"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textDirection=vertical270",
+        "--prop textDirection=stacked"
+      ],
+      "readback": "horizontal|vertical90|vertical270|stacked",
+      "enforcement": "report"
+    },
+    "strike": {
+      "type": "enum",
+      "description": "strikethrough on shape text. Single and double are distinct OOXML tokens (sngStrike / dblStrike); Word splits these into \u0060strike\u0060 \u002B \u0060dstrike\u0060, PowerPoint folds both into one attribute.",
+      "values": [
+        "none",
+        "single",
+        "double"
+      ],
+      "aliases": [
+        "strikethrough",
+        "font.strike",
+        "font.strikethrough"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop strike=single",
+        "--prop strike=double",
+        "--prop strike=true"
+      ],
+      "readback": "single | double | none. Boolean \u0060true\u0060 on add/set is accepted as an alias for \u0060single\u0060.",
+      "enforcement": "report"
+    },
+    "highlight": {
+      "type": "color",
+      "description": "text highlight color behind the glyphs (a:highlight). Unlike Word\u0027s fixed named-color list, accepts any color (hex, named, rgb(), scheme names like accent1). \u0027none\u0027/\u0027false\u0027 removes the highlight.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop highlight=FFFF00",
+        "--prop highlight=accent1",
+        "--prop highlight=none"
+      ],
+      "readback": "#RRGGBB hex (or scheme color name) read from the first run\u0027s a:highlight",
+      "enforcement": "report"
+    },
+    "cap": {
+      "type": "enum",
+      "description": "letter-case rendering mode for shape text (rPr/cap).",
+      "values": [
+        "none",
+        "small",
+        "all"
+      ],
+      "aliases": [
+        "allCaps",
+        "allcaps",
+        "smallCaps",
+        "smallcaps"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop cap=all",
+        "--prop allCaps=true"
+      ],
+      "readback": "none | small | all",
+      "enforcement": "report"
+    },
+    "lang": {
+      "type": "string",
+      "description": "BCP-47 language tag. lang lives per-run (drawingML a:rPr/@lang) \u2014 a shape has no language of its own, only an aggregate of differently-tongued runs. add/set on a shape is a convenience that writes the FIRST run\u0027s rPr; read it back at run scope (/shape[N]/paragraph[P]/run[R]). Not surfaced at shape level: a first-run projection cannot say which language each run is, and a newly added run would not inherit it.",
+      "aliases": [
+        "altLang",
+        "altlang"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop lang=en-US"
+      ],
+      "readback": "run scope only (/shape[N]/paragraph[P]/run[R])",
+      "enforcement": "report"
+    },
+    "spacing": {
+      "type": "number",
+      "description": "character spacing in points. Stored as 1/100 pt in OOXML (a:rPr/@spc); readback is the point value. Negative values tighten.",
+      "aliases": [
+        "spc",
+        "charspacing",
+        "letterspacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop spacing=2",
+        "--prop charspacing=-1",
+        "--prop spacing=0.5"
+      ],
+      "readback": "point value as decimal string (e.g. \u00272\u0027, \u0027-1\u0027, \u00270.5\u0027)",
+      "enforcement": "report"
+    },
+    "kern": {
+      "type": "number",
+      "description": "minimum kerning size in 1/100 pt (drawingML rPr/@kern). kern lives per-run \u2014 a shape has no kerning threshold of its own, only an aggregate of its runs\u0027 rPr. add/set on a shape is a convenience that writes the runs; read it back at run scope (/shape[N]/paragraph[P]/run[R]). Not surfaced at shape level: the first-run projection could not be replayed, because \u0060add textbox kern=\u2026\u0060 meets a runless shape before the text is set and materialises a paragraph default (\u003Ca:pPr\u003E\u003Ca:defRPr kern=\u2026\u003E) the source never had \u2014 every sibling run without an explicit kern then inherited it.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop kern=1200"
+      ],
+      "readback": "run scope only (/shape[N]/paragraph[P]/run[R])",
+      "enforcement": "report"
+    },
+    "autoFit": {
+      "type": "enum",
+      "values": [
+        "normal",
+        "shrink",
+        "shape",
+        "none"
+      ],
+      "aliases": [
+        "autofit"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "text body auto-fit mode. \u0027normal\u0027/\u0027shrink\u0027 shrinks text to fit (normAutofit); \u0027shape\u0027 resizes the shape to fit text; \u0027none\u0027 overflows. Aliases (Add\u002BSet): true/shrink \u2192 normal, resize \u2192 shape, false \u2192 none.",
+      "examples": [
+        "--prop autoFit=normal",
+        "--prop autoFit=shrink",
+        "--prop autoFit=shape",
+        "--prop autoFit=none"
+      ],
+      "readback": "normal | shape | none",
+      "enforcement": "report"
+    },
+    "fontScale": {
+      "type": "string",
+      "aliases": [
+        "fontscale"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "normAutofit font-scale (shrink-to-fit text ratio). Input as a percent: bare integer 0-100 (75 \u2192 75%) or N% form (\u002775%\u0027). Stored as OOXML thousandths-of-percent (75000); readback emits the raw OOXML integer.",
+      "examples": [
+        "--prop fontScale=75",
+        "--prop fontScale=75%"
+      ],
+      "readback": "OOXML thousandths-of-percent (e.g. 75000)",
+      "enforcement": "report"
+    },
+    "lnSpcReduction": {
+      "type": "string",
+      "aliases": [
+        "lnspcreduction",
+        "lineSpaceReduction",
+        "linespacereduction",
+        "lineSpacingReduction",
+        "linespacingreduction"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "normAutofit line-space reduction (shrink-to-fit spacing ratio). Input as a percent: bare integer 0-100 (20 \u2192 20%) or N% form (\u002720%\u0027). Stored as OOXML thousandths-of-percent (20000); readback emits the raw OOXML integer.",
+      "examples": [
+        "--prop lnSpcReduction=20",
+        "--prop lineSpaceReduction=20%"
+      ],
+      "readback": "OOXML thousandths-of-percent (e.g. 20000)",
+      "enforcement": "report"
+    },
+    "lineSpacing": {
+      "type": "string",
+      "description": "line spacing for shape paragraphs (multiplier or pt).",
+      "aliases": [
+        "linespacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineSpacing=1.5x"
+      ],
+      "readback": "1.5x or 18pt",
+      "enforcement": "report"
+    },
+    "spaceBefore": {
+      "type": "length",
+      "aliases": [
+        "spacebefore"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop spaceBefore=6pt"
+      ],
+      "readback": "unit-qualified pt",
+      "enforcement": "report"
+    },
+    "spaceAfter": {
+      "type": "length",
+      "aliases": [
+        "spaceafter"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop spaceAfter=6pt"
+      ],
+      "readback": "unit-qualified pt",
+      "enforcement": "report"
+    },
+    "gradient": {
+      "type": "string",
+      "description": "gradient fill spec. Linear: \u0027C1-C2[-ANGLE]\u0027 or \u0027LINEAR;C1;C2;ANGLE\u0027. Radial: \u0027radial:C1-C2[-FOCUS]\u0027 (focus: tl/tr/bl/br/center). Path: \u0027path:C1-C2[-FOCUS]\u0027. Per-stop position: \u0027C@PCT\u0027 (e.g. \u0027FF0000@0-0000FF@100\u0027).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop gradient=\u0022FF0000-0000FF\u0022",
+        "--prop gradient=\u0022FF0000-0000FF-90\u0022",
+        "--prop gradient=\u0022LINEAR;FF0000;0000FF;45\u0022",
+        "--prop gradient=\u0022radial:4B0082-1E90FF-center\u0022"
+      ],
+      "readback": "linear: \u0027linear;C1;C2;ANGLE\u0027 (semicolon-separated, degree integer). radial/path: \u0027radial:C1-C2-FOCUS\u0027 / \u0027path:C1-C2-FOCUS\u0027. When gradient is present, \u0027fill\u0027 reads back as \u0027gradient\u0027 unless a solidFill also exists.",
+      "enforcement": "report"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "pattern fill: \u0027preset\u0027 or \u0027preset:fg\u0027 or \u0027preset:fg:bg\u0027 (defaults: fg=000000, bg=FFFFFF).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop pattern=\u0022diagBrick:FF0000:FFFFFF\u0022"
+      ],
+      "readback": "preset:fg_color[:bg_color] e.g. diagBrick:#FF0000:#FFFFFF",
+      "enforcement": "report"
+    },
+    "image": {
+      "type": "string",
+      "description": "image (blip) fill: path to a local image file used as the shape fill.",
+      "aliases": [
+        "imagefill"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop image=/path/to/photo.png"
+      ],
+      "readback": "\u0022true\u0022 when shape has an image (blipFill) fill",
+      "enforcement": "report"
+    },
+    "fillRect": {
+      "type": "string",
+      "description": "image-fill stretch insets as \u0022l,t,r,b\u0022 in thousandths of a percent (perMille). Positive insets letterbox the image inside the shape; negative insets oversize it (cover-style framing). Applies to an image (blipFill) shape; consumed alongside image=.",
+      "aliases": [
+        "fillrect"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop image=/path/photo.png --prop fillRect=0,-36364,0,-85860"
+      ],
+      "readback": "\u0022l,t,r,b\u0022 perMille when the shape\u0027s blipFill stretch carries non-zero insets",
+      "enforcement": "report"
+    },
+    "srcRect": {
+      "type": "string",
+      "description": "image-fill source crop as \u0022l,t,r,b\u0022 in thousandths of a percent (perMille) \u2014 the fraction trimmed from each edge of the source image before it fills the shape. Applies to an image (blipFill) shape; consumed alongside image=.",
+      "aliases": [
+        "srcrect"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop image=/path/photo.png --prop srcRect=10000,0,10000,0"
+      ],
+      "readback": "\u0022l,t,r,b\u0022 perMille when the shape\u0027s blipFill carries a srcRect crop",
+      "enforcement": "report"
+    },
+    "lineWidth": {
+      "type": "length",
+      "description": "outline width.",
+      "aliases": [
+        "linewidth"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineWidth=1pt"
+      ],
+      "readback": "length in pt (e.g. \u00221pt\u0022)",
+      "enforcement": "report"
+    },
+    "lineDash": {
+      "type": "enum",
+      "description": "outline dash pattern (drawingML prstDash). Also reachable as the third segment of the compound line=\u0027color:width:style\u0027 form.",
+      "aliases": [
+        "linedash",
+        "line.dash"
+      ],
+      "values": [
+        "solid",
+        "dot",
+        "dash",
+        "dashDot",
+        "lgDash",
+        "lgDashDot",
+        "lgDashDotDot",
+        "sysDot",
+        "sysDash",
+        "sysDashDot",
+        "sysDashDotDot",
+        "longdash",
+        "longdashdot"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineDash=dash",
+        "--prop lineDash=dashDot",
+        "--prop lineDash=sysDash",
+        "--prop line=FF0000:1.5:dash"
+      ],
+      "readback": "canonical OOXML prstDash token (solid | dot | dash | dashDot | lgDash | lgDashDot | lgDashDotDot | sysDot | sysDash | sysDashDot | sysDashDotDot). \u0027longdash\u0027/\u0027longdashdot\u0027 are accepted on input as aliases for lgDash/lgDashDot. \u0027dashDotDot\u0027 has no native enum member; it is accepted as an alias for sysDashDotDot (Get readback returns sysDashDotDot).",
+      "enforcement": "report"
+    },
+    "lineGradient": {
+      "type": "string",
+      "description": "gradient outline (drawingML \u003Ca:ln\u003E/\u003Ca:gradFill\u003E). Accepts a stop list \u0027color@pos,color@pos,...\u0027 (pos in percent) with an optional \u0027angle=Ndeg\u0027 segment, mirroring the fill gradient form. Set/Add replace any solid outline color. Get readback is emitted under the canonical key \u0027line.gradient\u0027.",
+      "aliases": [
+        "linegradient",
+        "line.gradient"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineGradient=\u0022FF0000@0,0000FF@100\u0022",
+        "--prop lineGradient=\u0022FF0000@0,00FF00@50,0000FF@100,angle=90deg\u0022"
+      ],
+      "readback": "gradient stop string (canonical key line.gradient)",
+      "enforcement": "report"
+    },
+    "lineCap": {
+      "type": "enum",
+      "description": "line end cap style (drawingML \u003Ca:ln @cap\u003E). Affects how the stroke terminates at endpoints (and dash gaps for dashed strokes).",
+      "aliases": [
+        "linecap",
+        "line.cap"
+      ],
+      "values": [
+        "round",
+        "flat",
+        "square"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineCap=round"
+      ],
+      "readback": "round | flat | square",
+      "enforcement": "report"
+    },
+    "lineJoin": {
+      "type": "enum",
+      "description": "line join style at shape corners (drawingML \u003Ca:ln\u003E child \u003Ca:round/\u003E | \u003Ca:bevel/\u003E | \u003Ca:miter/\u003E). Accepts compound \u0027miter:\u003Clim\u003E\u0027 to also set the miter limit in one key.",
+      "aliases": [
+        "linejoin",
+        "line.join"
+      ],
+      "values": [
+        "round",
+        "bevel",
+        "miter"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineJoin=miter",
+        "--prop lineJoin=miter:800000"
+      ],
+      "readback": "round | bevel | miter",
+      "enforcement": "report"
+    },
+    "miterLimit": {
+      "type": "number",
+      "description": "miter join limit (drawingML \u003Ca:miter @lim\u003E) in 1000ths of a percent (e.g. 800000 = 800%). Implies lineJoin=miter when set without an explicit lineJoin.",
+      "aliases": [
+        "miterlimit",
+        "miter.limit",
+        "line.miterlimit"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop miterLimit=800000"
+      ],
+      "readback": "integer (1000ths of a percent)",
+      "enforcement": "report"
+    },
+    "cmpd": {
+      "type": "enum",
+      "description": "compound line style (drawingML \u003Ca:ln @cmpd\u003E) for double/triple/asymmetric strokes.",
+      "aliases": [
+        "compoundLine",
+        "compoundline",
+        "line.compound"
+      ],
+      "values": [
+        "sng",
+        "dbl",
+        "thickThin",
+        "thinThick",
+        "tri"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop cmpd=dbl",
+        "--prop cmpd=thickThin"
+      ],
+      "readback": "canonical OOXML token (sng | dbl | thickThin | thinThick | tri)",
+      "enforcement": "report"
+    },
+    "lineAlign": {
+      "type": "enum",
+      "description": "stroke alignment relative to the path (drawingML \u003Ca:ln @algn\u003E). \u0027ctr\u0027 centers the stroke on the path; \u0027in\u0027 insets it inside the shape boundary.",
+      "aliases": [
+        "linealign",
+        "line.align"
+      ],
+      "values": [
+        "ctr",
+        "in"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineAlign=ctr"
+      ],
+      "readback": "ctr | in",
+      "enforcement": "report"
+    },
+    "headEnd": {
+      "type": "enum",
+      "description": "arrowhead at the line\u0027s start (drawingML \u003Ca:headEnd type=...\u003E). Supported on any outline (shape or connector), not connector-only.",
+      "aliases": [
+        "headend",
+        "arrowStart",
+        "arrowstart"
+      ],
+      "values": [
+        "none",
+        "triangle",
+        "stealth",
+        "diamond",
+        "oval",
+        "arrow"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop headEnd=triangle"
+      ],
+      "readback": "canonical OOXML token (none | triangle | stealth | diamond | oval | arrow)",
+      "enforcement": "report"
+    },
+    "tailEnd": {
+      "type": "enum",
+      "description": "arrowhead at the line\u0027s end (drawingML \u003Ca:tailEnd type=...\u003E). Supported on any outline (shape or connector).",
+      "aliases": [
+        "tailend",
+        "arrowEnd",
+        "arrowend"
+      ],
+      "values": [
+        "none",
+        "triangle",
+        "stealth",
+        "diamond",
+        "oval",
+        "arrow"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop tailEnd=arrow"
+      ],
+      "readback": "canonical OOXML token (none | triangle | stealth | diamond | oval | arrow)",
+      "enforcement": "report"
+    },
+    "list": {
+      "type": "string",
+      "description": "list style for shape paragraphs (bullet|numbered|alpha|roman|none|\u003Cchar\u003E).",
+      "aliases": [
+        "liststyle"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop list=bullet"
+      ],
+      "readback": "list style token of the first paragraph",
+      "enforcement": "report"
+    },
+    "link": {
+      "type": "string",
+      "description": "click-action target for the shape. Accepts an absolute URI (https://, mailto:, tel:, \u2026), slide[N] for an in-deck jump (1-based; the target slide must already exist), or a named navigation action (firstslide, lastslide, nextslide, previousslide, endshow). Pass \u0027none\u0027 or empty to clear.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop link=https://example.com",
+        "--prop link=slide[3]",
+        "--prop link=nextslide"
+      ],
+      "readback": "URL / slide[N] / named action",
+      "enforcement": "report"
+    },
+    "tooltip": {
+      "type": "string",
+      "description": "tooltip / screen-tip text for hyperlink. Applied together with \u0060link\u0060 in a single set/add call; standalone tooltip without link is not supported (no hyperlink relationship to attach to). Set-side may update an existing hyperlink\u0027s tooltip in-place without re-supplying link.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop link=https://example.com --prop tooltip=\u0022click here\u0022"
+      ],
+      "readback": "hyperlink screen-tip text",
+      "enforcement": "report"
+    },
+    "animation": {
+      "type": "string",
+      "description": "animation effect spec.",
+      "aliases": [
+        "animate"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop animation=fade"
+      ],
+      "readback": "synthesized effect spec of the form \u0022effect-class-durationMs\u0022 (e.g. \u0022fade-entrance-400\u0022), resolved from the slide Timing tree; absent when the shape has no animation",
+      "enforcement": "report"
+    },
+    "effective.direction": {
+      "type": "enum",
+      "values": [
+        "rtl",
+        "ltr"
+      ],
+      "description": "resolved reading direction inherited from placeholder\u2192layout\u2192master\u2192presentation defaults. Suppressed when \u0027direction\u0027 is set directly on the shape.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "rtl | ltr",
+      "enforcement": "report"
+    },
+    "effective.size": {
+      "type": "length",
+      "description": "resolved font size inherited from placeholder\u2192layout\u2192master\u2192presentation defaults. Suppressed when \u0027size\u0027 is set directly on the shape.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "unit-qualified pt (e.g. \u002218pt\u0022)",
+      "enforcement": "report"
+    },
+    "effective.font": {
+      "type": "string",
+      "description": "resolved font name inherited from placeholder\u2192layout\u2192master\u2192presentation defaults. Suppressed when \u0027font\u0027 is set directly on the shape.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "effective.color": {
+      "type": "color",
+      "description": "resolved text color inherited from placeholder\u2192layout\u2192master\u2192presentation defaults. Suppressed when \u0027color\u0027 is set directly on the shape.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "#-prefixed uppercase hex (scheme colors pass through)",
+      "enforcement": "report"
+    },
+    "effective.bold": {
+      "type": "bool",
+      "description": "resolved bold inherited from placeholder\u2192layout\u2192master\u2192presentation defaults. Suppressed when \u0027bold\u0027 is set directly on the shape.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "effective.italic": {
+      "type": "bool",
+      "description": "resolved italic via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "effective.underline": {
+      "type": "string",
+      "description": "resolved underline via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "single/double/none",
+      "enforcement": "report"
+    },
+    "effective.strike": {
+      "type": "string",
+      "description": "resolved strike via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "single/double/none",
+      "enforcement": "report"
+    },
+    "effective.font.latin": {
+      "type": "string",
+      "description": "resolved Latin font via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "effective.font.ea": {
+      "type": "string",
+      "description": "resolved East Asian font via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "effective.font.cs": {
+      "type": "string",
+      "description": "resolved complex script font via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "effective.align": {
+      "type": "string",
+      "description": "resolved paragraph alignment via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "left/center/right/justify",
+      "enforcement": "report"
+    },
+    "effective.lineSpacing": {
+      "type": "string",
+      "description": "resolved line spacing via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "multiplier (e.g. 1.5x) or fixed pt",
+      "enforcement": "report"
+    },
+    "effective.spaceBefore": {
+      "type": "length",
+      "description": "resolved spaceBefore via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "unit-qualified pt",
+      "enforcement": "report"
+    },
+    "effective.spaceAfter": {
+      "type": "length",
+      "description": "resolved spaceAfter via cascade.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "unit-qualified pt",
+      "enforcement": "report"
+    },
+    "effective.size.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.size.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.font.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.font.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.font.latin.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.font.latin.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.font.ea.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.font.ea.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.font.cs.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.font.cs.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.color.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.color.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.bold.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.bold.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.italic.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.italic.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.underline.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.underline.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.strike.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.strike.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.align.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.align.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.lineSpacing.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.lineSpacing.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.spaceBefore.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.spaceBefore.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "effective.spaceAfter.src": {
+      "type": "string",
+      "description": "path of the cascade layer that wrote effective.spaceAfter.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path string",
+      "enforcement": "report"
+    },
+    "id": {
+      "type": "number",
+      "description": "cNvPr shape id; @id in /shape[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "readback": "integer shape id",
+      "enforcement": "report"
+    },
+    "zorder": {
+      "type": "number",
+      "description": "1-based z-order in slide shape tree. On add/set, repositions the shape within the shape tree (1 = back).",
+      "aliases": [
+        "z-order",
+        "order"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop zorder=1"
+      ],
+      "readback": "1-based integer (1 = back)",
+      "enforcement": "report"
+    },
+    "bevel": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "3-D top bevel descriptor (sp3d.bevelT). Form: \u0027preset[-width[-height]]\u0027 with width/height in points; height defaults to width. Preset values: angle, artDeco, circle, convex, coolSlant, cross, divot, hardEdge, relaxedInset, riblet, slope, softRound. Example: \u0027circle-6-6\u0027.",
+      "examples": [
+        "--prop bevel=circle",
+        "--prop bevel=circle-6",
+        "--prop bevel=angle-8-4"
+      ],
+      "readback": "\u0027preset\u0027 alone when width=height=6pt (OOXML default \u2014 \u0027circle-6\u0027 reads back as \u0027circle\u0027), \u0027preset-N\u0027 when width=height=N (symmetric, e.g. \u0027circle-4\u0027), or \u0027preset-widthPt-heightPt\u0027 when width\u2260height. Surfaces when sp3d.bevelT is present.",
+      "enforcement": "report"
+    },
+    "bevelBottom": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "3-D bottom bevel descriptor (sp3d.bevelB). Same grammar as \u0027bevel\u0027. Single-size shorthand \u0027preset-N\u0027 sets width=height=N.",
+      "examples": [
+        "--prop bevelBottom=circle-4",
+        "--prop bevelBottom=circle-4-4"
+      ],
+      "readback": "\u0027preset\u0027 alone when default size (6pt), \u0027preset-N\u0027 when width=height=N (symmetric), or \u0027preset-widthPt-heightPt\u0027 when width\u2260height.",
+      "enforcement": "report"
+    },
+    "depth": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "3-D extrusion height (sp3d @extrusionH). Accepts the canonical length input forms \u2014 bare number is points, also accepts pt/cm/in/px/emu suffix. \u0027none\u0027 or \u00270\u0027 clears.",
+      "examples": [
+        "--prop depth=10",
+        "--prop depth=10pt",
+        "--prop depth=0.5cm",
+        "--prop depth=none"
+      ],
+      "readback": "bare numeric points (e.g. \u002710\u0027, \u002714.17\u0027).",
+      "enforcement": "report"
+    },
+    "lighting": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "3-D scene lighting rig name (scene3d.lightRig @rig). OOXML preset rig values: threePt, balanced, soft, harsh, flood, contrasting, morning, sunrise, sunset, chilly, freezing, flat, twoPt, glow, brightRoom.",
+      "examples": [
+        "--prop lighting=threePt",
+        "--prop lighting=balanced"
+      ],
+      "readback": "OOXML preset light rig token.",
+      "enforcement": "report"
+    },
+    "material": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "3-D preset material (sp3d.prstMaterial). Accepted tokens (case-insensitive): clear, darkEdge (alias dkEdge), flat, matte, metal, plastic, powder, softEdge, softMetal, translucentPowder, warmMatte, wireframe (alias wire).",
+      "examples": [
+        "--prop material=metal",
+        "--prop material=plastic"
+      ],
+      "readback": "OOXML preset material token.",
+      "enforcement": "report"
+    },
+    "reflection": {
+      "type": "string",
+      "description": "reflection effect. Accepts \u0027true\u0027 / \u0027tight\u0027 / \u0027half\u0027 / \u0027full\u0027 to enable a reflection of varying length, or \u0027none\u0027 to clear.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop reflection=true",
+        "--prop reflection=half",
+        "--prop reflection=full"
+      ],
+      "readback": "tight | half | full (mapped from a:reflection @endPos: \u003C70000=tight, \u003C95000=half, else=full).",
+      "enforcement": "report"
+    },
+    "shadow": {
+      "type": "string",
+      "description": "outer shadow. Pass a color (e.g. \u0027000000\u0027) or \u0027true\u0027 (defaults to black). Routed to text-level rPr for text-only shapes.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop shadow=#808080",
+        "--prop shadow=none",
+        "--prop shadow=000000",
+        "--prop shadow=true"
+      ],
+      "readback": "compound \u0027#RRGGBB-blurPt-angleDeg-distPt-opacityPct\u0027 (e.g. \u0027#000000-4-45-3-40\u0027). Color is a \u0027#\u0027-prefixed 6-digit hex (the alpha is carried solely by the trailing opacity field, never double-encoded as an alpha byte); blur, distance in pt; angle in degrees; opacity in percent (0-100).",
+      "enforcement": "report"
+    },
+    "innerShadow": {
+      "type": "string",
+      "description": "inner shadow (a:innerShdw) as \u0060color-blur-angle-dist-opacity\u0060 (mirrors \u0060shadow\u0060). Input color is hex (with or without \u0060#\u0060, 6- or 8-digit \u0060RRGGBBAA\u0060) or a scheme name (with optional \u002BlumMod/\u002Bshade transforms); blur/dist in points; angle in degrees; opacity 0-100. Rendered as a CSS inset box-shadow in the HTML preview.",
+      "aliases": [
+        "innershadow"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop innerShadow=000000",
+        "--prop innerShadow=FF0000-4-45-3-60"
+      ],
+      "readback": "compound \u0027#RRGGBB-blurPt-angleDeg-distPt-opacityPct\u0027 (e.g. \u0027#FF0000-4-45-3-60\u0027). Color is a \u0027#\u0027-prefixed 6-digit hex (alpha carried solely by the trailing opacity field); blur, distance in pt; angle in degrees; opacity in percent (0-100).",
+      "enforcement": "report"
+    },
+    "glow": {
+      "type": "string",
+      "description": "glow effect. Pass a color (e.g. \u00274472C4\u0027) or \u0027true\u0027 (defaults to accent blue).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop glow=#4472C4",
+        "--prop glow=4472C4",
+        "--prop glow=true"
+      ],
+      "readback": "compound \u0027#RRGGBBAA-radiusPt-opacityPct\u0027 (e.g. \u0027#4472C4BF-8-75\u0027). Color is CSS-form 8-digit hex with leading # (alpha last); radius in pt; opacity in percent.",
+      "enforcement": "report"
+    },
+    "flipH": {
+      "type": "bool",
+      "aliases": [
+        "flipHorizontal"
+      ],
+      "description": "Flip horizontally (Office-API alias of flip=h).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop flipH=true"
+      ],
+      "readback": "true when the shape carries a horizontal flip",
+      "enforcement": "report"
+    },
+    "flipV": {
+      "type": "bool",
+      "aliases": [
+        "flipVertical"
+      ],
+      "description": "Flip vertically (Office-API alias of flip=v).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop flipV=true"
+      ],
+      "readback": "true when the shape carries a vertical flip",
+      "enforcement": "report"
+    },
+    "lineOpacity": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "requires": [
+        "line"
+      ],
+      "description": "shape outline alpha as fraction (0..1). Requires an outline (line/lineColor) to attach to. Surfaces when the outline carries an a:alpha child.",
+      "examples": [
+        "--prop line=FF0000:2:solid --prop lineOpacity=0.5"
+      ],
+      "readback": "fraction 0..1",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "description": "x in EMU/length form (e.g. 2cm). pptx absolute positioning.",
+      "aliases": [
+        "left"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=2",
+        "--prop x=2cm",
+        "--prop x=1in",
+        "--prop x=72pt"
+      ],
+      "readback": "length string (FormatEmu)",
+      "enforcement": "strict"
+    },
+    "y": {
+      "type": "string",
+      "description": "y in EMU/length form (e.g. 2cm). pptx absolute positioning.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=3",
+        "--prop y=3cm"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "top"
+      ],
+      "readback": "length string (FormatEmu)"
+    },
+    "width": {
+      "type": "string",
+      "description": "width in EMU/length form (e.g. 2cm). pptx absolute positioning.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "aliases": [
+        "w"
+      ],
+      "examples": [
+        "--prop width=4",
+        "--prop width=6cm",
+        "--prop width=5cm"
+      ],
+      "enforcement": "report",
+      "readback": "length string (FormatEmu)"
+    },
+    "height": {
+      "type": "string",
+      "description": "height in EMU/length form (e.g. 2cm). pptx absolute positioning.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "aliases": [
+        "h"
+      ],
+      "examples": [
+        "--prop height=3",
+        "--prop height=3cm"
+      ],
+      "enforcement": "report",
+      "readback": "length string (FormatEmu)"
+    },
+    "align": {
+      "type": "string",
+      "description": "Paragraph alignment: \u0027left\u0027 / \u0027center\u0027 (c/ctr) / \u0027right\u0027 (r) / \u0027justify\u0027.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop align=center"
+      ],
+      "enforcement": "report"
+    },
+    "bold": {
+      "type": "bool",
+      "description": "Bold runs. Bare alias of font.bold.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop bold=true"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.bold"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "color": {
+      "type": "color",
+      "description": "Text color. Bare alias of font.color.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop color=#FF0000",
+        "--prop color=0000FF"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.color"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "fill": {
+      "type": "color",
+      "description": "Solid fill color, or \u0027none\u0027 for no fill (text-only shapes route effects to text-level rPr). Accepts color-transform modifiers appended with \u0027\u002B\u0027: \u0027\u002BlumMod\u003CN\u003E\u0027 / \u0027\u002BlumOff\u003CN\u003E\u0027 (luminance, percent), \u0027\u002Btint\u003CN\u003E\u0027 / \u0027\u002Bshade\u003CN\u003E\u0027, \u0027\u002Balpha\u003CN\u003E\u0027 (e.g. \u0027accent1\u002BlumMod75\u0027, \u0027FF0000\u002BlumMod50\u0027, \u0027accent2\u002Bshade60\u002Balpha80\u0027). Modifiers apply to both scheme and srgb base colors and round-trip in Get.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop fill=#FFFF00",
+        "--prop fill=none",
+        "--prop fill=FF0000",
+        "--prop fill=#FF0000",
+        "--prop fill=red",
+        "--prop fill=accent1"
+      ],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report",
+      "aliases": [
+        "background"
+      ]
+    },
+    "font": {
+      "type": "string",
+      "description": "default font family for shape text. Bare \u0027font\u0027 targets Latin \u002B EastAsian; for per-script control (Japanese / Korean / Arabic) use font.latin, font.ea, or font.cs.",
+      "aliases": [
+        "font.name"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font=Arial"
+      ],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "italic": {
+      "type": "bool",
+      "description": "Italic runs. Bare alias of font.italic.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop italic=true"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.italic"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "line": {
+      "type": "string",
+      "description": "Outline color (or \u0027none\u0027). Form: \u0027color[:width[:style]]\u0027, e.g. \u0027FF0000:1.5:dash\u0027. width in points; style: solid|dash|dot|dashdot|longdash.",
+      "aliases": [
+        "border",
+        "linecolor",
+        "lineColor"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop line=#000000",
+        "--prop line=FF0000:1.5",
+        "--prop line=none",
+        "--prop line=000000"
+      ],
+      "readback": "color or color:width",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override the auto-generated \u0027Shape {id}\u0027 label on cNvPr @name.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop name=\u0022banner\u0022",
+        "--prop name=MyShape"
+      ],
+      "enforcement": "report",
+      "get": true,
+      "readback": "shape name string (cNvPr @name)"
+    },
+    "rotation": {
+      "type": "string",
+      "description": "Rotation in degrees (positive = clockwise). Stored OOXML-internal as 60000ths of a degree on Transform2D @rot.",
+      "aliases": [
+        "rot",
+        "rotate"
+      ],
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop rotation=45"
+      ],
+      "enforcement": "report",
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "softEdge": {
+      "type": "string",
+      "aliases": [
+        "softedge"
+      ],
+      "description": "Soft edge radius, or \u0027none\u0027 to clear.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop softEdge=5",
+        "--prop softEdge=4pt"
+      ],
+      "readback": "unit-qualified string in points, e.g. \u00225pt\u0022",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop text=\u0022Note\u0022",
+        "--prop text=\u0022Hello\u0022"
+      ],
+      "readback": "plain text content of the shape",
+      "enforcement": "strict"
+    },
+    "underline": {
+      "type": "string",
+      "description": "Underline style: \u0027true\u0027/\u0027single\u0027/\u0027sng\u0027, \u0027double\u0027/\u0027dbl\u0027, \u0027none\u0027/\u0027false\u0027. Bare alias of font.underline.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop underline=single"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.underline"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "valign": {
+      "type": "string",
+      "description": "Vertical anchor: \u0027top\u0027 (t) / \u0027center\u0027 (ctr/middle/c/m) / \u0027bottom\u0027 (b).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop valign=middle"
+      ],
+      "enforcement": "report"
+    }
+  },
+  "format": "pptx",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/slide[N]/shape[@id=ID]"
+    ],
+    "positional": [
+      "/slide[N]/shape[N]"
+    ]
+  },
+  "note": "Positional /shape[N] enumerates ALL shapes on the slide including layout-inherited placeholders \u2014 new shapes typically land at the end, not at /shape[1]. \u0060add\u0060 echoes the canonical /shape[@id=ID] path; prefer that for follow-up Set/Get. effective.* keys (direction, size, font, color, bold) are read-only inheritance-resolved values walked up the placeholder\u2192layout\u2192master\u2192defaults chain; suppressed when the corresponding direct key is set. Each pairs with effective.*.src naming the writing layer. Cross-format note: \u0060color=\u0060 on pptx shapes unambiguously sets text/run color. The same bare \u0060color=\u0060 key is rejected on xlsx cells (ambiguous with fill) \u2014 use \u0060font.color\u0060 for text or \u0060fill\u0060 for background when working with xlsx cells."
+}
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "slide",
+  "parent": "presentation",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]"
+    ]
+  },
+  "note": "Layouts are resolved by name (ResolveSlideLayout). \u0027title\u0027/\u0027text\u0027 shorthand inserts title/content text shapes at Add. Transition \u0060morph\u2026\u0060 auto-prefixes shape names. Newly added slides have no placeholders \u2014 populate via title/text shorthand, \u0060--type placeholder --prop phType=title\u0060, or \u0060--type shape|textbox\u0060.",
+  "properties": {
+    "layout": {
+      "type": "string",
+      "description": "slide layout name (e.g. \u0027Title Slide\u0027, \u0027Title and Content\u0027). Resolved against the presentation\u0027s slide masters. The \u0060layout\u0060 property is metadata only \u2014 placeholder slots defined in the layout are NOT auto-materialized on the slide. To populate slots: pass \u0060--prop title=\u2026\u0060 to auto-emit a title placeholder shape (phType=title); pass \u0060--prop text=\u2026\u0060 to auto-emit a body placeholder shape (phType=body); or add placeholders explicitly with \u0060--type placeholder --prop phType=\u003Crole\u003E\u0060.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop layout=\u0022Title Slide\u0022"
+      ],
+      "readback": "layout name string",
+      "enforcement": "report"
+    },
+    "title": {
+      "type": "string",
+      "description": "title text. Creates a Title shape at Add time, carrying \u003Cp:ph type=\u0022title\u0022/\u003E. To modify or read the title text after creation, target the title shape directly (e.g. /slide[N]/shape[@phType=title]).",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop title=\u0022Introduction\u0022"
+      ],
+      "readback": "not surfaced at slide level; descend into the title shape",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "content body text. Creates a Content text shape at Add time, carrying \u003Cp:ph type=\u0022body\u0022 idx=\u00221\u0022/\u003E so it binds to the layout\u0027s body slot.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop text=\u0022Body text\u0022"
+      ],
+      "readback": "not surfaced at slide level",
+      "enforcement": "report"
+    },
+    "background": {
+      "type": "color",
+      "description": "slide background. Accepts: hex color (\u0060#RGB\u0060, \u0060#RRGGBB\u0060, \u0060#RRGGBBAA\u0060 for solid\u002Balpha), scheme color (\u0060accent1\u0060..\u0060accent6\u0060, \u0060dark1\u0060, \u0060dark2\u0060, \u0060light1\u0060, \u0060light2\u0060, \u0060hyperlink\u0060, \u0060followedHyperlink\u0060), \u0060transparent\u0060 (or \u0060none\u0060/\u0060clear\u0060), linear gradient \u0060C1-C2[-C3][-angle]\u0060 (angle in degrees, also accepts \u0060LINEAR;C1;C2[;angle]\u0060), radial gradient \u0060radial:C1-C2[-focus]\u0060 (focus: \u0060tl\u0060/\u0060tr\u0060/\u0060bl\u0060/\u0060br\u0060/\u0060center\u0060), path gradient \u0060path:C1-C2[-focus]\u0060, and image fill \u0060image:/path/to/file\u0060 (local path; pair with \u0060background.mode\u0060/\u0060background.alpha\u0060/\u0060background.scale\u0060).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop background=#FFFFFF"
+      ],
+      "readback": "resolved background descriptor",
+      "enforcement": "report"
+    },
+    "transition": {
+      "type": "string",
+      "description": "transition name (fade, push, wipe, morph, etc.). \u0027morph...\u0027 triggers auto-prefixing of shape names.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop transition=fade"
+      ],
+      "readback": "transition name",
+      "enforcement": "report"
+    },
+    "advanceTime": {
+      "type": "number",
+      "description": "auto-advance time in milliseconds (integer). e.g. 5000 = 5 seconds.",
+      "aliases": [
+        "advancetime"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop advanceTime=5000"
+      ],
+      "readback": "milliseconds (integer)",
+      "enforcement": "report"
+    },
+    "advanceClick": {
+      "type": "bool",
+      "description": "advance on click.",
+      "aliases": [
+        "advanceclick"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop advanceClick=true"
+      ],
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "notes": {
+      "type": "string",
+      "description": "slide notes text. Set-only at creation time.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop notes=\u0022Speaker notes here\u0022"
+      ],
+      "readback": "notes text when present",
+      "enforcement": "report"
+    },
+    "hidden": {
+      "type": "bool",
+      "description": "true when the slide is hidden from slideshow (Slide/@show=false).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "readback": "true if slide is hidden in slideshow",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "slide name (cSld/@name) \u2014 shown by PowerPoint accessibility/VBA tooling and preserved on round-trip.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop name=\u0022Agenda\u0022"
+      ],
+      "readback": "slide name when present",
+      "enforcement": "report"
+    },
+    "layoutType": {
+      "type": "string",
+      "description": "slide layout type name as encoded on the underlying SlideLayout (e.g. blank, title, titleOnly, twoContent, obj, txAndObj). Distinct from \u0060layout\u0060, which is the user-facing layout display name.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "layout type token from SlideLayout/@type",
+      "enforcement": "report"
+    },
+    "background.alpha": {
+      "type": "number",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "slide background fill alpha as percent (0..100). Settable on existing solid or image backgrounds: on solid, rewrites the color with the given alpha (equivalent to \u0060background=RRGGBBAA\u0060); on image, emits \u0060\u003Ca:alphaModFix/\u003E\u0060. Surfaces on get when the resolved fill carries an alpha channel.",
+      "readback": "integer percent 0..100",
+      "enforcement": "report"
+    },
+    "background.crop": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "slide background image crop quad in \u0060l,t,r,b\u0060 percent units (CT_RelativeRect).",
+      "readback": "comma-separated \u0060l,t,r,b\u0060 quad",
+      "enforcement": "report"
+    },
+    "background.mode": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "slide background image fill mode \u2014 \u0060stretch\u0060 (default), \u0060tile\u0060, or \u0060center\u0060. Settable on an existing image background; emitted on get only when non-default.",
+      "readback": "\u0060tile\u0060 | \u0060center\u0060",
+      "enforcement": "report"
+    },
+    "background.ref": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "theme background reference index \u2014 bgRef/@idx (1001/1002/1003 etc.) when the slide inherits from the theme.",
+      "readback": "integer theme bg ref id",
+      "enforcement": "report"
+    },
+    "background.scale": {
+      "type": "number",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "tile-fill scale percent (sx, both axes), 1..500. Settable on an existing image background with background.mode=tile; surfaces on get with background.mode=tile.",
+      "readback": "integer percent",
+      "enforcement": "report"
+    },
+    "matchedShapes": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "morph transition: number of shapes from the previous slide that matched on the current slide.",
+      "readback": "integer match count",
+      "enforcement": "report"
+    },
+    "morphMode": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "morph transition mode (byObject default, or other p:morph @option token).",
+      "readback": "morph mode token",
+      "enforcement": "report"
+    },
+    "morphShapes": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "morph transition: number of candidate shapes considered for matching on this slide.",
+      "readback": "integer candidate count",
+      "enforcement": "report"
+    }
+  },
+  "children": [
+    {
+      "element": "shape",
+      "pathSegment": "shape",
+      "cardinality": "0..n"
+    },
+    {
+      "element": "table",
+      "pathSegment": "table",
+      "cardinality": "0..n"
+    },
+    {
+      "element": "chart",
+      "pathSegment": "chart",
+      "cardinality": "0..n"
+    },
+    {
+      "element": "picture",
+      "pathSegment": "picture",
+      "cardinality": "0..n"
+    },
+    {
+      "element": "placeholder",
+      "pathSegment": "placeholder",
+      "cardinality": "0..n"
+    }
+  ]
+}
+{
+  "$schema": "../_schema.json",
+  "element": "table",
+  "properties": {
+    "id": {
+      "type": "number",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "cNvPr graphic-frame id; @id in /table[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "readback": "integer (cNvPr graphic frame id)",
+      "enforcement": "report"
+    },
+    "zorder": {
+      "type": "number",
+      "description": "z-order in slide shape tree. On add, positions the table (1 = back). On set, re-stacks it: front/back/forward/backward, \u002B1/-1, or a 1-based absolute index.",
+      "aliases": [
+        "z-order",
+        "order"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop zorder=1",
+        "--prop zorder=front"
+      ],
+      "readback": "1-based integer (1 = back)",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "description": "left offset in EMU-parseable length.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=1in"
+      ],
+      "readback": "cm-formatted length",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=1in"
+      ],
+      "readback": "cm-formatted length",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop height=5cm"
+      ],
+      "readback": "cm-formatted length",
+      "enforcement": "report"
+    },
+    "rowHeight": {
+      "type": "length",
+      "description": "uniform row height (EMU). On add, if unspecified it\u0027s derived from \u0027height\u0027 / rows. On set, applies the given height to EVERY row (a convenience for \u0060tr[R] --prop height\u0060 on each); read individual heights back per-row via \u0060tr[R]\u0060.",
+      "aliases": [
+        "rowheight"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop rowHeight=1cm"
+      ],
+      "readback": "not surfaced at table level",
+      "enforcement": "strict"
+    },
+    "colWidths": {
+      "type": "string",
+      "description": "per-column widths as comma- or semicolon-separated lengths (EMU/cm/in/pt). Length must match \u0027cols\u0027; extra/missing entries fall back to the uniform default. Get readback is comma-separated FormatEmu output.",
+      "aliases": [
+        "colwidths"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop colWidths=2cm,3cm,2cm",
+        "--prop colWidths=\u00221in;2in;1in\u0022"
+      ],
+      "readback": "comma-separated length list (e.g. \u00222cm,3cm,2cm\u0022)",
+      "enforcement": "strict"
+    },
+    "headerFill": {
+      "type": "color",
+      "description": "solid fill color applied to row 0 (header).",
+      "aliases": [
+        "headerfill"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop headerFill=#4472C4"
+      ],
+      "readback": "per-cell fill, not aggregated at table level",
+      "enforcement": "strict"
+    },
+    "bodyFill": {
+      "type": "color",
+      "description": "solid fill color applied to rows 1..N (body).",
+      "aliases": [
+        "bodyfill"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop bodyFill=#EEECE1"
+      ],
+      "readback": "per-cell fill, not aggregated at table level",
+      "enforcement": "strict"
+    },
+    "firstRow": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @firstRow flag \u2014 header-row styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "lastRow": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @lastRow flag \u2014 total-row styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "firstCol": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @firstCol flag \u2014 first-column styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "lastCol": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @lastCol flag \u2014 last-column styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "bandedRows": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @bandRow flag \u2014 alternating row banding from the table style.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "bandedCols": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @bandCol flag \u2014 alternating column banding from the table style.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "border.all": {
+      "type": "string",
+      "description": "shorthand: applies the border to every edge of every cell. PPT OOXML has no table-level border element \u2014 this fans out to per-cell a:lnL/lnR/lnT/lnB. Format: \u0027WIDTH[ DASH][ COLOR]\u0027 space-separated (e.g. \u00271pt solid FF0000\u0027) or \u0027STYLE;WIDTH;COLOR[;DASH]\u0027 semicolon form (style is ignored \u2014 kept for docx parity). DASH \u2208 solid|dot|dash|lgDash|dashDot|sysDot|sysDash. Use \u0027none\u0027 to clear. Alias: border. Cross-format note: docx only accepts the semicolon form \u0027STYLE;SIZE;COLOR\u0027 \u2014 pptx is more lenient.",
+      "aliases": [
+        "border"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.all=\u00221pt solid FF0000\u0022",
+        "--prop border=\u0022single;1pt;000000\u0022",
+        "--prop border.all=none",
+        "--prop border.all=\u0022single;4;FF0000\u0022"
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.bottom": {
+      "type": "string",
+      "description": "outer bottom border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated \u0027WIDTH DASH COLOR\u0027 form; docx only accepts the semicolon form \u0027STYLE;SIZE;COLOR\u0027. Add/Set only \u2014 read per-cell.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.bottom=\u00222pt solid 000000\u0022",
+        "--prop border.bottom=\u0022double;6;0000FF\u0022"
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.horizontal": {
+      "type": "string",
+      "description": "inside-horizontal dividers (between rows). Fans out to bottom of rows 1..N-1 plus top of rows 2..N. PPT has no native inside-border element. Alias: border.insideH. Cross-format note: docx only accepts the semicolon form \u0027STYLE;SIZE;COLOR\u0027 \u2014 pptx is more lenient.",
+      "aliases": [
+        "border.insideh",
+        "border.insideH"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.horizontal=\u00221pt solid CCCCCC\u0022",
+        "--prop border.horizontal=\u0022single;4;CCCCCC\u0022"
+      ],
+      "enforcement": "report",
+      "readback": "n/a (PPT has no native inside-border emit on Get)"
+    },
+    "border.left": {
+      "type": "string",
+      "description": "outer left edge: applies to the left of column-1 cells in every row only. Format same as border.all. Cross-format note: docx only accepts the semicolon form \u0027STYLE;SIZE;COLOR\u0027 \u2014 pptx is more lenient.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.left=\u00221pt solid 808080\u0022",
+        "--prop border.left=\u0022single;4\u0022"
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.right": {
+      "type": "string",
+      "description": "outer right edge: applies to the right of last-column cells in every row only. Format same as border.all. Cross-format note: docx only accepts the semicolon form \u0027STYLE;SIZE;COLOR\u0027 \u2014 pptx is more lenient.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.right=\u00221pt solid 808080\u0022",
+        "--prop border.right=\u0022single;4\u0022"
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.top": {
+      "type": "string",
+      "description": "outer top border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated \u0027WIDTH DASH COLOR\u0027 form; docx only accepts the semicolon form \u0027STYLE;SIZE;COLOR\u0027 (SIZE is in 1/8 pt units). Add/Set only \u2014 table-level border readback is not surfaced today; inspect per-cell border.top instead.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.top=\u00222pt solid 000000\u0022",
+        "--prop border.top=\u0022single;4;000000\u0022"
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.vertical": {
+      "type": "string",
+      "description": "inside-vertical dividers (between columns). Fans out to right of cols 1..M-1 plus left of cols 2..M. Alias: border.insideV. Cross-format note: docx only accepts the semicolon form \u0027STYLE;SIZE;COLOR\u0027 \u2014 pptx is more lenient.",
+      "aliases": [
+        "border.insidev",
+        "border.insideV"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.vertical=\u00221pt solid CCCCCC\u0022",
+        "--prop border.vertical=\u0022single;4;CCCCCC\u0022"
+      ],
+      "enforcement": "report",
+      "readback": "n/a (PPT has no native inside-border emit on Get)"
+    },
+    "name": {
+      "type": "string",
+      "description": "NonVisualDrawingProperties Name (used for stable @name addressing).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop name=SalesData",
+        "--prop name=Summary"
+      ],
+      "readback": "name string",
+      "enforcement": "strict"
+    },
+    "cols": {
+      "type": "int",
+      "description": "number of columns (ignored if \u0027data\u0027 is supplied).",
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop cols=3"
+      ],
+      "readback": "integer column count from first row",
+      "enforcement": "strict"
+    },
+    "data": {
+      "type": "string",
+      "description": "inline CSV-ish data (\u0027H1,H2;R1C1,R1C2\u0027) or CSV file/URL/data-URI resolvable by FileSource. Both forms are quote-aware: wrap a cell in double quotes to keep a comma (or a row separator) inside it, and double the quote to write a literal one.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop data=\u0022A,B;1,2\u0022",
+        "--prop data=\u0027Name,Age;\u0022Doe, John\u0022,30\u0027"
+      ],
+      "readback": "n/a (seeds cells at Add time)",
+      "enforcement": "strict"
+    },
+    "rows": {
+      "type": "int",
+      "description": "number of rows (ignored if \u0027data\u0027 is supplied).",
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop rows=3"
+      ],
+      "readback": "integer row count",
+      "enforcement": "strict"
+    },
+    "width": {
+      "type": "string",
+      "description": "table width in twips (Dxa) or percent (\u002750%\u0027 \u2192 Pct).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop width=10cm",
+        "--prop width=9000"
+      ],
+      "readback": "Dxa twips or pct50ths",
+      "enforcement": "report"
+    },
+    "style": {
+      "type": "string",
+      "description": "table style name or GUID (accepted aliases: tableStyle, tableStyleId). Valid names: medium1..4, light1..3, dark1..2, none, or a direct {GUID}.",
+      "values": [
+        "medium1",
+        "medium2",
+        "medium3",
+        "medium4",
+        "light1",
+        "light2",
+        "light3",
+        "dark1",
+        "dark2",
+        "none"
+      ],
+      "aliases": [
+        "tableStyle",
+        "tableStyleId"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop style=medium2",
+        "--prop style=light1",
+        "--prop style=dark1"
+      ],
+      "readback": "style name when resolvable, else GUID",
+      "enforcement": "strict"
+    }
+  },
+  "format": "pptx",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/slide[N]/table[@id=ID]",
+      "/slide[N]/table[@name=NAME]"
+    ],
+    "positional": [
+      "/slide[N]/table[M]"
+    ]
+  },
+  "note": "GraphicFrame wrapping Drawing.Table. Seed data inline via \u0060data\u0060 (semicolons split rows, commas split cells) or per-cell via \u0060r{R}c{C}\u0060 props. \u0060get /slide[N]/table[K]\u0060 defaults to --depth=1 (table \u002B row stubs only; large tables at depth=2 dominate the response). Use --depth 2 or address cells directly via \u0060/slide[N]/table[K]/row[R]/cell[C]\u0060. A table-level \u0060fill=COLOR\u0060 fans the fill out to every cell (there is no separate table-level fill readback \u2014 read the per-cell fill).",
+  "children": [
+    {
+      "element": "row",
+      "pathSegment": "tr",
+      "cardinality": "1..n"
+    },
+    {
+      "element": "column",
+      "pathSegment": "col",
+      "cardinality": "1..n"
+    }
+  ]
+}
+{
+  "$schema": "../_schema.json",
+  "element": "chart",
+  "properties": {
+    "direction": {
+      "type": "string",
+      "aliases": [
+        "rtl"
+      ],
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl|ltr",
+      "description": "Chart-level reading direction. rtl stamps a:rtl=\u00221\u0022 on chartSpace c:txPr lvl1pPr so default text bodies (axis labels, data labels) render right-to-left for Arabic / Hebrew."
+    },
+    "id": {
+      "type": "number",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "cNvPr chart id; @id in /chart[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "readback": "integer chart shape id",
+      "enforcement": "report"
+    },
+    "zorder": {
+      "type": "number",
+      "description": "1-based z-order in slide shape tree. On add, positions the chart within the shape tree (1 = back). Post-creation reordering is not supported via Set; use Move/Swap on the chart graphic frame, or raw-set the spTree child order.",
+      "aliases": [
+        "z-order",
+        "order"
+      ],
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop zorder=1"
+      ],
+      "readback": "1-based integer (1 = back)",
+      "enforcement": "report"
+    },
+    "chartType": {
+      "type": "enum",
+      "values": [
+        "bar",
+        "column",
+        "line",
+        "pie",
+        "doughnut",
+        "area",
+        "scatter",
+        "bubble",
+        "radar",
+        "stock",
+        "combo",
+        "waterfall",
+        "funnel",
+        "treemap",
+        "sunburst",
+        "boxWhisker",
+        "histogram",
+        "pareto"
+      ],
+      "description": "pptx override: chartType is consumed by AddChart (creation only). Switching chart type post-creation is not supported \u2014 rebuild the chart with the new type. INPUT is lenient and accepts friendly aliases (stackedArea, bar3D, percentStackedColumn, stackedLine, percentStackedBar, ...) which round-trip correctly. READBACK (Get) is intentionally NOT symmetric with input: it returns the systematic \u0060base_modifier\u0060 token form \u2014 e.g. area_stacked, area_percentStacked, bar_stacked, bar_percentStacked, bar3d, column_stacked, column_percentStacked, line_stacked, line_percentStacked, pieOfPie, barOfPie. This canonical-readback form is by design (one systematic token per geometry); do not expect the readback to echo the friendly input alias.",
+      "aliases": [
+        "type"
+      ],
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop chartType=column",
+        "--prop chartType=stackedArea   # readback: area_stacked",
+        "--prop chartType=bar3D   # readback: bar3d"
+      ],
+      "readback": "systematic base_modifier token (e.g. area_stacked, bar_percentStacked, column_stacked, line_stacked, bar3d, pieOfPie, barOfPie) \u2014 NOT the friendly input alias",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "shape name (DocProperties.Name).",
+      "examples": [
+        "--prop name=\u0022Sales Chart\u0022"
+      ],
+      "readback": "shape name string",
+      "enforcement": "report"
+    },
+    "anchor": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "absolute placement on slide; cm-based \u0027x,y,w,h\u0027 or named anchor token.",
+      "examples": [
+        "--prop anchor=D2:J18",
+        "--prop anchor=2cm,3cm,18cm,10cm"
+      ]
+    },
+    "dispunits": {
+      "type": "string",
+      "aliases": [
+        "displayunits"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis display units divisor. Values: none, hundreds, thousands, tenThousands|10000, hundredThousands|100000, millions, tenMillions|10000000, hundredMillions|100000000, billions, trillions.",
+      "examples": [
+        "--prop dispunits=thousands"
+      ]
+    },
+    "x": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "absolute X position from sheet origin; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop x=2cm"
+      ]
+    },
+    "y": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "absolute Y position from sheet origin; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop y=3cm"
+      ]
+    },
+    "radarstyle": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "radar"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "radar chart subtype. Values: standard|line, marker, filled|fill.",
+      "examples": [
+        "--prop radarstyle=filled"
+      ]
+    },
+    "roundedcorners": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "round the chart-area outer corners.",
+      "examples": [
+        "--prop roundedcorners=true"
+      ]
+    },
+    "valaxisvisible": {
+      "type": "bool",
+      "aliases": [
+        "valaxis.visible"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] visible (on role=value); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop valaxisvisible=false"
+      ]
+    },
+    "areafill": {
+      "type": "string",
+      "aliases": [
+        "area.fill"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "fill applied to every series shape. Solid color or gradient \u0027c1-c2[:angle]\u0027.",
+      "examples": [
+        "--prop areafill=4472C4-A5C8FF:90"
+      ]
+    },
+    "autotitledeleted": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "suppress the auto-generated \u0027Chart Title\u0027 placeholder.",
+      "examples": [
+        "--prop autotitledeleted=true"
+      ]
+    },
+    "axisfont": {
+      "type": "string",
+      "aliases": [
+        "axis.font"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] axisFont; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisfont=10:8B949E:Helvetica"
+      ]
+    },
+    "axisline": {
+      "type": "string",
+      "aliases": [
+        "axis.line"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] lineWidth/lineDash; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisline=666666:1"
+      ]
+    },
+    "axismax": {
+      "type": "number",
+      "aliases": [
+        "max"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] max (on value/value2); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axismax=1000",
+        "--prop axismax=250"
+      ]
+    },
+    "axismin": {
+      "type": "number",
+      "aliases": [
+        "min"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] min (on value/value2); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axismin=0"
+      ]
+    },
+    "axisnumfmt": {
+      "type": "string",
+      "aliases": [
+        "axisnumberformat"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] axisNumFmt / format; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisnumfmt=\u0022#,##0\u0022"
+      ]
+    },
+    "axisorientation": {
+      "type": "string",
+      "aliases": [
+        "axisreverse"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] axisOrientation; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisorientation=true"
+      ]
+    },
+    "axisposition": {
+      "type": "string",
+      "aliases": [
+        "axispos"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] tickLabelPos / crossBetween; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisposition=top"
+      ]
+    },
+    "axistitle": {
+      "type": "string",
+      "aliases": [
+        "vtitle"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] title (value-axis); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axistitle=\u0022Revenue\u0022"
+      ]
+    },
+    "axisvisible": {
+      "type": "bool",
+      "aliases": [
+        "axis.delete",
+        "axis.visible"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] visible; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisvisible=false"
+      ]
+    },
+    "bubbleScale": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "bubble chart scale (% of default).",
+      "readback": "integer percentage",
+      "enforcement": "report",
+      "aliases": [
+        "bubblescale"
+      ],
+      "examples": [
+        "--prop bubblescale=100"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "bubble"
+        ]
+      }
+    },
+    "catAxisVisible": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] visible (on role=category); see chart-axis schema for full axis-level options",
+      "readback": "true | false",
+      "enforcement": "report",
+      "aliases": [
+        "cataxis.visible",
+        "cataxisvisible"
+      ],
+      "examples": [
+        "--prop cataxisvisible=false"
+      ]
+    },
+    "catTitle": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "category axis title text.",
+      "readback": "title string",
+      "enforcement": "report",
+      "aliases": [
+        "htitle",
+        "cattitle"
+      ],
+      "examples": [
+        "--prop cattitle=\u0022Quarter\u0022"
+      ]
+    },
+    "cataxisline": {
+      "type": "string",
+      "aliases": [
+        "cataxis.line"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] lineWidth/lineDash (on role=category); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop cataxisline=333333:1"
+      ]
+    },
+    "categories": {
+      "type": "string",
+      "description": "comma-separated category labels, OR a cell range reference (e.g. Sheet1!A2:A5)",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop categories=A,B,C",
+        "--prop categories=\u0022Q1,Q2,Q3,Q4\u0022",
+        "--prop categories=\u0022Sheet1!$A$2:$A$5\u0022"
+      ],
+      "readback": "comma-separated category labels",
+      "enforcement": "strict"
+    },
+    "chartFill": {
+      "type": "color",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "chart-level fill color (accepts #RRGGBB, named colors, or scheme names).",
+      "readback": "#RRGGBB or color descriptor",
+      "enforcement": "report"
+    },
+    "chartareafill": {
+      "type": "string",
+      "aliases": [
+        "chartfill"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "chart-area background fill. Solid color, gradient, or \u0027none\u0027.",
+      "examples": [
+        "--prop chartareafill=FFFFFF"
+      ]
+    },
+    "chartborder": {
+      "type": "string",
+      "aliases": [
+        "chartarea.border"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "chart-area outer border line. Same format as plotborder.",
+      "examples": [
+        "--prop chartborder=000000:1",
+        "--prop chartborder=none"
+      ]
+    },
+    "colorrule": {
+      "type": "string",
+      "aliases": [
+        "conditionalcolor",
+        "colorRule"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "conditional per-data-point color. Format: \u0027threshold:belowColor:aboveColor\u0027.",
+      "examples": [
+        "--prop colorrule=0:FF0000:00AA00"
+      ]
+    },
+    "colors": {
+      "type": "string",
+      "description": "comma-separated series fill colors, positional (1st color \u2192 series 1). Per-series dotted keys (series1.color=...) override positions.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop colors=\u00224472C4,ED7D31,A5A5A5\u0022"
+      ],
+      "enforcement": "strict"
+    },
+    "combosplit": {
+      "type": "number",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "combo chart split index: first N series use primary chart type, rest use secondary. Add-time only.",
+      "examples": [
+        "--prop combosplit=2"
+      ]
+    },
+    "combotypes": {
+      "type": "string",
+      "aliases": [
+        "combo.types"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "rebuild as combo chart with per-series chart types (column,line,area,...). Comma-separated, one per series.",
+      "examples": [
+        "--prop combotypes=\u0022column,column,line\u0022"
+      ]
+    },
+    "crossBetween": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "category axis cross-between behavior (between / midCat).",
+      "examples": [
+        "--prop crossBetween=between",
+        "--prop crossbetween=midcat"
+      ],
+      "readback": "crossBetween token",
+      "enforcement": "report",
+      "aliases": [
+        "crossbetween"
+      ]
+    },
+    "crosses": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "where the value axis crosses the category axis. Values: autoZero (default), max, min.",
+      "examples": [
+        "--prop crosses=max"
+      ],
+      "readback": "crosses token"
+    },
+    "crossesAt": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "value-axis crossesAt value readback.",
+      "readback": "numeric value",
+      "enforcement": "report",
+      "aliases": [
+        "crossesat"
+      ],
+      "examples": [
+        "--prop crossesat=0"
+      ]
+    },
+    "data": {
+      "type": "string",
+      "description": "inline series spec \u0027Name:1,2,3\u0027 or \u0027Name1:1,2,3;Name2:4,5,6\u0027. Add-time only; use per-series chart-series Set after creation.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop data=\u0022Sales:10,20,30\u0022",
+        "--prop data=\u0022Sales:10,20,30;Cost:5,8,12\u0022"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "dataLabels": {
+      "type": "string",
+      "aliases": [
+        "datalabels",
+        "labels"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "show/hide data labels. Use \u0027none\u0027 to hide; otherwise comma list of flags: value, percent, category, series, all (also accepts seriesName/categoryName/percentage/values aliases). Position values (outsideEnd/center/insideEnd/insideBase/top/bottom/left/right/bestFit) implicitly enable showVal and apply as dLblPos.",
+      "examples": [
+        "--prop dataLabels=value",
+        "--prop dataLabels=\u0022value,percent\u0022",
+        "--prop dataLabels=outsideEnd",
+        "--prop dataLabels=none"
+      ],
+      "readback": "comma-separated flags: value,percent,category,series"
+    },
+    "dataTable": {
+      "type": "bool",
+      "aliases": [
+        "datatable"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "show data table beneath the chart (with default borders \u002B legend keys).",
+      "examples": [
+        "--prop dataTable=true"
+      ],
+      "readback": "true | false"
+    },
+    "decreaseColor": {
+      "type": "color",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "waterfall: negative bar color. Add-time only.",
+      "examples": [
+        "--prop decreaseColor=FF0000"
+      ]
+    },
+    "dispBlanksAs": {
+      "type": "enum",
+      "values": [
+        "gap",
+        "zero",
+        "span"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "how empty cells render (gap leaves a hole, zero plots as 0, span connects across).",
+      "examples": [
+        "--prop dispBlanksAs=gap"
+      ],
+      "readback": "dispBlanksAs token",
+      "enforcement": "report"
+    },
+    "droplines": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "drop lines on line chart. true|false toggle or line spec \u0027color[:width[:dash]]\u0027; \u0027none\u0027 removes.",
+      "examples": [
+        "--prop droplines=true",
+        "--prop droplines=808080:0.5"
+      ]
+    },
+    "errbars": {
+      "type": "string",
+      "aliases": [
+        "errorbars"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "error bars on each series. Format: \u0027type:value\u0027 where type \u2208 fixed (alias: fixedValue), percent (alias: percentage, pct), stddev (alias: standardDeviation), stderr (alias: standardError). \u0027none\u0027 removes.",
+      "examples": [
+        "--prop errbars=fixed:5",
+        "--prop errbars=none",
+        "--prop errbars=percent:10"
+      ]
+    },
+    "explosion": {
+      "type": "number",
+      "aliases": [
+        "explode"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "pie/doughnut slice explosion 0..100 (percent of radius); 0 removes.",
+      "examples": [
+        "--prop explosion=10"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "firstSliceAngle": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "pie/doughnut first slice angle (degrees).",
+      "readback": "integer degrees",
+      "enforcement": "report",
+      "aliases": [
+        "sliceangle",
+        "firstsliceangle"
+      ],
+      "examples": [
+        "--prop firstsliceangle=90"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "pie"
+        ]
+      }
+    },
+    "gapdepth": {
+      "type": "number",
+      "appliesWhen": {
+        "chartType": [
+          "bar3d",
+          "line3d",
+          "area3d"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "depth gap between series in 3D bar/line/area charts (percent).",
+      "examples": [
+        "--prop gapdepth=150"
+      ]
+    },
+    "gapwidth": {
+      "type": "number",
+      "aliases": [
+        "gap"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "gap between bar/column groups, 0..500 (percent of bar width).",
+      "examples": [
+        "--prop gapwidth=150"
+      ],
+      "readback": "integer 0..500"
+    },
+    "gradient": {
+      "type": "string",
+      "aliases": [
+        "gradientfill"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "gradient fill applied to every series. Format: \u0027c1-c2[-c3][:angle]\u0027 (angle in degrees). Errors if chart has no series.",
+      "examples": [
+        "--prop gradient=FF0000-0000FF",
+        "--prop gradient=FF0000-00FF00-0000FF:90"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "gradients": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "per-series gradient fills, semicolon-separated; one entry per series.",
+      "examples": [
+        "--prop gradients=\u0022FF0000-0000FF;00FF00-FFFF00\u0022"
+      ]
+    },
+    "gridlines": {
+      "type": "bool",
+      "aliases": [
+        "majorgridlines"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "value-axis major gridlines. true|false toggle, or line spec \u0027color\u0027, \u0027color:width\u0027, \u0027color:width:dash\u0027 to style; \u0027none\u0027 removes.",
+      "examples": [
+        "--prop gridlines=true",
+        "--prop gridlines=E0E0E0:0.3",
+        "--prop gridlines=none"
+      ],
+      "readback": "true | false"
+    },
+    "height": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "chart frame height; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop height=10cm"
+      ]
+    },
+    "hilowlines": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line",
+          "stock"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "high-low lines on line/stock chart. Same format as droplines.",
+      "examples": [
+        "--prop hilowlines=true"
+      ]
+    },
+    "holeSize": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "doughnut hole size readback.",
+      "readback": "integer 10..90 percent",
+      "enforcement": "report",
+      "aliases": [
+        "holesize"
+      ],
+      "examples": [
+        "--prop holesize=50",
+        "--prop holeSize=50"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "doughnut"
+        ]
+      }
+    },
+    "increaseColor": {
+      "type": "color",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "waterfall: positive bar color. Add-time only.",
+      "examples": [
+        "--prop increaseColor=00AA00"
+      ]
+    },
+    "invertifneg": {
+      "type": "bool",
+      "aliases": [
+        "invertifnegative"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "if true, draw negative bars in an inverted (lighter) color.",
+      "examples": [
+        "--prop invertifneg=true"
+      ]
+    },
+    "labelPos": {
+      "type": "string",
+      "aliases": [
+        "labelpos",
+        "labelposition"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "data label position. Values: center|ctr, insideEnd|inEnd|inside, insideBase|inBase|base, outsideEnd|outEnd|outside, bestFit|best|auto, top|t, bottom|b, left|l, right|r. Restrictions: not supported on doughnut/area/radar/stock; pie/pie3D restricted to ctr/inEnd/inBase/bestFit (other tokens rejected, per OOXML ST_DLblPosPie); stacked series clamp to ctr/inBase/inEnd; combo charts skip entirely.",
+      "examples": [
+        "--prop labelPos=outsideEnd"
+      ],
+      "readback": "OOXML position token: ctr/inEnd/inBase/outEnd/bestFit/t/b/l/r"
+    },
+    "labelfont": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "data label text font. Format: \u0027size:color:fontname\u0027 (any segment optional). Readback is split into labelFont.size / labelFont.color / labelFont.bold / labelFont.name (one key per slot) so dump\u2192replay can rebuild the compound spec without parsing.",
+      "examples": [
+        "--prop labelfont=9:333333:Calibri"
+      ]
+    },
+    "labelFont.size": {
+      "type": "number",
+      "get": true,
+      "description": "data label font size in points. Readback of the size slot inside labelfont= (BuildLabelTextProperties\u0027 DefaultRunProperties.FontSize).",
+      "examples": []
+    },
+    "labelFont.color": {
+      "type": "string",
+      "get": true,
+      "description": "data label font color (hex, e.g. #FF0000). Readback of the color slot inside labelfont=.",
+      "examples": []
+    },
+    "labelFont.bold": {
+      "type": "bool",
+      "get": true,
+      "description": "data label font bold flag. Emitted only when true.",
+      "examples": []
+    },
+    "labelFont.name": {
+      "type": "string",
+      "get": true,
+      "description": "data label font typeface (latin). Readback of the fontname slot inside labelfont=.",
+      "examples": []
+    },
+    "labeloffset": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "category-axis label offset 0..1000 (percent of font height); category axis only.",
+      "examples": [
+        "--prop labeloffset=100"
+      ]
+    },
+    "labelrotation": {
+      "type": "number",
+      "aliases": [
+        "xaxis.labelrotation",
+        "valaxis.labelrotation",
+        "yaxis.labelrotation",
+        "xaxis.labelRotation",
+        "valaxis.labelRotation",
+        "yaxis.labelRotation",
+        "xaxislabelrotation",
+        "valaxislabelrotation",
+        "yaxislabelrotation"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "tick-label rotation in degrees (-90..90). Bare \u0027labelrotation\u0027 targets both axes; xaxis.* targets category, yaxis./valaxis.* targets value.",
+      "examples": [
+        "--prop labelrotation=-45",
+        "--prop xaxis.labelrotation=30"
+      ]
+    },
+    "leaderlines": {
+      "type": "bool",
+      "aliases": [
+        "showleaderlines"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "show/hide leader lines connecting data labels to slices (pie/doughnut).",
+      "examples": [
+        "--prop leaderlines=true"
+      ]
+    },
+    "legend": {
+      "type": "enum",
+      "values": [
+        "true",
+        "false",
+        "none",
+        "top",
+        "bottom",
+        "left",
+        "right",
+        "topRight",
+        "tr"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "legend position. \u0027none\u0027/\u0027false\u0027 hides; otherwise place at top|t, bottom|b, left|l, right|r, topRight|tr. Hyphen and underscore variants accepted.",
+      "examples": [
+        "--prop legend=bottom",
+        "--prop legend=none"
+      ]
+    },
+    "legend.overlay": {
+      "type": "bool",
+      "aliases": [
+        "legendoverlay"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "if true, legend overlays the plot area instead of reserving space.",
+      "examples": [
+        "--prop legend.overlay=true"
+      ],
+      "readback": "true | false"
+    },
+    "legendFont": {
+      "type": "string",
+      "aliases": [
+        "legendfont",
+        "legend.font"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "legend text font. Format: \u0027size:color:fontname\u0027 (any segment optional).",
+      "examples": [
+        "--prop legendFont=10:CCCCCC:Arial",
+        "--prop legendFont=9:808080"
+      ],
+      "readback": "size:color:fontname"
+    },
+    "linedash": {
+      "type": "string",
+      "aliases": [
+        "dash"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "line dash style for every series. Values: solid, dash, dashDot, dot, lgDash, lgDashDot, sysDash, sysDot, sysDashDot.",
+      "examples": [
+        "--prop linedash=dash"
+      ]
+    },
+    "linewidth": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "line width in points (applies to every series line).",
+      "examples": [
+        "--prop linewidth=2"
+      ]
+    },
+    "logbase": {
+      "type": "number",
+      "aliases": [
+        "logscale",
+        "yaxisscale"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis logarithmic base (2..1000 typically). Shorthand: true|yes|log|1 \u2192 base 10; false|none|linear|0 removes log scale.",
+      "examples": [
+        "--prop logbase=10",
+        "--prop logscale=true",
+        "--prop yaxisscale=linear"
+      ]
+    },
+    "majorTickMark": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "major tick mark style (out / in / cross / none).",
+      "examples": [
+        "--prop majorTickMark=out",
+        "--prop majortickmark=out"
+      ],
+      "readback": "tick mark token",
+      "enforcement": "report",
+      "aliases": [
+        "majortick",
+        "majortickmark"
+      ]
+    },
+    "majorunit": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis major gridline / tick spacing.",
+      "examples": [
+        "--prop majorunit=200",
+        "--prop majorunit=50"
+      ]
+    },
+    "marker": {
+      "type": "string",
+      "aliases": [
+        "markers"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "marker symbol for line/scatter/radar series only (other types silently skipped). Format: \u0027symbol\u0027 or \u0027symbol:size\u0027 or \u0027symbol:size:color\u0027. Symbols: none, auto, circle, square, diamond, triangle, x, plus, star, dash, dot. (picture markers are not implemented.) Chart-level Get surfaces a first-series representative value once any series carries a marker (the dump emitter relies on it for uniform-marker charts); the authoritative per-series read is /chart[N]/series[K] (chart-series schema declares marker get:true).",
+      "examples": [
+        "--prop marker=circle",
+        "--prop marker=square:8:FF0000"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "markersize": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "marker size 2..72 (line/scatter/radar series only).",
+      "examples": [
+        "--prop markersize=8"
+      ]
+    },
+    "markercolor": {
+      "type": "string",
+      "aliases": [
+        "marker.color"
+      ],
+      "set": true,
+      "get": true,
+      "description": "marker fill color (line/scatter/radar series only). Fans out to every applicable series; preserves existing marker symbol/size. Read back from the first series\u0027 marker spPr/solidFill.",
+      "examples": [
+        "--prop markerColor=FF0000"
+      ],
+      "readback": "as emitted by handler (hex color, e.g. #FF0000)"
+    },
+    "minorGridlines": {
+      "type": "bool",
+      "aliases": [
+        "minorgridlines"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "value-axis minor gridlines; same format as gridlines.",
+      "examples": [
+        "--prop minorGridlines=true",
+        "--prop minorGridlines=F0F0F0:0.25"
+      ],
+      "readback": "true | false"
+    },
+    "minorTickMark": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "minor tick mark style (out / in / cross / none).",
+      "examples": [
+        "--prop minorTickMark=none",
+        "--prop minortickmark=in"
+      ],
+      "readback": "tick mark token",
+      "enforcement": "report",
+      "aliases": [
+        "minortick",
+        "minortickmark"
+      ]
+    },
+    "minorunit": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis minor gridline / tick spacing.",
+      "examples": [
+        "--prop minorunit=50",
+        "--prop minorunit=10"
+      ]
+    },
+    "overlap": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "bar/column overlap within a group, -100..100 (negative = gap, positive = overlap).",
+      "examples": [
+        "--prop overlap=0",
+        "--prop overlap=100"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "plotFill": {
+      "type": "color",
+      "aliases": [
+        "plotareafill",
+        "plotfill"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "plot-area background fill. Solid color, gradient \u0027c1-c2[:angle]\u0027, or \u0027none\u0027.",
+      "examples": [
+        "--prop plotFill=FAFAFA",
+        "--prop plotareafill=FAFAFA",
+        "--prop plotFill=none"
+      ],
+      "readback": "#RRGGBB or color descriptor"
+    },
+    "plotborder": {
+      "type": "string",
+      "aliases": [
+        "plotarea.border"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "plot-area border line. Format: \u0027color\u0027, \u0027color:width\u0027, \u0027color:width:dash\u0027; or \u0027none\u0027.",
+      "examples": [
+        "--prop plotborder=CCCCCC:0.5",
+        "--prop plotborder=none"
+      ]
+    },
+    "plotvisonly": {
+      "type": "bool",
+      "aliases": [
+        "plotvisibleonly"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "if true, skip plotting hidden worksheet rows/columns.",
+      "examples": [
+        "--prop plotvisonly=true"
+      ]
+    },
+    "preset": {
+      "type": "string",
+      "aliases": [
+        "theme",
+        "style.preset"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "named style bundle. Values: minimal, dark, corporate, magazine, dashboard, colorful, monochrome (alias mono).",
+      "examples": [
+        "--prop preset=minimal",
+        "--prop preset=corporate",
+        "--prop preset=dark"
+      ]
+    },
+    "referenceline": {
+      "type": "string",
+      "aliases": [
+        "refline",
+        "targetline"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "horizontal reference / target line. Format: \u0027value\u0027 or \u0027value:color\u0027 or \u0027value:color:label\u0027 or \u0027value:color:label:dash\u0027. Pass \u0027none\u0027 to remove.",
+      "examples": [
+        "--prop referenceline=100:FF0000:Target",
+        "--prop referenceline=none",
+        "--prop refline=80:00AA00"
+      ]
+    },
+    "scatterstyle": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "scatter"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "scatter chart subtype. Values: line|lineOnly, lineMarker, marker|markerOnly, smooth|smoothLine, smoothMarker.",
+      "examples": [
+        "--prop scatterstyle=smoothMarker"
+      ]
+    },
+    "secondaryaxis": {
+      "type": "string",
+      "aliases": [
+        "secondary"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "comma-separated 1-based series indices to plot on a secondary value axis.",
+      "examples": [
+        "--prop secondaryaxis=2",
+        "--prop secondary=\u00222,3\u0022"
+      ]
+    },
+    "series{N}": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": false,
+      "description": "legacy bare per-series data update (N is the 1-based series index). \u0027series{N}=\u00221,2,3\u0022\u0027 replaces the numeric values for series N; \u0027series{N}=\u0022Name:1,2,3\u0022\u0027 also updates the series label. Prefer the dotted form (series{N}.name=, series{N}.values=) for clarity \u2014 see chart-series schema.",
+      "examples": [
+        "--prop series1=\u002210,20,30\u0022",
+        "--prop series2=\u0022Revenue:5,8,12\u0022"
+      ]
+    },
+    "seriesoutline": {
+      "type": "string",
+      "aliases": [
+        "series.outline"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "series outline. Format: \u0027color\u0027, \u0027color:width\u0027, or \u0027color:width:dash\u0027 (also accepts \u0027-\u0027 separator); \u0027none\u0027 removes.",
+      "examples": [
+        "--prop seriesoutline=000000:0.5",
+        "--prop seriesoutline=none"
+      ]
+    },
+    "seriesshadow": {
+      "type": "string",
+      "aliases": [
+        "series.shadow"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "outer shadow on every series shape. Format: \u0027COLOR-BLUR-ANGLE-DIST-OPACITY\u0027; \u0027none\u0027 removes.",
+      "examples": [
+        "--prop seriesshadow=000000-5-45-3-50",
+        "--prop seriesshadow=none"
+      ]
+    },
+    "serlines": {
+      "type": "string",
+      "aliases": [
+        "serieslines"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "series lines on stacked bar charts (true/false).",
+      "examples": [
+        "--prop serlines=true"
+      ]
+    },
+    "shape": {
+      "type": "string",
+      "aliases": [
+        "barshape"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "bar3d"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "3D bar shape. Values: box|cuboid, cone, coneToMax, cylinder, pyramid, pyramidToMax. Bar3D charts only.",
+      "examples": [
+        "--prop shape=cylinder"
+      ]
+    },
+    "showMarker": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "show markers on line/scatter series at chart level (true|false).",
+      "examples": [
+        "--prop showMarker=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "shownegbubbles": {
+      "type": "bool",
+      "appliesWhen": {
+        "chartType": [
+          "bubble"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "render negative-valued bubbles. Bubble charts only.",
+      "examples": [
+        "--prop shownegbubbles=true"
+      ]
+    },
+    "sizerepresents": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "bubble"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "how bubble size value is mapped. Values: area (default), width|w. Bubble charts only.",
+      "examples": [
+        "--prop sizerepresents=area"
+      ]
+    },
+    "smooth": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line",
+          "scatter"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "smooth lines on line/scatter charts (true|false). Reported unsupported for other chart types.",
+      "examples": [
+        "--prop smooth=true"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "style": {
+      "type": "number",
+      "aliases": [
+        "styleid"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "built-in chart style id 1..48; pass \u0027none\u0027 to clear.",
+      "examples": [
+        "--prop style=2"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "tickLabelPos": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tick label position (high / low / nextTo / none).",
+      "examples": [
+        "--prop tickLabelPos=nextTo",
+        "--prop ticklabelpos=low"
+      ],
+      "readback": "tick label position token",
+      "enforcement": "report",
+      "aliases": [
+        "ticklabelposition",
+        "ticklabelpos"
+      ]
+    },
+    "ticklabelskip": {
+      "type": "number",
+      "aliases": [
+        "tickskip"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "draw tick labels every Nth category (category axis).",
+      "examples": [
+        "--prop ticklabelskip=2"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "chart title text; pass \u0027none\u0027 (case-insensitive) or an empty string to omit/remove the title \u2014 on add this skips creating the title element, on set it removes an existing title. Get also returns sub-keys title.font, title.size, title.color, title.bold when set; these are get-only readback fields surfaced from chart title runs.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop title=\u0022Q1\u0022",
+        "--prop title=\u00222024 Sales\u0022",
+        "--prop title=none"
+      ],
+      "readback": "chart title",
+      "enforcement": "report"
+    },
+    "title.bold": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title bold flag (true|false).",
+      "readback": "true | false"
+    },
+    "title.color": {
+      "type": "color",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title font color (#RRGGBB, named, or scheme color).",
+      "readback": "#RRGGBB"
+    },
+    "title.font": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title font name.",
+      "readback": "font name"
+    },
+    "title.overlay": {
+      "type": "bool",
+      "aliases": [
+        "titleoverlay"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "if true, title overlays the plot area instead of reserving space above it.",
+      "examples": [
+        "--prop title.overlay=true"
+      ],
+      "readback": "true"
+    },
+    "title.size": {
+      "type": "font-size",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title font size (e.g. 14 or 14pt).",
+      "readback": "Npt"
+    },
+    "totalColor": {
+      "type": "color",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "waterfall: subtotal/total bar color. Add-time only.",
+      "examples": [
+        "--prop totalColor=4472C4"
+      ]
+    },
+    "transparency": {
+      "type": "number",
+      "aliases": [
+        "opacity",
+        "alpha"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "series fill transparency (0..100, percent). \u0027transparency\u0027 is inverse of \u0027opacity\u0027/\u0027alpha\u0027 (transparency=30 \u2261 opacity=70).",
+      "examples": [
+        "--prop transparency=30",
+        "--prop opacity=70"
+      ]
+    },
+    "trendline": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "add trendline to every series. Format: \u0027type[:order]\u0027 or \u0027type:forward:backward\u0027. Types: linear (default), exp|exponential, log|logarithmic, poly|polynomial, power, movingAvg|moving|movingAverage. Order applies to poly/movingAvg. Pass \u0027none\u0027 to clear.",
+      "examples": [
+        "--prop trendline=linear",
+        "--prop trendline=poly:3",
+        "--prop trendline=none",
+        "--prop trendline=movingAvg:3"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "updownbars": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line",
+          "stock"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "up/down bars on line chart. true | \u0027gapWidth:upColor:downColor\u0027 | \u0027none\u0027/\u0027false\u0027.",
+      "examples": [
+        "--prop updownbars=true",
+        "--prop updownbars=150:00AA00:FF0000"
+      ]
+    },
+    "valaxisline": {
+      "type": "string",
+      "aliases": [
+        "valaxis.line"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] lineWidth/lineDash (on role=value); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop valaxisline=333333:1"
+      ]
+    },
+    "varyColors": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "vary colors by data point (true|false; single-series charts).",
+      "examples": [
+        "--prop varyColors=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "view3d": {
+      "type": "string",
+      "aliases": [
+        "camera",
+        "perspective"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "3D view angles. Format: \u0027rotX,rotY,perspective\u0027 (any tail optional) or single integer for perspective only. Named-key form (rotX=...) is rejected.",
+      "examples": [
+        "--prop view3d=15,20,30",
+        "--prop view3d=20",
+        "--prop perspective=30"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "width": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "chart frame width; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop width=18cm",
+        "--prop width=15cm"
+      ]
+    }
+  },
+  "format": "pptx",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/slide[N]/chart[@id=ID]"
+    ],
+    "positional": [
+      "/slide[N]/chart[N]"
+    ]
+  },
+  "note": "source of truth: Core/Chart/ChartHelper.cs ParseChartType() for the classic (c:chart) family, Core/Chart/ChartExBuilder.cs IsExtendedChartType() for the extended (cx:chart) family. Adding a new chartType value MUST update both the handler and this file in the same PR \u2014 contract tests enforce equivalence. Axis configuration: chart-level axis* props (axismin, axismax, axistitle, axisfont, ...) are Add-time only; for post-creation axis Set/Get use the chart-axis element.",
+  "children": [
+    {
+      "element": "chart-title",
+      "pathSegment": "title",
+      "cardinality": "0..1"
+    },
+    {
+      "element": "chart-legend",
+      "pathSegment": "legend",
+      "cardinality": "0..1"
+    },
+    {
+      "element": "chart-plotArea",
+      "pathSegment": "plotArea",
+      "cardinality": "0..1"
+    },
+    {
+      "element": "chart-axis",
+      "pathSegment": "axis",
+      "cardinality": "0..n",
+      "key": "role",
+      "keyValues": [
+        "category",
+        "value",
+        "value2",
+        "series"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "bar",
+          "column",
+          "line",
+          "area",
+          "scatter",
+          "bubble",
+          "radar",
+          "stock",
+          "combo"
+        ]
+      }
+    },
+    {
+      "element": "chart-series",
+      "pathSegment": "series",
+      "cardinality": "1..n"
+    }
+  ]
+}
+{
+  "$schema": "../_schema.json",
+  "properties": {
+    "title": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop title=\u0022Q4 Review\u0022"
+      ],
+      "readback": "title string",
+      "enforcement": "report"
+    },
+    "author": {
+      "type": "string",
+      "aliases": [
+        "creator"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop author=\u0022Alice\u0022"
+      ],
+      "readback": "author string",
+      "enforcement": "report"
+    },
+    "keywords": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop keywords=\u0022tag1,tag2\u0022"
+      ],
+      "readback": "keywords string",
+      "enforcement": "report"
+    },
+    "description": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop description=\u0022Abstract\u0022"
+      ],
+      "readback": "description string",
+      "enforcement": "report"
+    },
+    "category": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop category=Marketing"
+      ],
+      "readback": "category string",
+      "enforcement": "report"
+    },
+    "lastModifiedBy": {
+      "type": "string",
+      "aliases": [
+        "lastmodifiedby"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lastModifiedBy=\u0022Bob\u0022"
+      ],
+      "readback": "last-modified author",
+      "enforcement": "report"
+    },
+    "revisionNumber": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/core.xml Revision field \u2014 presentation save counter.",
+      "examples": [
+        "--prop revisionNumber=3"
+      ],
+      "readback": "revision number string",
+      "enforcement": "report"
+    },
+    "created": {
+      "type": "string",
+      "description": "creation timestamp from docProps/core.xml.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "ISO 8601 timestamp",
+      "enforcement": "report"
+    },
+    "modified": {
+      "type": "string",
+      "description": "last-modified timestamp from docProps/core.xml.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "ISO 8601 timestamp",
+      "enforcement": "report"
+    },
+    "slideWidth": {
+      "type": "string",
+      "aliases": [
+        "width"
+      ],
+      "description": "slide width from \u003Cp:sldSz/@cx\u003E, formatted via FormatEmu. Set accepts unit-qualified or raw EMU; setting width or height alone switches @type to \u0027custom\u0027.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop slideWidth=30cm",
+        "--prop slideWidth=720pt"
+      ],
+      "readback": "unit-qualified length string (e.g. \u002725.4cm\u0027, \u0027720pt\u0027)",
+      "enforcement": "report"
+    },
+    "slideHeight": {
+      "type": "string",
+      "aliases": [
+        "height"
+      ],
+      "description": "slide height from \u003Cp:sldSz/@cy\u003E, formatted via FormatEmu. Set accepts unit-qualified or raw EMU; setting width or height alone switches @type to \u0027custom\u0027.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop slideHeight=20cm",
+        "--prop slideHeight=540pt"
+      ],
+      "readback": "unit-qualified length string (e.g. \u002719.05cm\u0027, \u0027540pt\u0027)",
+      "enforcement": "report"
+    },
+    "slideSize": {
+      "type": "string",
+      "description": "slide size preset name derived from \u003Cp:sldSz/@type\u003E. Set accepts one of the listed preset names (widescreen | standard | 16:10 | a4 | a3 | letter | b4 | b5 | 35mm | overhead | banner | ledger | custom) and rewrites @cx/@cy \u002B @type accordingly; unlisted names are rejected (use slideWidth/slideHeight for an arbitrary custom size).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop slideSize=widescreen",
+        "--prop slideSize=a4"
+      ],
+      "readback": "preset name: widescreen | standard | 16:10 | a4 | a3 | letter | b4 | b5 | 35mm | overhead | banner | ledger | custom",
+      "enforcement": "report"
+    },
+    "defaultFont": {
+      "type": "string",
+      "description": "default minor (body) font from the first slide master\u0027s theme FontScheme.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "default text font family name",
+      "enforcement": "report"
+    },
+    "extended.application": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "from docProps/app.xml application identifier (e.g. \u0022Microsoft PowerPoint\u0022).",
+      "readback": "application string",
+      "enforcement": "report"
+    },
+    "compatMode": {
+      "type": "bool",
+      "aliases": [
+        "compatibilitymode"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "presentation @compatMode flag \u2014 true when the file is in legacy-compatibility mode.",
+      "examples": [
+        "--prop compatMode=true"
+      ],
+      "readback": "true when compat mode is on",
+      "enforcement": "report"
+    },
+    "firstSlideNum": {
+      "type": "number",
+      "aliases": [
+        "firstslidenumber"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "presentation @firstSlideNum \u2014 slide number of the first slide (default 1).",
+      "examples": [
+        "--prop firstSlideNum=10"
+      ],
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "rtl": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": false,
+      "description": "Set-only input alias for presentation @rtl (right-to-left reading order). Get exposes the same OOXML attribute under the canonical key \u0060direction\u0060 (\u0027rtl\u0027 when true), matching docx convention. Asymmetric by design \u2014 set with \u0060rtl=true|false\u0060, read via \u0060direction\u0060.",
+      "examples": [
+        "--prop rtl=true"
+      ],
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "Get-only canonical key for presentation reading direction. Emits \u0027rtl\u0027 when @rtl=true is set; absent otherwise. To set, use the input-only \u0060rtl=true|false\u0060 key.",
+      "readback": "\u0027rtl\u0027 when right-to-left; key absent for default left-to-right",
+      "enforcement": "report"
+    },
+    "print.colorMode": {
+      "type": "string",
+      "aliases": [
+        "printcolormode"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties color mode. Set accepts: color|clr, grayscale|gray, blackAndWhite|bw.",
+      "examples": [
+        "--prop print.colorMode=gray",
+        "--prop print.colorMode=color"
+      ],
+      "readback": "color mode token (clr | gray | bw)",
+      "enforcement": "report"
+    },
+    "print.frameSlides": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties FrameSlides flag \u2014 print a thin border around each slide.",
+      "examples": [
+        "--prop print.frameSlides=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "print.hiddenSlides": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties HiddenSlides flag \u2014 include hidden slides in printed output.",
+      "examples": [
+        "--prop print.hiddenSlides=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "print.what": {
+      "type": "string",
+      "aliases": [
+        "printwhat"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties PrintWhat \u2014 what gets printed. Set accepts shorthand (slides, handouts, notes, outline) and explicit OOXML tokens (handouts1, handouts2, handouts3, handouts4, handouts6, handouts9). Bare \u0060handouts\u0060 is an alias for handouts1. Get returns the OOXML token (e.g. handouts1).",
+      "examples": [
+        "--prop print.what=handouts",
+        "--prop print.what=handouts4",
+        "--prop print.what=notes"
+      ],
+      "readback": "print-what enum inner text (slides | handouts1..9 | notes | outline)",
+      "enforcement": "report"
+    },
+    "print.scaleToFitPaper": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties ScaleToFitPaper flag \u2014 scale slides to fill the paper page.",
+      "examples": [
+        "--prop print.scaleToFitPaper=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "show.loop": {
+      "type": "bool",
+      "aliases": [
+        "showloop"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties Loop flag \u2014 auto-restart slideshow when reaching the end.",
+      "examples": [
+        "--prop show.loop=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "show.narration": {
+      "type": "bool",
+      "aliases": [
+        "shownarration"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties ShowNarration flag \u2014 play recorded narration during slideshow.",
+      "examples": [
+        "--prop show.narration=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "show.animation": {
+      "type": "bool",
+      "aliases": [
+        "showanimation"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties ShowAnimation flag \u2014 play animations during slideshow.",
+      "examples": [
+        "--prop show.animation=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "show.useTimings": {
+      "type": "bool",
+      "aliases": [
+        "usetimings",
+        "show.usetimings"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties UseTimings flag \u2014 use stored slide timings during slideshow.",
+      "examples": [
+        "--prop show.useTimings=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "removePersonalInfo": {
+      "type": "bool",
+      "aliases": [
+        "removepersonalinfoonsave"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ExtendedProperties RemovePersonalInfoOnSave \u2014 strip author/last-saved-by metadata on save.",
+      "examples": [
+        "--prop removePersonalInfo=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "extended.applicationVersion": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml AppVersion field.",
+      "readback": "version string",
+      "enforcement": "report"
+    },
+    "extended.characters": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Characters count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.company": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/app.xml Company field.",
+      "readback": "company name",
+      "enforcement": "report"
+    },
+    "extended.lines": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Lines count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.manager": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/app.xml Manager field.",
+      "readback": "manager name",
+      "enforcement": "report"
+    },
+    "extended.pages": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Pages count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.paragraphs": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Paragraphs count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.template": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/app.xml Template field.",
+      "readback": "template name",
+      "enforcement": "report"
+    },
+    "extended.totalTime": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml TotalTime field (minutes).",
+      "readback": "integer minutes",
+      "enforcement": "report"
+    },
+    "extended.words": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Words count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "subject": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop subject=Finance"
+      ],
+      "readback": "subject string",
+      "enforcement": "report"
+    },
+    "theme.color.accent1": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 1.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent2": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 2.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent3": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 3.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent4": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 4.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent5": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 5.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent6": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 6.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.dk1": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot dk1 (dark 1 / default text).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.dk2": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot dk2 (dark 2).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.folHlink": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme followed-hyperlink color.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.hlink": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme hyperlink color.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.lt1": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot lt1 (light 1 / default background).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.lt2": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot lt2 (light 2).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.colorScheme": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "color scheme name (a:clrScheme/@name).",
+      "readback": "color scheme name",
+      "enforcement": "report"
+    },
+    "theme.font.major.eastAsia": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "major (heading) East Asian typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.font.major.latin": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "major (heading) Latin typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.font.minor.eastAsia": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "minor (body) East Asian typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.font.minor.latin": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "minor (body) Latin typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.fontScheme": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "font scheme name (a:fontScheme/@name).",
+      "readback": "font scheme name",
+      "enforcement": "report"
+    },
+    "theme.formatScheme": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "format scheme name (a:fmtScheme/@name).",
+      "readback": "format scheme name",
+      "enforcement": "report"
+    },
+    "theme.name": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "theme display name (a:theme/@name).",
+      "readback": "theme name string",
+      "enforcement": "report"
+    }
+  },
+  "format": "pptx",
+  "element": "presentation",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": false
+  },
+  "paths": {
+    "positional": [
+      "/"
+    ]
+  },
+  "note": "Root container. Get returns the presentation node with slide count \u002B theme/master/layout references as children. Not addressable via Add. Set on \u0027/\u0027 exposes core document metadata (title/author/subject/keywords/description/category) \u2014 written to docProps/core.xml, same source as docx/xlsx. Element-level mutations go through /slide[N], /theme, etc.",
+  "children": [
+    {
+      "element": "slide",
+      "pathSegment": "slide",
+      "cardinality": "0..n"
+    },
+    {
+      "element": "slidemaster",
+      "pathSegment": "slidemaster",
+      "cardinality": "1..n"
+    },
+    {
+      "element": "theme",
+      "pathSegment": "theme",
+      "cardinality": "1"
+    }
+  ]
+}

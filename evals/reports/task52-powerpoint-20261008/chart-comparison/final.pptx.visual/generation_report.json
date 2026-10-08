@@ -1,0 +1,19 @@
+{
+  "schema_version": "generation-report-1",
+  "kind": "pptx",
+  "profile_name": "chart",
+  "document": "final.pptx",
+  "verdict": "passed_with_warnings",
+  "shell_sha256": "67fe2d81e9145f8ffb466adf0e1cd6d6b6b339cd5553140886aa4dde4232f097",
+  "content_sha256": "be66e7c6cc1c3c6f9292bd0fd5c81df519e50c38816af99920f12be545cb8638",
+  "output_sha256": "47a0b6974ebdfa2f36b9d9e2d3f6bc922e48b9dd9fc57d5e77fc2103fdf23d40",
+  "findings": [
+    {
+      "check": "visual.manifest",
+      "severity": "INFO",
+      "message": "visual audit manifest written: /evidence/chart-comparison/final.pptx.visual/visual_manifest.json",
+      "location": "/evidence/chart-comparison/final.pptx.visual/visual_manifest.json"
+    }
+  ],
+  "generated_at": "2026-10-08T17:03:58Z"
+}

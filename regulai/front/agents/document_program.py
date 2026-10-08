@@ -38,6 +38,16 @@ def build(template, rows, fields, output):
         for cell, value in zip(row.cells, (item, format(Decimal(cents) / 100, '.2f').replace('.', ',') + ' €')):
             cell.paragraphs[0].runs[0].text = value
         row._tr.get_or_add_trPr().append(OxmlElement('w:cantSplit'))
+        if doc.core_properties.version == '2':
+            from docx.shared import RGBColor
+            for cell in row.cells:
+                shade = OxmlElement('w:shd')
+                shade.set(W + 'fill', 'DDEBE9' if len(table.rows) == len(amounts) + 1 else
+                          'F1F5F4' if len(table.rows) % 2 == 0 else 'FFFFFF')
+                cell._tc.get_or_add_tcPr().append(shade)
+                if len(table.rows) == len(amounts) + 1:
+                    cell.paragraphs[0].runs[0].bold = True
+                    cell.paragraphs[0].runs[0].font.color.rgb = RGBColor.from_string('193B45')
     temporary = io.BytesIO()
     doc.save(temporary)
     with zipfile.ZipFile(temporary) as generated:

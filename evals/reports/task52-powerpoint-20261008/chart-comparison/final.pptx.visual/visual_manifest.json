@@ -1,0 +1,121 @@
+{
+  "schema_version": "visual-manifest-2",
+  "kind": "pptx",
+  "profile_name": "chart",
+  "document": ".final.rbqhxfrw.pptx",
+  "shell_sha256": "67fe2d81e9145f8ffb466adf0e1cd6d6b6b339cd5553140886aa4dde4232f097",
+  "content_sha256": "be66e7c6cc1c3c6f9292bd0fd5c81df519e50c38816af99920f12be545cb8638",
+  "renderers_available": true,
+  "qa_mode": "strict",
+  "dpi": 100,
+  "pages": [
+    {
+      "index": 1,
+      "png": "page-1.png",
+      "width": 1000,
+      "height": 750,
+      "orientation": "landscape"
+    }
+  ],
+  "l1_findings": [],
+  "ocr": {
+    "engine": "tesseract",
+    "available": true,
+    "status": "ok",
+    "terms_checked": [
+      "Click to edit Master title style",
+      "Click to edit Master subtitle style",
+      "1/27/13"
+    ],
+    "pages": [
+      {
+        "index": 1,
+        "text": "Di stri buci On por concept o Importe (€) Revi si dn técnica Pi fidn espafiol Area Norte ¢) 0.5 1 1.5 2 2.5 3 3.5 4",
+        "text_truncated": false
+      }
+    ],
+    "hits": [],
+    "errors": []
+  },
+  "checklist": [
+    {
+      "id": "regions_present",
+      "what": "Each expected region appears in the expected order: ['cover', 'body']",
+      "derived_from": "structure.skeleton[*].region + order",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "cover_correct",
+      "what": "The cover shows the bound title, no duplicate title, no residual demo prompt",
+      "derived_from": "anchors.cover + comprehension.cover_slots",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_residual_placeholder",
+      "what": "No template placeholder/demo text is visible in the rendered output",
+      "derived_from": "surface.<kind>.demo_region + comprehension.cover_slots[*].demo_value",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "palette_on_brand",
+      "what": "On-screen colors belong to the brand palette",
+      "derived_from": "theme.colors + theme.palette_roles",
+      "severity_hint": "INFO"
+    },
+    {
+      "id": "roles_styled",
+      "what": "Semantic blocks (heading/list/callout/table/quote/caption) appear with the brand style, not 'Normal'",
+      "derived_from": "roles._index",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_overlap",
+      "what": "No overlapping or clipped text/shapes",
+      "derived_from": "constant; reinforced by l1_findings visual.edge_bleed",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "no_blank_pages",
+      "what": "No unexpected blank/broken pages",
+      "derived_from": "constant; reinforced by l1_findings visual.blank_page",
+      "severity_hint": "WARNING"
+    },
+    {
+      "id": "overflow_clean",
+      "what": "No content beyond the printable margins",
+      "derived_from": "qa.overflow_capability=estimator",
+      "severity_hint": "WARNING"
+    }
+  ],
+  "environment": {
+    "platform": "Linux-6.8.0-142-generic-x86_64-with-glibc2.41",
+    "python": "3.12.11",
+    "visual_qa": true,
+    "degraded": false,
+    "renderers": {
+      "soffice": {
+        "available": true,
+        "path": "/usr/bin/soffice"
+      },
+      "pdftoppm": {
+        "available": true,
+        "path": "/usr/bin/pdftoppm"
+      }
+    },
+    "optional_python": {
+      "fitz": {
+        "available": false,
+        "purpose": "PyMuPDF PDF raster fallback"
+      }
+    },
+    "ocr": {
+      "tesseract": {
+        "available": true,
+        "path": "/usr/bin/tesseract",
+        "purpose": "optional OCR visible-text audit"
+      }
+    },
+    "install_hints": []
+  },
+  "instructions": "Open each PNG. For each checklist item, judge PASS/FAIL against the rendered pages, taking l1_findings into account. If any item FAILS, repair the IntermediateDocument/content and regenerate, then re-run the audit. Do NOT call any model from the engine; this judgment is yours."
+}

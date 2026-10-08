@@ -176,7 +176,8 @@ def download(request, artifact_id):
             status='verified', execution__status='completed')
         authorized_run(request.user, artifact.execution_id)
         types = {'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                 'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'pdf': 'application/pdf'}
+                 'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'pdf': 'application/pdf',
+                 'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}
         response = HttpResponse(_bytes(artifact), content_type=types[artifact.format])
         response['Content-Disposition'] = f'attachment; filename="document-{artifact.logical_id}-r{artifact.revision}.{artifact.format}"'
     except (AgentDenied, AgentArtifact.DoesNotExist, ValueError):

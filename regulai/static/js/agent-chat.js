@@ -20,6 +20,7 @@
     heading.style.overflowWrap = 'anywhere';
     if (artifact.format && artifact.format !== 'xlsx') {
       const pending = artifact.status !== 'verified';
+      const pageName = artifact.format === 'pptx' ? 'Diapositiva' : 'Página';
       node('p', `Revisión ${artifact.revision} · ${artifact.format.toUpperCase()} · ${pending ? 'Pendiente de revisión visual' : 'Verificado y revisado'}`, card).className = 'small text-muted';
       let loaded = 0;
       const pages = node('div', null, card);
@@ -28,13 +29,13 @@
       artifact.preview.pages.forEach((url, index) => {
         if (!/^\/chat\/agent\/artifacts\/[0-9a-f-]+\/pages\/\d+\/$/.test(url)) return;
         const figure = node('figure', null, pages);
-        node('figcaption', `Página ${index + 1} de ${artifact.preview.pages.length}`, figure).className = 'small';
+        node('figcaption', `${pageName} ${index + 1} de ${artifact.preview.pages.length}`, figure).className = 'small';
         const img = node('img', null, figure);
-        img.alt = `Página ${index + 1} del documento para revisión visual`;
+        img.alt = `${pageName} ${index + 1} del documento para revisión visual`;
         img.style.cssText = 'width:100%;height:auto;border:1px solid #d9d9d9';
         img.onload = () => { loaded++; if (button) button.disabled = loaded !== artifact.preview.pages.length; };
         img.src = url;
-        const full = node('a', 'Abrir página a tamaño completo', figure);
+        const full = node('a', `Abrir ${pageName.toLowerCase()} a tamaño completo`, figure);
         full.href = url; full.target = '_blank'; full.rel = 'noopener';
       });
       if (pending) {
@@ -54,7 +55,7 @@
       } else {
         const link = node('a', `Descargar ${artifact.format.toUpperCase()} verificado`, card);
         link.href = artifact.download_url; link.className = 'btn btn-primary btn-sm'; link.setAttribute('download', '');
-        node('p', 'En el siguiente mensaje puedes cambiar el título o el resumen, o pedir la versión PDF.', card).className = 'small mt-2';
+        node('p', artifact.format === 'pptx' ? 'Puedes cambiar el título o el texto de una diapositiva en el siguiente mensaje.' : 'En el siguiente mensaje puedes cambiar el título o el resumen, o pedir la versión PDF.', card).className = 'small mt-2';
       }
       return;
     }
@@ -165,7 +166,7 @@
       const active = event.target.value === 'agent';
       byId('agentActivity')?.classList.toggle('d-none', !active);
       byId('agentCancel').hidden = true;
-      text('Adjunta un CSV o XLSX sintético para crear un Excel con fórmulas y totales comprobados.');
+      text('Adjunta un CSV o XLSX sintético para crear una hoja Excel, un informe Word/PDF o una presentación.');
       byId('fileInput').accept = active ? '.csv,.xlsx' : '.txt,.pdf,.docx,.csv,.json,.py,.js,.md,.xlsx';
       byId('attachmentHint').textContent = active ? 'CSV/XLSX: item y amount_cents. El archivo se conserva para las revisiones.' : 'Adjunta un documento compatible para el chat.';
     });

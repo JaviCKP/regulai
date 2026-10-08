@@ -32,6 +32,21 @@ def authorize_tool(token, attempt, payload):
                 or call.args['logical_id'] != job.get('logical_id')
                 or call.args['base_revision'] != job.get('base')))):
             raise AgentDenied('artifact_reference_denied')
+    elif call.name in ('build_presentation', 'edit_presentation'):
+        from .presentation_contract import valid_text
+        job = execution.job
+        if call.name == 'build_presentation':
+            valid_text(call.args['title'], 'title')
+            valid_text(call.args['section'], 'body')
+            if call.args['template'] not in ('new', 'corporate') or call.args['input_reference'] != job.get('source'):
+                raise AgentDenied('artifact_reference_denied')
+        else:
+            if (not job.get('base') or call.args['logical_id'] != job.get('logical_id')
+                    or call.args['base_revision'] != job['base'] or not 1 <= call.args['slide'] <= 3):
+                raise AgentDenied('artifact_reference_denied')
+            if AgentArtifact.objects.get(pk=job['base']).format != 'pptx':
+                raise AgentDenied('presentation_base_required')
+            valid_text(call.args['value'], call.args['field'])
     elif call.name in ('build_document', 'edit_document', 'export_pdf'):
         from .document_contract import valid_section
         from .excel_contract import valid_title
@@ -145,7 +160,7 @@ def tool_result(token, attempt, payload):
             view = _csv_view(execution, context[2], call, request.raw)
         except (ValueError, TypeError, KeyError, csv.Error):
             view = {'status': 'withheld', 'code': 'aggregate_not_verified'}
-    elif call.name in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf'):
+    elif call.name in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
         # The executor returns an opaque candidate reference. Approval and the
         # aggregate come only from the independent application verifier.
         try:

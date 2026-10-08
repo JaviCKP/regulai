@@ -1,0 +1,42 @@
+[
+  {
+    "args": [
+      "doctor"
+    ],
+    "code": 0,
+    "stdout": "python:docx: ok\npython:pptx: ok\npython:openpyxl: ok\npython:lxml: ok\npython:PIL: ok\npython:fitz: missing (PyMuPDF PDF raster fallback)\nbinary:soffice: ok (visual DOCX/PPTX/XLSX render)\nbinary:pdftoppm: ok (PDF to PNG visual proof)\nocr:tesseract: ok (optional OCR visible-text audit)\nvisual QA: L1 proxy + L2 manifest available\nOCR QA: optional visible-text scan available\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "extract",
+      "--name",
+      "chart",
+      "--template",
+      "/evidence/chart-comparison/template.pptx",
+      "--scope",
+      "project"
+    ],
+    "code": 0,
+    "stdout": "extracted chart -> /evidence/chart-comparison/brand-kit/chart/profile.json\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "generate",
+      "--name",
+      "chart",
+      "--input",
+      "/evidence/chart-comparison/input.json",
+      "--output",
+      "/evidence/chart-comparison/final.pptx",
+      "--scope",
+      "project",
+      "--qa",
+      "strict"
+    ],
+    "code": 0,
+    "stdout": "INFO visual.manifest: visual audit manifest written: /evidence/chart-comparison/final.pptx.visual/visual_manifest.json\nvisual manifest: /evidence/chart-comparison/final.pptx.visual/visual_manifest.json\ngeneration report: /evidence/chart-comparison/final.pptx.visual/generation_report.json\ngenerated /evidence/chart-comparison/final.pptx\n",
+    "stderr": ""
+  }
+]

@@ -1,6 +1,7 @@
-"""Synthetic fault injection: first real E2B render cannot find its converter.
+"""Synthetic fault injection: first real E2B render cannot find its tools.
 
-The second native tool call runs the unchanged converter. Nothing in the product
+DOCX first fails at LibreOffice; PPTX first fails at OfficeCLI's close/validation
+step, before reaching Impress. The second call uses the unchanged tools. Nothing in the product
 accepts this flag, and this file is not installed in the document image.
 """
 import json
@@ -16,7 +17,7 @@ injected = False
 
 def execute(self, command, *args, **kwargs):
     global injected
-    if not injected and '/skills/document_program.py render' in command:
+    if not injected and any('/skills/'+program+' render' in command for program in ('document_program.py', 'presentation_program.py')):
         injected = True
         command = command.replace('python -I ', 'env PATH=/converter-unavailable /usr/local/bin/python -I ', 1)
     return original(self, command, *args, **kwargs)

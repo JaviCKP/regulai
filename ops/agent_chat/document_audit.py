@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -11,7 +12,9 @@ prepare()
 from front.models import AgentExecution, AgentToolResult
 from front.agents import jobs, document_contract
 
-root = Path('/evidence/document-runs')
+case = os.environ.get('REGULAY_DOCUMENT_CASE', 'document-runs')
+assert case in ('document-runs', 'presentation-runs')
+root = Path('/evidence') / case
 root.mkdir(exist_ok=False)
 report = {'synthetic_only': True, 'paid_calls': 0, 'runs': []}
 requests = Path('/evidence/model-requests.json').read_text()
@@ -19,7 +22,7 @@ for marker in ('Synthetic Private Marker', '<script>alert', 'synthetic.invalid',
                'Piñón español', 'iVBORw0KGgo', 'JVBERi0', 'UEsDB'):
     assert marker not in requests, marker
 report['originals_and_renders_absent_from_model'] = True
-for run in AgentExecution.objects.filter(conversation__isnull=False).order_by('created_at'):
+for run in AgentExecution.objects.filter(conversation__id__gte=int(os.environ.get('REGULAY_DOCUMENT_FIRST_CHAT', '0'))).order_by('created_at'):
     row = {'id': str(run.pk), 'conversation': run.conversation_id, 'status': run.status,
            'request': run.prompt.content, 'logical_id': run.job['logical_id'],
            'events': list(run.events.values('id', 'kind', 'created_at')), 'artifacts': []}

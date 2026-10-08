@@ -152,3 +152,39 @@ no calidad generativa con un modelo real ni paridad con Claude. Siguen vigentes 
 límites de 48–50 (incluido NoNewPrivs=0 dentro de Firecracker y operaciones revisadas).
 Rama desactivada por defecto, cuentas/conexiones actuales intactas, cero llamadas de
 pago o escrituras externas. La tarea 51 queda verificada antes de comenzar la 52.
+
+### Ampliación visual solicitada durante la tarea 52
+
+Después del cierre de 51 en `ff2a947`, el usuario pidió mejorar el formato e
+investigar skills públicas. Se consultó `drharunyuksel/docx-report-skill`, MIT,
+commit `efbd76eecad7e1aa070a8ca17dffc51a685833d7`: jerarquía tipográfica, paleta
+contenida, márgenes y tratamiento de tablas. Se conserva la
+[referencia y licencia](../../agent-assets/upstream/docx-report-design/source-manifest.json).
+No se ejecutan sus helpers Node ni se instala otro motor. Las reglas originales
+compartidas se cargan desde `regulai/front/agents/runtime/design.md`.
+
+La plantilla incluida pasa a la versión 2: título Liberation Serif, cuerpo Sans,
+verde oscuro y neutros, filas alternas, total destacado, importes alineados y
+espacio interior en celdas. El informe corto ocupa dos páginas (dos secciones),
+con notas bajo la tabla; la tabla de 65 filas ocupa cinco. Los resultados de
+tres/cuatro páginas anteriores siguen describiendo la versión 1, no esta plantilla.
+La plantilla anterior se conserva byte a byte en `corporate-v1.docx`, y una prueba
+edita el título de un artefacto anterior sin migrar ni alterar su diseño.
+
+Se reabrieron, renderizaron e inspeccionaron realmente las dos páginas del caso
+corto y las cinco del largo; cabeceras repetidas, filas completas, numeración y
+total 81,25 € correctos. [Revisión independiente de las siete páginas Word y doce
+PPTX](../../../evals/reports/task52-powerpoint-20261008/visual-review-design-v3.md).
+En el chat con SDK/E2B reales se creó otro DOCX, se revisaron sus dos páginas y se
+exportó a PDF bajo la misma identidad; también se inspeccionaron ambas páginas
+del PDF final. Las descargas HTTP coinciden con los bytes verificados:
+
+- DOCX `e80c0d87-0999-4643-a0dc-c50f515656a5`, SHA-256 `b8fdadf185f21ad2fc9da0f1018443d6eb0b37219f800186b318ba13bfa7f772`.
+- PDF `147bc595-bc0f-49dc-8344-64527f442945`, SHA-256 `603deda5fca3d8b01476ce3ca027b18e9ccc2183a39fce2822e0ac9fbdfdc85d`.
+
+[Archivos, renders y registro de revisión](../../../evals/reports/task52-powerpoint-20261008/presentation-runs/audit.json).
+[UI del PDF rediseñado](../../../evals/reports/task52-powerpoint-20261008/ui-pdf-redesign.jpg).
+La batería final conjunta pasa **51 pruebas en PostgreSQL**; las **196 regresiones**
+de gobierno/estado/dinero también pasan. Comandos y límites compartidos quedan en
+[la tarea 52](52-agente-powerpoint.md). La mejora visual no acredita calidad
+generativa de DeepSeek: las respuestas del proveedor siguen simuladas.

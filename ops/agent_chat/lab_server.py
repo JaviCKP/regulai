@@ -54,11 +54,11 @@ def prepare(*, database_host='127.0.0.1', database_port='55450', evidence=None):
                 f'engine:{credential.pk}', f'obfuscation:{mask.pk}']}, 'limits': {'provider_managed': True}}
         company.save()
         agent = AgentModelProfile.objects.create(company=company, name='Task50 synthetic', enabled=True,
-            connection=credential, model=model, tools=['build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf'])
+            connection=credential, model=model, tools=['build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'])
     else:
         company = user.profile.company
         agent = AgentModelProfile.objects.get(company=company, name='Task50 synthetic')
-        agent.tools = ['build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf']
+        agent.tools = ['build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation']
         agent.save(update_fields=['tools'])
     settings.REGULAY_AGENT_ENABLED = True
     settings.REGULAY_AGENT_DEVELOPMENT = True
@@ -89,7 +89,17 @@ def prepare(*, database_host='127.0.0.1', database_port='55450', evidence=None):
             instruction = next((m['content'] for m in messages if m['role'] == 'user' and
                 not m['content'].startswith('Referencias autorizadas del servidor: ')), '').lower()
             identity = {'logical_id': context['logical_id'], 'base_revision': context['base_revision']}
-            if context.get('base_format') in ('docx', 'pdf'):
+            if context.get('base_format') == 'pptx':
+                name = 'edit_presentation'
+                body = 'diapositiva' in instruction or 'sección' in instruction
+                args = {**identity, 'slide': 3 if body else 1, 'field': 'body' if body else 'title',
+                        'value': 'Revisión localizada: análisis de importes de España. Se conserva el resto de la presentación.' if body else 'Informe económico revisado'}
+            elif 'pptx' in instruction or 'powerpoint' in instruction or 'presentación' in instruction:
+                name, args = 'build_presentation', {'input_reference': context['input_reference'],
+                    'template': 'corporate' if 'plantilla' in instruction else 'new', 'title': 'Informe económico de España',
+                    'section': ('El análisis reúne los importes de las áreas de trabajo en España. Cada concepto mantiene su nombre original y su valor en euros. La revisión técnica debe contrastar el detalle con el archivo de origen antes de utilizar el total. Se conservan las tildes, la ñ y los símbolos monetarios: €, £ y $.'
+                        if 'largo' in instruction else 'Los importes corresponden a tres conceptos del archivo de origen. La tabla conserva el detalle y el gráfico permite comparar su distribución.')}
+            elif context.get('base_format') in ('docx', 'pdf'):
                 if 'pdf' in instruction and context['base_format'] == 'docx':
                     name, args = 'export_pdf', identity
                 else:

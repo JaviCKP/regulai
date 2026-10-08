@@ -21,9 +21,11 @@ from .sandbox_pool import CleanPool, create_clean
 
 def runtime_prompt(tools=()):
     root = Path(__file__).with_name('runtime')
-    names = ['system.md', 'documents.md', 'skills/excel/SKILL.md']
+    names = ['system.md', 'documents.md', 'design.md', 'skills/excel/SKILL.md']
     if any(name in tools for name in ('build_document', 'edit_document', 'export_pdf')):
         names += ['skills/docx/SKILL.md', 'skills/pdf/SKILL.md']
+    if any(name in tools for name in ('build_presentation', 'edit_presentation')):
+        names += ['skills/pptx/SKILL.md']
     return '\n\n'.join((root / name).read_text(encoding='utf-8') for name in names)
 
 
@@ -85,7 +87,7 @@ def run_job(internal, sandbox):
                 def execute(phase, command):
                     lease.check()
                     internal.operation('run/step', {'call': call, 'phase': phase})
-                    result = backend.execute(command, timeout=90)
+                    result = backend.execute(command, timeout=180 if name in ('build_presentation', 'edit_presentation') else 90)
                     logs.append({'phase': phase, 'output': result.output, 'exit_code': result.exit_code})
                     if result.exit_code:
                         raise RuntimeError(json.dumps({'local_operation_failed': logs}))
@@ -93,12 +95,18 @@ def run_job(internal, sandbox):
 
                 execute('input', 'mkdir -p ' + work)
                 sandbox.files.write(work + '/fields.json', json.dumps({'title': fields['title']}).encode())
-                if name in ('build_document', 'edit_document', 'export_pdf'):
+                if name in ('build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
                     sandbox.files.write(work + '/fields.json', json.dumps(fields).encode())
                     final_dir = work + '/final'
-                    program = 'python -I /skills/document_program.py '
+                    presenting = name in ('build_presentation', 'edit_presentation')
+                    extension = 'pptx' if presenting else 'docx'
+                    program = 'python -I /skills/' + ('presentation_program.py ' if presenting else 'document_program.py ')
                     common = ' --output ' + final_dir
-                    if name == 'export_pdf':
+                    if presenting:
+                        source = '/workspace/input/base.pptx' if name == 'edit_presentation' else granted['input']['path']
+                        execute('compose', program + ('edit' if name == 'edit_presentation' else 'build') + common +
+                            ' --source ' + shlex.quote(source) + ' --template /skills/corporate.pptx --fields ' + work + '/fields.json')
+                    elif name == 'export_pdf':
                         execute('compose', 'mkdir -p ' + final_dir + ' && cp /workspace/input/document.docx ' + final_dir + '/final.docx')
                     else:
                         source = ('/workspace/input/document.docx' if name == 'edit_document' else
@@ -111,7 +119,7 @@ def run_job(internal, sandbox):
                         downloaded = backend.download_files([final_dir + '/candidate.zip'])[0]
                     except RuntimeError:
                         # Preserve the produced DOCX even when conversion fails.
-                        downloaded = backend.download_files([final_dir + '/final.docx'])[0]
+                        downloaded = backend.download_files([final_dir + '/final.' + extension])[0]
                     if downloaded.error or not downloaded.content:
                         raise RuntimeError('Document candidate unavailable')
                     lease.check()
@@ -151,6 +159,18 @@ def run_job(internal, sandbox):
                     tool_call_id=call['id'], name=name, artifact={'raw_logs': logs})
 
         @tool
+        def build_presentation(input_reference: str, template: str, title: str, section: str, runtime: ToolRuntime):
+            """Build a three-slide editable PPTX, with new or corporate layout and authorized data."""
+            return operate('build_presentation', {'input_reference': input_reference, 'template': template,
+                'title': title, 'section': section}, runtime)
+
+        @tool
+        def edit_presentation(logical_id: str, base_revision: str, slide: int, field: str, value: str, runtime: ToolRuntime):
+            """Change title or body on one slide (1-3), preserving every other part."""
+            return operate('edit_presentation', {'logical_id': logical_id, 'base_revision': base_revision,
+                'slide': slide, 'field': field, 'value': value}, runtime)
+
+        @tool
         def build_excel(input_reference: str, title: str, runtime: ToolRuntime):
             """Build and verify XLSX from the authorized opaque input reference."""
             return operate('build_excel', {'input_reference': input_reference, 'title': title}, runtime)
@@ -177,7 +197,7 @@ def run_job(internal, sandbox):
             """Convert the current verified document to PDF, preserving its content."""
             return operate('export_pdf', {'logical_id': logical_id, 'base_revision': base_revision}, runtime)
 
-        graph = build_agent(backend, internal, tools=[build_excel, rename_excel, build_document, edit_document, export_pdf],
+        graph = build_agent(backend, internal, tools=[build_excel, rename_excel, build_document, edit_document, export_pdf, build_presentation, edit_presentation],
             model_profile={'max_input_tokens': 200000, 'max_output_tokens': 8000},
             allowed_tools=granted['tools'], system_prompt=runtime_prompt(granted['tools']))
         result = graph.invoke({'messages': [HumanMessage(content=granted['message']),

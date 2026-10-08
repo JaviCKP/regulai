@@ -1,0 +1,27 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    ".venv/Scripts/python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_pipeline",
+    "front.test_pipeline_privacy",
+    "front.test_required_masking",
+    "front.test_ai_connections",
+    "front.test_difficulty_routing",
+    "front.test_local_masking_integration",
+    "front.test_state",
+    "front.test_smoke",
+    "front.test_evaluation_budget",
+    "front.test_calibration_budget",
+    "front.test_backend_hardening",
+    "front.test_connectors",
+    "front.test_frontend_chat",
+    "front.test_frontend_resources",
+    "--settings=regulai.test_settings",
+    "--noinput"
+  ],
+  "exit_code": 0,
+  "seconds": 58.853
+}

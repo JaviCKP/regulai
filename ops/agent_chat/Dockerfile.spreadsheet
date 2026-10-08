@@ -1,11 +1,16 @@
 FROM python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
 # Single document image. Build-time installation; no downloads in conversations.
-RUN apt-get update && apt-get install -y --no-install-recommends libreoffice-calc=4:25.2.3-2+deb13u8 libreoffice-writer=4:25.2.3-2+deb13u8 poppler-utils=25.03.0-5+deb13u4 fonts-liberation=1:2.1.5-3 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libreoffice-calc=4:25.2.3-2+deb13u8 libreoffice-writer=4:25.2.3-2+deb13u8 libreoffice-impress=4:25.2.3-2+deb13u8 poppler-utils=25.03.0-5+deb13u4 fonts-liberation=1:2.1.5-3 && rm -rf /var/lib/apt/lists/*
+ADD --checksum=sha256:1a5da5cb7e9d995db7a6560beb7466760c79617648f72e65f4ce55897c407f67 --chmod=0555 https://github.com/iOfficeAI/OfficeCLI/releases/download/v1.0.155/officecli-linux-x64 /usr/local/bin/officecli
+ENV OFFICECLI_NO_AUTO_RESIDENT=1 DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 COPY ops/agent_chat/requirements.txt /tmp/spreadsheet-requirements.txt
 RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/spreadsheet-requirements.txt && python -m pip check
 RUN useradd --uid 1000 --create-home user && mkdir -p /skills /workspace/input /workspace/work /workspace/output /conversation_history /large_tool_results && chown user:user /workspace/work /workspace/output /conversation_history /large_tool_results
 COPY --chmod=0444 regulai/front/agents/spreadsheet_program.py /skills/spreadsheet_program.py
 COPY --chmod=0444 regulai/front/agents/document_program.py /skills/document_program.py
 COPY --chmod=0444 regulai/front/agents/runtime/templates/corporate.docx /skills/corporate.docx
+COPY --chmod=0444 regulai/front/agents/presentation_program.py /skills/presentation_program.py
+COPY --chmod=0444 regulai/front/agents/runtime/templates/corporate.pptx /skills/corporate.pptx
+COPY --chmod=0444 regulai/front/agents/runtime/skills/pptx/LICENSE.txt regulai/front/agents/runtime/skills/pptx/THIRD-PARTY-NOTICES.txt /usr/share/doc/officecli/
 RUN chmod 0555 /skills
 WORKDIR /workspace/work

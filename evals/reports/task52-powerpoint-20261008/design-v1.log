@@ -1,0 +1,13 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "/lab/ops/agent_chat/presentation_design_eval.py", line 24, in <module>
+    render(folder)
+  File "/lab/regulai/front/agents/presentation_program.py", line 177, in render
+    cli('validate', file)
+  File "/lab/regulai/front/agents/presentation_program.py", line 26, in cli
+    raise ValueError('presentation_cli_failed: ' + result.stdout + result.stderr)
+ValueError: presentation_cli_failed: Found 1 validation error(s):
+  [Schema] The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:date1904'. List of possible elements expected: <http://schemas.openxmlformats.org/drawingml/2006/chart:chart>.
+    Path: /c:chartSpace[1]
+    Part: /ppt/slides/charts/chart1.xml
+

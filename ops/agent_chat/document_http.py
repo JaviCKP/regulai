@@ -1,6 +1,7 @@
 """Real HTTP authorization and byte equality for synthetic DOCX/PDF artifacts."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import uuid
 
@@ -22,7 +23,8 @@ def login(target, user='agent-synthetic-ui'):
 
 login(client)
 report = {'downloads': [], 'failed_drafts_inaccessible': [], 'stale_revision': False, 'cross_user': False}
-artifacts = list(AgentArtifact.objects.exclude(format='xlsx').order_by('created_at'))
+artifacts = list(AgentArtifact.objects.exclude(format='xlsx').filter(
+    execution__conversation_id__gte=int(os.environ.get('REGULAY_DOCUMENT_FIRST_CHAT', '0'))).order_by('created_at'))
 for artifact in artifacts:
     url = f'/chat/agent/artifacts/{artifact.pk}/download/'
     response = client.get(url)
@@ -55,5 +57,7 @@ with httpx.Client(base_url=str(client.base_url), follow_redirects=False, timeout
     assert response.status_code == 409
 report['cross_user'] = True
 client.close()
-Path('/evidence/document-runs/http.json').write_text(json.dumps(report, indent=2))
+case = os.environ.get('REGULAY_DOCUMENT_CASE', 'document-runs')
+assert case in ('document-runs', 'presentation-runs')
+(Path('/evidence') / case / 'http.json').write_text(json.dumps(report, indent=2))
 print(json.dumps(report))

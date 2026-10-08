@@ -1,0 +1,9 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "/evaluate.py", line 143, in <module>
+    report['cases']['template'] = inspect(modified, template, ('ppt/slides/slide1.xml', 'ppt/slides/slide2.xml'))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/evaluate.py", line 105, in inspect
+    assert set(package) == set(previous)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

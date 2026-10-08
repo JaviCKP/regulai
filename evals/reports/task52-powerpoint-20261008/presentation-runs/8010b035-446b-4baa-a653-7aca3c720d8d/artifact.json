@@ -1,0 +1,44 @@
+{
+  "id": "8010b035-446b-4baa-a653-7aca3c720d8d",
+  "logical_id": "04fa2832-cb92-4009-9015-f302abae3599",
+  "revision": 3,
+  "format": "pptx",
+  "status": "verified",
+  "sha256": "a02ab76b360b473b35bd84f92d6813abc7f8da01e045d1fcb5f4687649c30d3d",
+  "verification": {
+    "rows": 3,
+    "pages": 3,
+    "checks": [
+      "native_text_table_chart",
+      "embedded_workbook",
+      "source_values",
+      "canvas_bounds",
+      "pdf_text_fonts",
+      "rendered_final_bytes",
+      "unchanged_revision"
+    ],
+    "sha256": "a02ab76b360b473b35bd84f92d6813abc7f8da01e045d1fcb5f4687649c30d3d",
+    "call_id": "synthetic-a994d04e0d1245f6822b61c397c10ac6",
+    "pdf_sha256": "c5d7a8cf12338359e0b323b165cc0b48e38e60738a303d96c64e3c094f1267c1",
+    "page_sha256": [
+      "40e93f9645552ce993e68a73a0cd7f6d930936ade187edf07f33a273cdff4587",
+      "b261f8d2a357bdd2421f57541d5417ed874da50399de867a26ba770bb0c06211",
+      "49304b2b36bd9f95e4add96c7e509f12f13c95d73455d1515a992a8b060acf6d"
+    ],
+    "total_cents": 750,
+    "visual_review": {
+      "checks": [
+        "all_pages",
+        "no_clipping_or_overlap",
+        "tables_complete",
+        "fonts_and_spanish",
+        "no_template_residue"
+      ],
+      "sha256": "a02ab76b360b473b35bd84f92d6813abc7f8da01e045d1fcb5f4687649c30d3d",
+      "reviewed_at": "2026-10-08T17:24:48.125731+00:00",
+      "reviewer_id": 1
+    },
+    "automated_passed": true,
+    "submission_sha256": "02c7263924395113a2d959f1841d1ccee5b5c1085f814d5603756404253192b6"
+  }
+}

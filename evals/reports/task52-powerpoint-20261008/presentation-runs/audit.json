@@ -1,0 +1,1087 @@
+{
+  "synthetic_only": true,
+  "paid_calls": 0,
+  "runs": [
+    {
+      "id": "632ceb8e-345c-4449-9329-868140c4ab72",
+      "conversation": 7,
+      "status": "completed",
+      "request": "Crea una presentación PPTX nueva con estos datos.",
+      "logical_id": "04fa2832-cb92-4009-9015-f302abae3599",
+      "events": [
+        {
+          "id": 111,
+          "kind": "queued",
+          "created_at": "2026-10-08 17:21:19.802875+00:00"
+        },
+        {
+          "id": 112,
+          "kind": "claimed",
+          "created_at": "2026-10-08 17:21:19.942504+00:00"
+        },
+        {
+          "id": 113,
+          "kind": "input",
+          "created_at": "2026-10-08 17:21:21.466102+00:00"
+        },
+        {
+          "id": 114,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:21:21.596614+00:00"
+        },
+        {
+          "id": 115,
+          "kind": "render",
+          "created_at": "2026-10-08 17:21:54.002416+00:00"
+        },
+        {
+          "id": 116,
+          "kind": "verify",
+          "created_at": "2026-10-08 17:21:59.753214+00:00"
+        },
+        {
+          "id": 117,
+          "kind": "visual_pending",
+          "created_at": "2026-10-08 17:22:00.440420+00:00"
+        },
+        {
+          "id": 118,
+          "kind": "visual_reviewed",
+          "created_at": "2026-10-08 17:22:53.698338+00:00"
+        },
+        {
+          "id": 119,
+          "kind": "completed",
+          "created_at": "2026-10-08 17:22:53.862675+00:00"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "b8d1709b-288e-45d2-90bb-05b331890eac",
+          "logical_id": "04fa2832-cb92-4009-9015-f302abae3599",
+          "revision": 1,
+          "format": "pptx",
+          "status": "verified",
+          "sha256": "15542a68a4d8d57025070be57d40f4760911f22ef2329eec6bd9903fd17bd3a9",
+          "verification": {
+            "rows": 3,
+            "pages": 3,
+            "checks": [
+              "native_text_table_chart",
+              "embedded_workbook",
+              "source_values",
+              "canvas_bounds",
+              "pdf_text_fonts",
+              "rendered_final_bytes",
+              "new"
+            ],
+            "sha256": "15542a68a4d8d57025070be57d40f4760911f22ef2329eec6bd9903fd17bd3a9",
+            "call_id": "synthetic-662af69e37d24e2eb2694db01794834f",
+            "pdf_sha256": "e4e89d6ba0715a5baa613af6ab0dcc399ebad227126a764e2f834ec8fc5c153f",
+            "page_sha256": [
+              "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6",
+              "b261f8d2a357bdd2421f57541d5417ed874da50399de867a26ba770bb0c06211",
+              "30361901fc9007909244cca3cd4ced0cbf33d54f868c15fc931e7114e56a7698"
+            ],
+            "total_cents": 750,
+            "visual_review": {
+              "checks": [
+                "all_pages",
+                "no_clipping_or_overlap",
+                "tables_complete",
+                "fonts_and_spanish",
+                "no_template_residue"
+              ],
+              "sha256": "15542a68a4d8d57025070be57d40f4760911f22ef2329eec6bd9903fd17bd3a9",
+              "reviewed_at": "2026-10-08T17:22:53.695290+00:00",
+              "reviewer_id": 1
+            },
+            "automated_passed": true,
+            "submission_sha256": "31717caa88721fcf3224e1349e43a4332a1364393854c168c896c96dd65c1af4"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "id": "14",
+          "call_id": "synthetic-662af69e37d24e2eb2694db01794834f",
+          "model_view": {
+            "code": "visual_review_required",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"b8d1709b-288e-45d2-90bb-05b331890eac\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "build_presentation",
+            "id": null,
+            "tool_call_id": "synthetic-662af69e37d24e2eb2694db01794834f",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "verify",
+                  "output": "",
+                  "exit_code": 0
+                }
+              ]
+            },
+            "status": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "a8a90df5-fad0-4cd8-96f2-2b60ac3110bb",
+      "conversation": 7,
+      "status": "completed",
+      "request": "Cambia el título a Informe económico revisado",
+      "logical_id": "04fa2832-cb92-4009-9015-f302abae3599",
+      "events": [
+        {
+          "id": 120,
+          "kind": "queued",
+          "created_at": "2026-10-08 17:23:15.065244+00:00"
+        },
+        {
+          "id": 121,
+          "kind": "claimed",
+          "created_at": "2026-10-08 17:23:15.611574+00:00"
+        },
+        {
+          "id": 122,
+          "kind": "input",
+          "created_at": "2026-10-08 17:23:16.620519+00:00"
+        },
+        {
+          "id": 123,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:23:16.769668+00:00"
+        },
+        {
+          "id": 124,
+          "kind": "render",
+          "created_at": "2026-10-08 17:23:19.749471+00:00"
+        },
+        {
+          "id": 125,
+          "kind": "verify",
+          "created_at": "2026-10-08 17:23:25.294812+00:00"
+        },
+        {
+          "id": 126,
+          "kind": "visual_pending",
+          "created_at": "2026-10-08 17:23:25.947806+00:00"
+        },
+        {
+          "id": 127,
+          "kind": "visual_reviewed",
+          "created_at": "2026-10-08 17:23:48.603713+00:00"
+        },
+        {
+          "id": 128,
+          "kind": "completed",
+          "created_at": "2026-10-08 17:23:48.729484+00:00"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "fe41bd2e-9487-453f-a42a-dde5755f7e6b",
+          "logical_id": "04fa2832-cb92-4009-9015-f302abae3599",
+          "revision": 2,
+          "format": "pptx",
+          "status": "verified",
+          "sha256": "8d170986932d1e6eb35e34092c97b264b8802c157d0efa0750da53dfb3d9e589",
+          "verification": {
+            "rows": 3,
+            "pages": 3,
+            "checks": [
+              "native_text_table_chart",
+              "embedded_workbook",
+              "source_values",
+              "canvas_bounds",
+              "pdf_text_fonts",
+              "rendered_final_bytes",
+              "unchanged_revision"
+            ],
+            "sha256": "8d170986932d1e6eb35e34092c97b264b8802c157d0efa0750da53dfb3d9e589",
+            "call_id": "synthetic-1033cb813dfe4055bc9090e1ac2da5f0",
+            "pdf_sha256": "ac4e5c1dd7c238a39b04da47c030dc9b415bdbbf0b59f40e5c5beadc695deedf",
+            "page_sha256": [
+              "40e93f9645552ce993e68a73a0cd7f6d930936ade187edf07f33a273cdff4587",
+              "b261f8d2a357bdd2421f57541d5417ed874da50399de867a26ba770bb0c06211",
+              "30361901fc9007909244cca3cd4ced0cbf33d54f868c15fc931e7114e56a7698"
+            ],
+            "total_cents": 750,
+            "visual_review": {
+              "checks": [
+                "all_pages",
+                "no_clipping_or_overlap",
+                "tables_complete",
+                "fonts_and_spanish",
+                "no_template_residue"
+              ],
+              "sha256": "8d170986932d1e6eb35e34092c97b264b8802c157d0efa0750da53dfb3d9e589",
+              "reviewed_at": "2026-10-08T17:23:48.602452+00:00",
+              "reviewer_id": 1
+            },
+            "automated_passed": true,
+            "submission_sha256": "df8baa98c197621b997b36ef233ff6a548043a8d7e0accf550f8388e9f3cbccc"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "id": "15",
+          "call_id": "synthetic-1033cb813dfe4055bc9090e1ac2da5f0",
+          "model_view": {
+            "code": "visual_review_required",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"fe41bd2e-9487-453f-a42a-dde5755f7e6b\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "edit_presentation",
+            "id": null,
+            "tool_call_id": "synthetic-1033cb813dfe4055bc9090e1ac2da5f0",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "verify",
+                  "output": "",
+                  "exit_code": 0
+                }
+              ]
+            },
+            "status": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "c922e083-3ef7-42a2-b2ac-322eee68f9fa",
+      "conversation": 7,
+      "status": "completed",
+      "request": "Cambia el texto de la diapositiva 3 con la revisión localizada",
+      "logical_id": "04fa2832-cb92-4009-9015-f302abae3599",
+      "events": [
+        {
+          "id": 129,
+          "kind": "queued",
+          "created_at": "2026-10-08 17:24:00.654336+00:00"
+        },
+        {
+          "id": 130,
+          "kind": "claimed",
+          "created_at": "2026-10-08 17:24:01.113158+00:00"
+        },
+        {
+          "id": 131,
+          "kind": "input",
+          "created_at": "2026-10-08 17:24:02.118277+00:00"
+        },
+        {
+          "id": 132,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:24:02.290278+00:00"
+        },
+        {
+          "id": 133,
+          "kind": "render",
+          "created_at": "2026-10-08 17:24:05.547531+00:00"
+        },
+        {
+          "id": 134,
+          "kind": "verify",
+          "created_at": "2026-10-08 17:24:13.283266+00:00"
+        },
+        {
+          "id": 135,
+          "kind": "visual_pending",
+          "created_at": "2026-10-08 17:24:13.900817+00:00"
+        },
+        {
+          "id": 136,
+          "kind": "visual_reviewed",
+          "created_at": "2026-10-08 17:24:48.129786+00:00"
+        },
+        {
+          "id": 137,
+          "kind": "completed",
+          "created_at": "2026-10-08 17:24:48.718944+00:00"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "8010b035-446b-4baa-a653-7aca3c720d8d",
+          "logical_id": "04fa2832-cb92-4009-9015-f302abae3599",
+          "revision": 3,
+          "format": "pptx",
+          "status": "verified",
+          "sha256": "a02ab76b360b473b35bd84f92d6813abc7f8da01e045d1fcb5f4687649c30d3d",
+          "verification": {
+            "rows": 3,
+            "pages": 3,
+            "checks": [
+              "native_text_table_chart",
+              "embedded_workbook",
+              "source_values",
+              "canvas_bounds",
+              "pdf_text_fonts",
+              "rendered_final_bytes",
+              "unchanged_revision"
+            ],
+            "sha256": "a02ab76b360b473b35bd84f92d6813abc7f8da01e045d1fcb5f4687649c30d3d",
+            "call_id": "synthetic-a994d04e0d1245f6822b61c397c10ac6",
+            "pdf_sha256": "c5d7a8cf12338359e0b323b165cc0b48e38e60738a303d96c64e3c094f1267c1",
+            "page_sha256": [
+              "40e93f9645552ce993e68a73a0cd7f6d930936ade187edf07f33a273cdff4587",
+              "b261f8d2a357bdd2421f57541d5417ed874da50399de867a26ba770bb0c06211",
+              "49304b2b36bd9f95e4add96c7e509f12f13c95d73455d1515a992a8b060acf6d"
+            ],
+            "total_cents": 750,
+            "visual_review": {
+              "checks": [
+                "all_pages",
+                "no_clipping_or_overlap",
+                "tables_complete",
+                "fonts_and_spanish",
+                "no_template_residue"
+              ],
+              "sha256": "a02ab76b360b473b35bd84f92d6813abc7f8da01e045d1fcb5f4687649c30d3d",
+              "reviewed_at": "2026-10-08T17:24:48.125731+00:00",
+              "reviewer_id": 1
+            },
+            "automated_passed": true,
+            "submission_sha256": "02c7263924395113a2d959f1841d1ccee5b5c1085f814d5603756404253192b6"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "id": "16",
+          "call_id": "synthetic-a994d04e0d1245f6822b61c397c10ac6",
+          "model_view": {
+            "code": "visual_review_required",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"8010b035-446b-4baa-a653-7aca3c720d8d\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "edit_presentation",
+            "id": null,
+            "tool_call_id": "synthetic-a994d04e0d1245f6822b61c397c10ac6",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "verify",
+                  "output": "",
+                  "exit_code": 0
+                }
+              ]
+            },
+            "status": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "80043d9c-f2a7-4ddf-bdad-5e6e444c7aee",
+      "conversation": 8,
+      "status": "completed",
+      "request": "Crea un PPTX con la plantilla corporativa",
+      "logical_id": "9d24570f-b6e4-45c7-a0ab-d4e9bdf6c45b",
+      "events": [
+        {
+          "id": 138,
+          "kind": "queued",
+          "created_at": "2026-10-08 17:25:37.645766+00:00"
+        },
+        {
+          "id": 139,
+          "kind": "claimed",
+          "created_at": "2026-10-08 17:25:52.023309+00:00"
+        },
+        {
+          "id": 140,
+          "kind": "input",
+          "created_at": "2026-10-08 17:25:53.245586+00:00"
+        },
+        {
+          "id": 141,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:25:53.405172+00:00"
+        },
+        {
+          "id": 142,
+          "kind": "render",
+          "created_at": "2026-10-08 17:26:14.602200+00:00"
+        },
+        {
+          "id": 143,
+          "kind": "draft",
+          "created_at": "2026-10-08 17:26:14.973947+00:00"
+        },
+        {
+          "id": 144,
+          "kind": "input",
+          "created_at": "2026-10-08 17:26:15.735838+00:00"
+        },
+        {
+          "id": 145,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:26:15.870201+00:00"
+        },
+        {
+          "id": 146,
+          "kind": "render",
+          "created_at": "2026-10-08 17:26:35.797917+00:00"
+        },
+        {
+          "id": 147,
+          "kind": "verify",
+          "created_at": "2026-10-08 17:26:41.185303+00:00"
+        },
+        {
+          "id": 148,
+          "kind": "visual_pending",
+          "created_at": "2026-10-08 17:26:41.964430+00:00"
+        },
+        {
+          "id": 149,
+          "kind": "visual_reviewed",
+          "created_at": "2026-10-08 17:27:31.230324+00:00"
+        },
+        {
+          "id": 150,
+          "kind": "completed",
+          "created_at": "2026-10-08 17:27:31.680638+00:00"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "29322bb1-ee36-48fe-adb6-86c2910a07ec",
+          "logical_id": "9d24570f-b6e4-45c7-a0ab-d4e9bdf6c45b",
+          "revision": 1,
+          "format": "pptx",
+          "status": "draft",
+          "sha256": "1d959b434bfbff84c93cdfd9a8ad3988ce2739125e87156b8760be239149e8aa",
+          "verification": {
+            "code": "document_verification_failed",
+            "sha256": "1d959b434bfbff84c93cdfd9a8ad3988ce2739125e87156b8760be239149e8aa",
+            "call_id": "synthetic-72d718bbb1544abd99625e21c3c4d76b",
+            "automated_passed": false,
+            "submission_sha256": "1d959b434bfbff84c93cdfd9a8ad3988ce2739125e87156b8760be239149e8aa"
+          }
+        },
+        {
+          "id": "ea77c619-3bf2-4e5b-91a9-9e2e46a5bd31",
+          "logical_id": "9d24570f-b6e4-45c7-a0ab-d4e9bdf6c45b",
+          "revision": 2,
+          "format": "pptx",
+          "status": "verified",
+          "sha256": "b26abea379862fa33a8015dfc113ef4457cdf750e28a046ff15fc23d9c9596e7",
+          "verification": {
+            "rows": 3,
+            "pages": 3,
+            "checks": [
+              "native_text_table_chart",
+              "embedded_workbook",
+              "source_values",
+              "canvas_bounds",
+              "pdf_text_fonts",
+              "rendered_final_bytes",
+              "corporate"
+            ],
+            "sha256": "b26abea379862fa33a8015dfc113ef4457cdf750e28a046ff15fc23d9c9596e7",
+            "call_id": "synthetic-854e9fb75c2243e3be71345589014956",
+            "pdf_sha256": "bd2fa6e456459c8c671d6ec8223f31eabd9c6c31586556478bb3d4324ff14dcd",
+            "page_sha256": [
+              "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6",
+              "c1c35c7035477acaf21f3a61ebda97887dbba0aeeacfeb81328cc2240565a41a",
+              "f9e3af5fa2254ba5d6c184fb58ba7528a9ae3b496ce794dcae17021dd97067d1"
+            ],
+            "total_cents": 750,
+            "visual_review": {
+              "checks": [
+                "all_pages",
+                "no_clipping_or_overlap",
+                "tables_complete",
+                "fonts_and_spanish",
+                "no_template_residue"
+              ],
+              "sha256": "b26abea379862fa33a8015dfc113ef4457cdf750e28a046ff15fc23d9c9596e7",
+              "reviewed_at": "2026-10-08T17:27:31.228130+00:00",
+              "reviewer_id": 1
+            },
+            "automated_passed": true,
+            "submission_sha256": "e6c81f68ac3dd526cf468c6fb6f143da69aa4fd13e00dfab164acf0b24a658b8"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "id": "17",
+          "call_id": "synthetic-72d718bbb1544abd99625e21c3c4d76b",
+          "model_view": {
+            "code": "document_not_verified",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"29322bb1-ee36-48fe-adb6-86c2910a07ec\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "build_presentation",
+            "id": null,
+            "tool_call_id": "synthetic-72d718bbb1544abd99625e21c3c4d76b",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "Traceback (most recent call last):\n  File \"/skills/presentation_program.py\", line 255, in <module>\n    main()\n  File \"/skills/presentation_program.py\", line 238, in main\n    return (render if args.operation == 'render' else seal)(args.output)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/skills/presentation_program.py\", line 204, in render\n    cli('close', file)\n  File \"/skills/presentation_program.py\", line 24, in cli\n    result = subprocess.run(['officecli', *map(str, args)], env=ENV, capture_output=True, text=True, timeout=30)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/local/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'officecli'\n",
+                  "exit_code": 1
+                }
+              ]
+            },
+            "status": "success"
+          }
+        },
+        {
+          "id": "18",
+          "call_id": "synthetic-854e9fb75c2243e3be71345589014956",
+          "model_view": {
+            "code": "visual_review_required",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"ea77c619-3bf2-4e5b-91a9-9e2e46a5bd31\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "build_presentation",
+            "id": null,
+            "tool_call_id": "synthetic-854e9fb75c2243e3be71345589014956",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "verify",
+                  "output": "",
+                  "exit_code": 0
+                }
+              ]
+            },
+            "status": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "9d76d99d-5b39-4dcd-b97f-5bd05b57b9df",
+      "conversation": 9,
+      "status": "completed",
+      "request": "Crea un PPTX nuevo con texto largo, tabla y gráfico editables",
+      "logical_id": "5e1b2574-7478-4e1b-86b6-74fd2e81d331",
+      "events": [
+        {
+          "id": 151,
+          "kind": "queued",
+          "created_at": "2026-10-08 17:27:57.919287+00:00"
+        },
+        {
+          "id": 152,
+          "kind": "claimed",
+          "created_at": "2026-10-08 17:27:58.327047+00:00"
+        },
+        {
+          "id": 153,
+          "kind": "input",
+          "created_at": "2026-10-08 17:27:59.224084+00:00"
+        },
+        {
+          "id": 154,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:27:59.346697+00:00"
+        },
+        {
+          "id": 155,
+          "kind": "render",
+          "created_at": "2026-10-08 17:28:31.174320+00:00"
+        },
+        {
+          "id": 156,
+          "kind": "verify",
+          "created_at": "2026-10-08 17:28:36.840783+00:00"
+        },
+        {
+          "id": 157,
+          "kind": "visual_pending",
+          "created_at": "2026-10-08 17:28:37.561857+00:00"
+        },
+        {
+          "id": 158,
+          "kind": "visual_reviewed",
+          "created_at": "2026-10-08 17:29:04.057544+00:00"
+        },
+        {
+          "id": 159,
+          "kind": "completed",
+          "created_at": "2026-10-08 17:29:05.168765+00:00"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "4a059ccc-e3c3-4de8-9cca-369ef4a4b495",
+          "logical_id": "5e1b2574-7478-4e1b-86b6-74fd2e81d331",
+          "revision": 1,
+          "format": "pptx",
+          "status": "verified",
+          "sha256": "e41542a9fbc763884ec5be7a99805c2e71fa773c3084ac67251caf8a86035a4a",
+          "verification": {
+            "rows": 3,
+            "pages": 3,
+            "checks": [
+              "native_text_table_chart",
+              "embedded_workbook",
+              "source_values",
+              "canvas_bounds",
+              "pdf_text_fonts",
+              "rendered_final_bytes",
+              "new"
+            ],
+            "sha256": "e41542a9fbc763884ec5be7a99805c2e71fa773c3084ac67251caf8a86035a4a",
+            "call_id": "synthetic-4a2c9b45aed4405c85f457a20b53e1a8",
+            "pdf_sha256": "2f5d68d384754da722a2daadc4da6bd0b02024af404da100c575f0ac58db1a13",
+            "page_sha256": [
+              "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6",
+              "b261f8d2a357bdd2421f57541d5417ed874da50399de867a26ba770bb0c06211",
+              "e56b091cc7508dd9bb16e7ba29d9ddb201623f2b6f65964874bd71f8d800ad15"
+            ],
+            "total_cents": 750,
+            "visual_review": {
+              "checks": [
+                "all_pages",
+                "no_clipping_or_overlap",
+                "tables_complete",
+                "fonts_and_spanish",
+                "no_template_residue"
+              ],
+              "sha256": "e41542a9fbc763884ec5be7a99805c2e71fa773c3084ac67251caf8a86035a4a",
+              "reviewed_at": "2026-10-08T17:29:04.056229+00:00",
+              "reviewer_id": 1
+            },
+            "automated_passed": true,
+            "submission_sha256": "6e8a03e04342c1598eca89f71ced0355e9680d50708c81ae8ded41bac578c330"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "id": "19",
+          "call_id": "synthetic-4a2c9b45aed4405c85f457a20b53e1a8",
+          "model_view": {
+            "code": "visual_review_required",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"4a059ccc-e3c3-4de8-9cca-369ef4a4b495\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "build_presentation",
+            "id": null,
+            "tool_call_id": "synthetic-4a2c9b45aed4405c85f457a20b53e1a8",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "verify",
+                  "output": "",
+                  "exit_code": 0
+                }
+              ]
+            },
+            "status": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "628273d1-bcdd-47ad-b1e4-ddb6fb410b54",
+      "conversation": 10,
+      "status": "completed",
+      "request": "Crea un informe DOCX con la plantilla corporativa",
+      "logical_id": "bbc3a9c0-3535-4569-ad5e-8be01d9a9a2a",
+      "events": [
+        {
+          "id": 160,
+          "kind": "queued",
+          "created_at": "2026-10-08 17:29:28.035143+00:00"
+        },
+        {
+          "id": 161,
+          "kind": "claimed",
+          "created_at": "2026-10-08 17:29:28.946642+00:00"
+        },
+        {
+          "id": 162,
+          "kind": "input",
+          "created_at": "2026-10-08 17:29:29.772758+00:00"
+        },
+        {
+          "id": 163,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:29:29.911697+00:00"
+        },
+        {
+          "id": 164,
+          "kind": "render",
+          "created_at": "2026-10-08 17:29:30.946847+00:00"
+        },
+        {
+          "id": 165,
+          "kind": "verify",
+          "created_at": "2026-10-08 17:29:34.155380+00:00"
+        },
+        {
+          "id": 166,
+          "kind": "visual_pending",
+          "created_at": "2026-10-08 17:29:34.843507+00:00"
+        },
+        {
+          "id": 167,
+          "kind": "visual_reviewed",
+          "created_at": "2026-10-08 17:31:56.746244+00:00"
+        },
+        {
+          "id": 168,
+          "kind": "completed",
+          "created_at": "2026-10-08 17:31:57.673045+00:00"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "e80c0d87-0999-4643-a0dc-c50f515656a5",
+          "logical_id": "bbc3a9c0-3535-4569-ad5e-8be01d9a9a2a",
+          "revision": 1,
+          "format": "docx",
+          "status": "verified",
+          "sha256": "b8fdadf185f21ad2fc9da0f1018443d6eb0b37219f800186b318ba13bfa7f772",
+          "verification": {
+            "rows": 3,
+            "pages": 2,
+            "checks": [
+              "template_parts",
+              "sections",
+              "table_values",
+              "pdf_text",
+              "embedded_fonts",
+              "rendered_final_bytes",
+              "new_document"
+            ],
+            "sha256": "b8fdadf185f21ad2fc9da0f1018443d6eb0b37219f800186b318ba13bfa7f772",
+            "call_id": "synthetic-46c884b48353488a9802ceee252741e3",
+            "pdf_sha256": "55416a8198c29927490a817630b4ca0035063091a80b0613c88267bd3cda474d",
+            "docx_sha256": "b8fdadf185f21ad2fc9da0f1018443d6eb0b37219f800186b318ba13bfa7f772",
+            "page_sha256": [
+              "13cf4bdf0bc2cd27e66e583cf96af47905d0a5e89ca4996e2654db250f8733f7",
+              "3d49db8a62716ee583c2a52ad7c9e28b40dc2a35608f89482d6bf5d1405a41ad"
+            ],
+            "total_cents": 750,
+            "visual_review": {
+              "checks": [
+                "all_pages",
+                "no_clipping_or_overlap",
+                "tables_complete",
+                "fonts_and_spanish",
+                "no_template_residue"
+              ],
+              "sha256": "b8fdadf185f21ad2fc9da0f1018443d6eb0b37219f800186b318ba13bfa7f772",
+              "reviewed_at": "2026-10-08T17:31:56.744825+00:00",
+              "reviewer_id": 1
+            },
+            "automated_passed": true,
+            "submission_sha256": "266dabf78035c3a612d08a1a429a2ba72dc5129460b8f1efc952705a802a7432"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "id": "20",
+          "call_id": "synthetic-46c884b48353488a9802ceee252741e3",
+          "model_view": {
+            "code": "visual_review_required",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"e80c0d87-0999-4643-a0dc-c50f515656a5\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "build_document",
+            "id": null,
+            "tool_call_id": "synthetic-46c884b48353488a9802ceee252741e3",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "verify",
+                  "output": "",
+                  "exit_code": 0
+                }
+              ]
+            },
+            "status": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "a81e0b2b-1c62-4843-b73e-bcfd99c13ee8",
+      "conversation": 10,
+      "status": "completed",
+      "request": "Exporta este informe a PDF",
+      "logical_id": "bbc3a9c0-3535-4569-ad5e-8be01d9a9a2a",
+      "events": [
+        {
+          "id": 169,
+          "kind": "queued",
+          "created_at": "2026-10-08 17:32:33.603064+00:00"
+        },
+        {
+          "id": 170,
+          "kind": "claimed",
+          "created_at": "2026-10-08 17:32:33.778872+00:00"
+        },
+        {
+          "id": 171,
+          "kind": "input",
+          "created_at": "2026-10-08 17:32:34.756687+00:00"
+        },
+        {
+          "id": 172,
+          "kind": "compose",
+          "created_at": "2026-10-08 17:32:34.938489+00:00"
+        },
+        {
+          "id": 173,
+          "kind": "render",
+          "created_at": "2026-10-08 17:32:35.089256+00:00"
+        },
+        {
+          "id": 174,
+          "kind": "verify",
+          "created_at": "2026-10-08 17:32:38.698301+00:00"
+        },
+        {
+          "id": 175,
+          "kind": "visual_pending",
+          "created_at": "2026-10-08 17:32:39.416995+00:00"
+        },
+        {
+          "id": 176,
+          "kind": "visual_reviewed",
+          "created_at": "2026-10-08 17:33:49.964171+00:00"
+        },
+        {
+          "id": 177,
+          "kind": "completed",
+          "created_at": "2026-10-08 17:33:50.813080+00:00"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": "147bc595-bc0f-49dc-8344-64527f442945",
+          "logical_id": "bbc3a9c0-3535-4569-ad5e-8be01d9a9a2a",
+          "revision": 2,
+          "format": "pdf",
+          "status": "verified",
+          "sha256": "603deda5fca3d8b01476ce3ca027b18e9ccc2183a39fce2822e0ac9fbdfdc85d",
+          "verification": {
+            "rows": 3,
+            "pages": 2,
+            "checks": [
+              "template_parts",
+              "sections",
+              "table_values",
+              "pdf_text",
+              "embedded_fonts",
+              "rendered_final_bytes",
+              "unchanged_revision"
+            ],
+            "sha256": "603deda5fca3d8b01476ce3ca027b18e9ccc2183a39fce2822e0ac9fbdfdc85d",
+            "call_id": "synthetic-7a5a98e352f448308084144d49ecafe8",
+            "pdf_sha256": "603deda5fca3d8b01476ce3ca027b18e9ccc2183a39fce2822e0ac9fbdfdc85d",
+            "docx_sha256": "b8fdadf185f21ad2fc9da0f1018443d6eb0b37219f800186b318ba13bfa7f772",
+            "page_sha256": [
+              "13cf4bdf0bc2cd27e66e583cf96af47905d0a5e89ca4996e2654db250f8733f7",
+              "3d49db8a62716ee583c2a52ad7c9e28b40dc2a35608f89482d6bf5d1405a41ad"
+            ],
+            "total_cents": 750,
+            "visual_review": {
+              "checks": [
+                "all_pages",
+                "no_clipping_or_overlap",
+                "tables_complete",
+                "fonts_and_spanish",
+                "no_template_residue"
+              ],
+              "sha256": "603deda5fca3d8b01476ce3ca027b18e9ccc2183a39fce2822e0ac9fbdfdc85d",
+              "reviewed_at": "2026-10-08T17:33:49.962484+00:00",
+              "reviewer_id": 1
+            },
+            "automated_passed": true,
+            "submission_sha256": "3a73d5ba6f7193b5aae24fbd816af7a1decafde3a337daf32ed661b22a6599ae"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "id": "21",
+          "call_id": "synthetic-7a5a98e352f448308084144d49ecafe8",
+          "model_view": {
+            "code": "visual_review_required",
+            "status": "withheld"
+          },
+          "raw": {
+            "content": "{\"reference\": \"147bc595-bc0f-49dc-8344-64527f442945\"}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "export_pdf",
+            "id": null,
+            "tool_call_id": "synthetic-7a5a98e352f448308084144d49ecafe8",
+            "artifact": {
+              "raw_logs": [
+                {
+                  "phase": "input",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "compose",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "render",
+                  "output": "",
+                  "exit_code": 0
+                },
+                {
+                  "phase": "verify",
+                  "output": "",
+                  "exit_code": 0
+                }
+              ]
+            },
+            "status": "success"
+          }
+        }
+      ]
+    }
+  ],
+  "originals_and_renders_absent_from_model": true
+}
