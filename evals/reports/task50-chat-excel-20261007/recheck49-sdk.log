@@ -1,0 +1,11 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+test_all_builtin_outputs_are_gated_before_context (test_governed_adapter.AdapterTests.test_all_builtin_outputs_are_gated_before_context) ... ok
+test_errors_metadata_command_and_large_output_never_reach_model (test_governed_adapter.AdapterTests.test_errors_metadata_command_and_large_output_never_reach_model) ... ok
+test_real_sdk_compaction_sync_and_async_uses_internal_operation (test_governed_adapter.AdapterTests.test_real_sdk_compaction_sync_and_async_uses_internal_operation) ... ok
+test_stream_fallback_and_vision_cannot_bypass_adapter (test_governed_adapter.AdapterTests.test_stream_fallback_and_vision_cannot_bypass_adapter) ... ok
+test_uncertain_and_redirect_responses_do_not_retry_model (test_governed_adapter.AdapterTests.test_uncertain_and_redirect_responses_do_not_retry_model) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 11.975s
+
+OK

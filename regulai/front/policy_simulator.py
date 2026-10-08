@@ -192,7 +192,15 @@ def _outcome(actor, config, sample, rules, signals):
             'level': item.level, 'quality': item.quality} for item in candidates
             if f'engine:{item.company_engine_id}' in policy.allowed_destinations]
         budget = Decimal(cfg.limits.budget) if cfg.limits.budget is not None else None
-        required_checks = int(cfg.classification == 'required') + int(cfg.verification.mode != 'local')
+        tier_routing = cfg.routing.strategy == 'difficulty'
+        if tier_routing and signals['origin'] == 'jev' and cfg.classification != 'required':
+            result['route'].update(status='not_evaluated', reason_codes=['difficulty_evaluation_required'])
+            return result
+        if tier_routing:
+            difficulty = 'economy' if difficulty == 'economy' else 'strong'
+            result['difficulty'] = difficulty
+            candidates = [item for item in candidates if item.level == difficulty]
+        required_checks = int(cfg.classification == 'required' or tier_routing) + int(cfg.verification.mode != 'local')
         if budget is not None and required_checks:
             if cfg.jev.max_call_cost is None or cfg.jev.input_price is None or cfg.jev.output_price is None:
                 raise RoutingError('unknown_price')
@@ -204,12 +212,14 @@ def _outcome(actor, config, sample, rules, signals):
             if budget < 0:
                 raise RoutingError('budget_exhausted')
         selected = route(candidates, [sample], allowed_destinations=policy.allowed_destinations,
-            min_quality=cfg.routing.min_quality[difficulty], max_output_tokens=cfg.routing.max_output_tokens,
-            budget=budget)
+            min_quality=cfg.routing.min_quality[difficulty],
+            max_output_tokens=None if cfg.limits.provider_managed else cfg.routing.max_output_tokens,
+            provider_managed=cfg.limits.provider_managed,
+            budget=budget, require_quality=not tier_routing)
         result['route'].update(status='selected', model=selected.candidate.model_id,
             company_engine_id=selected.candidate.company_engine_id, level=selected.candidate.level,
             max_output_tokens=selected.max_output_tokens, estimated_cost=str(selected.estimated_cost) if selected.estimated_cost is not None else None,
-            currency=selected.candidate.currency, reason_codes=['quality_cost_route'])
+            currency=selected.candidate.currency, reason_codes=['difficulty_route' if tier_routing else 'quality_cost_route'])
     except RoutingError as error:
         result['route'].update(status='unavailable', reason_codes=[error.code])
     return result

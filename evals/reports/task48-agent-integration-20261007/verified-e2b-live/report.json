@@ -1,0 +1,794 @@
+{
+  "scope": "real self-hosted E2B/Firecracker inside disposable QEMU/KVM VM",
+  "started_utc": "2026-10-07T19:43:46.879758+00:00",
+  "commands": [
+    {
+      "command": [
+        "uname",
+        "-r"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "version",
+        "--format",
+        "{{.Server.Version}}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-directory",
+        "/home/probe/e2b",
+        "logs",
+        "--no-color",
+        "preflight"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "build",
+        "--build-context",
+        "agents=/home/probe/task48/regulai/front/agents",
+        "-t",
+        "regulay-task48-executor:local",
+        "-f",
+        "/home/probe/task48/ops/agent_probe/Dockerfile.executor",
+        "/home/probe/task48/ops/agent_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "build",
+        "--build-context",
+        "agents=/home/probe/task48/regulai/front/agents",
+        "-t",
+        "regulay-task48-sandbox:local",
+        "-f",
+        "/home/probe/task48/ops/agent_probe/Dockerfile.sandbox",
+        "/home/probe/task48/ops/agent_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-directory",
+        "/home/probe/e2b",
+        "exec",
+        "-T",
+        "ready",
+        "cat",
+        "/run/e2b/team-api-key"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "host",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--mount",
+        "type=bind,src=/home/probe/task48/.runtime,dst=/run/task48,readonly",
+        "regulay-task48-executor:local",
+        "python",
+        "-c",
+        "import sys,json; sys.path.insert(0,'/app/ops/agent_probe'); from run_e2b import build_template; build_template(json.load(open('/run/task48/template.json')))"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "create",
+        "--internal",
+        "--ipv6",
+        "--subnet",
+        "172.30.48.0/24",
+        "--subnet",
+        "fd48:48::/64",
+        "--opt",
+        "com.docker.network.bridge.name=br-task48",
+        "task48-exec"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "create",
+        "--internal",
+        "--ipv6",
+        "--subnet",
+        "172.30.49.0/24",
+        "--subnet",
+        "fd48:49::/64",
+        "task48-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-N",
+        "TASK48_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-A",
+        "TASK48_EXEC",
+        "-m",
+        "conntrack",
+        "--ctstate",
+        "ESTABLISHED,RELATED",
+        "-j",
+        "ACCEPT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-A",
+        "TASK48_EXEC",
+        "-p",
+        "tcp",
+        "-m",
+        "multiport",
+        "--dports",
+        "3000,3002",
+        "-j",
+        "ACCEPT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-A",
+        "TASK48_EXEC",
+        "-j",
+        "REJECT",
+        "--reject-with",
+        "icmp-admin-prohibited"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-I",
+        "INPUT",
+        "1",
+        "-i",
+        "br-task48",
+        "-j",
+        "TASK48_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "ip6tables",
+        "-I",
+        "INPUT",
+        "1",
+        "-i",
+        "br-task48",
+        "-j",
+        "REJECT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        "task48-receiver",
+        "--network",
+        "task48-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "serve"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "task48-receiver",
+        "--format",
+        "{{json .NetworkSettings.Networks}}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task48-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "172.30.49.2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task48-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "fd48:49::2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task48-exec",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--mount",
+        "type=bind,src=/home/probe/task48/.runtime,dst=/run/task48,readonly",
+        "regulay-task48-executor:local",
+        "python",
+        "-c",
+        "import sys,json; sys.path.insert(0,'/app/ops/agent_probe'); from run_e2b import live_probe; print(json.dumps(live_probe(json.load(open('/run/task48/live.json')))))"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task48-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "172.30.49.2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task48-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "--tmpfs",
+        "/workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "fd48:49::2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "-f",
+        "task48-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-D",
+        "INPUT",
+        "-i",
+        "br-task48",
+        "-j",
+        "TASK48_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-F",
+        "TASK48_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-X",
+        "TASK48_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "ip6tables",
+        "-D",
+        "INPUT",
+        "-i",
+        "br-task48",
+        "-j",
+        "REJECT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "rm",
+        "task48-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "rm",
+        "task48-exec"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "kernel": "6.8.0-142-generic",
+  "docker_version": "29.1.3",
+  "e2b_preflight": "preflight-1  | preflight: ok (arch=x86_64 page=4096 kernel=6.8.0-142-generic glibc=2.39 free=41GiB)",
+  "positive_controls_before": [
+    {
+      "address": "172.30.49.2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    },
+    {
+      "address": "fd48:49::2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    }
+  ],
+  "live": {
+    "scope": "self-hosted-e2b",
+    "started_utc": "2026-10-07T19:44:28.275853+00:00",
+    "executor_denials": [
+      {
+        "address": "172.30.49.2",
+        "port": 8080,
+        "denied": true,
+        "error": "OSError",
+        "errno": 101,
+        "ipv6_disabled_by_kernel": false
+      },
+      {
+        "address": "fd48:49::2",
+        "port": 8080,
+        "denied": true,
+        "error": "OSError",
+        "errno": 101,
+        "ipv6_disabled_by_kernel": false
+      }
+    ],
+    "positive_controls": "require separate control-host evidence",
+    "trials": [
+      {
+        "mode": "cold",
+        "sandbox_id": "i2wcxqikai38f6ngaddnl",
+        "preparation_seconds": 0.45783447999997406,
+        "assignment_seconds": 0.02709431800008133,
+        "contract": {
+          "uid": 1000,
+          "effective_capabilities": 0,
+          "input_readonly": true,
+          "work_writable": true,
+          "output_writable": true,
+          "docker_socket": false,
+          "provider_credentials": false,
+          "no_new_privs": "0",
+          "ipv6_disabled": true
+        },
+        "sandbox_denials": [
+          {
+            "address": "172.30.49.2",
+            "port": 8080,
+            "denied": true,
+            "error": "TimeoutError",
+            "errno": null,
+            "ipv6_disabled_by_kernel": false
+          },
+          {
+            "address": "fd48:49::2",
+            "port": 8080,
+            "denied": true,
+            "error": "OSError",
+            "errno": 99,
+            "ipv6_disabled_by_kernel": true
+          }
+        ],
+        "sdk": {
+          "native_tool_call": {
+            "name": "csv_totals",
+            "args": {
+              "input_path": "/workspace/input/numbers.csv"
+            },
+            "id": "task48-csv-1",
+            "type": "tool_call"
+          },
+          "model_received": {
+            "name": "csv_totals",
+            "tool_call_id": "task48-csv-1",
+            "result": {
+              "rows": 3,
+              "total_cents": 750
+            }
+          },
+          "effective_tools": [
+            "csv_totals",
+            "edit_file",
+            "execute",
+            "glob",
+            "grep",
+            "ls",
+            "read_file",
+            "write_file",
+            "write_todos"
+          ],
+          "events": [
+            {
+              "surface": "agent.model_middleware"
+            },
+            {
+              "surface": "model.request",
+              "purpose": "generation",
+              "sha256": "dd3162629b32a460ae83b7e757ed6f1fc8a187420d1eb8f428a9df6ee07bb5d8"
+            },
+            {
+              "surface": "model.response",
+              "purpose": "generation",
+              "sha256": "6be17cc9eee3103a8d643ef8a244a0000f3cb0e0b84801746f317b9e587ca42c"
+            },
+            {
+              "surface": "tool.arguments",
+              "sha256": "116bf90f02f052c6b771a54bd6169648615bb0c5c04eb3feb198610050c35b97"
+            },
+            {
+              "surface": "tool.result",
+              "name": "csv_totals",
+              "call_id": "task48-csv-1",
+              "sha256": "59e7137a207db34c8d615655947566748d0c35d38ae7d0a184a805b2af0fcd80"
+            },
+            {
+              "surface": "agent.model_middleware"
+            },
+            {
+              "surface": "model.request",
+              "purpose": "generation",
+              "sha256": "564eb8a7aaad963b5410897d4efdf9cd37854ab1bb700f980e7b3a07874b1896"
+            },
+            {
+              "surface": "model.response",
+              "purpose": "generation",
+              "sha256": "be441535b70f37f617cb7ce0a8af5c09eb3f601624838be69c8285f222b2bffa"
+            }
+          ],
+          "paid_calls": 0,
+          "global_memory": false,
+          "automatic_delegation": false
+        }
+      },
+      {
+        "mode": "prepared",
+        "sandbox_id": "iasidnoemkm0v8lkejf5q",
+        "preparation_seconds": 0.4791436870000325,
+        "assignment_seconds": 0.036431362000030276,
+        "contract": {
+          "uid": 1000,
+          "effective_capabilities": 0,
+          "input_readonly": true,
+          "work_writable": true,
+          "output_writable": true,
+          "docker_socket": false,
+          "provider_credentials": false,
+          "no_new_privs": "0",
+          "ipv6_disabled": true
+        },
+        "sandbox_denials": [
+          {
+            "address": "172.30.49.2",
+            "port": 8080,
+            "denied": true,
+            "error": "TimeoutError",
+            "errno": null,
+            "ipv6_disabled_by_kernel": false
+          },
+          {
+            "address": "fd48:49::2",
+            "port": 8080,
+            "denied": true,
+            "error": "OSError",
+            "errno": 99,
+            "ipv6_disabled_by_kernel": true
+          }
+        ],
+        "sdk": {
+          "native_tool_call": {
+            "name": "csv_totals",
+            "args": {
+              "input_path": "/workspace/input/numbers.csv"
+            },
+            "id": "task48-csv-1",
+            "type": "tool_call"
+          },
+          "model_received": {
+            "name": "csv_totals",
+            "tool_call_id": "task48-csv-1",
+            "result": {
+              "rows": 3,
+              "total_cents": 750
+            }
+          },
+          "effective_tools": [
+            "csv_totals",
+            "edit_file",
+            "execute",
+            "glob",
+            "grep",
+            "ls",
+            "read_file",
+            "write_file",
+            "write_todos"
+          ],
+          "events": [
+            {
+              "surface": "agent.model_middleware"
+            },
+            {
+              "surface": "model.request",
+              "purpose": "generation",
+              "sha256": "86617c7e9b0f36fe8d70f9113f8fe69a743888251fb6edd1a78683cf34c0400a"
+            },
+            {
+              "surface": "model.response",
+              "purpose": "generation",
+              "sha256": "6be17cc9eee3103a8d643ef8a244a0000f3cb0e0b84801746f317b9e587ca42c"
+            },
+            {
+              "surface": "tool.arguments",
+              "sha256": "116bf90f02f052c6b771a54bd6169648615bb0c5c04eb3feb198610050c35b97"
+            },
+            {
+              "surface": "tool.result",
+              "name": "csv_totals",
+              "call_id": "task48-csv-1",
+              "sha256": "59e7137a207db34c8d615655947566748d0c35d38ae7d0a184a805b2af0fcd80"
+            },
+            {
+              "surface": "agent.model_middleware"
+            },
+            {
+              "surface": "model.request",
+              "purpose": "generation",
+              "sha256": "afe14eed0e055eacca0e0f8a8288b6a5a92400a6f5d06766f4e75dc12a530c7e"
+            },
+            {
+              "surface": "model.response",
+              "purpose": "generation",
+              "sha256": "be441535b70f37f617cb7ce0a8af5c09eb3f601624838be69c8285f222b2bffa"
+            }
+          ],
+          "paid_calls": 0,
+          "global_memory": false,
+          "automatic_delegation": false
+        }
+      }
+    ],
+    "paid_calls": 0
+  },
+  "positive_controls_after": [
+    {
+      "address": "172.30.49.2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    },
+    {
+      "address": "fd48:49::2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-07T19:44:33.537433+00:00"
+}

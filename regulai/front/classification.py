@@ -27,6 +27,25 @@ def _probability(value):
     return type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1
 
 
+def difficulty_level(answers, threshold):
+    """Difficulty proposes a tier, never authorizes a destination or changes sensitivity."""
+    if not isinstance(answers, dict) or set(answers) != {'difficulty'}:
+        raise ValueError('Invalid difficulty answers.')
+    answer = answers['difficulty']
+    if not isinstance(answer, dict) or set(answer) != {'type', 'choice', 'confidence', 'probabilities'}:
+        raise ValueError('Invalid difficulty choice.')
+    probabilities = answer['probabilities']
+    if (answer['type'] != 'choice' or answer['choice'] not in ('easy', 'hard')
+            or not _probability(answer['confidence']) or not isinstance(probabilities, dict)
+            or set(probabilities) != {'easy', 'hard'} or any(not _probability(p) for p in probabilities.values())
+            or not math.isclose(sum(probabilities.values()), 1, abs_tol=1e-6, rel_tol=0)
+            or probabilities[answer['choice']] < max(probabilities.values())
+            or answer['confidence'] > probabilities[answer['choice']] + 1e-6):
+        raise ValueError('Invalid difficulty distribution.')
+    # Uncertain routing uses the stronger authorized model, without lowering security thresholds.
+    return 'economy' if answer['choice'] == 'easy' and answer['confidence'] >= threshold else 'strong'
+
+
 def _validate(answers):
     if not isinstance(answers, dict) or set(answers) != {'category', 'task', 'difficulty', *SIGNALS}:
         raise ValueError('Invalid classification answers.')

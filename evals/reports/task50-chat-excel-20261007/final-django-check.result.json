@@ -1,0 +1,12 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    ".venv/Scripts/python.exe",
+    "regulai/manage.py",
+    "check",
+    "--settings=regulai.test_settings"
+  ],
+  "exit_code": 0,
+  "seconds": 1.537
+}

@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.core.files.uploadedfile import SimpleUploadedFile
 from front import test_chat_flow
 from front.connectors import ChatResponse, OpenAIConnector
-from front.models import CompanyEngine, EngineModel, Message, ObfuscationConfig, Profile, Rule
+from front.models import CompanyEngine, EngineModel, Message, ObfuscationConfig, Profile, Prompt, Rule
 
 OPENAI_CHAT = OpenAIConnector.chat
 
@@ -34,6 +34,41 @@ def jev_http(choices=None, failures=None):
 
 
 class PipelineTests(test_chat_flow.ChatFixture):
+    def test_conversation_judge_scopes_current_turn_without_dropping_history_or_weakening_enforcement(self):
+        self.configure(classification='local')
+        previous_request = 'Responde solamente con estas dos palabras: Prueba correcta.'
+        for entry in ('web', 'api', 'legacy'):
+            with self.subTest(entry=entry):
+                self.http.side_effect = jev_http()
+                self.provider.return_value = ChatResponse('Prueba correcta.', 30, 'synthetic-v1', 'stop', 20, 10)
+                first = self.send('/chat/send/', previous_request).json()
+                conversation = first['conversation_id']
+                path = f'/chat/{conversation}/send/' if entry == 'web' else (
+                    '/api/chat/send/' if entry == 'api' else f'/chat/{conversation}/')
+                self.http.reset_mock()
+                self.provider.return_value = ChatResponse('¡Hola! ¿En qué puedo ayudarte?', 30, 'synthetic-v1', 'stop', 20, 10)
+                self.send(path, 'hola', conversation_id=conversation)
+                prompt = Prompt.objects.latest('pk')
+                self.assertEqual(prompt.status, 'completed')
+                self.assertEqual(prompt.decision['history']['sent_turns'], 1)
+                judged = [json.loads(call.kwargs['data']) for call in self.http.call_args_list if call.kwargs.get('data')][-1]
+                self.assertEqual(judged['state']['request'], 'hola')
+                self.assertEqual(judged['state']['context'], [
+                    {'role': 'user', 'content': previous_request}, {'role': 'assistant', 'content': 'Prueba correcta.'}])
+                self.assertIn('state.request', judged['questions']['failure_omission']['instructions'])
+                self.assertIn('one-turn', judged['questions']['failure_omission']['instructions'])
+                call = prompt.decision['calls'][-1]
+                self.assertEqual(call['question_rubric_version'], 'verification-questions-v2')
+                self.assertEqual(call['threshold'], 0.8)
+                self.assertEqual(prompt.decision['verification']['mode'], 'enforce')
+                self.http.side_effect = jev_http(failures={'failure_omission': 0.47})
+                self.provider.return_value = ChatResponse('Prueba correcta.', 30, 'synthetic-v1', 'stop', 20, 10)
+                self.send(path, 'hola', conversation_id=conversation)
+                rejected = Prompt.objects.latest('pk')
+                self.assertEqual(rejected.status, 'failed')
+                self.assertEqual(rejected.decision['error_type'], 'verification_failed')
+                self.assertEqual(rejected.conversation.messages.filter(role='assistant').count(), 2)
+
     def test_web_automatic_mode_ignores_stale_manual_session_selection(self):
         self.configure()
         self.company.ai_config['routing'] = {'mode': 'auto', 'candidates': [{

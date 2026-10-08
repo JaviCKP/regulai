@@ -1,0 +1,23 @@
+{
+  "source": "https://raw.githubusercontent.com/e2b-dev/runtime/79098f5667b695c9fa8d087305068e1950dccc54/embed/compose/scripts/preflight.sh",
+  "sha256": "db87fe2668c3104459f0e462d5dd6c46b0a6ad42efdca632d5407492d571f2b9",
+  "command": [
+    "rtk",
+    "proxy",
+    "wsl",
+    "-d",
+    "Ubuntu",
+    "--",
+    "bash",
+    "-s"
+  ],
+  "e2b_preflight_exit_code": 2,
+  "e2b_preflight": "[rtk] /!\\ No hook installed \u2014 run `rtk init -g` for automatic token savings\nbash: line 33: syntax error near unexpected token `$'{\\r''\nbash: line 33: `check_arch() {\n'\n",
+  "docker_runtimes": [
+    "io.containerd.runc.v2",
+    "nvidia",
+    "runc"
+  ],
+  "opensandbox_secure_runtime_available": false,
+  "e2b_infrastructure_validated": false
+}

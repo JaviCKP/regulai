@@ -1,0 +1,16 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "/home/probe/task49/ops/agent_probe/vm/task49_network.py", line 96, in <module>
+    main()
+  File "/home/probe/task49/ops/agent_probe/vm/task49_network.py", line 70, in main
+    raw = run('docker', 'run', '--rm', '--network', 'task49-exec', *flags,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task49/ops/agent_probe/vm/task49_network.py", line 24, in run
+    raise RuntimeError(result.stderr.decode(errors='replace'))
+RuntimeError: Traceback (most recent call last):
+  File "/app/ops/agent_probe/network_governed.py", line 54, in <module>
+    executor_probe(json.loads(sys.argv[2]))
+  File "/app/ops/agent_probe/network_governed.py", line 34, in executor_probe
+    raise AssertionError('Unexpected executor credentials')
+AssertionError: Unexpected executor credentials
+

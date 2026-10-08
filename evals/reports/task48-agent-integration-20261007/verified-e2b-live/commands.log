@@ -1,0 +1,364 @@
+
+$ uname -r
+6.8.0-142-generic
+
+$ docker version --format {{.Server.Version}}
+29.1.3
+
+$ docker compose --project-directory /home/probe/e2b logs --no-color preflight
+preflight-1  | preflight: ok (arch=x86_64 page=4096 kernel=6.8.0-142-generic glibc=2.39 free=41GiB)
+
+$ docker build --build-context agents=/home/probe/task48/regulai/front/agents -t regulay-task48-executor:local -f /home/probe/task48/ops/agent_probe/Dockerfile.executor /home/probe/task48/ops/agent_probe
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.executor
+#1 transferring dockerfile: 728B done
+#1 DONE 0.1s
+
+#2 [context agents] load .dockerignore
+#2 transferring agents:
+#2 transferring agents: 2B done
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#3 DONE 1.5s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 133B done
+#4 DONE 0.1s
+
+#5 [internal] load build context
+#5 DONE 0.0s
+
+#6 [context agents] load from client
+#6 DONE 0.0s
+
+#7 [stage-0 1/7] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#7 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#7 ...
+
+#6 [context agents] load from client
+#6 transferring agents: 11.55kB done
+#6 DONE 0.2s
+
+#5 [internal] load build context
+#5 transferring context: 158.02kB 0.0s done
+#5 DONE 0.2s
+
+#7 [stage-0 1/7] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#7 DONE 0.3s
+
+#8 [stage-0 2/7] COPY requirements.txt /tmp/requirements.txt
+#8 DONE 0.1s
+
+#9 [stage-0 3/7] RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt     && python -m pip check && useradd --uid 1000 --create-home user
+#9 1.541 Ignoring httpx2-jsfetch: markers 'sys_platform == "emscripten"' don't match your environment
+#9 1.650 Collecting annotated-types==0.8.0 (from -r /tmp/requirements.txt (line 3))
+#9 1.740   Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#9 1.794 Collecting anthropic==1.12.0 (from -r /tmp/requirements.txt (line 7))
+#9 1.810   Downloading anthropic-1.12.0-py3-none-any.whl (1.9 MB)
+#9 1.990      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 12.0 MB/s eta 0:00:00
+#9 2.028 Collecting anyio==4.15.1 (from -r /tmp/requirements.txt (line 11))
+#9 2.042   Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+#9 2.073 Collecting attrs==26.1.0 (from -r /tmp/requirements.txt (line 20))
+#9 2.087   Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+#9 2.112 Collecting bracex==3.0.1 (from -r /tmp/requirements.txt (line 24))
+#9 2.125   Downloading bracex-3.0.1-py3-none-any.whl (11 kB)
+#9 2.148 Collecting certifi==2026.7.22 (from -r /tmp/requirements.txt (line 28))
+#9 2.161   Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+#9 2.266 Collecting cffi==2.1.1 (from -r /tmp/requirements.txt (line 35))
+#9 2.280   Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+#9 2.372 Collecting charset-normalizer==3.5.2 (from -r /tmp/requirements.txt (line 137))
+#9 2.386   Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+#9 2.422 Collecting connectrpc==0.11.1 (from -r /tmp/requirements.txt (line 311))
+#9 2.436   Downloading connectrpc-0.11.1-py3-none-any.whl (64 kB)
+#9 2.556 Collecting cryptography==50.0.2 (from -r /tmp/requirements.txt (line 315))
+#9 2.571   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+#9 2.851      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 17.5 MB/s eta 0:00:00
+#9 2.887 Collecting deepagents==0.6.12 (from -r /tmp/requirements.txt (line 376))
+#9 2.901   Downloading deepagents-0.6.12-py3-none-any.whl (236 kB)
+#9 2.933 Collecting distro==1.9.0 (from -r /tmp/requirements.txt (line 382))
+#9 2.947   Downloading distro-1.9.0-py3-none-any.whl (20 kB)
+#9 2.965 Collecting dockerfile-parse==2.0.1 (from -r /tmp/requirements.txt (line 388))
+#9 2.980   Downloading dockerfile_parse-2.0.1-py2.py3-none-any.whl (14 kB)
+#9 2.998 Collecting docstring-parser==0.18.0 (from -r /tmp/requirements.txt (line 392))
+#9 3.012   Downloading docstring_parser-0.18.0-py3-none-any.whl (22 kB)
+#9 3.092 Collecting e2b==2.53.1 (from -r /tmp/requirements.txt (line 396))
+#9 3.107   Downloading e2b-2.53.1-py3-none-any.whl (400 kB)
+#9 3.147 Collecting filetype==1.2.0 (from -r /tmp/requirements.txt (line 402))
+#9 3.162   Downloading filetype-1.2.0-py2.py3-none-any.whl (19 kB)
+#9 3.196 Collecting google-auth==2.60.0 (from -r /tmp/requirements.txt (line 406))
+#9 3.210   Downloading google_auth-2.60.0-py3-none-any.whl (264 kB)
+#9 3.275 Collecting google-genai==2.28.0 (from -r /tmp/requirements.txt (line 410))
+#9 3.292   Downloading google_genai-2.28.0-py3-none-any.whl (1.2 MB)
+#9 3.367      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 15.3 MB/s eta 0:00:00
+#9 3.393 Collecting h11==0.16.0 (from -r /tmp/requirements.txt (line 414))
+#9 3.408   Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#9 3.430 Collecting h2==4.4.1 (from -r /tmp/requirements.txt (line 420))
+#9 3.445   Downloading h2-4.4.1-py3-none-any.whl (62 kB)
+#9 3.466 Collecting hpack==4.2.0 (from -r /tmp/requirements.txt (line 424))
+#9 3.480   Downloading hpack-4.2.0-py3-none-any.whl (34 kB)
+#9 3.503 Collecting httpcore==1.0.9 (from -r /tmp/requirements.txt (line 428))
+#9 3.517   Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+#9 3.541 Collecting httpcore2==2.13.1 (from -r /tmp/requirements.txt (line 432))
+#9 3.555   Downloading httpcore2-2.13.1-py3-none-any.whl (83 kB)
+#9 3.581 Collecting httpx==0.28.1 (from -r /tmp/requirements.txt (line 436))
+#9 3.595   Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+#9 3.623 Collecting httpx2==2.13.1 (from -r /tmp/requirements.txt (line 444))
+#9 3.637   Downloading httpx2-2.13.1-py3-none-any.whl (95 kB)
+#9 3.660 Collecting hyperframe==6.1.0 (from -r /tmp/requirements.txt (line 454))
+#9 3.675   Downloading hyperframe-6.1.0-py3-none-any.whl (13 kB)
+#9 3.694 Collecting idna==3.20 (from -r /tmp/requirements.txt (line 458))
+#9 3.709   Downloading idna-3.20-py3-none-any.whl (69 kB)
+#9 3.776 Collecting jiter==0.17.0 (from -r /tmp/requirements.txt (line 466))
+#9 3.790   Downloading jiter-0.17.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (345 kB)
+#9 3.827 Collecting jsonpatch==1.33 (from -r /tmp/requirements.txt (line 587))
+#9 3.840   Downloading jsonpatch-1.33-py2.py3-none-any.whl (12 kB)
+#9 3.858 Collecting jsonpointer==3.2.0 (from -r /tmp/requirements.txt (line 591))
+#9 3.872   Downloading jsonpointer-3.2.0-py3-none-any.whl (8.2 kB)
+#9 3.951 Collecting langchain==1.4.3 (from -r /tmp/requirements.txt (line 595))
+#9 3.968   Downloading langchain-1.4.3-py3-none-any.whl (164 kB)
+#9 4.012 Collecting langchain-anthropic==1.7.5 (from -r /tmp/requirements.txt (line 599))
+#9 4.027   Downloading langchain_anthropic-1.7.5-py3-none-any.whl (65 kB)
+#9 4.074 Collecting langchain-core==1.6.7 (from -r /tmp/requirements.txt (line 603))
+#9 4.088   Downloading langchain_core-1.6.7-py3-none-any.whl (572 kB)
+#9 4.115      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 572.8/572.8 kB 19.7 MB/s eta 0:00:00
+#9 4.134 Collecting langchain-e2b==0.0.6 (from -r /tmp/requirements.txt (line 615))
+#9 4.148   Downloading langchain_e2b-0.0.6-py3-none-any.whl (11 kB)
+#9 4.173 Collecting langchain-google-genai==4.4.0 (from -r /tmp/requirements.txt (line 619))
+#9 4.188   Downloading langchain_google_genai-4.4.0-py3-none-any.whl (81 kB)
+#9 4.211 Collecting langchain-protocol==0.0.19 (from -r /tmp/requirements.txt (line 623))
+#9 4.225   Downloading langchain_protocol-0.0.19-py3-none-any.whl (7.3 kB)
+#9 4.267 Collecting langgraph==1.2.14 (from -r /tmp/requirements.txt (line 629))
+#9 4.283   Downloading langgraph-1.2.14-py3-none-any.whl (255 kB)
+#9 4.325 Collecting langgraph-checkpoint==4.2.0 (from -r /tmp/requirements.txt (line 633))
+#9 4.340   Downloading langgraph_checkpoint-4.2.0-py3-none-any.whl (56 kB)
+#9 4.364 Collecting langgraph-prebuilt==1.1.0 (from -r /tmp/requirements.txt (line 639))
+#9 4.378   Downloading langgraph_prebuilt-1.1.0-py3-none-any.whl (41 kB)
+#9 4.408 Collecting langgraph-sdk==0.4.6 (from -r /tmp/requirements.txt (line 643))
+#9 4.423   Downloading langgraph_sdk-0.4.6-py3-none-any.whl (162 kB)
+#9 4.502 Collecting langsmith==0.14.4 (from -r /tmp/requirements.txt (line 647))
+#9 4.516   Downloading langsmith-0.14.4-py3-none-any.whl (813 kB)
+#9 4.555      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 813.1/813.1 kB 32.5 MB/s eta 0:00:00
+#9 4.582 Collecting markdown-it-py==4.2.0 (from -r /tmp/requirements.txt (line 653))
+#9 4.596   Downloading markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+#9 4.621 Collecting mdurl==0.1.2 (from -r /tmp/requirements.txt (line 657))
+#9 4.636   Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+#9 4.680 Collecting opentelemetry-api==1.45.1 (from -r /tmp/requirements.txt (line 661))
+#9 4.695   Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+#9 4.856 Collecting orjson==3.13.0 (from -r /tmp/requirements.txt (line 665))
+#9 4.872   Downloading orjson-3.13.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (130 kB)
+#9 4.919 Collecting ormsgpack==1.12.2 (from -r /tmp/requirements.txt (line 728))
+#9 4.934   Downloading ormsgpack-1.12.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (212 kB)
+#9 4.963 Collecting packaging==26.3 (from -r /tmp/requirements.txt (line 779))
+#9 5.003   Downloading packaging-26.3-py3-none-any.whl (129 kB)
+#9 5.043 Collecting protobuf-py==0.1.1 (from -r /tmp/requirements.txt (line 786))
+#9 5.057   Downloading protobuf_py-0.1.1-py3-none-any.whl (181 kB)
+#9 5.152 Collecting protobuf-py-ext==0.1.1 (from -r /tmp/requirements.txt (line 792))
+#9 5.182   Downloading protobuf_py_ext-0.1.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (326 kB)
+#9 5.223 Collecting pyasn1==0.6.4 (from -r /tmp/requirements.txt (line 822))
+#9 5.238   Downloading pyasn1-0.6.4-py3-none-any.whl (84 kB)
+#9 5.263 Collecting pyasn1-modules==0.4.2 (from -r /tmp/requirements.txt (line 826))
+#9 5.283   Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
+#9 5.314 Collecting pycparser==3.0 (from -r /tmp/requirements.txt (line 830))
+#9 5.328   Downloading pycparser-3.0-py3-none-any.whl (48 kB)
+#9 5.446 Collecting pydantic==2.13.5 (from -r /tmp/requirements.txt (line 834))
+#9 5.464   Downloading pydantic-2.13.5-py3-none-any.whl (472 kB)
+#9 6.078 Collecting pydantic-core==2.46.5 (from -r /tmp/requirements.txt (line 846))
+#9 6.093   Downloading pydantic_core-2.46.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+#9 6.233      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 15.1 MB/s eta 0:00:00
+#9 6.260 Collecting pygments==2.21.0 (from -r /tmp/requirements.txt (line 968))
+#9 6.275   Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+#9 6.374      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 13.9 MB/s eta 0:00:00
+#9 6.418 Collecting pyqwest==0.10.0 (from -r /tmp/requirements.txt (line 972))
+#9 6.432   Downloading pyqwest-0.10.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (5.6 MB)
+#9 6.704      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.6/5.6 MB 20.8 MB/s eta 0:00:00
+#9 6.730 Collecting python-dateutil==2.9.0.post0 (from -r /tmp/requirements.txt (line 1019))
+#9 6.744   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#9 6.796 Collecting pyyaml==6.0.3 (from -r /tmp/requirements.txt (line 1023))
+#9 6.811   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+#9 6.855      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 19.8 MB/s eta 0:00:00
+#9 6.884 Collecting requests==2.34.2 (from -r /tmp/requirements.txt (line 1098))
+#9 6.898   Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+#9 6.922 Collecting requests-toolbelt==1.0.0 (from -r /tmp/requirements.txt (line 1106))
+#9 6.935   Downloading requests_toolbelt-1.0.0-py2.py3-none-any.whl (54 kB)
+#9 6.975 Collecting rich==15.0.0 (from -r /tmp/requirements.txt (line 1110))
+#9 6.989   Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+#9 7.024 Collecting six==1.17.0 (from -r /tmp/requirements.txt (line 1114))
+#9 7.037   Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#9 7.054 Collecting sniffio==1.3.1 (from -r /tmp/requirements.txt (line 1118))
+#9 7.068   Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+#9 7.089 Collecting tenacity==9.1.4 (from -r /tmp/requirements.txt (line 1125))
+#9 7.104   Downloading tenacity-9.1.4-py3-none-any.whl (28 kB)
+#9 7.123 Collecting truststore==0.10.4 (from -r /tmp/requirements.txt (line 1131))
+#9 7.136   Downloading truststore-0.10.4-py3-none-any.whl (18 kB)
+#9 7.157 Collecting typing-extensions==4.16.0 (from -r /tmp/requirements.txt (line 1137))
+#9 7.170   Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#9 7.190 Collecting typing-inspection==0.4.4 (from -r /tmp/requirements.txt (line 1153))
+#9 7.203   Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#9 7.241 Collecting urllib3==2.8.0 (from -r /tmp/requirements.txt (line 1157))
+#9 7.257   Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+#9 7.351 Collecting uuid-utils==0.17.1 (from -r /tmp/requirements.txt (line 1161))
+#9 7.368   Downloading uuid_utils-0.17.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (323 kB)
+#9 7.409 Collecting wcmatch==11.0.1 (from -r /tmp/requirements.txt (line 1259))
+#9 7.423   Downloading wcmatch-11.0.1-py3-none-any.whl (43 kB)
+#9 7.520 Collecting websockets==16.1.1 (from -r /tmp/requirements.txt (line 1265))
+#9 7.534   Downloading websockets-16.1.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (187 kB)
+#9 7.636 Collecting xxhash==4.0.1 (from -r /tmp/requirements.txt (line 1379))
+#9 7.653   Downloading xxhash-4.0.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (261 kB)
+#9 7.749 Collecting zstandard==0.25.0 (from -r /tmp/requirements.txt (line 1597))
+#9 7.770   Downloading zstandard-0.25.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.5 MB)
+#9 8.142      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.5/5.5 MB 14.7 MB/s eta 0:00:00
+#9 8.678 Installing collected packages: filetype, zstandard, xxhash, websockets, uuid-utils, urllib3, typing-extensions, truststore, tenacity, sniffio, six, pyyaml, pygments, pycparser, pyasn1, protobuf-py-ext, packaging, ormsgpack, orjson, mdurl, jsonpointer, jiter, idna, hyperframe, hpack, h11, docstring-parser, dockerfile-parse, distro, charset-normalizer, certifi, bracex, attrs, annotated-types, wcmatch, typing-inspection, requests, python-dateutil, pydantic-core, pyasn1-modules, protobuf-py, opentelemetry-api, markdown-it-py, langchain-protocol, jsonpatch, httpcore2, httpcore, h2, cffi, anyio, rich, requests-toolbelt, pyqwest, pydantic, httpx2, httpx, cryptography, langsmith, google-auth, connectrpc, anthropic, langchain-core, e2b, langgraph-sdk, langgraph-checkpoint, langchain-anthropic, google-genai, langgraph-prebuilt, langchain-google-genai, langgraph, langchain, deepagents, langchain-e2b
+#9 14.99 Successfully installed annotated-types-0.8.0 anthropic-1.12.0 anyio-4.15.1 attrs-26.1.0 bracex-3.0.1 certifi-2026.7.22 cffi-2.1.1 charset-normalizer-3.5.2 connectrpc-0.11.1 cryptography-50.0.2 deepagents-0.6.12 distro-1.9.0 dockerfile-parse-2.0.1 docstring-parser-0.18.0 e2b-2.53.1 filetype-1.2.0 google-auth-2.60.0 google-genai-2.28.0 h11-0.16.0 h2-4.4.1 hpack-4.2.0 httpcore-1.0.9 httpcore2-2.13.1 httpx-0.28.1 httpx2-2.13.1 hyperframe-6.1.0 idna-3.20 jiter-0.17.0 jsonpatch-1.33 jsonpointer-3.2.0 langchain-1.4.3 langchain-anthropic-1.7.5 langchain-core-1.6.7 langchain-e2b-0.0.6 langchain-google-genai-4.4.0 langchain-protocol-0.0.19 langgraph-1.2.14 langgraph-checkpoint-4.2.0 langgraph-prebuilt-1.1.0 langgraph-sdk-0.4.6 langsmith-0.14.4 markdown-it-py-4.2.0 mdurl-0.1.2 opentelemetry-api-1.45.1 orjson-3.13.0 ormsgpack-1.12.2 packaging-26.3 protobuf-py-0.1.1 protobuf-py-ext-0.1.1 pyasn1-0.6.4 pyasn1-modules-0.4.2 pycparser-3.0 pydantic-2.13.5 pydantic-core-2.46.5 pygments-2.21.0 pyqwest-0.10.0 python-dateutil-2.9.0.post0 pyyaml-6.0.3 requests-2.34.2 requests-toolbelt-1.0.0 rich-15.0.0 six-1.17.0 sniffio-1.3.1 tenacity-9.1.4 truststore-0.10.4 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 uuid-utils-0.17.1 wcmatch-11.0.1 websockets-16.1.1 xxhash-4.0.1 zstandard-0.25.0
+#9 14.99 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 15.09 
+#9 15.09 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#9 15.09 [notice] To update, run: pip install --upgrade pip
+#9 15.64 No broken requirements found.
+#9 DONE 16.3s
+
+#10 [stage-0 4/7] COPY --from=agents __init__.py integration_probe.py probe_csv.py /app/regulai/front/agents/
+#10 DONE 0.2s
+
+#11 [stage-0 5/7] COPY test_probe.py runtime_checks.py run_e2b.py /app/ops/agent_probe/
+#11 DONE 0.1s
+
+#12 [stage-0 6/7] COPY input/numbers.csv /app/ops/agent_probe/input/numbers.csv
+#12 DONE 0.1s
+
+#13 [stage-0 7/7] WORKDIR /app
+#13 DONE 0.1s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 4.2s done
+#14 exporting manifest sha256:8c8e4d19c5209d740ae8260d372a5f9f3150e617098fd93b055e8b5fd186c49a 0.0s done
+#14 exporting config sha256:789a6cefdee73754876b289ab4857193d6664020e9970a55f1158b15c28a0f21 0.0s done
+#14 exporting attestation manifest sha256:e12d86d311582172cbe1e653ede1a6729bfb92dd5765d00c76017e4ff92e45e7 0.1s done
+#14 exporting manifest list sha256:03fdd482439768f9ca9dafbefeb7db7e15e1d86739ef7fec749a15d68e084779
+#14 exporting manifest list sha256:03fdd482439768f9ca9dafbefeb7db7e15e1d86739ef7fec749a15d68e084779 0.0s done
+#14 naming to docker.io/library/regulay-task48-executor:local done
+#14 unpacking to docker.io/library/regulay-task48-executor:local
+#14 unpacking to docker.io/library/regulay-task48-executor:local 1.2s done
+#14 DONE 5.6s
+
+$ docker build --build-context agents=/home/probe/task48/regulai/front/agents -t regulay-task48-sandbox:local -f /home/probe/task48/ops/agent_probe/Dockerfile.sandbox /home/probe/task48/ops/agent_probe
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.sandbox
+#1 transferring dockerfile: 948B done
+#1 DONE 0.0s
+
+#2 [context agents] load .dockerignore
+#2 transferring agents: 2B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 133B done
+#4 DONE 0.0s
+
+#5 [stage-0 1/7] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#5 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#5 CACHED
+
+#6 [context agents] load from client
+#6 transferring agents: 34B done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 100B done
+#7 DONE 0.1s
+
+#8 [stage-0 2/7] RUN useradd --uid 1000 --create-home user     && mkdir -p /workspace/input /workspace/work /workspace/output /conversation_history /large_tool_results     && chown user:user /workspace/work /workspace/output /conversation_history /large_tool_results     && find / -xdev -type f -perm /6000 -exec chmod a-s {} +
+#8 DONE 0.9s
+
+#9 [stage-0 3/7] COPY input/numbers.csv /workspace/input/numbers.csv
+#9 DONE 0.1s
+
+#10 [stage-0 4/7] COPY runtime_checks.py /probe/runtime_checks.py
+#10 DONE 0.1s
+
+#11 [stage-0 5/7] COPY --from=agents probe_csv.py /probe/probe_csv.py
+#11 DONE 0.1s
+
+#12 [stage-0 6/7] RUN chmod 0555 /workspace/input && chmod 0444 /workspace/input/numbers.csv
+#12 DONE 0.2s
+
+#13 [stage-0 7/7] WORKDIR /workspace/work
+#13 DONE 0.1s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 0.7s done
+#14 exporting manifest sha256:c981ba9e553eb9b19c84df4d757893dcef6d95a25dc78f9c0cbeb066b2a1cfe9 0.0s done
+#14 exporting config sha256:30a0a959afc847430fa66e33028a56631885f6f6fb77ff851b61b28dcc04aa5f 0.0s done
+#14 exporting attestation manifest sha256:792c197d4a086f6a364411d6f7c90a40920ec4aec1e6695218847bb81080ad5b
+#14 exporting attestation manifest sha256:792c197d4a086f6a364411d6f7c90a40920ec4aec1e6695218847bb81080ad5b 0.1s done
+#14 exporting manifest list sha256:9a58310289dc00cc94787d0a7440be5dbf482aea55378bb2a4251f95f1cde5b6 0.0s done
+#14 naming to docker.io/library/regulay-task48-sandbox:local
+#14 naming to docker.io/library/regulay-task48-sandbox:local done
+#14 unpacking to docker.io/library/regulay-task48-sandbox:local
+#14 unpacking to docker.io/library/regulay-task48-sandbox:local 0.2s done
+#14 DONE 1.1s
+
+$ docker run --rm --network host --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --dns 127.0.0.1 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --mount type=bind,src=/home/probe/task48/.runtime,dst=/run/task48,readonly regulay-task48-executor:local python -c import sys,json; sys.path.insert(0,'/app/ops/agent_probe'); from run_e2b import build_template; build_template(json.load(open('/run/task48/template.json')))
+
+$ docker network create --internal --ipv6 --subnet 172.30.48.0/24 --subnet fd48:48::/64 --opt com.docker.network.bridge.name=br-task48 task48-exec
+b041e1280d7ace0634b52188c6f7bed9da56c31a8081e69d791b01a4205e167e
+
+$ docker network create --internal --ipv6 --subnet 172.30.49.0/24 --subnet fd48:49::/64 task48-receiver
+64abb7b4023d97148c7733ed462b9abe53b45bab473485b3f21ad69b9e610b51
+
+$ iptables -N TASK48_EXEC
+
+$ iptables -A TASK48_EXEC -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+$ iptables -A TASK48_EXEC -p tcp -m multiport --dports 3000,3002 -j ACCEPT
+
+$ iptables -A TASK48_EXEC -j REJECT --reject-with icmp-admin-prohibited
+
+$ iptables -I INPUT 1 -i br-task48 -j TASK48_EXEC
+
+$ ip6tables -I INPUT 1 -i br-task48 -j REJECT
+
+$ docker run -d --name task48-receiver --network task48-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --dns 127.0.0.1 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py serve
+71ca18f72302292958e8d57f447f86290af7fe47008f5bff889d198dae981ca8
+
+$ docker inspect task48-receiver --format {{json .NetworkSettings.Networks}}
+{"task48-receiver":{"IPAMConfig":null,"Links":null,"Aliases":null,"DriverOpts":null,"GwPriority":0,"NetworkID":"64abb7b4023d97148c7733ed462b9abe53b45bab473485b3f21ad69b9e610b51","EndpointID":"526fd03bfda2a987f5c69bb1a21245265d7066fde33f7ede88e55fc9870a6859","Gateway":"","IPAddress":"172.30.49.2","MacAddress":"22:20:e4:34:56:d0","IPPrefixLen":24,"IPv6Gateway":"","GlobalIPv6Address":"fd48:49::2","GlobalIPv6PrefixLen":64,"DNSNames":["task48-receiver","71ca18f72302"]}}
+
+$ docker run --rm --network task48-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --dns 127.0.0.1 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow 172.30.49.2 8080
+{"address": "172.30.49.2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+
+$ docker run --rm --network task48-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --dns 127.0.0.1 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow fd48:49::2 8080
+{"address": "fd48:49::2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+
+$ docker run --rm --network task48-exec --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --dns 127.0.0.1 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --mount type=bind,src=/home/probe/task48/.runtime,dst=/run/task48,readonly regulay-task48-executor:local python -c import sys,json; sys.path.insert(0,'/app/ops/agent_probe'); from run_e2b import live_probe; print(json.dumps(live_probe(json.load(open('/run/task48/live.json')))))
+{"scope": "self-hosted-e2b", "started_utc": "2026-10-07T19:44:28.275853+00:00", "executor_denials": [{"address": "172.30.49.2", "port": 8080, "denied": true, "error": "OSError", "errno": 101, "ipv6_disabled_by_kernel": false}, {"address": "fd48:49::2", "port": 8080, "denied": true, "error": "OSError", "errno": 101, "ipv6_disabled_by_kernel": false}], "positive_controls": "require separate control-host evidence", "trials": [{"mode": "cold", "sandbox_id": "i2wcxqikai38f6ngaddnl", "preparation_seconds": 0.45783447999997406, "assignment_seconds": 0.02709431800008133, "contract": {"uid": 1000, "effective_capabilities": 0, "input_readonly": true, "work_writable": true, "output_writable": true, "docker_socket": false, "provider_credentials": false, "no_new_privs": "0", "ipv6_disabled": true}, "sandbox_denials": [{"address": "172.30.49.2", "port": 8080, "denied": true, "error": "TimeoutError", "errno": null, "ipv6_disabled_by_kernel": false}, {"address": "fd48:49::2", "port": 8080, "denied": true, "error": "OSError", "errno": 99, "ipv6_disabled_by_kernel": true}], "sdk": {"native_tool_call": {"name": "csv_totals", "args": {"input_path": "/workspace/input/numbers.csv"}, "id": "task48-csv-1", "type": "tool_call"}, "model_received": {"name": "csv_totals", "tool_call_id": "task48-csv-1", "result": {"rows": 3, "total_cents": 750}}, "effective_tools": ["csv_totals", "edit_file", "execute", "glob", "grep", "ls", "read_file", "write_file", "write_todos"], "events": [{"surface": "agent.model_middleware"}, {"surface": "model.request", "purpose": "generation", "sha256": "dd3162629b32a460ae83b7e757ed6f1fc8a187420d1eb8f428a9df6ee07bb5d8"}, {"surface": "model.response", "purpose": "generation", "sha256": "6be17cc9eee3103a8d643ef8a244a0000f3cb0e0b84801746f317b9e587ca42c"}, {"surface": "tool.arguments", "sha256": "116bf90f02f052c6b771a54bd6169648615bb0c5c04eb3feb198610050c35b97"}, {"surface": "tool.result", "name": "csv_totals", "call_id": "task48-csv-1", "sha256": "59e7137a207db34c8d615655947566748d0c35d38ae7d0a184a805b2af0fcd80"}, {"surface": "agent.model_middleware"}, {"surface": "model.request", "purpose": "generation", "sha256": "564eb8a7aaad963b5410897d4efdf9cd37854ab1bb700f980e7b3a07874b1896"}, {"surface": "model.response", "purpose": "generation", "sha256": "be441535b70f37f617cb7ce0a8af5c09eb3f601624838be69c8285f222b2bffa"}], "paid_calls": 0, "global_memory": false, "automatic_delegation": false}}, {"mode": "prepared", "sandbox_id": "iasidnoemkm0v8lkejf5q", "preparation_seconds": 0.4791436870000325, "assignment_seconds": 0.036431362000030276, "contract": {"uid": 1000, "effective_capabilities": 0, "input_readonly": true, "work_writable": true, "output_writable": true, "docker_socket": false, "provider_credentials": false, "no_new_privs": "0", "ipv6_disabled": true}, "sandbox_denials": [{"address": "172.30.49.2", "port": 8080, "denied": true, "error": "TimeoutError", "errno": null, "ipv6_disabled_by_kernel": false}, {"address": "fd48:49::2", "port": 8080, "denied": true, "error": "OSError", "errno": 99, "ipv6_disabled_by_kernel": true}], "sdk": {"native_tool_call": {"name": "csv_totals", "args": {"input_path": "/workspace/input/numbers.csv"}, "id": "task48-csv-1", "type": "tool_call"}, "model_received": {"name": "csv_totals", "tool_call_id": "task48-csv-1", "result": {"rows": 3, "total_cents": 750}}, "effective_tools": ["csv_totals", "edit_file", "execute", "glob", "grep", "ls", "read_file", "write_file", "write_todos"], "events": [{"surface": "agent.model_middleware"}, {"surface": "model.request", "purpose": "generation", "sha256": "86617c7e9b0f36fe8d70f9113f8fe69a743888251fb6edd1a78683cf34c0400a"}, {"surface": "model.response", "purpose": "generation", "sha256": "6be17cc9eee3103a8d643ef8a244a0000f3cb0e0b84801746f317b9e587ca42c"}, {"surface": "tool.arguments", "sha256": "116bf90f02f052c6b771a54bd6169648615bb0c5c04eb3feb198610050c35b97"}, {"surface": "tool.result", "name": "csv_totals", "call_id": "task48-csv-1", "sha256": "59e7137a207db34c8d615655947566748d0c35d38ae7d0a184a805b2af0fcd80"}, {"surface": "agent.model_middleware"}, {"surface": "model.request", "purpose": "generation", "sha256": "afe14eed0e055eacca0e0f8a8288b6a5a92400a6f5d06766f4e75dc12a530c7e"}, {"surface": "model.response", "purpose": "generation", "sha256": "be441535b70f37f617cb7ce0a8af5c09eb3f601624838be69c8285f222b2bffa"}], "paid_calls": 0, "global_memory": false, "automatic_delegation": false}}], "paid_calls": 0}
+
+$ docker run --rm --network task48-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --dns 127.0.0.1 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow 172.30.49.2 8080
+{"address": "172.30.49.2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+
+$ docker run --rm --network task48-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --dns 127.0.0.1 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow fd48:49::2 8080
+{"address": "fd48:49::2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+
+$ docker rm -f task48-receiver
+task48-receiver
+
+$ iptables -D INPUT -i br-task48 -j TASK48_EXEC
+
+$ iptables -F TASK48_EXEC
+
+$ iptables -X TASK48_EXEC
+
+$ ip6tables -D INPUT -i br-task48 -j REJECT
+
+$ docker network rm task48-receiver
+task48-receiver
+
+$ docker network rm task48-exec
+task48-exec

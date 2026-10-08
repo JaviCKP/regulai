@@ -1,0 +1,4 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+preflight: kernel 6.6.114.1-microsoft-standard-WSL2 is older than 6.8. FIX: apt-get install linux-generic-hwe-24.04 on the host and reboot
+preflight: missing on the host: iptables. FIX: apt-get install iptables rsync e2fsprogs iproute2 on the host (the orchestrator execs them there), then start the stack again
+FIX: resolve the 2 item(s) above, then start the stack again

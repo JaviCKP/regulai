@@ -1,0 +1,21 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Building executor
+Building sandbox
+Building real E2B template
+Running native SDK graph against real E2B (cold and prepared)
+Evidence: /home/probe/task48/evidence-20261007T193742
+Traceback (most recent call last):
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 131, in <module>
+    main()
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 108, in main
+    raw = run(EXECUTOR, 'task48-exec', 'python', '-c',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 56, in run
+    return docker('run', *flags, image, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 44, in docker
+    return command(['docker', *args], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 40, in command
+    raise RuntimeError('Infrastructure command failed; inspect VM evidence/commands.log')
+RuntimeError: Infrastructure command failed; inspect VM evidence/commands.log

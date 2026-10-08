@@ -10,6 +10,24 @@ from front.models import EngineModel
 
 
 class ChatUiTests(ChatFixture):
+    def test_historical_receipt_explains_judge_rejection_without_candidate_text(self):
+        self.browser("""
+const output = new Element();
+renderReceipt(output, {verification: {status: 'failed'}, calls: [{purpose: 'verification', status: 'completed', threshold: 0.8,
+  signals: {failure_omission: {type: 'noul', noul: 0.2}, failure_contradiction: {type: 'noul', noul: 0.72}}}]}, 'failed');
+assert.match(output.text, /contradicción o afirmación sin respaldo.*0.72/s);
+assert.match(output.text, /Umbral máximo de fallo admitido.*0.2/s);
+""")
+
+    def test_provider_limits_receipt_explains_null_limits(self):
+        self.browser("""
+const output = new Element();
+renderReceipt(output, {limits: {provider_managed: true, response_bytes: null,
+  max_output_tokens: null, call_timeout_seconds: null, deadline_seconds: null}}, 'completed');
+assert.match(output.text, /Gestionados por el proveedor/);
+assert.doesNotMatch(output.text, /Response limit|Output limit|Call timeout|Request deadline/);
+""")
+
     def browser(self, checks, path='/chat/'):
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)

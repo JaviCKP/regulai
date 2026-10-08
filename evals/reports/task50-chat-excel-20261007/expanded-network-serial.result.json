@@ -1,0 +1,13 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "python",
+    "ops/agent_probe/vm/remote.py",
+    "ops/agent_chat/refresh_executor.sh",
+    "--log",
+    "evals/reports/task50-chat-excel-20261007/expanded-network-serial-vm.log"
+  ],
+  "exit_code": 1,
+  "seconds": 11.08
+}

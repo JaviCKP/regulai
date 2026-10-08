@@ -37,8 +37,7 @@ def mask_cost_bounds(masks, max_call_cost):
 
 
 def mask_local_texts(texts, *, language='', timeout=10):
-    # Loading optional NLP dependencies is deferred until this backend is used.
-    # Import/model errors propagate; they never select an HTTP fallback.
+    # Local pattern errors propagate; they never select an HTTP fallback.
     from .local_masking import mask_local_texts as local
     return local(texts, language=language, timeout=timeout)
 

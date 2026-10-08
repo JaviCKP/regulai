@@ -1,0 +1,131 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/phases.Run
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/phases/phase.go:80
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build.runBuild
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/builder.go:435
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build.(*Builder).Build
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/builder.go:280
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/server.(*ServerStore).TemplateCreate.func1
+orchestrator-1  | 	/build/orchestrator/pkg/template/server/create_template.go:284
+orchestrator-1  | 2026-10-07T21:39:03.159Z  [33mWARN[0m  failed to reset memory.peak, interval peak semantics degraded  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "error": "write /sys/fs/cgroup/e2b/sbx-b2mobndi0qcm98z9qvxaz-k757mk77apstlpwj1o5m/memory.peak: invalid argument"}
+orchestrator-1  | github.com/e2b-dev/infra/packages/shared/pkg/logger.(*TracedLogger).Warn
+orchestrator-1  | 	/build/shared/pkg/logger/logger.go:160
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox/cgroup.(*managerImpl).readAndResetMemoryPeak
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/cgroup/manager.go:532
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox/cgroup.(*managerImpl).getStatsForPath
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/cgroup/manager.go:497
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox/cgroup.(*CgroupHandle).GetStats
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/cgroup/manager.go:108
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*HostStatsCollector).CollectSample
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/hoststats_collector.go:80
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*HostStatsCollector).Stop.func1
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/hoststats_collector.go:172
+orchestrator-1  | sync.(*Once).doSlow
+orchestrator-1  | 	/usr/local/go/src/sync/once.go:78
+orchestrator-1  | sync.(*Once).Do
+orchestrator-1  | 	/usr/local/go/src/sync/once.go:69
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*HostStatsCollector).Stop
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/hoststats_collector.go:167
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*Factory).CreateSandbox.func5
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/sandbox.go:1068
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*Cleanup).run-range2
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/cleanup.go:95
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*Cleanup).run.Backward[...].func2
+orchestrator-1  | 	/usr/local/go/src/slices/iter.go:29
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*Cleanup).run
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/cleanup.go:94
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*Cleanup).Run.func1
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/cleanup.go:73
+orchestrator-1  | sync.(*Once).doSlow
+orchestrator-1  | 	/usr/local/go/src/sync/once.go:78
+orchestrator-1  | sync.(*Once).Do
+orchestrator-1  | 	/usr/local/go/src/sync/once.go:69
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*Cleanup).Run
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/cleanup.go:72
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/sandbox.(*Sandbox).Close
+orchestrator-1  | 	/build/orchestrator/pkg/sandbox/sandbox.go:1853
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/layer.(*LayerExecutor).BuildLayer
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/layer/layer_executor.go:166
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/phases/steps.(*StepBuilder).Build
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/phases/steps/builder.go:228
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/phases.runPhase
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/phases/phase.go:161
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build/phases.Run
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/phases/phase.go:80
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build.runBuild
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/builder.go:435
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/build.(*Builder).Build
+orchestrator-1  | 	/build/orchestrator/pkg/template/build/builder.go:280
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/server.(*ServerStore).TemplateCreate.func1
+orchestrator-1  | 	/build/orchestrator/pkg/template/server/create_template.go:284
+orchestrator-1  | 2026-10-07T21:39:03.160Z  [34mINFO[0m  marking sandbox as stopping  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "sandbox.id": "b2mobndi0qcm98z9qvxaz", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "build.id": "e4527ab3-b8af-4c34-bf56-f55761ebd805", "execution.id": "4c59c170-16bc-4240-a017-935f365afdfe", "sandbox.lifecycle.id": "44fbf1dd-81ae-426d-a77b-7e78da49d753", "sandbox.ip": "10.11.0.1"}
+orchestrator-1  | 2026-10-07T21:39:03.190Z  [34mINFO[0m  closing handler for NBD commands  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "sandbox.id": "b2mobndi0qcm98z9qvxaz", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "build.id": "e4527ab3-b8af-4c34-bf56-f55761ebd805", "execution.id": "4c59c170-16bc-4240-a017-935f365afdfe", "device_index": 0, "socket_index": 0, "error": "read unix @->@: use of closed network connection"}
+orchestrator-1  | 2026-10-07T21:39:03.288Z  [34mINFO[0m  overlay device released  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "sandbox.id": "b2mobndi0qcm98z9qvxaz", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "build.id": "e4527ab3-b8af-4c34-bf56-f55761ebd805", "execution.id": "4c59c170-16bc-4240-a017-935f365afdfe"}
+orchestrator-1  | 2026-10-07T21:39:03.289Z  [34mINFO[0m  sandbox lifecycle stopped  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "sandbox.id": "b2mobndi0qcm98z9qvxaz", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "build.id": "e4527ab3-b8af-4c34-bf56-f55761ebd805", "execution.id": "4c59c170-16bc-4240-a017-935f365afdfe", "sandbox.lifecycle.id": "44fbf1dd-81ae-426d-a77b-7e78da49d753", "sandbox.ip": "10.11.0.1"}
+orchestrator-1  | 2026-10-07T21:39:03.289Z  [33mWARN[0m  error while building template  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "template.id": "o8w5fpa1bu3exrgnbvh0", "build.id": "e4527ab3-b8af-4c34-bf56-f55761ebd805", "error": "error building step 1: failed to run command 'apt-get update && apt-get install -y --no-install-recommends libreoffice-calc fonts-liberation && rm -rf /var/lib/apt/lists/*': command failed: unavailable: the connection to sandbox b2mobndi0qcm98z9qvxaz ended before the stream completed"}
+orchestrator-1  | github.com/e2b-dev/infra/packages/shared/pkg/logger.(*TracedLogger).Warn
+orchestrator-1  | 	/build/shared/pkg/logger/logger.go:160
+orchestrator-1  | github.com/e2b-dev/infra/packages/shared/pkg/telemetry.ReportError
+orchestrator-1  | 	/build/shared/pkg/telemetry/tracing.go:84
+orchestrator-1  | github.com/e2b-dev/infra/packages/orchestrator/pkg/template/server.(*ServerStore).TemplateCreate.func1
+orchestrator-1  | 	/build/orchestrator/pkg/template/server/create_template.go:296
+orchestrator-1  | 2026-10-07T21:39:03.841Z  [34mINFO[0m  SandboxService/List/unary: started call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:03Z", "grpc.request.deadline": "2026-10-07T21:39:23Z", "grpc.time_ms": "0.024"}
+orchestrator-1  | 2026-10-07T21:39:03.841Z  [34mINFO[0m  SandboxService/List/unary: request received  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:03Z", "grpc.request.deadline": "2026-10-07T21:39:23Z", "grpc.recv.duration": "24.163µs", "grpc.time_ms": "0.024"}
+orchestrator-1  | 2026-10-07T21:39:03.841Z  [34mINFO[0m  SandboxService/List/unary: response sent  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:03Z", "grpc.request.deadline": "2026-10-07T21:39:23Z", "grpc.send.duration": "101.247µs", "grpc.time_ms": "0.101"}
+orchestrator-1  | 2026-10-07T21:39:03.841Z  [34mINFO[0m  SandboxService/List/unary [OK]: finished call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:03Z", "grpc.request.deadline": "2026-10-07T21:39:23Z", "grpc.code": "OK", "grpc.time_ms": "0.138"}
+orchestrator-1  | 2026-10-07T21:39:06.290Z  [34mINFO[0m  sandbox network map entry removed  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "sandbox.id": "b2mobndi0qcm98z9qvxaz", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "build.id": "e4527ab3-b8af-4c34-bf56-f55761ebd805", "execution.id": "4c59c170-16bc-4240-a017-935f365afdfe", "sandbox.lifecycle.id": "44fbf1dd-81ae-426d-a77b-7e78da49d753", "sandbox.ip": "10.11.0.1"}
+orchestrator-1  | 2026/10/07 21:39:10 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:39:20 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026-10-07T21:39:23.841Z  [34mINFO[0m  SandboxService/List/unary: started call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:23Z", "grpc.request.deadline": "2026-10-07T21:39:43Z", "grpc.time_ms": "0.009"}
+orchestrator-1  | 2026-10-07T21:39:23.841Z  [34mINFO[0m  SandboxService/List/unary: request received  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:23Z", "grpc.request.deadline": "2026-10-07T21:39:43Z", "grpc.recv.duration": "9.802µs", "grpc.time_ms": "0.009"}
+orchestrator-1  | 2026-10-07T21:39:23.841Z  [34mINFO[0m  SandboxService/List/unary: response sent  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:23Z", "grpc.request.deadline": "2026-10-07T21:39:43Z", "grpc.send.duration": "105.687µs", "grpc.time_ms": "0.105"}
+orchestrator-1  | 2026-10-07T21:39:23.841Z  [34mINFO[0m  SandboxService/List/unary [OK]: finished call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:23Z", "grpc.request.deadline": "2026-10-07T21:39:43Z", "grpc.code": "OK", "grpc.time_ms": "0.179"}
+orchestrator-1  | 2026/10/07 21:39:30 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:39:40 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026-10-07T21:39:43.842Z  [34mINFO[0m  SandboxService/List/unary: started call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:43Z", "grpc.request.deadline": "2026-10-07T21:40:03Z", "grpc.time_ms": "0.024"}
+orchestrator-1  | 2026-10-07T21:39:43.843Z  [34mINFO[0m  SandboxService/List/unary: request received  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:43Z", "grpc.request.deadline": "2026-10-07T21:40:03Z", "grpc.recv.duration": "24.132µs", "grpc.time_ms": "0.024"}
+orchestrator-1  | 2026-10-07T21:39:43.843Z  [34mINFO[0m  SandboxService/List/unary: response sent  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:43Z", "grpc.request.deadline": "2026-10-07T21:40:03Z", "grpc.send.duration": "316.594µs", "grpc.time_ms": "0.316"}
+orchestrator-1  | 2026-10-07T21:39:43.843Z  [34mINFO[0m  SandboxService/List/unary [OK]: finished call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:39:43Z", "grpc.request.deadline": "2026-10-07T21:40:03Z", "grpc.code": "OK", "grpc.time_ms": "0.341"}
+orchestrator-1  | 2026/10/07 21:39:50 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:40:00 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026-10-07T21:40:03.841Z  [34mINFO[0m  SandboxService/List/unary: started call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:03Z", "grpc.request.deadline": "2026-10-07T21:40:23Z", "grpc.time_ms": "0.017"}
+orchestrator-1  | 2026-10-07T21:40:03.842Z  [34mINFO[0m  SandboxService/List/unary: request received  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:03Z", "grpc.request.deadline": "2026-10-07T21:40:23Z", "grpc.recv.duration": "17.688µs", "grpc.time_ms": "0.017"}
+orchestrator-1  | 2026-10-07T21:40:03.842Z  [34mINFO[0m  SandboxService/List/unary: response sent  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:03Z", "grpc.request.deadline": "2026-10-07T21:40:23Z", "grpc.send.duration": "364.024µs", "grpc.time_ms": "0.364"}
+orchestrator-1  | 2026-10-07T21:40:03.842Z  [34mINFO[0m  SandboxService/List/unary [OK]: finished call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:03Z", "grpc.request.deadline": "2026-10-07T21:40:23Z", "grpc.code": "OK", "grpc.time_ms": "0.39"}
+orchestrator-1  | 2026/10/07 21:40:10 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:40:20 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026-10-07T21:40:23.842Z  [34mINFO[0m  SandboxService/List/unary: started call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:23Z", "grpc.request.deadline": "2026-10-07T21:40:43Z", "grpc.time_ms": "0.007"}
+orchestrator-1  | 2026-10-07T21:40:23.842Z  [34mINFO[0m  SandboxService/List/unary: request received  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:23Z", "grpc.request.deadline": "2026-10-07T21:40:43Z", "grpc.recv.duration": "7.995µs", "grpc.time_ms": "0.007"}
+orchestrator-1  | 2026-10-07T21:40:23.843Z  [34mINFO[0m  SandboxService/List/unary: response sent  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:23Z", "grpc.request.deadline": "2026-10-07T21:40:43Z", "grpc.send.duration": "149.439µs", "grpc.time_ms": "0.149"}
+orchestrator-1  | 2026-10-07T21:40:23.843Z  [34mINFO[0m  SandboxService/List/unary [OK]: finished call  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "protocol": "grpc", "grpc.component": "server", "grpc.service": "SandboxService", "grpc.method": "List", "grpc.method_type": "unary", "peer.address": "127.0.0.1:47130", "grpc.start_time": "2026-10-07T21:40:23Z", "grpc.request.deadline": "2026-10-07T21:40:43Z", "grpc.code": "OK", "grpc.time_ms": "0.178"}
+orchestrator-1  | 2026/10/07 21:40:30 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+[ 1750.882156] block nbd0: Receive control failed (result -32)
+[ 1750.882335] block nbd0: NBD_DISCONNECT
+[ 1750.882773] block nbd0: Send control failed (result -32)
+[ 1750.882775] block nbd0: Request send failed, requeueing
+[ 1750.882784] block nbd0: Dead connection, failed to find a fallback
+[ 1750.889389] block nbd0: Send disconnect failed -32
+[ 1750.890684] block nbd0: shutting down sockets
+[ 1750.890799] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 2
+[ 1750.895229] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.896897] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.900639] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.902435] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.903981] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.905931] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.908022] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.910474] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.912503] ldm_validate_partition_table(): Disk read failed.
+[ 1750.912518] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.914677] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.916623] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.918770] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.920980] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.923064] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.925264] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.927416] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.930439] Dev nbd0: unable to read RDB block 0
+[ 1750.931668] I/O error, dev nbd0, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+[ 1750.933874] Buffer I/O error on dev nbd0, logical block 0, async page read
+[ 1750.935748] Buffer I/O error on dev nbd0, logical block 3, async page read
+[ 1750.937560]  nbd0: unable to read partition table

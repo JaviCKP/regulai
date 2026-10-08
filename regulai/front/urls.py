@@ -1,4 +1,6 @@
 from django.urls import path
+from .ai_connections import ai_connections
+from .agents import views as agent_views
 from .chat_ui import request_receipt, request_evidence
 from .policy_simulator import policy_simulator, policy_simulator_activate
 from .views import (
@@ -22,6 +24,15 @@ from .views import (
 app_name = 'front'
 
 urlpatterns = [
+    path('internal/agents/inference/', agent_views.inference, name='agent_inference'),
+    path('internal/agents/tool-results/', agent_views.result, name='agent_tool_result'),
+    path('internal/agents/authorize-tool/', agent_views.authorize, name='agent_authorize_tool'),
+    path('internal/agents/claim/', agent_views.worker_claim, name='agent_worker_claim'),
+    path('internal/agents/run/<str:operation>/', agent_views.execution_operation, name='agent_execution_operation'),
+    path('chat/agent/runs/<uuid:run_id>/', agent_views.run_status, name='agent_run_status'),
+    path('chat/agent/runs/<uuid:run_id>/events/', agent_views.events, name='agent_events'),
+    path('chat/agent/runs/<uuid:run_id>/cancel/', agent_views.cancel_run, name='agent_cancel'),
+    path('chat/agent/artifacts/<uuid:artifact_id>/download/', agent_views.download, name='agent_download'),
     # Home
     path("", home_view, name="home"),
 
@@ -97,6 +108,7 @@ urlpatterns = [
 
     # Company Settings
     path("settings/company/", company_settings, name="company_settings"),
+    path("settings/ai/", ai_connections, name="ai_connections"),
 
     # Department Management (Settings)
     path("settings/departments/", departments_list, name="departments_list"),

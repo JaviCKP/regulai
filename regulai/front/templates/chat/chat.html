@@ -326,6 +326,16 @@
     <div class="card h-100">
       <div class="card-body d-flex flex-column">
         <!-- Header -->
+        {% if ai_setup_missing %}
+        <div class="alert alert-info" role="status">
+          <strong>Falta configurar la IA de esta cuenta.</strong>
+          {% if can_manage_company_policy %}
+          <a href="{% url 'front:ai_connections' %}">Abre Conexiones IA</a> para guardar una clave y activar el chat básico.
+          {% else %}
+          Pide al administrador de tu cuenta que guarde una clave y active una política desde Conexiones IA.
+          {% endif %}
+        </div>
+        {% endif %}
         <div class="chat-header d-flex align-items-center justify-content-between mb-3">
           <h5 class="card-title fw-semibold mb-0">
             {% if conversation %}
@@ -407,12 +417,13 @@
             </div>
 
             {% if automatic_routing %}
-            <label class="small"><input id="automaticRouting" type="checkbox" checked> Automatic model selection</label>
+            <label class="small"><input id="automaticRouting" type="checkbox" checked> {% if difficulty_routing %}Selección automática según dificultad{% else %}Automatic model selection{% endif %}</label>
             {% endif %}
-            <span class="badge bg-success-subtle text-success">
+            <span class="badge {% if ai_setup_missing %}bg-warning-subtle text-warning{% else %}bg-success-subtle text-success{% endif %}">
               <iconify-icon icon="solar:plug-circle-bold" class="me-1"></iconify-icon>
-              Configured
+              {% if ai_setup_missing %}Configuración pendiente{% else %}Configured{% endif %}
             </span>
+            {% if provider_managed_limits %}<span class="badge bg-primary-subtle text-primary">Límites del proveedor</span>{% endif %}
           </div>
         </div>
 
@@ -443,7 +454,7 @@
                   <div class="file-attachment">
                     <iconify-icon icon="solar:file-bold"></iconify-icon>
                     <span>{{ msg.file_name }}</span>
-                    <span class="small">Reattach the original file to ask about it again.</span>
+                    <span class="small">{% if agent_mode %}Entrada privada conservada para las revisiones.{% else %}Reattach the original file to ask about it again.{% endif %}</span>
                     {% if msg.file_size %}
                     <span class="opacity-75">({{ msg.file_size|filesizeformat }})</span>
                     {% endif %}
@@ -464,7 +475,7 @@
                   {% else %}
                   <details class="request-evidence mt-2" data-evidence-url="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">
                     <summary>Document evidence</summary>
-                    <div class="evidence-content">Open to load retained evidence. Reattach the original to check it again.</div>
+                    <div class="evidence-content">{% if agent_mode %}Comprobación vinculada a los bytes finales de esta revisión.{% else %}Open to load retained evidence. Reattach the original to check it again.{% endif %}</div>
                     <a href="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">Evidence JSON</a>
                   </details>
                   {% endif %}
@@ -503,6 +514,26 @@
         <!-- Chat Input Form -->
         <form method="post" enctype="multipart/form-data" class="chat-input-area" id="chatForm">
           {% csrf_token %}
+          {% if agent_available and not conversation %}
+          <div class="mb-2">
+            <label for="conversationMode" class="form-label small">Modo del nuevo chat</label>
+            <select id="conversationMode" class="form-select form-select-sm" aria-label="Modo del nuevo chat">
+              <option value="chat">Chat</option>
+              <option value="agent">Agente Excel · laboratorio sintético</option>
+            </select>
+          </div>
+          {% endif %}
+          {% if agent_available or agent_mode %}
+          <section id="agentActivity" class="border rounded p-3 mb-3 d-none" aria-label="Actividad del agente" style="max-height: 70vh; overflow: auto;">
+            <div class="d-flex justify-content-between gap-2 align-items-start">
+              <strong>Agente Excel</strong><button type="button" id="agentCancel" class="btn btn-outline-danger btn-sm">Cancelar ejecución</button>
+            </div>
+            <p id="agentProgress" role="status" aria-live="polite" class="small my-2"></p>
+            <details><summary class="small">Actividad de la ejecución</summary><ol id="agentEvents" class="small mb-2"></ol></details>
+            <div id="agentArtifacts"></div>
+            <small class="text-muted">CSV/XLSX sintético: item y amount_cents. Entradas privadas; revisiones inmutables.</small>
+          </section>
+          {% endif %}
 
           <!-- File Preview Area -->
           <div id="filePreview" class="mb-2 d-none">
@@ -536,7 +567,7 @@
               </div>
               <div class="form-text mt-1 d-flex justify-content-between">
                 <small>Press Enter to send, Shift+Enter for new line</small>
-                <small class="text-muted">Supported: txt, pdf with text, docx, xlsx, csv, json, py, js, md. Reattach files for later questions.</small>
+                <small class="text-muted" id="attachmentHint">Supported: txt, pdf with text, docx, xlsx, csv, json, py, js, md. Reattach files for later questions.</small>
               </div>
             </div>
           </div>
@@ -599,6 +630,8 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ agent_initial|json_script:"agent-initial" }}
+<script src="{% static 'js/agent-chat.js' %}"></script>
 <script>
   let currentConversationId = {{ conversation.id|default:"null" }};
   let isLoading = false;
@@ -680,6 +713,7 @@
       modelId: document.querySelector('#modelDropdownMenu .active')?.dataset.modelId,
       userBubble: createUserBubble(prompt, file)
     };
+    Object.assign(command, window.regulayAgent.capture(file));
     const container = document.getElementById('chatContainer');
     container.querySelector('.empty-chat')?.remove();
     container.appendChild(command.userBubble);
@@ -706,11 +740,15 @@
     command.controls?.remove();
     const container = document.getElementById('chatContainer');
     const loading = createLoadingIndicator();
+    if (command.mode === 'agent') loading.querySelector('.loading-text').textContent = 'Enviando la petición al agente…';
     container.appendChild(loading);
     const form = new FormData();
     form.append('prompt', command.prompt);
     form.append('request_id', command.requestId);
     form.append('auto_route', String(command.autoRoute));
+    if (command.mode) form.append('mode', command.mode);
+    if (command.artifactId) form.append('artifact_id', command.artifactId);
+    if (command.baseRevision) form.append('base_revision', command.baseRevision);
     if (command.file) form.append('file', command.file);
     if (command.engineId) form.append('engine_id', command.engineId);
     if (command.modelId) form.append('model_id', command.modelId);
@@ -723,6 +761,7 @@
       // Blocked/unavailable replies carry useful JSON even for HTTP 403/503.
       const data = await response.json();
       renderResult(data, command);
+      if (data.agent) window.regulayAgent.watch(data.agent, command);
     } catch (error) {
       command.notice?.remove();
       command.notice = createSystemBubble('Could not retrieve the result. Retry checks this same request; it does not create a new send.');
@@ -805,6 +844,7 @@
     Object.entries(limitLabels).forEach(([key, label]) => {
       if (receipt.limits?.[key] != null) receiptLine(parent, label, receipt.limits[key]);
     });
+    if (receipt.limits?.provider_managed) receiptLine(parent, 'Límites de generación', 'Gestionados por el proveedor');
     if (receipt.route) {
       receiptLine(parent, 'Route', receipt.route.mode);
       if (receipt.route.company_engine_id != null) receiptLine(parent, 'Destination', 'engine:' + receipt.route.company_engine_id);
@@ -816,6 +856,15 @@
     receiptLine(parent, 'Verification', receipt.verification?.status || 'not performed');
     if (receipt.verification?.reason_codes?.length) receiptLine(parent, 'Verification reasons', receipt.verification.reason_codes.join(', '));
     const calls = Array.isArray(receipt.calls) ? receipt.calls : [];
+    const judge = calls.filter(call => call.purpose === 'verification' && call.status === 'completed').slice(-1)[0];
+    const signalLabels = {failure_omission: 'Jev: requisitos omitidos', failure_contradiction: 'Jev: contradicción o afirmación sin respaldo'};
+    if (judge?.signals) {
+      Object.entries(signalLabels).forEach(([key, label]) => {
+        const value = judge.signals[key]?.noul;
+        if (typeof value === 'number' && Number.isFinite(value)) receiptLine(parent, label, value);
+      });
+      if (typeof judge.threshold === 'number') receiptLine(parent, 'Umbral máximo de fallo admitido', Number((1 - judge.threshold).toFixed(10)));
+    }
     receiptLine(parent, 'Calls', calls.length);
     calls.forEach((call, index) => {
       receiptLine(parent, 'Call ' + (index + 1), [call.purpose, call.status, call.provider, call.model_effective || call.model].filter(Boolean).join(' / '));

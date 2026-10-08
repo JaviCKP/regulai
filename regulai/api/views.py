@@ -342,7 +342,8 @@ class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
 def chat_send_message(request):
     from front.chat_service import send_chat_message
     command = {key: request.data.get(key) for key in (
-        'content', 'conversation_id', 'engine_id', 'model_id', 'request_id', 'consent_token', 'action')}
+        'content', 'conversation_id', 'engine_id', 'model_id', 'request_id', 'consent_token', 'action',
+        'mode', 'artifact_id', 'base_revision')}
     command['content'] = command['content'] or ''
     command['file'] = request.FILES.get('file')
     result = send_chat_message(request.user, command)

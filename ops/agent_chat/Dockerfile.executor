@@ -1,0 +1,9 @@
+FROM regulay-task48-executor:local
+# Only SDK-side modules. No application models, database driver or alias registry.
+COPY regulai/front/agents/adapter.py regulai/front/agents/protocol.py regulai/front/agents/worker.py regulai/front/agents/sandbox_pool.py /app/regulai/front/agents/
+COPY regulai/front/agents/runtime /app/regulai/front/agents/runtime
+COPY regulai/front/agents/spreadsheet_program.py /app/regulai/front/agents/spreadsheet_program.py
+COPY ops/agent_chat/requirements.txt ops/agent_chat/build_template.py /app/ops/agent_chat/
+COPY ops/agent_chat/network_probe.py /app/ops/agent_chat/
+ENV PYTHONPATH=/app/regulai
+CMD ["python", "-m", "front.agents.worker", "--config", "/run/task50/config.json"]

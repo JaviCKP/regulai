@@ -1,0 +1,101 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "accepted_ms": 179.6,
+      "url": "/chat/send/"
+    },
+    {
+      "accepted_ms": 32.59,
+      "url": "/chat/send/"
+    },
+    {
+      "duplicate_and_sse_reconnect_once": true,
+      "cursor": 18,
+      "following": [
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    },
+    {
+      "accepted_ms": 85.03,
+      "url": "/chat/3/send/"
+    },
+    {
+      "immutable_title_revision_and_stale_rejection": true,
+      "artifact": {
+        "id": "6387c50a-177a-4927-b814-394adb172af7",
+        "logical_id": "b3f8ec30-966f-4131-9fb8-fa7ab7193b16",
+        "revision": 2,
+        "sha256": "b3a0b0a136f21cb7727a653f01de582a20a0423c3f445e18a2e770a1cfad3464",
+        "preview": {
+          "title": "Ventas revisadas",
+          "headers": [
+            "Concepto",
+            "Céntimos",
+            "Euros"
+          ],
+          "rows": [
+            [
+              "Nombre: Private Synthetic Marker",
+              125,
+              "1.25"
+            ],
+            [
+              "<script>alert(1)</script>",
+              250,
+              "2.5"
+            ],
+            [
+              "=HYPERLINK(\"invalid\")",
+              375,
+              "3.75"
+            ]
+          ],
+          "total_cents": 750,
+          "total_euros": "7.5",
+          "rows_shown": 3,
+          "rows_total": 3
+        },
+        "download_url": "/chat/agent/artifacts/6387c50a-177a-4927-b814-394adb172af7/download/"
+      }
+    },
+    {
+      "accepted_ms": 94.93,
+      "url": "/api/chat/send/"
+    },
+    {
+      "xlsx_input_negative_zero_and_total": true
+    },
+    {
+      "accepted_ms": 103.18,
+      "url": "/chat/"
+    },
+    {
+      "cancel_active_inference_no_new_step": true
+    },
+    {
+      "accepted_ms": 59.71,
+      "url": "/chat/send/"
+    },
+    {
+      "revocation_blocks_sse_state_download_and_steps": true
+    },
+    {
+      "cross_user_state_sse_download_denied": true
+    },
+    {
+      "accepted_ms": 76.94,
+      "url": "/chat/send/"
+    },
+    {
+      "process_killed_and_restart_interrupted_without_replay": true,
+      "execution": "9920e249-3ea0-4a8b-9135-029213b7bdd6"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+task50-worker
+vm.nr_hugepages = 1536
+Build started
+Requesting build for template: task50-excel
+Template created with ID: o8w5fpa1bu3exrgnbvh0, Build ID: d40ba76f-0283-40de-9c2a-07c968f05678
+Skipping upload of 'regulai/front/agents/spreadsheet_program.py', already cached
+All file uploads completed
+Starting building...
+Waiting for logs...
+Building template o8w5fpa1bu3exrgnbvh0/d40ba76f-0283-40de-9c2a-07c968f05678
+CACHED [base] FROM localhost:5000/task50-sheet:latest [0010925ee800e29d56a0ec058ec97c440eef5bd65db576541a0eab8264a6f071]
+CACHED [base] DEFAULT USER user [54b92bf88957eb2221072a52b268d3ea73c9372ea063cb38a6029b808dcdf0e1]
+[builder 1/6] RUN free -m && df -h / root [715f7b1745297ee0b1e1a7a566373b5fcb172c3dfd991902142d40967dfbee48]
+Updating envd to version v0.9.202609130627+59497eb9134
+[builder 1/6] [stdout]: total        used        free      shared  buff/cache   available
+[builder 1/6] [stdout]: Mem:             976         172         842           1          64         804
+[builder 1/6] [stdout]: Swap:              0           0           0
+[builder 1/6] [stdout]: Filesystem      Size  Used Avail Use% Mounted on
+[builder 1/6] [stdout]: /dev/root       1.6G  849M  416M  68% /
+Adding layer to cache: d81b054d-4c08-4310-8b4f-6d6b36c4c212
+Uploading layer: d81b054d-4c08-4310-8b4f-6d6b36c4c212
+[builder 2/6] RUN if ! id -u user >/dev/null 2>&1; then useradd --uid 1000 --create-home user; fi && test "$(id -u user)" = 1000 && mkdir -p /skills /workspace/input /workspace/work /workspace/output /conversation_history /large_tool_results && chown user:user /workspace/work /workspace/output /conversation_history /large_tool_results root [fd87b85027204defb70c98036a74d8b51845a944c722efcbc7ab433217c309f3]
+Saved: d81b054d-4c08-4310-8b4f-6d6b36c4c212
+Adding layer to cache: 69a52e85-ac45-4fd6-abda-fc4616442f21
+Uploading layer: 69a52e85-ac45-4fd6-abda-fc4616442f21
+[builder 3/6] COPY regulai/front/agents/spreadsheet_program.py /skills/spreadsheet_program.py root 0444 [a32dfece2ca67cab11c3f7220d06cda48a3a466450181adb56d75f670ec40a39]
+Saved: 69a52e85-ac45-4fd6-abda-fc4616442f21
+Build failed: An internal error occurred. Please try again or contact support with the build ID.
+Build finished
+Traceback (most recent call last):
+  File "/app/ops/agent_chat/build_template.py", line 29, in <module>
+    build(json.loads(Path(sys.argv[1]).read_text()))
+  File "/app/ops/agent_chat/build_template.py", line 21, in build
+    result = Template.build(template, alias=config['template'], cpu_count=1, memory_mb=1024,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/e2b/template_sync/main.py", line 288, in build
+    wait_for_build_finish(
+  File "/usr/local/lib/python3.12/site-packages/e2b/template_sync/build_api.py", line 314, in wait_for_build_finish
+    raise BuildException(
+e2b.exceptions.BuildException: An internal error occurred. Please try again or contact support with the build ID.

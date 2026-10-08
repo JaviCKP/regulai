@@ -1,0 +1,47 @@
+{
+  "checked_utc": "2026-10-07T19:12:39.936794+00:00",
+  "scope": "Read-only host availability check; no infrastructure created or changed",
+  "commands": [
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "Get-VM | Select-Object Name,State,Version,MemoryAssigned | ConvertTo-Json -Compress"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "[rtk] /!\\ No hook installed \u2014 run `rtk init -g` for automatic token savings\nGet-VM : No dispone del permiso necesario para completar esta tarea. P\u00f3ngase en contacto con el administrador de la \ndirectiva de autorizaci\u00f3n del equipo 'DESKTOP-BMOE1O8'.\nEn l\u00ednea: 1 Car\u00e1cter: 1\n+ Get-VM | Select-Object Name,State,Version,MemoryAssigned | ConvertTo- ...\n+ ~~~~~~\n    + CategoryInfo          : NotSpecified: (:) [Get-VM], VirtualizationException\n    + FullyQualifiedErrorId : Unspecified,Microsoft.HyperV.PowerShell.Commands.GetVM\n \n"
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"
+      ],
+      "exit_code": 0,
+      "stdout": "False\n",
+      "stderr": "[rtk] /!\\ No hook installed \u2014 run `rtk init -g` for automatic token savings\n"
+    },
+    {
+      "command": [
+        "rtk",
+        "proxy",
+        "docker",
+        "context",
+        "ls"
+      ],
+      "exit_code": 0,
+      "stdout": "NAME              DESCRIPTION                               DOCKER ENDPOINT                             ERROR\ndefault           Current DOCKER_HOST based configuration   npipe:////./pipe/docker_engine              \ndesktop-linux *   Docker Desktop                            npipe:////./pipe/dockerDesktopLinuxEngine   \n",
+      "stderr": "[rtk] /!\\ No hook installed \u2014 run `rtk init -g` for automatic token savings\n"
+    }
+  ],
+  "real_e2b_test": "pending compatible host",
+  "cold_seconds": null,
+  "prepared_seconds": null
+}

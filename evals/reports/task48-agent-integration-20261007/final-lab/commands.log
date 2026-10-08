@@ -1,0 +1,230 @@
+
+$ info --format {"OSType":{{json .OSType}},"Architecture":{{json .Architecture}},"KernelVersion":{{json .KernelVersion}},"ServerVersion":{{json .ServerVersion}},"Runtimes":"{{range $name, $runtime := .Runtimes}}{{$name}} {{end}}"}
+{"OSType":"linux","Architecture":"x86_64","KernelVersion":"6.6.114.1-microsoft-standard-WSL2","ServerVersion":"29.7.2","Runtimes":"io.containerd.runc.v2 nvidia runc "}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ build --build-context agents=C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\agents -t regulay-task48-executor:local -f C:\Users\javi\Documents\Codex\regulai-platform\ops\agent_probe\Dockerfile.executor C:\Users\javi\Documents\Codex\regulai-platform\ops\agent_probe
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.executor
+#1 transferring dockerfile: 622B done
+#1 DONE 0.0s
+
+#2 [context agents] load .dockerignore
+#2 transferring agents: 2B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 133B done
+#4 DONE 0.0s
+
+#5 [stage-0 1/6] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#5 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#5 DONE 0.0s
+
+#6 [context agents] load from client
+#6 transferring agents: 26.83kB 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 150.15kB 0.0s done
+#7 DONE 0.0s
+
+#8 [stage-0 2/6] COPY requirements.txt /tmp/requirements.txt
+#8 CACHED
+
+#9 [stage-0 3/6] RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt     && python -m pip check && useradd --uid 1000 --create-home user
+#9 CACHED
+
+#10 [stage-0 4/6] COPY --from=agents / /app/regulai/front/agents/
+#10 DONE 0.1s
+
+#11 [stage-0 5/6] COPY test_probe.py runtime_checks.py run_e2b.py /app/ops/agent_probe/
+#11 DONE 0.1s
+
+#12 [stage-0 6/6] WORKDIR /app
+#12 DONE 0.1s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.3s done
+#13 exporting manifest sha256:2fa0620909958feae30f283f8af2409596b236901ce2ebb4d052c1eba26bfc79 0.0s done
+#13 exporting config sha256:a9478a5c5b91221d9f2eee7103e73509aa84c1df3ff454acdd0a176e3cb76bc5 0.0s done
+#13 exporting attestation manifest sha256:0d8fe92404b256d9b2425128c5edc4b774a873bc4f59854dc910fadc22e87d5f 0.0s done
+#13 exporting manifest list sha256:c996096d0e9b2c9b1f1a95431fddf72c73301d319f680df46fb879fa73b48be9
+#13 exporting manifest list sha256:c996096d0e9b2c9b1f1a95431fddf72c73301d319f680df46fb879fa73b48be9 0.1s done
+#13 naming to docker.io/library/regulay-task48-executor:local done
+#13 unpacking to docker.io/library/regulay-task48-executor:local 0.1s done
+#13 DONE 0.6s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/lj3tbr745q44te7c5bj894cgq
+
+$ build --build-context agents=C:\Users\javi\Documents\Codex\regulai-platform\regulai\front\agents -t regulay-task48-sandbox:local -f C:\Users\javi\Documents\Codex\regulai-platform\ops\agent_probe\Dockerfile.sandbox C:\Users\javi\Documents\Codex\regulai-platform\ops\agent_probe
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.sandbox
+#1 transferring dockerfile: 948B done
+#1 DONE 0.0s
+
+#2 [context agents] load .dockerignore
+#2 transferring agents: 2B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 133B done
+#4 DONE 0.0s
+
+#5 [context agents] load from client
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 DONE 0.0s
+
+#7 [stage-0 1/7] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#7 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#7 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#7 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 176B done
+#6 DONE 0.0s
+
+#5 [context agents] load from client
+#5 transferring agents: 34B done
+#5 DONE 0.0s
+
+#8 [stage-0 4/7] COPY runtime_checks.py /probe/runtime_checks.py
+#8 CACHED
+
+#9 [stage-0 5/7] COPY --from=agents probe_csv.py /probe/probe_csv.py
+#9 CACHED
+
+#10 [stage-0 3/7] COPY input/numbers.csv /workspace/input/numbers.csv
+#10 CACHED
+
+#11 [stage-0 6/7] RUN chmod 0555 /workspace/input && chmod 0444 /workspace/input/numbers.csv
+#11 CACHED
+
+#12 [stage-0 2/7] RUN useradd --uid 1000 --create-home user     && mkdir -p /workspace/input /workspace/work /workspace/output /conversation_history /large_tool_results     && chown user:user /workspace/work /workspace/output /conversation_history /large_tool_results     && find / -xdev -type f -perm /6000 -exec chmod a-s {} +
+#12 CACHED
+
+#13 [stage-0 7/7] WORKDIR /workspace/work
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 exporting manifest sha256:c610e3ccca0573b97251d7b075ada145b6ad701f77d95ff4615bca6ebfe9b510 done
+#14 exporting config sha256:5e7090c54c669c3084e671c39994eb672c409574c7af1111fc0b58d1455d2e1a done
+#14 exporting attestation manifest sha256:8784f0677d3607e3518b34755a5cf98d8ff6ea85306430817c6c53ac8c3a1f59
+#14 exporting attestation manifest sha256:8784f0677d3607e3518b34755a5cf98d8ff6ea85306430817c6c53ac8c3a1f59 0.0s done
+#14 exporting manifest list sha256:68af6d7b29d8bade7891c245e60f01a6a0d915ed70aebd2690b31db485c5126e 0.0s done
+#14 naming to docker.io/library/regulay-task48-sandbox:local done
+#14 unpacking to docker.io/library/regulay-task48-sandbox:local 0.0s done
+#14 DONE 0.1s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/6euchy61p51r24z6xffh4jg4d
+
+$ image inspect regulay-task48-executor:local --format {{.Id}}
+sha256:c996096d0e9b2c9b1f1a95431fddf72c73301d319f680df46fb879fa73b48be9
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ image inspect regulay-task48-sandbox:local --format {{.Id}}
+sha256:68af6d7b29d8bade7891c245e60f01a6a0d915ed70aebd2690b31db485c5126e
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ network create --internal --ipv6 --label regulay.task=48 regulay-task48-8ccab3e3-executor
+8e6b10a2bb5c1dce77f08088375ae666f766d7aa3df601f2049139a9da63f39d
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ network create --internal --ipv6 --label regulay.task=48 regulay-task48-8ccab3e3-receiver
+265978f7bbe770f74025a6e2dca11a01635c61b91d1eca094a2ee5bf62a457ab
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run -d --name regulay-task48-8ccab3e3-receiver --label regulay.task=48 --network regulay-task48-8ccab3e3-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py serve
+e15e3bbf812ea13e9e644b12c1e8e11bc22e3138acc37ad9a2bd1d26d85b9251
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ inspect regulay-task48-8ccab3e3-receiver --format {{json .NetworkSettings.Networks}}
+{"regulay-task48-8ccab3e3-receiver":{"IPAMConfig":null,"Links":null,"Aliases":null,"DriverOpts":null,"GwPriority":0,"NetworkID":"265978f7bbe770f74025a6e2dca11a01635c61b91d1eca094a2ee5bf62a457ab","EndpointID":"07727e08bee900bc4295f623dbefd946edd9599c7b854007edd6823a6fd6c12f","Gateway":"","IPAddress":"172.23.0.2","MacAddress":"ee:07:15:3a:14:ee","IPPrefixLen":16,"IPv6Gateway":"","GlobalIPv6Address":"fda4:9f33:1b38:1::2","GlobalIPv6PrefixLen":64,"DNSNames":["regulay-task48-8ccab3e3-receiver","e15e3bbf812e"]}}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-control --label regulay.task=48 --network regulay-task48-8ccab3e3-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow 172.23.0.2 8080
+{"address": "172.23.0.2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-deny --label regulay.task=48 --network regulay-task48-8ccab3e3-executor --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-executor:local python -I /app/ops/agent_probe/runtime_checks.py deny 172.23.0.2 8080
+{"address": "172.23.0.2", "port": 8080, "denied": true, "error": "OSError", "errno": 101}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-deny --label regulay.task=48 --network regulay-task48-8ccab3e3-executor --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py deny 172.23.0.2 8080
+{"address": "172.23.0.2", "port": 8080, "denied": true, "error": "OSError", "errno": 101}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-control --label regulay.task=48 --network regulay-task48-8ccab3e3-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow 172.23.0.2 8080
+{"address": "172.23.0.2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-control --label regulay.task=48 --network regulay-task48-8ccab3e3-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow fda4:9f33:1b38:1::2 8080
+{"address": "fda4:9f33:1b38:1::2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-deny --label regulay.task=48 --network regulay-task48-8ccab3e3-executor --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-executor:local python -I /app/ops/agent_probe/runtime_checks.py deny fda4:9f33:1b38:1::2 8080
+{"address": "fda4:9f33:1b38:1::2", "port": 8080, "denied": true, "error": "OSError", "errno": 101}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-deny --label regulay.task=48 --network regulay-task48-8ccab3e3-executor --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py deny fda4:9f33:1b38:1::2 8080
+{"address": "fda4:9f33:1b38:1::2", "port": 8080, "denied": true, "error": "OSError", "errno": 101}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-control --label regulay.task=48 --network regulay-task48-8ccab3e3-receiver --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py allow fda4:9f33:1b38:1::2 8080
+{"address": "fda4:9f33:1b38:1::2", "port": 8080, "denied": false, "control": "echo-confirmed"}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-contract --label regulay.task=48 --network regulay-task48-8ccab3e3-executor --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/runtime_checks.py contract
+{"uid": 1000, "effective_capabilities": 0, "input_readonly": true, "work_writable": true, "output_writable": true, "docker_socket": false, "provider_credentials": false, "no_new_privs": "1"}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-csv --label regulay.task=48 --network regulay-task48-8ccab3e3-executor --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-sandbox:local python -I /probe/probe_csv.py
+{"rows": 3, "total_cents": 750}
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ run --rm --name regulay-task48-8ccab3e3-sdk --label regulay.task=48 --network regulay-task48-8ccab3e3-executor --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --memory 512m --cpus 1 --pids-limit 64 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 --tmpfs /workspace/work:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 --tmpfs /workspace/output:rw,nosuid,nodev,size=32m,uid=1000,gid=1000 regulay-task48-executor:local python /app/ops/agent_probe/test_probe.py
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+test_async_native_roundtrip (__main__.ProbeTests.test_async_native_roundtrip) ... ok
+test_bad_or_extra_output_fields_fail_closed (__main__.ProbeTests.test_bad_or_extra_output_fields_fail_closed) ... ok
+test_compaction_reaches_model_boundary_sync_and_async (__main__.ProbeTests.test_compaction_reaches_model_boundary_sync_and_async) ... ok
+test_every_effective_tool_passes_result_hook (__main__.ProbeTests.test_every_effective_tool_passes_result_hook) ... ok
+test_exception_diagnostic_is_not_forwarded (__main__.ProbeTests.test_exception_diagnostic_is_not_forwarded) ... ok
+test_large_result_is_checked_before_sdk_offloads_it (__main__.ProbeTests.test_large_result_is_checked_before_sdk_offloads_it) ... ok
+test_model_multimodal_and_metadata_surfaces_are_checked (__main__.ProbeTests.test_model_multimodal_and_metadata_surfaces_are_checked) ... ok
+test_native_roundtrip_official_adapter (__main__.ProbeTests.test_native_roundtrip_official_adapter) ... ok
+test_real_e2b_sdk_serializes_denied_network_with_mock_http_transport (__main__.ProbeTests.test_real_e2b_sdk_serializes_denied_network_with_mock_http_transport) ... ok
+test_result_content_artifact_command_and_arguments_rejected (__main__.ProbeTests.test_result_content_artifact_command_and_arguments_rejected) ... ok
+test_self_hosted_runner_rejects_cloud_defaults (__main__.ProbeTests.test_self_hosted_runner_rejects_cloud_defaults) ... ok
+test_streaming_fallback_cannot_skip_model_boundary (__main__.ProbeTests.test_streaming_fallback_cannot_skip_model_boundary) ... ok
+test_validation_errors_and_unknown_tools_are_intercepted (__main__.ProbeTests.test_validation_errors_and_unknown_tools_are_intercepted) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.499s
+
+OK
+
+$ rm -f regulay-task48-8ccab3e3-receiver
+regulay-task48-8ccab3e3-receiver
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ network rm regulay-task48-8ccab3e3-receiver
+regulay-task48-8ccab3e3-receiver
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+$ network rm regulay-task48-8ccab3e3-executor
+regulay-task48-8ccab3e3-executor
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings

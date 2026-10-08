@@ -1,0 +1,13 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    ".venv/Scripts/python.exe",
+    "regulai/manage.py",
+    "migrate",
+    "--settings=regulai.agent_chat_test_settings",
+    "--noinput"
+  ],
+  "exit_code": 0,
+  "seconds": 3.352
+}

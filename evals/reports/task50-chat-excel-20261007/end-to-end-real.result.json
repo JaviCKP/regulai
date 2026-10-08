@@ -1,0 +1,13 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "python",
+    "ops/agent_probe/vm/remote.py",
+    "ops/agent_chat/run_live_cases.sh",
+    "--log",
+    "evals/reports/task50-chat-excel-20261007/end-to-end-real-vm.log"
+  ],
+  "exit_code": 0,
+  "seconds": 114.835
+}

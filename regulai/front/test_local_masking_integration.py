@@ -1,5 +1,6 @@
 """Local privacy transformations at the HTTP and provider boundaries."""
 import json
+import sys
 import uuid
 from copy import deepcopy
 from decimal import Decimal
@@ -156,17 +157,17 @@ class LocalMaskingIntegrationTests(test_chat_flow.ChatFixture):
         self.http.assert_not_called()
         self.provider.assert_not_called()
 
-    def test_missing_installed_model_fails_inside_real_detector_without_any_egress(self):
-        with patch('front.local_masking.MODEL_NAME', 'regulai_missing_synthetic_model'):
+    def test_missing_statistical_model_does_not_block_pattern_masking(self):
+        with patch.dict(sys.modules, {'spacy': None, 'xx_ent_wiki_sm': None}):
             for path in ('/chat/send/', '/api/chat/send/', '/chat/'):
                 with self.subTest(path=path):
                     self.send(path, self.original)
                     prompt = Prompt.objects.latest('pk')
-                    self.assertEqual(prompt.status, 'failed')
+                    self.assertEqual(prompt.status, 'completed', prompt.decision)
                     self.assertEqual(prompt.decision['calls'][0]['transport'], 'local')
-                    self.assertEqual(prompt.decision['total']['cost'], '0')
+                    self.assert_masked(str(self.provider.call_args))
         self.http.assert_not_called()
-        self.provider.assert_not_called()
+        self.assertEqual(self.provider.call_count, 3)
 
     def test_local_only_requires_explicit_zero_before_any_transform(self):
         for bound in (None, '0.01'):
@@ -407,7 +408,7 @@ class LocalMaskingConfigurationTests(test_chat_flow.ChatFixture):
         before = deepcopy(self.company.ai_config)
         draft, warnings = initial_policy(self.company)
         self.assertEqual(draft['masking']['max_call_cost'], '0')
-        self.assertTrue(any('install the local detector' in warning for warning in warnings))
+        self.assertTrue(any('explicit patterns only' in warning for warning in warnings))
         self.company.refresh_from_db()
         self.assertEqual(self.company.ai_config, before)
         self.assertEqual(ObfuscationConfig.objects.count(), 1)

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    ".venv/Scripts/python.exe",
+    "regulai/manage.py",
+    "shell",
+    "-c",
+    "from django.conf import settings; import json; print(json.dumps({'enabled': settings.REGULAY_AGENT_ENABLED, 'development':settings.REGULAY_AGENT_DEVELOPMENT,'allowlisted_accounts':len(settings.REGULAY_AGENT_DEV_ACCOUNTS)}))"
+  ],
+  "exit_code": 0,
+  "seconds": 0.791
+}

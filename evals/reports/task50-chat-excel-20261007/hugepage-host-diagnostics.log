@@ -1,0 +1,44 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+us-docker.pkg.dev/e2b-artifacts/embed/tools:v0.3.202609120109-ad1cddd091b 67108864 []
+0::/system.slice/docker-0f5d6c52a1bd28a7fffb2af71df74e47ac990ba32d40122d8ffd5d13fff69ad4.scope
+33 24 0:28 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime shared:9 - cgroup2 cgroup2 rw
+37 26 0:32 / /dev/hugepages rw,nosuid,nodev,relatime shared:14 - hugetlbfs hugetlbfs rw,pagesize=2M
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.1GB.events.local
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.2MB.rsvd.max
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.1GB.rsvd.current
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.2MB.events
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.1GB.rsvd.max
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.2MB.current
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.1GB.max
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.2MB.numa_stat
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.1GB.numa_stat
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.2MB.events.local
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.1GB.events
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.1GB.current
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.2MB.rsvd.current
+/sys/fs/cgroup/sys-fs-fuse-connections.mount/hugetlb.2MB.max
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.1GB.events.local
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.2MB.rsvd.max
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.1GB.rsvd.current
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.2MB.events
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.1GB.rsvd.max
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.2MB.current
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.1GB.max
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.2MB.numa_stat
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.1GB.numa_stat
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.2MB.events.local
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.1GB.events
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.1GB.current
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.2MB.rsvd.current
+/sys/fs/cgroup/sys-kernel-config.mount/hugetlb.2MB.max
+/sys/fs/cgroup/sys-kernel-debug.mount/hugetlb.1GB.events.local
+/sys/fs/cgroup/sys-kernel-debug.mount/hugetlb.2MB.rsvd.max
+hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
+total 0
+/home/probe/e2b/compose.yaml:11:# lines) keep the ${VAR:-...} form: HUGEPAGES, NBDS_MAX, PF_MIN_FREE_GIB,
+/home/probe/e2b/compose.yaml:216:      HUGEPAGES: ${HUGEPAGES:-2048}
+[    0.473702] HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+[    0.474522] HugeTLB: 16380 KiB vmemmap can be freed for a 1.00 GiB page
+[    0.476003] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.478509] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+[    3.980751] systemd[1]: Mounting dev-hugepages.mount - Huge Pages File System...

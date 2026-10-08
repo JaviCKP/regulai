@@ -158,6 +158,7 @@ LOGOUT_REDIRECT_URL = 'front:login'
 
 # Registration
 ALLOW_REGISTRATION = False  # Enable explicitly to allow public registration.
+REGULAY_AGENT_ENABLED = False  # Task 49 internal integration; no account/chat activation.
 
 # Django REST Framework Configuration
 REST_FRAMEWORK = {
@@ -207,6 +208,12 @@ ALLOW_REGISTRATION = False  # Enable explicitly to allow public registration.
 #SECURE_CONTENT_TYPE_NOSNIFF = True
 #SECURE_BROWSER_XSS_FILTER = True
 #X_FRAME_OPTIONS = 'DENY'
+
+# The Excel chat branch is development-only and requires explicit synthetic
+# account/company/profile IDs. Existing accounts are never enrolled by migration.
+REGULAY_AGENT_DEVELOPMENT = False
+REGULAY_AGENT_DEV_ACCOUNTS = {}
+REGULAY_AGENT_WORKER_TOKEN = ''
 
 try:
     from .local_settings import *

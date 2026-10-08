@@ -1,0 +1,132 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.executor
+#1 transferring dockerfile: 757B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/regulay-task48-executor:local
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 5.40kB 0.0s done
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0
+#5 resolve docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0 0.0s done
+#5 DONE 0.1s
+
+#6 [2/6] COPY regulai/front/agents/adapter.py regulai/front/agents/protocol.py regulai/front/agents/worker.py regulai/front/agents/sandbox_pool.py /app/regulai/front/agents/
+#6 CACHED
+
+#7 [3/6] COPY regulai/front/agents/runtime /app/regulai/front/agents/runtime
+#7 CACHED
+
+#8 [4/6] COPY regulai/front/agents/spreadsheet_program.py /app/regulai/front/agents/spreadsheet_program.py
+#8 CACHED
+
+#9 [5/6] COPY ops/agent_chat/requirements.txt ops/agent_chat/build_template.py /app/ops/agent_chat/
+#9 DONE 0.2s
+
+#10 [6/6] COPY ops/agent_chat/network_probe.py /app/ops/agent_chat/
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.2s done
+#11 exporting manifest sha256:23eeb11a162c7dd8048231fb999602ceb9fd696a46a7cc3265836820fcf06516 0.0s done
+#11 exporting config sha256:5c48c99237065565d6642f3e71e37317d94e3353390e8b799036dd278fcfc293 0.0s done
+#11 exporting attestation manifest sha256:e5e4465e95260ab779ccc6e7d309d40faea9b725f2fd18b91b91b6015666f563 0.1s done
+#11 exporting manifest list sha256:0d8fef3c5a4ee99b3f0b74fffbe471f672fc0623e8fff73aaa24b5f7bef5de7f
+#11 exporting manifest list sha256:0d8fef3c5a4ee99b3f0b74fffbe471f672fc0623e8fff73aaa24b5f7bef5de7f 0.0s done
+#11 naming to docker.io/library/regulay-task50-executor:local done
+#11 unpacking to docker.io/library/regulay-task50-executor:local 0.1s done
+#11 DONE 0.5s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.web
+#1 transferring dockerfile: 529B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.8s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#4 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 14.27MB 0.1s done
+#5 DONE 0.1s
+
+#6 [2/6] COPY ops/agent_chat/web-requirements.txt /tmp/requirements.txt
+#6 CACHED
+
+#7 [3/6] RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt && python -m pip check
+#7 CACHED
+
+#8 [4/6] COPY regulai /app/regulai
+#8 DONE 0.2s
+
+#9 [5/6] COPY ops/agent_chat /app/ops/agent_chat
+#9 DONE 0.1s
+
+#10 [6/6] WORKDIR /app
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.6s done
+#11 exporting manifest sha256:5e7e78dd0a2a1dc16407e6403b18f8baa39f187bdd3d55d9783186b94d8e9423 0.0s done
+#11 exporting config sha256:21da5dacc8e924e39bba26d97c661ec052542a0683971a42277e254f9598d3e3 0.0s done
+#11 exporting attestation manifest sha256:f7446a25675ea28b5a3aa06365f4dd59e861eaf4acfecde9eaea08f6f92dbb5c
+#11 exporting attestation manifest sha256:f7446a25675ea28b5a3aa06365f4dd59e861eaf4acfecde9eaea08f6f92dbb5c 0.1s done
+#11 exporting manifest list sha256:1950dbcef232d51eb23c5dac18f57f3b745787b7e0973a2827702fd5f594e240 0.0s done
+#11 naming to docker.io/library/regulay-task50-web:local
+#11 naming to docker.io/library/regulay-task50-web:local done
+#11 unpacking to docker.io/library/regulay-task50-web:local
+#11 unpacking to docker.io/library/regulay-task50-web:local 0.2s done
+#11 DONE 1.0s
+Build started
+Requesting build for template: task50-excel
+Template created with ID: o8w5fpa1bu3exrgnbvh0, Build ID: 82227794-b216-4a92-b69f-1cf7533bdf9b
+Skipping upload of 'ops/agent_chat/requirements.txt', already cached
+Skipping upload of 'regulai/front/agents/spreadsheet_program.py', already cached
+All file uploads completed
+Starting building...
+Waiting for logs...
+Building template o8w5fpa1bu3exrgnbvh0/82227794-b216-4a92-b69f-1cf7533bdf9b
+CACHED [base] FROM python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f [c4605e603f8ebdb996d8f7643640c09c7ba1a124e2af40ad0aa9f7a1a3b4c900]
+CACHED [base] DEFAULT USER user [3ebc03197a32698f542c54a99d292152d7a795b670c2b9376e8bc6f45812c5b6]
+[builder 1/9] RUN free -m && df -h / root [0ad01bfc6c7a92ba8b5084672e891098f85f1a0cecad1258502f49b0a336fc75]
+Updating envd to version v0.9.202609130627+59497eb9134
+[builder 1/9] [stdout]: total        used        free      shared  buff/cache   available
+[builder 1/9] [stdout]: Mem:            1982         171        1854           1          63        1811
+[builder 1/9] [stdout]: Swap:              0           0           0
+[builder 1/9] [stdout]: Filesystem      Size  Used Avail Use% Mounted on
+[builder 1/9] [stdout]: /dev/root       801M  300M  229M  57% /
+Adding layer to cache: 641c1cd4-8639-4e7e-b79c-8e3f749f95ea
+Uploading layer: 641c1cd4-8639-4e7e-b79c-8e3f749f95ea
+[builder 2/9] RUN apt-get update && apt-get install -y --no-install-recommends libreoffice-calc fonts-liberation && rm -rf /var/lib/apt/lists/* root [fca9c273d8736fe853042c3458fcfe6c1ed4c0e066edc18207b0f55133146fc7]
+Saved: 641c1cd4-8639-4e7e-b79c-8e3f749f95ea
+Build failed: An internal error occurred. Please try again or contact support with the build ID.
+Traceback (most recent call last):
+  File "/app/ops/agent_chat/build_template.py", line 34, in <module>
+    build(json.loads(Path(sys.argv[1]).read_text()))
+  File "/app/ops/agent_chat/build_template.py", line 26, in build
+    result = Template.build(template, alias=config['template'], cpu_count=2, memory_mb=2048, min_free_disk_mb=2048,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/e2b/template_sync/main.py", line 288, in build
+    wait_for_build_finish(
+  File "/usr/local/lib/python3.12/site-packages/e2b/template_sync/build_api.py", line 314, in wait_for_build_finish
+    raise BuildException(
+e2b.exceptions.BuildException: An internal error occurred. Please try again or contact support with the build ID.
+Build finished

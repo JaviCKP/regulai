@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-07",
+  "status": "preparation_only_not_loaded_by_chat",
+  "harness": "Deep Agents",
+  "validation": {
+    "source_and_license_review": true,
+    "runtime_integration_tested": false,
+    "skills_executed": false,
+    "quality_parity_with_claude_demonstrated": false,
+    "paid_model_calls_made": false
+  },
+  "original_assets": [
+    {
+      "path": "prompts/system.md",
+      "authorship": "Regulay: original instructions from product requirements",
+      "is_anthropic_system_prompt": false
+    },
+    {
+      "path": "prompts/documents.md",
+      "authorship": "Regulay: original document requirements",
+      "is_anthropic_skill": false
+    }
+  ],
+  "claude_references": [
+    {
+      "id": "core-prompts",
+      "url": "https://platform.claude.com/docs/en/release-notes/system-prompts/overview",
+      "publisher": "Anthropic",
+      "scope": "Published core behavior prompts; not a complete Desktop/Cowork harness",
+      "local_treatment": "reference_only",
+      "redistribution_permission": "not_identified"
+    },
+    {
+      "id": "core-opus-5-5",
+      "url": "https://platform.claude.com/docs/en/release-notes/system-prompts/claude-opus-5-5",
+      "publisher": "Anthropic",
+      "published_version_date": "2026-09-22",
+      "scope": "Core behavior block; text mentions desktop interface",
+      "local_treatment": "reference_only",
+      "redistribution_permission": "not_identified"
+    },
+    {
+      "id": "desktop-product",
+      "url": "https://support.claude.com/en/articles/10065433-install-claude-desktop",
+      "publisher": "Anthropic",
+      "scope": "Official product documentation; distinguishes Chat, Code and Cowork",
+      "local_treatment": "reference_only"
+    },
+    {
+      "id": "constitution",
+      "url": "https://www.anthropic.com/constitution",
+      "publisher": "Anthropic",
+      "license": "CC0-1.0",
+      "scope": "Constitution; not the Desktop system prompt",
+      "local_treatment": "reference_only"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "brand-docs",
+      "repo": "ferdinandobons/brand-docs",
+      "sha": "97a6e384cb0664cd44ba8113c0b80c9761700670",
+      "date": "2026-07-10T09:14:00Z",
+      "url": "https://github.com/ferdinandobons/brand-docs/commit/97a6e384cb0664cd44ba8113c0b80c9761700670",
+      "license_declared": "MIT",
+      "license_path": "LICENSE",
+      "notice_path": "NOTICE",
+      "skill_paths": [
+        "skills/brand-docx/SKILL.md",
+        "skills/brand-xlsx/SKILL.md",
+        "skills/brand-pptx/SKILL.md"
+      ],
+      "decision": "Evaluate first for corporate templates; alpha; shared engine required",
+      "installed": false
+    },
+    {
+      "id": "officecli",
+      "repo": "iOfficeAI/OfficeCLI",
+      "sha": "8d079c777ed6bea35b922c3d893758d3c2081137",
+      "date": "2026-10-06T06:23:47Z",
+      "url": "https://github.com/iOfficeAI/OfficeCLI/commit/8d079c777ed6bea35b922c3d893758d3c2081137",
+      "license_declared": "Apache-2.0",
+      "license_path": "LICENSE",
+      "notice_path": "THIRD-PARTY-NOTICES.txt",
+      "skill_paths": [
+        "SKILL.md",
+        "skills/officecli-docx/SKILL.md",
+        "skills/officecli-xlsx/SKILL.md",
+        "skills/officecli-pptx/SKILL.md"
+      ],
+      "decision": "Evaluate for editable PPTX and general Office edits; independent formula/render checks required",
+      "installed": false
+    },
+    {
+      "id": "openai-pdf",
+      "repo": "openai/skills",
+      "sha": "49f948faa9258a0c61caceaf225e179651397431",
+      "date": "2026-06-24T02:36:12Z",
+      "url": "https://github.com/openai/skills/commit/49f948faa9258a0c61caceaf225e179651397431",
+      "license_declared": "Apache-2.0",
+      "license_path": "skills/.curated/pdf/LICENSE.txt",
+      "skill_paths": [
+        "skills/.curated/pdf/SKILL.md"
+      ],
+      "decision": "Reference copy included; adapt runtime paths and privacy before activation",
+      "installed": false
+    },
+    {
+      "id": "dom-to-pptx",
+      "repo": "atharva9167j/dom-to-pptx",
+      "sha": "939ef79f00db8f9f5f4f75b590e83e380abce197",
+      "date": "2026-09-14T12:09:29Z",
+      "url": "https://github.com/atharva9167j/dom-to-pptx/commit/939ef79f00db8f9f5f4f75b590e83e380abce197",
+      "license_declared": "MIT",
+      "license_path": "LICENSE",
+      "skill_paths": [
+        "packages/dom-to-pptx-skills/skills/dom-to-pptx-skill/SKILL.md"
+      ],
+      "decision": "Alternative for new presentations from HTML; benchmark export fidelity",
+      "installed": false
+    },
+    {
+      "id": "genoffice",
+      "repo": "genspark-ai/genoffice",
+      "sha": "2490e20db8a9e89feb95a6914211c9aad3b34a2b",
+      "date": "2026-10-06T23:14:30Z",
+      "url": "https://github.com/genspark-ai/genoffice/commit/2490e20db8a9e89feb95a6914211c9aad3b34a2b",
+      "license_declared": "Apache-2.0",
+      "license_path": "LICENSE",
+      "notice_path": "NOTICE",
+      "skill_paths": [
+        "skills/genoffice/SKILL.md"
+      ],
+      "decision": "Reserve; validate headless packaging and provider separation",
+      "installed": false
+    },
+    {
+      "id": "univer",
+      "repo": "dream-num/skills",
+      "sha": "9cdf69c82dbdaea21c3bca004a4cffa9387cd58b",
+      "date": "2026-08-31T13:25:00Z",
+      "url": "https://github.com/dream-num/skills/commit/9cdf69c82dbdaea21c3bca004a4cffa9387cd58b",
+      "license_declared": "Apache-2.0 per README for skills repository",
+      "license_path": "LICENSE",
+      "skill_paths": [
+        "skills/univer-pro-integrate/SKILL.md"
+      ],
+      "decision": "Not selected: Office exchange documented under licensed Pro functionality",
+      "installed": false
+    },
+    {
+      "id": "anthropic-document-skills",
+      "repo": "anthropics/skills",
+      "sha": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
+      "date": "2026-10-05T13:46:42Z",
+      "url": "https://github.com/anthropics/skills/commit/683bc88e56f3e09ba94f7055977f3d3aa499f202",
+      "license_declared": "Proprietary source-available, per-skill LICENSE.txt",
+      "skill_paths": [
+        "skills/docx/SKILL.md",
+        "skills/xlsx/SKILL.md",
+        "skills/pptx/SKILL.md",
+        "skills/pdf/SKILL.md"
+      ],
+      "decision": "Reference only; no files copied",
+      "installed": false
+    }
+  ],
+  "imported_files": [
+    {
+      "path": "upstream/openai-pdf/SKILL.md",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "source_path": "skills/.curated/pdf/SKILL.md",
+      "modified": false,
+      "sha256": "d108cf2b36355ab37eb5962933f4d09785ec002f3105c506129320209306b9d2"
+    },
+    {
+      "path": "upstream/openai-pdf/LICENSE.txt",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "source_path": "skills/.curated/pdf/LICENSE.txt",
+      "modified": false,
+      "sha256": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9"
+    }
+  ],
+  "scope_note": "A declared license and inspected examples do not certify every dependency, provenance or Office compatibility. No third-party installers were executed."
+}

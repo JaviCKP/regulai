@@ -2,10 +2,8 @@
 from dataclasses import dataclass, replace
 from datetime import timedelta
 from decimal import Decimal
-from copy import deepcopy
 from http import HTTPStatus
 import json
-import math
 import logging
 import time
 import uuid
@@ -17,12 +15,13 @@ from django.utils import timezone
 from .connectors import ChatMessage, DOCUMENT_RESPONSE_SCHEMA, get_connector
 from .models import Alert, CompanyEngine, Conversation, EngineModel, Message, ObfuscationConfig, Profile, Prompt, Response
 from .policy import AIConfig, digest, evaluate_policy
-from .routing import Candidate, RoutingError, actual_cost, route
+from .routing import Candidate, RoutingError, route
 from .verification import MAX_CLAIMS, verify_response
 from .sources import build_sources
-from .classification import decide
-from .masking import mask_cost_bounds, mask_identity, mask_texts, valid_masks
+from .classification import decide, difficulty_level
+from .masking import mask_cost_bounds, mask_identity, valid_masks
 from . import jev
+from .governance import GovernedCalls, PipelineStop, destination_identity, observe_completed_calls
 
 logger = logging.getLogger(__name__)
 DOCUMENT_INSTRUCTION = ('Return only JSON {"claims":[{"text":"claim",'
@@ -44,7 +43,7 @@ class ChatResult:
 
 ERRORS = {
     'security_check_failed': 'No se pudo completar la comprobación de seguridad. La ficha de decisión indica si hubo llamadas o quedó un resultado incierto.',
-    'policy_configuration_invalid': 'El administrador debe configurar una política de salida válida.',
+    'policy_configuration_invalid': 'Falta una política de salida válida. El administrador de la cuenta debe abrir Settings > Conexiones IA para completar la configuración o revisar su política.',
     'masking_required': 'La empresa debe activar un enmascarador autorizado para datos personales y secretos.',
     'destination_not_allowed': 'La política no autoriza enviar este contenido al destino seleccionado.',
     'input_unreadable': 'No se pudo revisar el documento completo. No se ha enviado.',
@@ -72,6 +71,13 @@ ERRORS = {
     'quality_unavailable': 'Ningún candidato alcanza la calidad configurada para esta tarea.',
     'capability_unavailable': 'Los modelos autorizados no admiten el formato requerido.',
     'currency_mismatch': 'La tarifa del modelo no usa la moneda del presupuesto.',
+    'agent_development_only': 'El modo agente solo está disponible para cuentas sintéticas autorizadas del laboratorio.',
+    'agent_conversation_busy': 'Este chat ya tiene una ejecución en curso. Puedes seguir su actividad o cancelarla.',
+    'conversation_mode_immutable': 'El modo de un chat existente no se puede cambiar. Crea un chat nuevo.',
+    'agent_input_required': 'Adjunta un CSV o XLSX para empezar, o selecciona una revisión para cambiar su título.',
+    'agent_input_invalid': 'Usa un CSV UTF-8 o XLSX de una hoja con columnas item y amount_cents, importes enteros y hasta 1000 filas. No se admiten fórmulas de entrada ni enlaces externos.',
+    'artifact_revision_stale': 'Esta revisión ya no es la actual. Recarga el archivo antes de editarlo.',
+    'aggregate_group_too_small': 'El archivo no alcanza el mínimo de filas exigido por el perfil.',
 }
 
 
@@ -114,21 +120,11 @@ def request_result(prompt):
         data['evidence'] = prompt.response.evidence
     if code:
         data.update(error_type=code, error=ERRORS.get(code, code))
+        if code == 'verification_failed' and meta.get('verification', {}).get('finish_reason') == 'truncated':
+            data['error'] = 'El modelo agotó el límite de generación y la respuesta quedó incompleta. El administrador debe revisar el límite de tokens antes de reintentar.'
     http_status = {'blocked': 403, 'validation_error': 503, 'processing': 202, 'received': 202,
                    'failed': 502, 'outcome_unknown': 504}.get(status, 200)
     return ChatResult(data, http_status)
-
-
-def observe_completed_calls(prompt, *, terminal=False):
-    """Report persisted metadata once; external observers never receive content."""
-    observer = getattr(prompt, '_call_observer', None)
-    if observer is None:
-        return
-    for item in prompt._observer_tokens:
-        call, token, observed = item
-        if not observed and (terminal or call['status'] != 'started'):
-            item[2] = True
-            observer.after_call(deepcopy(call), token)
 
 
 def finish(prompt, status, code=None):
@@ -215,6 +211,17 @@ def send_chat_message(actor, command, *, call_observer=None):
         conversation = authorized_conversations(actor).filter(pk=conversation_id).first()
         if not conversation:
             return error_result('conversation_not_found', 404)
+    mode = command.get('mode')
+    if mode not in (None, '', 'chat', 'agent'):
+        return error_result('input_invalid')
+    if conversation and mode and mode != conversation.mode:
+        return error_result('conversation_mode_immutable', 409)
+    if (conversation and conversation.mode == 'agent') or (not conversation and mode == 'agent'):
+        from .agents.jobs import enqueue
+        try:
+            return enqueue(actor, command, conversation, text, request_id)
+        except (IntegrityError, OperationalError):
+            return error_result('request_busy', 409)
     document = None
     uploaded = command.get('file')
     if uploaded:
@@ -299,11 +306,6 @@ def send_chat_message(actor, command, *, call_observer=None):
                         policy_texts, local, created, engine_id, model_id, input_digest)
 
 
-class PipelineStop(Exception):
-    def __init__(self, code, status='validation_error'):
-        self.code, self.status = code, status
-
-
 def _catalog_rows(engines, cfg):
     rows = {}
     for entry in cfg.routing.candidates:
@@ -328,27 +330,21 @@ def candidates_for(actor, cfg, task):
     return [_candidate(*row, task) for row in _catalog_rows(engines, cfg).values()]
 
 
-def destination_identity(engine, model):
-    return digest([engine.engine.connector_type, engine.engine.base_url, digest(engine.api_key),
-        model.model_id, model.context_window, model.max_tokens, model.supports_json, model.supports_vision, getattr(model, 'reasoning', False),
-        str(model.input_price), str(model.output_price), model.currency, str(model.price_date)])
-
-
 def run_pipeline(actor, command, prompt, profile, text, document, system, history,
                  policy_texts, local, created, engine_id, model_id, input_digest):
     """One bounded execution; closures share the immutable authorization and ledger."""
     cfg = AIConfig.model_validate(profile.company.ai_config)
-    prompt.decision['limits'] = {'jev_state_bytes': jev.MAX_STATE_BYTES, 'max_output_tokens': cfg.routing.max_output_tokens,
+    provider_managed = cfg.limits.provider_managed
+    output_tokens = None if provider_managed else cfg.routing.max_output_tokens
+    prompt.decision['limits'] = {'provider_managed': provider_managed,
+        'jev_state_bytes': None if provider_managed else jev.MAX_STATE_BYTES, 'max_output_tokens': output_tokens,
         'history_max_bytes': cfg.history.max_bytes, 'history_max_turns': cfg.history.max_turns,
-        'call_timeout_seconds': cfg.limits.call_timeout_seconds, 'deadline_seconds': cfg.limits.deadline_seconds,
-        'jev_call_timeout_seconds': min(120, cfg.limits.call_timeout_seconds)}
-    deadline = prompt._started + cfg.limits.deadline_seconds
+        'call_timeout_seconds': None if provider_managed else cfg.limits.call_timeout_seconds,
+        'deadline_seconds': None if provider_managed else cfg.limits.deadline_seconds,
+        'jev_call_timeout_seconds': None if provider_managed else min(120, cfg.limits.call_timeout_seconds)}
     budget = Decimal(cfg.limits.budget) if cfg.limits.budget is not None else None
     sensitivity = local.sensitivity
     consent_accepted = False
-    initial_company_id, initial_department_id = profile.company_id, profile.department_id
-    initial_context = digest([profile.company.system_prompt, profile.department.system_prompt if profile.department else None])
-    initial_history = digest([(m.role, m.content) for m in history])
     engines = {row.pk: row for row in CompanyEngine.objects.filter(company=profile.company, active=True).select_related('engine') if row.api_key}
     masks = list(ObfuscationConfig.objects.filter(company=profile.company, active=True).order_by('created_at', 'pk'))
     if not valid_masks(masks):
@@ -378,14 +374,17 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         return finish(prompt, 'validation_error', 'no_authorized_candidates')
     semantic = cfg.verification.mode != 'local' or document is not None
     classify = cfg.classification == 'required'
+    tier_routing = cfg.routing.strategy == 'difficulty'
+    detect_difficulty = tier_routing and not manual and not classify
+    judge_before_generation = classify or detect_difficulty
     destinations = sorted({f'engine:{row[0].pk}' for row in rows.values()} |
                           {f'obfuscation:{mask.pk}' for mask in masks} |
-                          ({'jev'} if classify or semantic else set()))
+                          ({'jev'} if judge_before_generation or semantic else set()))
     decision = evaluate_policy(actor, policy_texts, destinations=destinations, sensitivity=sensitivity)
     prompt.decision['policy'] = decision.as_dict()
     if decision.status in ('block', 'unavailable'):
         return finish(prompt, 'blocked' if decision.status == 'block' else 'validation_error', decision.reason_codes[0])
-    if (classify or semantic) and not profile.company.jev_api_key:
+    if (judge_before_generation or semantic) and not profile.company.jev_api_key:
         return finish(prompt, 'validation_error', 'jev_unavailable')
     identities = {key: destination_identity(engine, model)
                   for key, (engine, model, _) in rows.items()}
@@ -438,131 +437,23 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         Alert.objects.get_or_create(prompt=prompt, rule_id=rule['id'], defaults={'user': actor,
             'company': profile.company, 'severity': rule['severity'], 'description': 'Confirmación vinculada aceptada.'})
 
-    def remaining():
-        seconds = deadline - time.monotonic()
-        if seconds <= 0:
-            raise PipelineStop('deadline_exceeded')
-        return min(seconds, cfg.limits.call_timeout_seconds)
-
-    def spent_bound():
-        values = [call.get('cost_exposure_bound', call.get('cost_bound')) for call in prompt.decision['calls']]
-        if any(value is None for value in values):
-            return None
-        return sum((Decimal(value) for value in values), Decimal(0))
-
-    def ensure_budget(cost, reserve=Decimal(0)):
-        if budget is not None:
-            spent = spent_bound()
-            if cost is None or spent is None or reserve is None:
-                raise PipelineStop('unknown_price')
-            if spent + cost + reserve > budget:
-                raise PipelineStop('budget_exhausted')
-
-    def preflight(destination, texts, *, model_pk=None):
-        remaining()
-        fresh = Profile.objects.select_related('company', 'department', 'user').get(user=actor)
-        if (not fresh.user.is_active or fresh.company_id != initial_company_id or fresh.department_id != initial_department_id
-                or digest([fresh.company.system_prompt, fresh.department.system_prompt if fresh.department else None]) != initial_context):
-            raise PipelineStop('authorization_changed')
-        actor.profile = fresh
-        active_masks = list(ObfuscationConfig.objects.filter(company_id=initial_company_id, active=True))
-        if (not valid_masks(active_masks)
-                or {mask.pk: mask_identity(mask) for mask in active_masks} != mask_identities):
-            raise PipelineStop('authorization_changed')
-        if digest([(m.role, m.content) for m in authorized_history(actor, prompt.conversation)]) != initial_history:
-            raise PipelineStop('authorization_changed')
-        check = evaluate_policy(actor, texts, destinations=[destination], sensitivity=sensitivity)
-        if (check.fingerprint != decision.fingerprint or check.status not in ('allow', 'consent_required')
-                or destination not in destinations or (check.status == 'consent_required' and (
-                    not consent_accepted or not {r['id'] for r in check.rules}.issubset({r['id'] for r in decision.rules})))):
-            raise PipelineStop('security_check_failed')
-        if destination == 'jev' and digest(fresh.company.jev_api_key) != jev_identity:
-            raise PipelineStop('authorization_changed')
-        if destination.startswith('engine:'):
-            linked_id = int(destination.split(':', 1)[1])
-            expected = rows.get((linked_id, model_pk))
-            if expected is None:
-                raise PipelineStop('authorization_changed')
-            original_engine = expected[0]
-            fresh_engine = CompanyEngine.objects.filter(pk=linked_id, company_id=initial_company_id,
-                active=True).select_related('engine').first()
-            fresh_model = EngineModel.objects.filter(pk=model_pk, engine_id=original_engine.engine_id,
-                active=True).first()
-            if (not fresh_engine or not fresh_model or fresh_engine.engine_id != original_engine.engine_id
-                    or destination_identity(fresh_engine, fresh_model) != identities[(linked_id, model_pk)]):
-                raise PipelineStop('authorization_changed')
-        if destination.startswith('obfuscation:'):
-            mask_id = int(destination.split(':', 1)[1])
-            mask = ObfuscationConfig.objects.filter(pk=mask_id, company_id=initial_company_id, active=True).first()
-            if not mask or mask_identity(mask) != mask_identities[mask_id]:
-                raise PipelineStop('authorization_changed')
-        return fresh
-
-    def start_call(purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None, transport='http'):
-        preflight(destination, texts, model_pk=model_pk)
-        ensure_budget(cost_bound, reserve)
-        call = {'purpose': purpose, 'provider': destination, 'model': model, 'status': 'started',
-                'cost': None, 'cost_bound': str(cost_bound) if cost_bound is not None else None,
-                'price_snapshot': prices, 'currency': 'USD', 'cost_kind': 'unknown', 'transport': transport}
-        if transport == 'local':
-            call.update(cost='0', cost_kind='configured_zero', cost_scope='api')
-        prompt.decision['calls'].append(call)
-        prompt.save(update_fields=['decision', 'updated_at'])
-        if prompt._call_observer is not None:
-            try:
-                token = prompt._call_observer.before_call(deepcopy(call))
-            except Exception:
-                call.update(status='not_started', cost='0', cost_kind='not_incurred', cost_exposure_bound='0')
-                prompt.save(update_fields=['decision', 'updated_at'])
-                raise PipelineStop('external_budget_unavailable') from None
-            prompt._observer_tokens.append([call, token, False])
-            try:
-                # An external reserve can wait on shared state. Its return is not
-                # evidence that company authorization remained unchanged.
-                preflight(destination, texts, model_pk=model_pk)
-            except PipelineStop:
-                call.update(status='not_started', cost='0', cost_kind='not_incurred', cost_exposure_bound='0')
-                prompt.save(update_fields=['decision', 'updated_at'])
-                raise
-        prompt._call_started = time.monotonic()
-        return call, prompt._call_started
-
-    def complete_call(call, started, result):
-        call.update(status='completed', duration_ms=round((time.monotonic() - started) * 1000))
-        if result is not None:
-            cost = actual_cost(call['price_snapshot'], result.input_tokens, result.output_tokens)
-            call.update(model_effective=getattr(result, 'model', None) or getattr(result, 'effective_model', None),
-                        input_tokens=result.input_tokens, output_tokens=result.output_tokens,
-                        cost=str(cost) if cost is not None else None,
-                        cost_kind='tariff_estimate' if cost is not None else 'unknown',
-                        provider_request_id=getattr(result, 'provider_request_id', None) or getattr(result, 'request_id', None))
-            # Retain normalized categories, not arbitrary provider strings or response content.
-            call['usage'] = {k: v for k, v in result.usage.items() if isinstance(v, (int, float))
-                             and not isinstance(v, bool) and math.isfinite(v) and 0 <= v <= 1_000_000_000}
-            gateway = getattr(result, 'provider_metadata', {}).get('gateway', {})
-            if 'cost' in gateway:
-                call['cost'] = gateway['cost']
-                call['cost_kind'] = 'provider_reported'
-            if call['cost'] is not None and call['cost_bound'] is not None and Decimal(call['cost']) > Decimal(call['cost_bound']):
-                call['cost_exposure_bound'] = call['cost']
-                prompt.save(update_fields=['decision', 'updated_at'])
-                raise PipelineStop('budget_bound_exceeded')
-        elif call['purpose'] == 'obfuscation' and call['cost_bound'] is not None and Decimal(call['cost_bound']) == 0:
-            call['cost'] = '0'
-            call['cost_kind'] = 'configured_zero'
-        prompt.save(update_fields=['decision', 'updated_at'])
-        observe_completed_calls(prompt)
-        remaining()
+    government = GovernedCalls(actor, prompt, profile, cfg, decision, destinations,
+        rows, masks, history, consent_accepted=consent_accepted)
+    remaining, spent_bound = government.remaining, government.spent_bound
+    ensure_budget, preflight = government.ensure_budget, government.preflight
+    start_call, complete_call = government.start_call, government.complete_call
 
     jev_prices = {key: getattr(cfg.jev, key) for key in ('input_price', 'output_price', 'currency', 'price_date')}
     jev_bound = (Decimal(cfg.jev.max_call_cost) if cfg.jev.max_call_cost is not None
                  and cfg.jev.input_price is not None and cfg.jev.output_price is not None else None)
     # A local acceptance cap, not a claimed token-to-byte conversion from a provider.
-    response_bytes = min(128000, cfg.routing.max_output_tokens * 8)
+    response_bytes = None if provider_managed else min(cfg.routing.max_response_bytes or 128000, output_tokens * 8)
     prompt.decision['limits']['response_bytes'] = response_bytes
 
     def check_judge_capacity(state):
-        if not semantic and not classify:
+        if provider_managed:
+            return
+        if not semantic and not judge_before_generation:
             return
         base = len(json.dumps(state, ensure_ascii=False).encode('utf-8'))
         # Each accepted output byte can expand to six JSON bytes. Resolved document
@@ -571,8 +462,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                              for source in state['sources']), default=0)
         bound = base + (response_bytes * 6 + MAX_CLAIMS * 8 * (64 + locator_bytes) + 512 if semantic else 0)
         prompt.decision['limits']['judge_input_bytes_bound'] = bound
-        questions = jev.verification_questions('general', [{}] * MAX_CLAIMS) if semantic else {
-            **jev.classification_questions(), **jev.task_questions()}
+        questions = jev.verification_questions('general', [{}] * MAX_CLAIMS) if semantic else (
+            {**jev.classification_questions(), **jev.task_questions()} if classify else jev.difficulty_questions())
         request_bound = bound + len(json.dumps({'model': cfg.jev.model, 'questions': questions}, ensure_ascii=False).encode('utf-8')) + 512
         if bound > jev.MAX_STATE_BYTES or request_bound > jev.MAX_REQUEST_BYTES:
             raise PipelineStop('evaluation_input_too_large')
@@ -582,15 +473,18 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             raise PipelineStop('jev_unavailable')
         serialized = json.dumps(state, ensure_ascii=False)
         # Reject whole oversized state before any provider side effect; never sample.
-        if len(serialized.encode('utf-8')) > jev.MAX_STATE_BYTES:
+        if not provider_managed and len(serialized.encode('utf-8')) > jev.MAX_STATE_BYTES:
             raise PipelineStop('evaluation_input_too_large')
         call, started = start_call(purpose, 'jev', cfg.jev.model,
             policy_texts + [('prompts', serialized)], jev_bound, jev_prices, reserve)
-        seconds = min(120, remaining())
-        connect_seconds = min(seconds / 2, max(3, seconds - 60))
+        timeout = None
+        if not provider_managed:
+            seconds = min(120, remaining())
+            connect_seconds = min(seconds / 2, max(3, seconds - 60))
+            timeout = (connect_seconds, seconds - connect_seconds)
         try:
             result = jev.evaluate(profile.company.jev_api_key, cfg.jev.model, state, questions,
-                timeout=(connect_seconds, seconds - connect_seconds), transport=cfg.jev.transport)
+                timeout=timeout, transport=cfg.jev.transport, provider_managed=provider_managed)
         except jev.JevError as error:
             call['provider_error_code'] = _safe_jev_error_code(error.code)
             logger.warning('Provider evaluation failed', extra={'code': call['provider_error_code'],
@@ -603,8 +497,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         raw_sources = build_sources(document.fragments) if document else None
         check_judge_capacity({'request': text, 'context': [{'role': m.role, 'content': m.content} for m in system + history],
                               'sources': json.loads(raw_sources.prompt_json) if raw_sources else []})
-        if classify or semantic:
-            ensure_budget(jev_bound, None if jev_bound is None else jev_bound * (int(classify) + int(semantic) - 1))
+        if judge_before_generation or semantic:
+            ensure_budget(jev_bound, None if jev_bound is None else jev_bound * (int(judge_before_generation) + int(semantic) - 1))
         if budget is not None and not any(model.input_price is not None and model.output_price is not None
                                          and model.currency == 'USD' for _, model, _ in rows.values()):
             raise PipelineStop('unknown_price')
@@ -618,30 +512,22 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             raise PipelineStop('policy_configuration_invalid')
         # Establish a complete mandatory monetary/capacity bound before masking
         # or classification. The final route still applies semantic task quality.
-        mandatory = (jev_bound or Decimal(0)) * (int(classify) + int(semantic)) + (mask_chain_bound or Decimal(0)) * 2
+        mandatory = (jev_bound or Decimal(0)) * (int(judge_before_generation) + int(semantic)) + (mask_chain_bound or Decimal(0)) * 2
         raw_current = text + ('\n\nSources:\n' + raw_sources.prompt_json if raw_sources else '')
         raw_messages = system + ([ChatMessage('system', DOCUMENT_INSTRUCTION)] if document else []) + history + [ChatMessage('user', raw_current)]
         preliminary = [replace(_candidate(*row, 'general'), quality=1.0) for key, row in rows.items()
             if not manual or key == (selected_engine.pk, selected_model.pk)]
         route(preliminary, raw_messages, allowed_destinations=destinations, needs_json=bool(document),
-            max_output_tokens=cfg.routing.max_output_tokens, extra_input_bytes=extra_input_bytes,
+            max_output_tokens=output_tokens, provider_managed=provider_managed, extra_input_bytes=extra_input_bytes,
             budget=None if budget is None else max(Decimal(0), budget - mandatory))
         if masks:
-            mask_call = None
             # Validate all mandatory checking costs before the first paid boundary.
-            ensure_budget(mask_chain_bound, None if (classify or semantic) and jev_bound is None else
-                          (mask_chain_bound or Decimal(0)) + (jev_bound or Decimal(0)) * (int(classify) + int(semantic)))
-            def before_mask(mask, value):
-                nonlocal mask_call
-                mask_call = start_call('obfuscation', f'obfuscation:{mask.pk}', None,
-                    policy_texts + [('prompts', value)], mask_bounds[mask.pk], {}, transport=mask.backend)
-                return remaining()
-            def after_mask(mask):
-                complete_call(*mask_call, None)
+            ensure_budget(mask_chain_bound, None if (judge_before_generation or semantic) and jev_bound is None else
+                          (mask_chain_bound or Decimal(0)) + (jev_bound or Decimal(0)) * (int(judge_before_generation) + int(semantic)))
             segments = [text] + [m.content for m in system + history]
             if document:
                 segments += [value for fragment in document.fragments for value in (fragment['text'], fragment['locator'])]
-            masked = iter(mask_texts(segments, masks, before_mask, after_mask))
+            masked = iter(government.protect_texts(segments, policy_texts))
             text = next(masked)
             system = [ChatMessage(m.role, next(masked)) for m in system]
             history = [ChatMessage(m.role, next(masked)) for m in history]
@@ -662,6 +548,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 rubric_version=jev.CLASSIFICATION_RUBRIC_VERSION, task_rubric_version=jev.TASK_RUBRIC_VERSION)
             classification = decide(answers, cfg, local.sensitivity)
             sensitivity, task, difficulty = classification.sensitivity, classification.task, classification.difficulty
+            government.sensitivity = sensitivity
             plausible_tasks = classification.plausible_tasks
             prompt.decision['notices'] = classification.notices
             if classification.stop_code:
@@ -673,6 +560,17 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             if classified.status not in ('allow', 'consent_required'):
                 raise PipelineStop(classified.reason_codes[0], 'blocked')
             destinations = sorted(set(destinations) & set(classified.allowed_destinations))
+            government.destinations = destinations
+        elif detect_difficulty:
+            answers = evaluate('difficulty', state, jev.difficulty_questions(), reserve=jev_bound if semantic else Decimal(0))
+            prompt.decision['calls'][-1].update(signals=answers, threshold=cfg.jev.threshold,
+                rubric_version=jev.DIFFICULTY_RUBRIC_VERSION)
+            try:
+                difficulty = difficulty_level(answers, cfg.jev.threshold)
+            except (ValueError, TypeError, KeyError):
+                raise PipelineStop('security_check_failed') from None
+        if tier_routing and difficulty != 'economy':
+            difficulty = 'strong'
         allowed = destinations
         candidates = [_candidate(*row, task) for row in rows.values()]
         if plausible_tasks:
@@ -681,7 +579,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if manual:
             first_candidates = [c for c in candidates if (c.company_engine_id, c.model_pk) == (selected_engine.pk, selected_model.pk)]
         else:
-            first_candidates = candidates
+            first_candidates = [c for c in candidates if c.level == difficulty] if tier_routing else candidates
         current = text
         if document:
             current += '\n\nSources:\n' + sources.prompt_json
@@ -695,12 +593,15 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             verify_reserve = None if verify_reserve is None or mask_chain_bound is None else verify_reserve + mask_chain_bound
         route_budget = None if budget is None else max(Decimal(0), budget - (spent_bound() or Decimal(0)) - (verify_reserve or Decimal(0)))
         selected = route(first_candidates, messages, allowed_destinations=allowed,
+            require_quality=not tier_routing,
             min_quality=cfg.routing.min_quality[difficulty], needs_json=document is not None,
-            max_output_tokens=cfg.routing.max_output_tokens, budget=route_budget, extra_input_bytes=extra_input_bytes)
+            max_output_tokens=output_tokens, provider_managed=provider_managed, budget=route_budget, extra_input_bytes=extra_input_bytes)
         ensure_budget(selected.estimated_cost, verify_reserve)
         # Reserve a complete optional escalation before the first generation when possible.
         retry = None
         try:
+            if tier_routing or provider_managed:
+                raise RoutingError('no_quality_escalation')
             retry_candidates = [c for c in candidates if not manual or cfg.routing.allow_cross_engine_fallback
                                 or c.company_engine_id == selected_engine.pk]
             retry = route(retry_candidates, messages + [ChatMessage('assistant', 'x' * response_bytes),
@@ -721,14 +622,16 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 messages = messages + retry_messages
             # Mask expansion and retry instructions must still fit the selected capacity.
             selection = route([candidate], messages, allowed_destinations=allowed,
-                needs_json=document is not None, max_output_tokens=cfg.routing.max_output_tokens,
+                require_quality=not tier_routing,
+                needs_json=document is not None, max_output_tokens=output_tokens, provider_managed=provider_managed,
                 # Explicit schema envelope is additional Anthropic input. The
                 # existing per-message overhead remains an assumption, not a
                 # documented bound on Anthropic's internal system prompt.
                 extra_input_bytes=extra_input_bytes)
             prompt.decision['route'] = {'mode': 'fallback' if attempt == 2 else ('manual' if manual else 'auto'),
                 'company_engine_id': engine.pk, 'model': model.model_id, 'task': task,
-                'level': candidate.level, 'quality': candidate.quality, 'reason_codes': ['quality_cost_route'],
+                'level': candidate.level, 'quality': None if tier_routing else candidate.quality,
+                'reason_codes': ['manual_selection' if manual else 'difficulty_route'] if tier_routing else ['quality_cost_route'],
                 'input_tokens_bound': selection.input_tokens_bound}
             prompt.model_used = model.model_id
             prompt.save(update_fields=['decision', 'model_used', 'updated_at'])
@@ -754,7 +657,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                     continue
                 raise
             complete_call(call, started, response)
-            if len(response.content.encode('utf-8')) > response_bytes:
+            if response_bytes is not None and len(response.content.encode('utf-8')) > response_bytes:
                 raise PipelineStop('evaluation_input_too_large')
             checks = verify_response(response.content, response.finish_reason,
                 fragments=document.fragments if document else None, require_semantic=semantic,
@@ -763,8 +666,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             if masks:
                 for mask in masks:
                     preflight(f'obfuscation:{mask.pk}', policy_texts + [('prompts', response.content)])
-                response = replace(response, content=mask_texts([response.content], masks, before_mask, after_mask)[0])
-                if len(response.content.encode('utf-8')) > response_bytes:
+                response = replace(response, content=government.protect_texts([response.content], policy_texts)[0])
+                if response_bytes is not None and len(response.content.encode('utf-8')) > response_bytes:
                     raise PipelineStop('evaluation_input_too_large')
                 if checks['local_status'] == 'passed':
                     checks = verify_response(response.content, response.finish_reason,
@@ -785,7 +688,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                         preflight('jev', policy_texts + [('prompts', response.content)])
                         answers = evaluate('verification', {**state, **judged}, questions)
                         prompt.decision['calls'][-1].update(signals=answers, threshold=cfg.verification.threshold,
-                            rubric_version=cfg.verification.rubric_version)
+                            rubric_version=cfg.verification.rubric_version,
+                            question_rubric_version=jev.VERIFICATION_QUESTION_VERSION)
                         # Preserve the inclusive decimal boundary without an epsilon.
                         failure_limit = Decimal(1) - Decimal(str(cfg.verification.threshold))
                         checks['failed_signals'] = [key for key, answer in answers.items()
@@ -801,8 +705,10 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                     checks['checks'][-1]['status'] = checks['status']
             prompt.decision['verification'] = {key: checks[key] for key in ('status', 'local_status', 'finish_reason', 'checks')}
             prompt.decision['verification'].update(mode=cfg.verification.mode, rubric_version=cfg.verification.rubric_version,
+                question_rubric_version=jev.VERIFICATION_QUESTION_VERSION,
                 scope='document_evidence' if document else ('requirements' if semantic else 'format_and_completion'),
                 attempt=attempt)
+            prompt.decision['verification']['reason_codes'] = checks.get('failed_signals', [])
             call['verification'] = prompt.decision['verification'].copy()
             prompt.save(update_fields=['decision', 'updated_at'])
             if checks['status'] in ('passed', 'not_verified'):
@@ -852,7 +758,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             calls[-1]['status'] = 'outcome_unknown' if uncertain else 'failed'
             calls[-1]['duration_ms'] = round((time.monotonic() - getattr(prompt, '_call_started', time.monotonic())) * 1000)
         code = ('outcome_unknown' if uncertain else 'internal_error') if calls and calls[-1]['status'] == 'completed' else (
-            'security_check_failed' if calls and calls[-1]['purpose'] == 'classification' else ('outcome_unknown' if uncertain else 'provider_failed'))
+            'security_check_failed' if calls and calls[-1]['purpose'] in ('classification', 'difficulty') else ('outcome_unknown' if uncertain else 'provider_failed'))
         logger.exception('Chat failed', extra={'code': code, 'request_id': str(prompt.request_id)},
             exc_info=(RuntimeError, RuntimeError(code), None))
         return finish(prompt, 'outcome_unknown' if uncertain else 'failed', code)

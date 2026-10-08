@@ -1,0 +1,12 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default'...
+{"timestamp": "2026-10-07T20:20:55.781168+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-07T20:20:59.542037+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+..
+----------------------------------------------------------------------
+Ran 3 tests in 2.592s
+
+OK
+Destroying test database for alias 'default'...
+Found 3 test(s).
+System check identified no issues (0 silenced).

@@ -58,6 +58,28 @@ Un administrador de empresa trabaja sobre su empresa. El catálogo global y Djan
 
 ## Configuración IA de ejemplo, sin secretos
 
+### Una clave propia por servicio desde Settings
+
+El administrador de cada cuenta de empresa puede abrir **Settings > Conexiones IA**
+(`/settings/ai/`). Hay seis campos independientes: clave nativa de Anthropic para
+Claude, Google para Gemini, Mistral, OpenAI y DeepSeek; el último recibe una clave de Vercel AI
+Gateway exclusivamente para TypeSafe Jev. Los cinco generadores se conectan directamente
+con su proveedor. No hay clave común ni copia de credenciales entre servicios. Los
+campos vacíos conservan sus claves; se puede configurar solo un servicio.
+
+Las claves quedan cifradas y aisladas por empresa. Guardar no consume créditos, prueba
+el acceso ni concede permisos de salida. Para una empresa sin política ni enmascarado,
+el segundo paso permite revisar y **Activar chat básico** después de guardar una clave
+de generación. Crea enmascarado local y reglas de bloqueo de credenciales; autoriza solo
+los generadores revisados para texto público/interno, con selección manual y hasta 1.000
+tokens de respuesta. Los textos se consideran internos sin clasificación semántica;
+no introducir información confidencial. No configura un presupuesto monetario ni inventa
+precios: el coste desconocido sigue desconocido. Jev, documentos y políticas existentes
+requieren la configuración avanzada. La revisión firmada caduca a los 30 minutos y una
+rotación de clave o cambio de proveedor exige revisar de nuevo. La migración
+0034 añade el catálogo directo sin transformar claves antiguas ni sustituir conexiones. Ver
+[alcance y comprobaciones de esta sección](tareas/40-conexiones-ia-por-cuenta.md).
+
 [ai-config-example.json](ai-config-example.json) valida con `AIConfig` y **mantiene cerrada la salida**: sin destinos, sin candidatos, presupuesto cero. Es una base segura para editar en el simulador, no una política que produzca respuestas.
 
 Para una política autorizada, configurar destinos por sensibilidad: `obfuscation:<id>` es obligatorio para las máscaras activas y compatibles; añadir `engine:<CompanyEngine.id>` y `jev` según el recorrido. La credencial de Jev va en el campo cifrado `Company.jev_api_key`; las de generación en `CompanyEngine.api_key`. Ninguna pertenece al JSON. Los modelos activos necesitan contexto, salida máxima, supports_json/reasoning, moneda USD, fecha y tarifas vigentes **por millón de tokens**, calidad por tarea sustentada en evidencia y reglas YARA válidas. Un presupuesto acotado rechaza precios desconocidos.

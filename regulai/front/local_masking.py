@@ -1,27 +1,19 @@
-"""Offline CPU masking. Detection is bounded and fallible; never downloads a model."""
-from functools import lru_cache
+"""Offline masking by explicit patterns; never infer private data from prose."""
 from decimal import Decimal, InvalidOperation
 from hashlib import sha256
-from importlib import metadata, util
 import json
-from pathlib import Path
 import re
 import threading
 import time
 import unicodedata
 
-DETECTOR_VERSION = 'regulai-local-v5'
-SPACY_VERSION = '3.8.16'
-MODEL_NAME = 'xx_ent_wiki_sm'
-MODEL_VERSION = '3.8.0'
-MODEL_ARTIFACT_SHA256 = '6f3c4b853852ea9e9d2dc76cc950dddb10a7e4c42d813308caefe6c5e8be2f0a'
+DETECTOR_VERSION = 'regulai-local-v6-patterns'
 MAX_BATCH_BYTES = 512_000
 MAX_SEGMENTS = 4096
 _LOCK = threading.Lock()
 _PLACEHOLDER = re.compile(r'\[\[REGULAI_(?:PERSON|LOCATION|ORGANIZATION|EMAIL|PHONE|ID|ACCOUNT|CARD|SECRET)\]\]')
 _SECRET_KEY = re.compile(r'^(?:api[_ -]?key|access[_ -]?token|refresh[_ -]?token|password|contrase[ñn]a|secret(?:[_ -]?key)?|authorization|private[_ -]?key)$', re.I)
 _SOURCE_ALIAS = re.compile(r'[SF][1-9]\d{0,3}')
-_FIELD_LABEL = re.compile(r'^(?:correo|email|dni|nie|iban|tel[eé]fono|tarjeta|nombre(?: completo)?|full name|name|titular|cliente)\s*:\s*', re.I | re.M)
 _STRUCTURAL_KEYS = frozenset({'claims', 'text', 'citations', 'source_id', 'alias', 'quote', 'answer',
                             'abstain', 'reason', 'sources', 'id', 'locator', 'excerpt', 'role', 'content'})
 _PATTERNS = [
@@ -47,36 +39,13 @@ _PATTERNS = [
 
 
 def detector_metadata():
-    """Observe installed versions and model data without importing/loading spaCy."""
-    try:
-        spacy_version, model_version = metadata.version('spacy'), metadata.version(MODEL_NAME)
-        spec = util.find_spec(MODEL_NAME)
-        if spacy_version != SPACY_VERSION or model_version != MODEL_VERSION or not spec or not spec.origin:
-            raise RuntimeError('Local masking requires the pinned runtime and model.')
-        data = Path(spec.origin).parent / f'{MODEL_NAME}-{MODEL_VERSION}'
-        files = sorted(path for path in data.rglob('*') if path.is_file() and '__pycache__' not in path.parts)
-        if not files or not (data / 'ner' / 'model').is_file():
-            raise RuntimeError('Local masking model data is unavailable.')
-        digest = sha256()
-        for path in files:
-            digest.update(path.relative_to(data).as_posix().encode('utf-8') + b'\0')
-            digest.update(sha256(path.read_bytes()).digest())
-        return {'backend': 'local', 'detector_version': DETECTOR_VERSION,
-                'spacy_version': spacy_version, 'model_name': MODEL_NAME, 'model_version': model_version,
-                'model_artifact_sha256': MODEL_ARTIFACT_SHA256, 'model_files_sha256': digest.hexdigest()}
-    except (metadata.PackageNotFoundError, OSError, ImportError) as error:
-        raise RuntimeError('Local masking dependencies are unavailable; install the pinned requirements.') from error
-
-
-@lru_cache(maxsize=1)
-def _load_model():
-    import xx_ent_wiki_sm
-    identity = detector_metadata()
-    nlp = xx_ent_wiki_sm.load()
-    if nlp.meta.get('version') != MODEL_VERSION or nlp.pipe_names != ['ner']:
-        raise RuntimeError('Incompatible local masking model.')
-    nlp.max_length = MAX_BATCH_BYTES
-    return nlp, identity
+    """Fingerprint the rules actually used, without loading a statistical model."""
+    patterns = [(category, pattern.pattern, pattern.flags) for category, pattern in _PATTERNS]
+    patterns.extend((name, pattern.pattern, pattern.flags) for name, pattern in
+                    (('secret_key', _SECRET_KEY), ('placeholder', _PLACEHOLDER), ('source_alias', _SOURCE_ALIAS)))
+    digest = sha256(json.dumps(patterns, ensure_ascii=False).encode('utf-8')).hexdigest()
+    return {'backend': 'local', 'detector_version': DETECTOR_VERSION,
+            'detection': 'explicit_patterns', 'patterns_sha256': digest}
 
 
 def _luhn(value):
@@ -106,7 +75,7 @@ def _matching_view(text):
     return ''.join(normalized), offsets
 
 
-def _mask_plain(text, nlp, deadline):
+def _mask_plain(text, deadline):
     if time.monotonic() >= deadline:
         raise TimeoutError('Local masking deadline exceeded.')
     protected = [match.span() for match in _PLACEHOLDER.finditer(text)]
@@ -124,16 +93,9 @@ def _mask_plain(text, nlp, deadline):
                 if mapping is not None:
                     start, end = mapping[start], mapping[end - 1] + 1
                 spans.append((start, end, category))
-    labels = {'PER': 'PERSON', 'PERSON': 'PERSON', 'LOC': 'LOCATION', 'GPE': 'LOCATION', 'ORG': 'ORGANIZATION'}
-    field_labels = [match.span() for match in _FIELD_LABEL.finditer(text)]
-    for entity in nlp(text).ents:
-        if entity.label_ in labels:
-            start, end = entity.start_char, entity.end_char
-            for left, right in field_labels:
-                if left <= start < right:
-                    start = min(end, right)
-            if start < end:
-                spans.append((start, end, labels[entity.label_]))
+    # A statistical entity label is not evidence of private data. In particular,
+    # it confused task variables and ordinary words with people and locations.
+    # Only explicit pattern matches above may change the user's text.
     if time.monotonic() >= deadline:
         raise TimeoutError('Local masking deadline exceeded.')
     merged = []
@@ -163,20 +125,20 @@ def _reject_json_constant(value):
     raise ValueError('Nonfinite JSON')
 
 
-def _mask_segment(text, nlp, deadline):
+def _mask_segment(text, deadline):
     if not text.lstrip().startswith(('{', '[')):
-        return _mask_plain(text, nlp, deadline)
+        return _mask_plain(text, deadline)
     try:
         value = json.loads(text, object_pairs_hook=_Pairs, parse_int=_Number, parse_float=_Number,
                            parse_constant=_reject_json_constant)
     except (ValueError, RecursionError):
-        return _mask_plain(text, nlp, deadline)
+        return _mask_plain(text, deadline)
 
     def encode(value):
         if isinstance(value, _Pairs):
             pairs = []
             for key, item in value:
-                masked_key = key if key in _STRUCTURAL_KEYS else _mask_plain(key, nlp, deadline)
+                masked_key = key if key in _STRUCTURAL_KEYS else _mask_plain(key, deadline)
                 if _SECRET_KEY.fullmatch(key):
                     encoded = json.dumps('[[REGULAI_SECRET]]')
                 elif key in {'id', 'source_id', 'alias'} and isinstance(item, str) and _SOURCE_ALIAS.fullmatch(item):
@@ -200,7 +162,7 @@ def _mask_segment(text, nlp, deadline):
             except InvalidOperation as error:
                 raise ValueError('Unsupported JSON numeric token for local masking.') from error
             for candidate in dict.fromkeys(candidates):
-                masked = _mask_plain(candidate, nlp, deadline)
+                masked = _mask_plain(candidate, deadline)
                 if masked != candidate:
                     # A sensitive number becomes a JSON marker string. Partial
                     # replacement would leave an invalid or misleading number.
@@ -210,7 +172,7 @@ def _mask_segment(text, nlp, deadline):
                     return json.dumps(marker.group())
             return str(value)
         if isinstance(value, str):
-            return json.dumps(_mask_plain(value, nlp, deadline), ensure_ascii=False)
+            return json.dumps(_mask_plain(value, deadline), ensure_ascii=False)
         if isinstance(value, list):
             return '[' + ','.join(encode(item) for item in value) + ']'
         return json.dumps(value, allow_nan=False)
@@ -233,10 +195,7 @@ def mask_local_texts(texts, *, language='', timeout=10):
     if not _LOCK.acquire(timeout=timeout):
         raise TimeoutError('Local masking capacity deadline exceeded.')
     try:
-        nlp, loaded_identity = _load_model()
-        if detector_metadata() != loaded_identity:
-            raise RuntimeError('Local masking model changed; restart and review the frozen configuration.')
-        result = [_mask_segment(text, nlp, deadline) for text in texts]
+        result = [_mask_segment(text, deadline) for text in texts]
         if time.monotonic() >= deadline:
             raise TimeoutError('Local masking deadline exceeded.')
         return result

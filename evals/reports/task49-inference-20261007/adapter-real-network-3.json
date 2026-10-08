@@ -1,0 +1,462 @@
+{
+  "passed": true,
+  "positive_before": [
+    {
+      "address": "172.30.51.2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    },
+    {
+      "address": "fd49:51::2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    }
+  ],
+  "executor": {
+    "allowed_internal_http": true,
+    "real_adapter": true,
+    "provider_keys": false,
+    "database_access": false,
+    "private_registry_code": false,
+    "denials": [
+      {
+        "address": "172.30.51.2",
+        "port": 8080,
+        "denied": true,
+        "error": "OSError",
+        "errno": 101,
+        "ipv6_disabled_by_kernel": false
+      },
+      {
+        "address": "fd49:51::2",
+        "port": 8080,
+        "denied": true,
+        "error": "OSError",
+        "errno": 101,
+        "ipv6_disabled_by_kernel": false
+      },
+      {
+        "address": "172.30.50.1",
+        "port": 80,
+        "denied": true,
+        "error": "OSError",
+        "errno": 113,
+        "ipv6_disabled_by_kernel": false
+      },
+      {
+        "address": "169.254.169.254",
+        "port": 80,
+        "denied": true,
+        "error": "OSError",
+        "errno": 101,
+        "ipv6_disabled_by_kernel": false
+      }
+    ],
+    "scope": "Network proof only; HTTP control is synthetic, application governance tested separately."
+  },
+  "positive_after": [
+    {
+      "address": "172.30.51.2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    },
+    {
+      "address": "fd49:51::2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    }
+  ],
+  "image": "sha256:1322b4c8c305b5aec475919a9d5b1659170ea3837b9932f7d3a7a9f605fe9c12",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "build",
+        "--network",
+        "none",
+        "-t",
+        "regulay-task49-executor:local",
+        "-"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "create",
+        "--internal",
+        "--ipv6",
+        "--subnet",
+        "172.30.50.0/24",
+        "--subnet",
+        "fd49:50::/64",
+        "--opt",
+        "com.docker.network.bridge.name=br-task49",
+        "task49-exec"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "create",
+        "--internal",
+        "--ipv6",
+        "--subnet",
+        "172.30.51.0/24",
+        "--subnet",
+        "fd49:51::/64",
+        "task49-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-N",
+        "TASK49_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-A",
+        "TASK49_EXEC",
+        "-m",
+        "conntrack",
+        "--ctstate",
+        "ESTABLISHED,RELATED",
+        "-j",
+        "ACCEPT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-A",
+        "TASK49_EXEC",
+        "-p",
+        "tcp",
+        "-m",
+        "multiport",
+        "--dports",
+        "3000,3002,31049",
+        "-j",
+        "ACCEPT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-A",
+        "TASK49_EXEC",
+        "-j",
+        "REJECT",
+        "--reject-with",
+        "icmp-admin-prohibited"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-I",
+        "INPUT",
+        "1",
+        "-i",
+        "br-task49",
+        "-j",
+        "TASK49_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "ip6tables",
+        "-I",
+        "INPUT",
+        "1",
+        "-i",
+        "br-task49",
+        "-j",
+        "REJECT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        "task49-receiver",
+        "--network",
+        "task49-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "serve"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "task49-receiver",
+        "--format",
+        "{{json .NetworkSettings.Networks}}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task49-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "172.30.51.2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task49-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "fd49:51::2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task49-exec",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task49-executor:local",
+        "python",
+        "/app/ops/agent_probe/network_governed.py",
+        "probe",
+        "[{\"address\": \"172.30.51.2\", \"port\": 8080}, {\"address\": \"fd49:51::2\", \"port\": 8080}, {\"address\": \"172.30.50.1\", \"port\": 80}, {\"address\": \"169.254.169.254\", \"port\": 80}]"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task49-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "172.30.51.2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task49-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--memory",
+        "512m",
+        "--pids-limit",
+        "64",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "fd49:51::2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "regulay-task49-executor:local",
+        "--format",
+        "{{.Id}}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "-f",
+        "task49-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-D",
+        "INPUT",
+        "-i",
+        "br-task49",
+        "-j",
+        "TASK49_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-F",
+        "TASK49_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "iptables",
+        "-X",
+        "TASK49_EXEC"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "ip6tables",
+        "-D",
+        "INPUT",
+        "-i",
+        "br-task49",
+        "-j",
+        "REJECT"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "rm",
+        "task49-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "rm",
+        "task49-exec"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

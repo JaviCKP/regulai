@@ -1,0 +1,28 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "/home/probe/task50/ops/agent_chat/network_live.py", line 54, in <module>
+    main()
+  File "/home/probe/task50/ops/agent_chat/network_live.py", line 37, in main
+    report['negative'] = json.loads(run('docker', 'run', '--rm', '--network', 'task50-exec', *flags,
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task50/ops/agent_chat/network_live.py", line 19, in run
+    raise RuntimeError(result.stdout + result.stderr)
+RuntimeError: Traceback (most recent call last):
+  File "/app/ops/agent_chat/network_probe.py", line 45, in <module>
+    print(json.dumps(probe(json.load(open('/run/task50/config.json')), json.loads(sys.argv[1]))))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/ops/agent_chat/network_probe.py", line 21, in probe
+    sandbox = create_clean(config)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/app/regulai/front/agents/sandbox_pool.py", line 29, in create_clean
+    sandbox.commands.run('printf 1 > /proc/sys/net/ipv6/conf/default/disable_ipv6 && '
+  File "/usr/local/lib/python3.12/site-packages/e2b/sandbox_sync/commands/command.py", line 298, in run
+    else proc.wait(
+         ^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/e2b/sandbox_sync/commands/command_handle.py", line 199, in wait
+    raise CommandExitException(
+e2b.sandbox.commands.command_handle.CommandExitException: Command exited with code 32 and error:
+mount: /skills: mount point does not exist.
+       dmesg(1) may have more information after failed mount system call.
+
+

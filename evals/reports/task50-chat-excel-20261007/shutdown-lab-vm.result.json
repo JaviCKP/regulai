@@ -1,0 +1,25 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "docker",
+    "exec",
+    "regulay-task48-e2bvm",
+    "ssh",
+    "-i",
+    "/vm/id_ed25519",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "UserKnownHostsFile=/vm/known_hosts",
+    "-p",
+    "2222",
+    "probe@127.0.0.1",
+    "sudo",
+    "shutdown",
+    "-h",
+    "now"
+  ],
+  "exit_code": 0,
+  "seconds": 0.54
+}

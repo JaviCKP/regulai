@@ -1,0 +1,13 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "python",
+    "ops/agent_probe/vm/remote.py",
+    "ops/agent_chat/prepare_vm.sh",
+    "--log",
+    "evals/reports/task50-chat-excel-20261007/prepare-excel-image-vm.log"
+  ],
+  "exit_code": 0,
+  "seconds": 24.102
+}

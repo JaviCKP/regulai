@@ -1,0 +1,37 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+orchestrator-1  | 2026-10-07T21:47:55.979Z  [31mERROR[0m  nbd backend read failed  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "sandbox.id": "b3rfp18pb48d4vmdnkymg", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "build.id": "a8f115c2-3684-41ba-a240-e3bf0a154fc9", "execution.id": "d116e82e-86c9-4f36-8bb6-75f592406e21", "device_index": 4, "socket_index": 0, "nbd_provider": "*block.Overlay", "nbd_op": "read", "nbd_handle": 4294967392, "nbd_offset": 139264, "nbd_length": 122880, "error": "context canceled"}
+orchestrator-1  | github.com/e2b-dev/infra/packages/shared/pkg/logger.(*TracedLogger).Error
+orchestrator-1  | 2026-10-07T21:47:56.250Z  [31mERROR[0m  error while building template  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "template.id": "o8w5fpa1bu3exrgnbvh0", "build.id": "a8f115c2-3684-41ba-a240-e3bf0a154fc9", "error": "error building step 1: resume sandbox: failed to start FC: error loading snapshot: error loading snapshot: Put \"http://localhost/snapshot/load\": uffd process exited: failed to wrap memfd: mmap memfd: cannot allocate memory"}
+orchestrator-1  | github.com/e2b-dev/infra/packages/shared/pkg/logger.(*TracedLogger).Error
+orchestrator-1  | github.com/e2b-dev/infra/packages/shared/pkg/telemetry.ReportCriticalError
+orchestrator-1  | 2026/10/07 21:48:00 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:48:10 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:48:20 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:48:30 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:48:40 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:48:50 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:49:00 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:49:10 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:49:20 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:49:30 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:49:40 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:49:50 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:50:00 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:50:10 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:50:20 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:50:30 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:50:40 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:50:50 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:51:00 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+orchestrator-1  | 2026/10/07 21:51:10 failed to upload metrics: exporter export timeout: rpc error: code = Unavailable desc = delegating_resolver: invalid target address "": missing address
+MemFree:          251104 kB
+MemAvailable:    4226024 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+FileHugePages:         0 kB
+HugePages_Total:    1024
+HugePages_Free:      999
+HugePages_Rsvd:      122
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:         2097152 kB

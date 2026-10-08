@@ -1,0 +1,52 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+orchestrator-1  | 2026-10-07T21:47:53.614Z  [34mINFO[0m  2026-10-07T21:47:53.614482109 [anonymous-instance:fc_api] The API server received a Put request on "/snapshot/load" with body "{\"mem_backend\":{\"backend_path\":\"/tmp/uffd-bs4x8dkbp1qvjockpz7sn-vey1oafa66wdqv79yx53.sock\",\"backend_type\":\"Uffd\",\"use_memfd\":true},\"snapshot_path\":\"/orchestrator/template/159ebd64-2de6-445a-8a28-1874e113fc22/cache/88265d12-c7b3-498f-a96f-e0c855b41da3/snapfile\"}\n".  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "logger": "orchestrator_template-manager", "sandbox.id": "bs4x8dkbp1qvjockpz7sn", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "instanceID": "bs4x8dkbp1qvjockpz7sn", "envID": "o8w5fpa1bu3exrgnbvh0"}
+orchestrator-1  | 2026-10-07T21:47:55.916Z  [34mINFO[0m  2026-10-07T21:47:55.916753999 [anonymous-instance:fc_api] The API server received a Put request on "/snapshot/load" with body "{\"mem_backend\":{\"backend_path\":\"/tmp/uffd-b3rfp18pb48d4vmdnkymg-5apm2cb8257x6jfk6vhx.sock\",\"backend_type\":\"Uffd\",\"use_memfd\":true},\"snapshot_path\":\"/orchestrator/template/0b60b68c-0f25-4bef-9787-91884bcee38b/cache/0695aecb-5986-47c7-abe7-a8c2a3538a0d/snapfile\"}\n".  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "logger": "orchestrator_template-manager", "sandbox.id": "b3rfp18pb48d4vmdnkymg", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "instanceID": "b3rfp18pb48d4vmdnkymg", "envID": "o8w5fpa1bu3exrgnbvh0"}
+orchestrator-1  | 2026-10-07T21:47:56.250Z  [31mERROR[0m  error while building template  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "template.id": "o8w5fpa1bu3exrgnbvh0", "build.id": "a8f115c2-3684-41ba-a240-e3bf0a154fc9", "error": "error building step 1: resume sandbox: failed to start FC: error loading snapshot: error loading snapshot: Put \"http://localhost/snapshot/load\": uffd process exited: failed to wrap memfd: mmap memfd: cannot allocate memory"}
+orchestrator-1  | 2026-10-07T21:53:56.429Z  [34mINFO[0m  2026-10-07T21:53:56.429435916 [anonymous-instance:fc_api] The API server received a Put request on "/snapshot/load" with body "{\"mem_backend\":{\"backend_path\":\"/tmp/uffd-b4pdxi1rxixzaxlb51b34-qec2v72cwqwq2xi389ef.sock\",\"backend_type\":\"Uffd\",\"use_memfd\":true},\"snapshot_path\":\"/orchestrator/template/d81b054d-4c08-4310-8b4f-6d6b36c4c212/cache/525e156a-659d-4d7e-a36e-34e22c14ea00/snapfile\"}\n".  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "logger": "orchestrator_template-manager", "sandbox.id": "b4pdxi1rxixzaxlb51b34", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "instanceID": "b4pdxi1rxixzaxlb51b34", "envID": "o8w5fpa1bu3exrgnbvh0"}
+orchestrator-1  | 2026-10-07T21:53:57.000Z  [34mINFO[0m  2026-10-07T21:53:56.999696156 [anonymous-instance:fc_api] The API server received a Put request on "/snapshot/load" with body "{\"mem_backend\":{\"backend_path\":\"/tmp/uffd-bxn1rzj2n28y813x7f17x-7bodzx2a04obnmtr6v3t.sock\",\"backend_type\":\"Uffd\",\"use_memfd\":true},\"snapshot_path\":\"/orchestrator/template/69a52e85-ac45-4fd6-abda-fc4616442f21/cache/e3578983-c961-447a-8acc-def132e84e82/snapfile\"}\n".  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "logger": "orchestrator_template-manager", "sandbox.id": "bxn1rzj2n28y813x7f17x", "template.id": "o8w5fpa1bu3exrgnbvh0", "team.id": "0b8a3ded-4489-4722-afd1-1d82e64ec2d5", "instanceID": "bxn1rzj2n28y813x7f17x", "envID": "o8w5fpa1bu3exrgnbvh0"}
+orchestrator-1  | 2026-10-07T21:53:57.291Z  [31mERROR[0m  error while building template  {"service": "orchestrator_template-manager", "internal": true, "pid": 2037, "template.id": "o8w5fpa1bu3exrgnbvh0", "build.id": "d40ba76f-0283-40de-9c2a-07c968f05678", "error": "error building step 3: resume sandbox: failed to start FC: error loading snapshot: error loading snapshot: Put \"http://localhost/snapshot/load\": uffd process exited: failed to wrap memfd: mmap memfd: cannot allocate memory"}
+null 0
+Limit                     Soft Limit           Hard Limit           Units     
+Max cpu time              unlimited            unlimited            seconds   
+Max file size             unlimited            unlimited            bytes     
+Max data size             unlimited            unlimited            bytes     
+Max stack size            8388608              unlimited            bytes     
+Max core file size        unlimited            unlimited            bytes     
+Max resident set          unlimited            unlimited            bytes     
+Max processes             unlimited            unlimited            processes 
+Max open files            524287               524288               files     
+Max locked memory         8388608              8388608              bytes     
+Max address space         unlimited            unlimited            bytes     
+Max file locks            unlimited            unlimited            locks     
+Max pending signals       31612                31612                signals   
+Max msgqueue size         819200               819200               bytes     
+Max nice priority         0                    0                    
+Max realtime priority     0                    0                    
+Max realtime timeout      unlimited            unlimited            us        
+MemFree:          224792 kB
+MemAvailable:    4242800 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+FileHugePages:         0 kB
+HugePages_Total:    1044
+HugePages_Free:     1019
+HugePages_Rsvd:      122
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:         2138112 kB
+Filesystem      Size  Used Avail Use% Mounted on
+hugetlbfs          0     0     0    - /dev/hugepages
+tmpfs           3.9G     0  3.9G   0% /dev/shm
+/dev/vda1        46G   17G   29G  37% /
+task50-web Up 22 minutes
+task50-postgres Up 22 minutes
+e2b-ready-1 Up 44 minutes
+e2b-dashboard-1 Up 44 minutes (healthy)
+e2b-client-proxy-1 Up 44 minutes (healthy)
+e2b-api-1 Up 44 minutes (healthy)
+e2b-orchestrator-1 Up 44 minutes (healthy)
+e2b-dashboard-api-1 Up 44 minutes (healthy)
+e2b-vector-1 Up 44 minutes (healthy)
+e2b-postgres-1 Up 44 minutes (healthy)
+e2b-redis-1 Up 44 minutes (healthy)
+e2b-clickhouse-1 Up 44 minutes (healthy)

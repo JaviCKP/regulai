@@ -1297,17 +1297,27 @@ def chat_view(request, conversation_id=None):
     if conversation:
         chat_messages = list(conversation.messages.all())
 
+    from .agents.jobs import available, run_data
+    from .models import AgentExecution
+    agent_run = AgentExecution.objects.filter(conversation=conversation).order_by('-created_at').first() if conversation and conversation.mode == 'agent' else None
+
     return render(request, "chat/chat.html", {
         "conversation": conversation,
         "conversations": conversations,
         "messages": chat_messages,
+        "agent_available": available(user),
+        "agent_mode": bool(conversation and conversation.mode == 'agent'),
+        "agent_initial": run_data(agent_run) if agent_run else None,
         "blocked": blocked,
         "blocked_rules": blocked_rules,
         "available_engines": available_engines,
         "current_engine": current_engine,
         "available_models": available_models,
         "current_model": current_model,
+        "ai_setup_missing": not profile.company.ai_config,
         "automatic_routing": profile.company.ai_config.get('routing', {}).get('mode') == 'auto',
+        "difficulty_routing": profile.company.ai_config.get('routing', {}).get('strategy') == 'difficulty',
+        "provider_managed_limits": profile.company.ai_config.get('limits', {}).get('provider_managed', False),
     })
 
 
@@ -1505,6 +1515,9 @@ def _web_command(request, conversation_id):
         'request_id': request.POST.get('request_id'),
         'consent_token': request.POST.get('consent_token'),
         'action': request.POST.get('action'),
+        'mode': request.POST.get('mode'),
+        'artifact_id': request.POST.get('artifact_id'),
+        'base_revision': request.POST.get('base_revision'),
     }
 
 

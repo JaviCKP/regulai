@@ -1,0 +1,15 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/app/regulai/front/agents/sandbox_pool.py", line 24, in create_clean
+    sandbox = Sandbox.create(template=config['template'], timeout=180,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/e2b/sandbox_sync/main.py", line 221, in create
+    sandbox = cls._create(
+              ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/e2b/sandbox_sync/main.py", line 1168, in _create
+    response = SandboxApi._create_sandbox(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/e2b/sandbox_sync/sandbox_api.py", line 258, in _create_sandbox
+    raise handle_api_exception(res)
+e2b.exceptions.SandboxException: 404: template 'task50-excel' not found

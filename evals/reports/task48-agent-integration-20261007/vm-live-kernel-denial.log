@@ -1,0 +1,14 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Building executor
+Evidence: /home/probe/task48/evidence-20261007T194211
+Traceback (most recent call last):
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 131, in <module>
+    main()
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 64, in main
+    docker('build', '--build-context', 'agents=' + str(ROOT / 'regulai/front/agents'),
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 44, in docker
+    return command(['docker', *args], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task48/ops/agent_probe/vm/live_lab.py", line 40, in command
+    raise RuntimeError('Infrastructure command failed; inspect VM evidence/commands.log')
+RuntimeError: Infrastructure command failed; inspect VM evidence/commands.log

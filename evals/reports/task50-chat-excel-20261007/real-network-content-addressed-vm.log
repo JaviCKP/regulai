@@ -1,0 +1,21 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "/home/probe/task50/ops/agent_chat/network_live.py", line 55, in <module>
+    main()
+  File "/home/probe/task50/ops/agent_chat/network_live.py", line 38, in main
+    report['negative'] = json.loads(run('docker', 'run', '--rm', '--network', 'task50-exec', *flags,
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task50/ops/agent_chat/network_live.py", line 20, in run
+    raise RuntimeError(result.stdout + result.stderr)
+RuntimeError: Traceback (most recent call last):
+  File "/app/ops/agent_chat/network_probe.py", line 45, in <module>
+    print(json.dumps(probe(json.load(open('/run/task50/config.json')), json.loads(sys.argv[1]))))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/ops/agent_chat/network_probe.py", line 33, in probe
+    raise RuntimeError('Sandbox isolation probe failed: ' + result.output)
+RuntimeError: Sandbox isolation probe failed: Traceback (most recent call last):
+  File "<string>", line 94, in <module>
+  File "<string>", line 45, in connect_probe
+RuntimeError: Unapproved synthetic destination was reachable
+
+

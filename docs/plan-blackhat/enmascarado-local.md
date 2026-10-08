@@ -1,5 +1,15 @@
 # Detector integrado de enmascarado local
 
+## Comportamiento actual: patrones explícitos (5 de octubre de 2026)
+
+Por petición del usuario, `regulai-local-v6-patterns` elimina NER de spaCy del backend local. La predicción de persona/lugar/organización no demuestra que haya datos privados: en el prompt real de planificación sustituía «Tengo», «A» y «A. Dispongo», alterando las dependencias. Ahora conserva la prosa, los nombres en texto libre, las letras de tareas y las tablas. Solo transforma coincidencias de patrones explícitos: correos, identificadores, teléfonos, cuentas, tarjetas, secretos y campos de nombre etiquetados. YARA continúa evaluando el original y aplicando las acciones de cada regla.
+
+Se aplica a todas las transformaciones del backend local (entrada, historial, documentos y salida), sin cambiar el backend HTTP. No carga ni exige spaCy o sus modelos. Los paquetes fijados de la instalación anterior permanecen en requirements para no mezclar esta corrección con una limpieza de dependencias. `detector_metadata()` identifica la versión y el hash de los patrones activos; los manifiestos anteriores de evaluación quedan obsoletos, no se reescriben sus resultados. Los límites de lote, atomicidad, fallo cerrado, JSON y coste API cero se conservan.
+
+Esto reduce deliberadamente la detección: los nombres, lugares y organizaciones en prosa libre ya no se ocultan por inferencia estadística. No se presenta como anonimización completa. La [tarea 47](tareas/47-enmascarado-sin-inferencia-de-entidades.md) registra la reproducción exacta y las pruebas posteriores. El resto de este documento conserva la historia de la implementación anterior y sus mediciones, que no representan esta versión.
+
+## Implementación anterior (histórico)
+
 Ampliación solicitada el 3 de octubre de 2026 durante la preparación del piloto. El conector anterior exigía un servicio HTTP compatible con PasteGuard: la aplicación no incluía ese detector. La implementación nueva ejecuta la detección y sustitución dentro del proceso Django, en CPU y sin llamadas a DeepSeek, Jev ni otro servicio para enmascarar. No se modificó ninguna base del usuario.
 
 ## Elección y dependencias

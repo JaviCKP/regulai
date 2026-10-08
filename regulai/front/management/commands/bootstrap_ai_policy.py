@@ -43,7 +43,7 @@ def initial_policy(company):
     for mask in masks:
         destinations.append(f'obfuscation:{mask.pk}')
         if mask.backend == 'local':
-            warnings.append(f'Obfuscator {mask.pk}: local API cost is zero; install the local detector and its model before sending.')
+            warnings.append(f'Obfuscator {mask.pk}: local API cost is zero; explicit patterns only, without statistical name detection.')
         else:
             warnings.append(f'Obfuscator {mask.pk}: set a contractual maximum call cost before enabling a budget.')
         if mask.detect != 'both':

@@ -1,0 +1,30 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Creating test database for alias 'default'...
+{"timestamp": "2026-10-07T20:25:53.681637+00:00", "level": "INFO", "logger": "front.migrations.0016_encrypt_api_keys", "request_id": null, "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-07T20:25:55.361925+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:55.937772+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:56.476720+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-07T20:25:56.637319+00:00", "level": "WARNING", "logger": "django.request", "request_id": "916538b9-7f6c-410f-9ffa-bcc2478c9fef", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:56.651844+00:00", "level": "WARNING", "logger": "django.request", "request_id": "a8354a3e-9f03-4ca7-87ad-d3c8bfa6edcf", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:56.664873+00:00", "level": "WARNING", "logger": "django.request", "request_id": "affffcc7-2417-471c-9f72-28df855423e9", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:56.676879+00:00", "level": "WARNING", "logger": "django.request", "request_id": "16fc663d-5b89-499f-a6dc-88b6e199c6d7", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:56.689885+00:00", "level": "WARNING", "logger": "django.request", "request_id": "2ad7d9e8-18bc-4f69-8bb9-a06be3fed2da", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:56.701428+00:00", "level": "WARNING", "logger": "django.request", "request_id": "7ebfa992-2432-4279-8a5d-14cc866d0f92", "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:56.718435+00:00", "level": "WARNING", "logger": "django.request", "request_id": "9d3b3b49-fedc-4a86-ad70-8bff7088e903", "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-07T20:25:57.110768+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:57.669026+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+...{"timestamp": "2026-10-07T20:25:58.643307+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:25:59.133858+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+..{"timestamp": "2026-10-07T20:25:59.603891+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:26:00.129943+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:26:00.631361+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+.{"timestamp": "2026-10-07T20:26:06.663402+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+{"timestamp": "2026-10-07T20:26:07.350474+00:00", "level": "INFO", "logger": "httpx", "request_id": null, "code": "unclassified_event", "exception_type": null}
+..s.
+----------------------------------------------------------------------
+Ran 13 tests in 14.207s
+
+OK (skipped=1)
+Destroying test database for alias 'default'...
+Found 13 test(s).
+System check identified no issues (0 silenced).

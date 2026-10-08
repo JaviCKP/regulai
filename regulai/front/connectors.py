@@ -30,6 +30,9 @@ class ChatMessage:
     """Represents a chat message."""
     role: str  # 'user', 'assistant', 'system'
     content: Any  # str or list (for multimodal content)
+    tool_calls: list[dict] = field(default_factory=list)
+    tool_call_id: str | None = None
+    name: str | None = None
 
 
 @dataclass
@@ -43,6 +46,7 @@ class ChatResponse:
     output_tokens: int | None = None
     provider_request_id: str | None = None
     usage: dict = field(default_factory=dict)
+    tool_calls: list[dict] = field(default_factory=list)
 
 
 class BaseConnector(ABC):
@@ -97,21 +101,34 @@ class OpenAIConnector(BaseConnector):
         # Convert ChatMessage objects to dict format
         api_messages = []
         for msg in messages:
-            api_messages.append({
-                "role": msg.role,
-                "content": msg.content
-            })
+            wire = {"role": msg.role, "content": msg.content}
+            if msg.tool_calls:
+                from .agents.protocol import ToolCall
+                wire['tool_calls'] = [ToolCall.model_validate(call).openai() for call in msg.tool_calls]
+            if msg.tool_call_id is not None:
+                wire['tool_call_id'] = msg.tool_call_id
+            if msg.name is not None:
+                wire['name'] = msg.name
+            api_messages.append(wire)
 
         response = self.client.chat.completions.create(
             model=model,
             messages=api_messages,
-            **({'max_completion_tokens': max_tokens} if reasoning else
-               {'max_tokens': max_tokens, 'temperature': temperature}),
+            **({} if max_tokens is None else
+               {'max_completion_tokens': max_tokens} if reasoning else {'max_tokens': max_tokens}),
+            **({} if reasoning else {'temperature': temperature}),
             **({'response_format': {'type': 'json_object'}} if supports_json else {}),
             timeout=kwargs.get('timeout', 30),
+            **({'tools': kwargs['tools']} if kwargs.get('tools') else {}),
             **({'extra_body': kwargs['extra_body']} if 'extra_body' in kwargs else {}),
         )
 
+        tool_calls = []
+        for call in getattr(response.choices[0].message, 'tool_calls', None) or []:
+            import json
+            from .agents.protocol import ToolCall
+            tool_calls.append(ToolCall.model_validate({'id': call.id, 'name': call.function.name,
+                'args': json.loads(call.function.arguments)}).model_dump())
         return ChatResponse(
             content=response.choices[0].message.content,
             tokens_used=response.usage.total_tokens if response.usage else 0,
@@ -121,6 +138,7 @@ class OpenAIConnector(BaseConnector):
             output_tokens=response.usage.completion_tokens if response.usage else None,
             provider_request_id=getattr(response, 'id', None),
             usage=response.usage.model_dump() if response.usage else {},
+            tool_calls=tool_calls,
         )
 
     def supports_vision(self) -> bool:
@@ -153,6 +171,8 @@ class AnthropicConnector(BaseConnector):
         """Send a chat request using Anthropic API."""
         if not self._available:
             raise ImportError("anthropic package is not installed. Install with: pip install anthropic")
+        if kwargs.get('tools') or any(m.tool_calls or m.tool_call_id is not None for m in messages):
+            raise ValueError('Native tool messages require the OpenAI-compatible agent protocol.')
 
         # Anthropic has different message format
         # System messages are passed separately
@@ -257,6 +277,24 @@ class AnthropicConnector(BaseConnector):
         return True
 
 
+class VercelGatewayConnector(OpenAIConnector):
+    """Fixed gateway and one upstream provider per requested model."""
+
+    def __init__(self, api_key: str, base_url: Optional[str] = None):
+        endpoint = 'https://ai-gateway.vercel.sh/v1'
+        if base_url and base_url.rstrip('/') != endpoint:
+            raise ValueError('Vercel AI Gateway requires its official endpoint.')
+        super().__init__(api_key, endpoint)
+
+    def chat(self, messages, model, max_tokens=1000, temperature=0.6, **kwargs):
+        provider, separator, identifier = model.partition('/')
+        if provider not in {'anthropic', 'mistral', 'google', 'openai'} or not separator or not identifier:
+            raise ValueError('Unsupported Vercel AI Gateway chat model.')
+        # Do not allow a caller to add destinations or model fallbacks.
+        kwargs['extra_body'] = {'providerOptions': {'gateway': {'only': [provider]}}}
+        return super().chat(messages, model, max_tokens, temperature, **kwargs)
+
+
 def get_connector(connector_type: str, api_key: str, base_url: Optional[str] = None) -> BaseConnector:
     """
     Factory function to get the appropriate connector based on type.
@@ -273,6 +311,7 @@ def get_connector(connector_type: str, api_key: str, base_url: Optional[str] = N
         'openai': OpenAIConnector,
         'openai_compatible': OpenAIConnector,
         'anthropic': AnthropicConnector,
+        'vercel_gateway': VercelGatewayConnector,
     }
 
     connector_class = connectors.get(connector_type)

@@ -1,0 +1,21 @@
+{
+  "environment": "synthetic ASGI laboratory at 127.0.0.1:8500",
+  "account": "agent-synthetic-ui",
+  "checked": [
+    "new agent mode selection and CSV upload through file chooser",
+    "immediate sending state, 202 accepted, queue and cancellation",
+    "real sandbox calculation, verified preview and authenticated XLSX download",
+    "second turn title changed on the same artifact, revision 2",
+    "second browser tab retained revision 1 and received stale revision rejection",
+    "XSS and formula-like CSV strings rendered as literal text",
+    "desktop preview/download inspected and captured",
+    "mobile DOM width 390, scroll width 390; table and download visible",
+    "new job completed after worker restart",
+    "final tested tab console contained no warning/error messages"
+  ],
+  "desktop_screenshot": "ui-final-desktop.png",
+  "mobile_screenshot": "ui-final-mobile.png",
+  "sse_socket_reconnect_proof": "live-evidence/live-cases.json",
+  "temporary_browser_tabs_closed": true,
+  "viewport_overrides_cleared": true
+}

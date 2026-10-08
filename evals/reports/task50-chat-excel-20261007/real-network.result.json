@@ -1,0 +1,13 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "python",
+    "ops/agent_probe/vm/remote.py",
+    "ops/agent_chat/run_network.sh",
+    "--log",
+    "evals/reports/task50-chat-excel-20261007/real-network-vm.log"
+  ],
+  "exit_code": 1,
+  "seconds": 6.054
+}

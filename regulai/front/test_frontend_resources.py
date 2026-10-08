@@ -17,6 +17,10 @@ from front.test_chat_flow import ChatFixture
 
 ROOT = Path(__file__).resolve().parents[2]
 NAVIGATION = {
+    'https://platform.deepseek.com/api_keys',
+    'https://vercel.com/docs/ai-gateway/authentication-and-byok/api-keys',
+    'https://aistudio.google.com/api-keys',
+    'https://console.mistral.ai/api-keys',
     'https://platform.openai.com/api-keys',
     'https://console.anthropic.com/settings/keys',
     'https://platform.deepseek.com/api_keys',

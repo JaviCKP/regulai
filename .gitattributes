@@ -27,3 +27,12 @@ evals/documents/pilot-20261003/files/*.xlsx binary
 # Final calibration documentation is included in the closure byte-hash manifest.
 docs/plan-blackhat/informe-calibracion-community-20261004.md -text
 docs/plan-blackhat/tareas/3[6-9]-*.md -text
+# Agent locks, imported skills and runtime manifests refer to exact bytes.
+docs/agent-assets/** -text
+ops/agent_probe/** -text
+ops/agent_chat/** -text
+regulai/front/agents/** -text
+# Preserve captured agent evidence, including CRLF and diagnostic whitespace.
+evals/reports/task48-agent-integration-20261007/** -text -whitespace
+evals/reports/task49-inference-20261007/** -text -whitespace
+evals/reports/task50-chat-excel-20261007/** -text -whitespace

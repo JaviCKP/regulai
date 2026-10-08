@@ -1,0 +1,17 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "ops/agent_probe/.venv/Scripts/python.exe",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "ops/agent_probe",
+    "-p",
+    "test_governed_adapter.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "seconds": 15.324
+}

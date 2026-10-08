@@ -1,0 +1,132 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.executor
+#1 transferring dockerfile: 699B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/regulay-task48-executor:local
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 11.12kB done
+#4 DONE 0.0s
+
+#5 [1/5] FROM docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0
+#5 resolve docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0
+#5 resolve docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0 0.0s done
+#5 CACHED
+
+#6 [2/5] COPY regulai/front/agents/adapter.py regulai/front/agents/protocol.py regulai/front/agents/worker.py regulai/front/agents/sandbox_pool.py /app/regulai/front/agents/
+#6 DONE 0.3s
+
+#7 [3/5] COPY regulai/front/agents/runtime /app/regulai/front/agents/runtime
+#7 DONE 0.1s
+
+#8 [4/5] COPY regulai/front/agents/spreadsheet_program.py /app/regulai/front/agents/spreadsheet_program.py
+#8 DONE 0.1s
+
+#9 [5/5] COPY ops/agent_chat/requirements.txt ops/agent_chat/build_template.py /app/ops/agent_chat/
+#9 DONE 0.1s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 0.5s done
+#10 exporting manifest sha256:cf35d8d911f6d1b3316aedc65911e450c231e5c200777245bf72e2ffdfe146fe 0.0s done
+#10 exporting config sha256:df2a6d5224571fa83c21bbeb876aea25414d7e182d16c8c94715a1932cc02f0b 0.0s done
+#10 exporting attestation manifest sha256:16ff18acb87854fab84bc9fc05e8750c0338b86558160f0b380bd5042985e13e 0.1s done
+#10 exporting manifest list sha256:2680efc64d5ab15d1ec82fbfca3a6b17a4f08a730b21ec0230ec30de2e388519
+#10 exporting manifest list sha256:2680efc64d5ab15d1ec82fbfca3a6b17a4f08a730b21ec0230ec30de2e388519 0.0s done
+#10 naming to docker.io/library/regulay-task50-executor:local done
+#10 unpacking to docker.io/library/regulay-task50-executor:local 0.1s done
+#10 DONE 0.8s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.web
+#1 transferring dockerfile: 529B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#4 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 14.26MB 0.1s done
+#5 DONE 0.1s
+
+#6 [2/6] COPY ops/agent_chat/web-requirements.txt /tmp/requirements.txt
+#6 CACHED
+
+#7 [3/6] RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt && python -m pip check
+#7 CACHED
+
+#8 [4/6] COPY regulai /app/regulai
+#8 DONE 0.2s
+
+#9 [5/6] COPY ops/agent_chat /app/ops/agent_chat
+#9 DONE 0.1s
+
+#10 [6/6] WORKDIR /app
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.5s done
+#11 exporting manifest sha256:ffa96094e737143fa02da98b02e3881d68814a0b72288f94dc4ff9b14526e7b6 0.0s done
+#11 exporting config sha256:318353cc40326bae37d812526302cae2c33e0bbc9dd1701ac118dcc263d5b272 0.0s done
+#11 exporting attestation manifest sha256:3e3ada7eef3738d6f73c47a4d36870b8c73a77a2fad7fd6b08d6bfec8c1a6abc 0.1s done
+#11 exporting manifest list sha256:64d005dbd45ff4f53f2bfaeb88134b05658689b69d1214d6785d5e459e82707f
+#11 exporting manifest list sha256:64d005dbd45ff4f53f2bfaeb88134b05658689b69d1214d6785d5e459e82707f 0.0s done
+#11 naming to docker.io/library/regulay-task50-web:local done
+#11 unpacking to docker.io/library/regulay-task50-web:local
+#11 unpacking to docker.io/library/regulay-task50-web:local 0.2s done
+#11 DONE 0.9s
+Unable to find image 'postgres:17-alpine' locally
+17-alpine: Pulling from library/postgres
+7ccdb0dcae74: Pulling fs layer
+b0a0d9d2abf2: Pulling fs layer
+eb805f20f060: Pulling fs layer
+a8a481ae6efc: Pulling fs layer
+3333950675b2: Pulling fs layer
+93a3470d5852: Pulling fs layer
+4ece9a32c307: Pulling fs layer
+43f9814c9a3b: Pulling fs layer
+f3b07e8a357c: Pulling fs layer
+7ccdb0dcae74: Download complete
+a8a481ae6efc: Download complete
+93a3470d5852: Download complete
+b0a0d9d2abf2: Download complete
+4ece9a32c307: Download complete
+3333950675b2: Download complete
+eb805f20f060: Download complete
+43f9814c9a3b: Download complete
+4ece9a32c307: Pull complete
+43f9814c9a3b: Pull complete
+656469e78267: Download complete
+3333950675b2: Pull complete
+fa8e66b88311: Download complete
+f3b07e8a357c: Download complete
+eb805f20f060: Pull complete
+f3b07e8a357c: Pull complete
+7ccdb0dcae74: Pull complete
+93a3470d5852: Pull complete
+a8a481ae6efc: Pull complete
+b0a0d9d2abf2: Pull complete
+Digest: sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+Status: Downloaded newer image for postgres:17-alpine
+d396ea86bdd5c17dc8c6e295b4fb6742448c33677bea22042a203bee85ff0c45
+00b9e81f2be36ce61d342726e3ba3eef2b6e6a1cf71257450a415c2e59e0bb55
+857f6b48107b9694d08d036620254f92beeb4fb6a74027ac9190d216e9972a00
+66e9a17daaefae69f0462c6762dd5537ae5ad921f01c7880ea77d0c68ff3d426
+Synthetic ASGI service and fenced worker ready

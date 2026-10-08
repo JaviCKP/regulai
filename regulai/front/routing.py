@@ -32,7 +32,7 @@ class Candidate:
 class RouteDecision:
     candidate: Candidate
     input_tokens_bound: int
-    max_output_tokens: int
+    max_output_tokens: int | None
     estimated_cost: Decimal | None
     price_snapshot: dict
 
@@ -60,14 +60,18 @@ def actual_cost(price_snapshot, input_tokens, output_tokens):
 def route(candidates, messages, *, allowed_destinations, min_quality=0,
           needs_vision=False, needs_json=False, max_output_tokens=1000,
           budget=None, overhead_tokens=256, budget_currency="USD",
-          manual_company_engine_id=None, min_quality_exclusive=False, extra_input_bytes=None):
+          manual_company_engine_id=None, min_quality_exclusive=False, extra_input_bytes=None,
+          require_quality=True, provider_managed=False):
     """UTF-8 bytes conservatively bound text tokens plus per-message overhead.
 
     messages may be strings, ChatMessage objects, or role/content dictionaries.
     Multimodal inputs require a provider-specific bound and are rejected here.
     No credentials or ORM lookup occur here: the caller supplies authorized rows.
     """
-    if (type(max_output_tokens) is not int or max_output_tokens <= 0
+    if (type(require_quality) is not bool or (not require_quality and (min_quality or min_quality_exclusive))
+            or type(provider_managed) is not bool
+            or (not provider_managed and (type(max_output_tokens) is not int or max_output_tokens <= 0))
+            or (provider_managed and max_output_tokens is not None)
             or type(overhead_tokens) is not int or overhead_tokens < 0
             or isinstance(min_quality, bool) or not isinstance(min_quality, (int, float))
             or not math.isfinite(min_quality) or not 0 <= min_quality <= 1):
@@ -104,16 +108,19 @@ def route(candidates, messages, *, allowed_destinations, min_quality=0,
             reasons.add("capability_unavailable")
             continue
         quality = candidate.quality
-        if (isinstance(quality, bool) or not isinstance(quality, (int, float))
+        if require_quality and (isinstance(quality, bool) or not isinstance(quality, (int, float))
                 or not math.isfinite(quality) or not 0 <= quality <= 1
                 or quality < min_quality or (min_quality_exclusive and quality == min_quality)):
             reasons.add("quality_unavailable")
             continue
-        if any(type(value) is not int or value <= 0
+        if provider_managed and candidate.connector_type not in ('openai', 'openai_compatible', 'vercel_gateway'):
+            reasons.add('capability_unavailable')
+            continue
+        if not provider_managed and any(type(value) is not int or value <= 0
                for value in (candidate.context_window, candidate.max_tokens)):
             reasons.add("unknown_capacity")
             continue
-        if (max_output_tokens > candidate.max_tokens
+        if not provider_managed and (max_output_tokens > candidate.max_tokens
                 or candidate_input_bound + max_output_tokens > candidate.context_window):
             reasons.add("context_overflow")
             continue

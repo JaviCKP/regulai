@@ -1,0 +1,167 @@
+{
+  "passed": false,
+  "positive_before": [
+    {
+      "address": "172.30.51.2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    },
+    {
+      "address": "fd50:51::2",
+      "port": 8080,
+      "denied": false,
+      "control": "echo-confirmed"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "network",
+        "create",
+        "--internal",
+        "--ipv6",
+        "--subnet",
+        "172.30.51.0/24",
+        "--subnet",
+        "fd50:51::/64",
+        "--label",
+        "regulay.task=50",
+        "task50-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        "task50-receiver",
+        "--network",
+        "task50-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "serve"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "task50-receiver",
+        "--format",
+        "{{json .NetworkSettings.Networks}}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task50-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "172.30.51.2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task50-receiver",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--dns",
+        "127.0.0.1",
+        "regulay-task48-sandbox:local",
+        "python",
+        "-I",
+        "/probe/runtime_checks.py",
+        "allow",
+        "fd50:51::2",
+        "8080"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "task50-exec",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--user",
+        "1000:1000",
+        "--dns",
+        "127.0.0.1",
+        "--mount",
+        "type=bind,src=/home/probe/task50/.runtime,dst=/run/task50,readonly",
+        "regulay-task50-executor:local",
+        "python",
+        "/app/ops/agent_chat/network_probe.py",
+        "[{\"address\": \"172.30.51.2\", \"port\": 8080}, {\"address\": \"fd50:51::2\", \"port\": 8080}, {\"address\": \"172.30.50.1\", \"port\": 55450}, {\"address\": \"169.254.169.254\", \"port\": 80}]"
+      ],
+      "exit_code": 1
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "-f",
+        "task50-receiver"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "rm",
+        "task50-receiver"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

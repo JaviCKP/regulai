@@ -1,0 +1,11 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    ".venv/Scripts/python.exe",
+    "-c",
+    "import sys; sys.path.insert(0,'regulai'); from front.agents.excel_contract import input_rows; samples=[b'item,amount_cents\\n'+b'a'*150000+b',1\\n', b'item,amount_cents\\n'+bytes([34])+b'unclosed,1']; rejected=0;\nfor source in samples:\n try: input_rows(source,'csv')\n except ValueError: rejected+=1\nassert rejected==2; assert input_rows(b'item,amount_cents\\na,125\\nb,250\\nc,375\\n','csv')==[('a',125),('b',250),('c',375)]; print('Malformed/oversized CSV fields rejected as domain errors; valid CSV preserved')"
+  ],
+  "exit_code": 0,
+  "seconds": 0.434
+}

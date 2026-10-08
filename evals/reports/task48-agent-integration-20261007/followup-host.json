@@ -1,0 +1,23 @@
+{
+  "source": "https://raw.githubusercontent.com/e2b-dev/runtime/79098f5667b695c9fa8d087305068e1950dccc54/embed/compose/scripts/preflight.sh",
+  "sha256": "db87fe2668c3104459f0e462d5dd6c46b0a6ad42efdca632d5407492d571f2b9",
+  "command": [
+    "rtk",
+    "proxy",
+    "wsl",
+    "-d",
+    "Ubuntu",
+    "--",
+    "bash",
+    "-s"
+  ],
+  "e2b_preflight_exit_code": 1,
+  "e2b_preflight": "[rtk] /!\\ No hook installed \u2014 run `rtk init -g` for automatic token savings\npreflight: kernel 6.6.114.1-microsoft-standard-WSL2 is older than 6.8. FIX: apt-get install linux-generic-hwe-24.04 on the host and reboot\npreflight: missing on the host: iptables. FIX: apt-get install iptables rsync e2fsprogs iproute2 on the host (the orchestrator execs them there), then start the stack again\nFIX: resolve the 2 item(s) above, then start the stack again\n",
+  "docker_runtimes": [
+    "io.containerd.runc.v2",
+    "nvidia",
+    "runc"
+  ],
+  "opensandbox_secure_runtime_available": false,
+  "e2b_infrastructure_validated": false
+}

@@ -1,0 +1,29 @@
+{
+  "image_id": "sha256:e9c45ab04ba01f3aab35a58012ec184a92911ffd92f9d75f1e348dbce2160ee2",
+  "user": "1000:1000",
+  "privileged": false,
+  "cap_drop": [
+    "ALL"
+  ],
+  "read_only_rootfs": true,
+  "devices": [
+    {
+      "PathOnHost": "/dev/kvm",
+      "PathInContainer": "/dev/kvm",
+      "CgroupPermissions": "rwm"
+    }
+  ],
+  "security_options": [
+    "no-new-privileges"
+  ],
+  "memory_limit_bytes": 9663676416,
+  "nano_cpus": 4000000000,
+  "port_bindings": {},
+  "mounts": [
+    {
+      "type": "volume",
+      "name": "regulay-task48-e2bvm-state",
+      "destination": "/vm"
+    }
+  ]
+}

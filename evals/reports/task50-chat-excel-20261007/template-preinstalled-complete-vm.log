@@ -1,0 +1,193 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.executor
+#1 transferring dockerfile: 757B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/regulay-task48-executor:local
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 50.79kB done
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0
+#5 resolve docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0 0.0s done
+#5 CACHED
+
+#6 [2/6] COPY regulai/front/agents/adapter.py regulai/front/agents/protocol.py regulai/front/agents/worker.py regulai/front/agents/sandbox_pool.py /app/regulai/front/agents/
+#6 DONE 0.2s
+
+#7 [3/6] COPY regulai/front/agents/runtime /app/regulai/front/agents/runtime
+#7 DONE 0.1s
+
+#8 [4/6] COPY regulai/front/agents/spreadsheet_program.py /app/regulai/front/agents/spreadsheet_program.py
+#8 DONE 0.1s
+
+#9 [5/6] COPY ops/agent_chat/requirements.txt ops/agent_chat/build_template.py /app/ops/agent_chat/
+#9 DONE 0.1s
+
+#10 [6/6] COPY ops/agent_chat/network_probe.py /app/ops/agent_chat/
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.5s done
+#11 exporting manifest sha256:cbbae80be37c4e08519e01d0c463a03f6f2744ba210846dcb33b2310a7494651 0.0s done
+#11 exporting config sha256:d671212f2815194f69542e07414d85ec78a91e35d724c34cb91b9cf252ce75f6 0.0s done
+#11 exporting attestation manifest sha256:1cfe2065523ee577f20790e8d3ae87b947366e268c7f86a865185718c57599f1 0.1s done
+#11 exporting manifest list sha256:6d4ff989f0311ea441ef0daac3334023f5c54e4be68919f0fab06c5520b8d9a6
+#11 exporting manifest list sha256:6d4ff989f0311ea441ef0daac3334023f5c54e4be68919f0fab06c5520b8d9a6 0.0s done
+#11 naming to docker.io/library/regulay-task50-executor:local done
+#11 unpacking to docker.io/library/regulay-task50-executor:local
+#11 unpacking to docker.io/library/regulay-task50-executor:local 0.2s done
+#11 DONE 0.9s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.web
+#1 transferring dockerfile: 529B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#5 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#5 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 14.28MB 0.1s done
+#4 DONE 0.1s
+
+#6 [2/6] COPY ops/agent_chat/web-requirements.txt /tmp/requirements.txt
+#6 CACHED
+
+#7 [3/6] RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt && python -m pip check
+#7 CACHED
+
+#8 [4/6] COPY regulai /app/regulai
+#8 DONE 0.2s
+
+#9 [5/6] COPY ops/agent_chat /app/ops/agent_chat
+#9 DONE 0.1s
+
+#10 [6/6] WORKDIR /app
+#10 DONE 0.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.6s done
+#11 exporting manifest sha256:4cb204a57198e8bd96d1cc5ca27b36cc624aee3f08d7597762af3db6fc06104a 0.0s done
+#11 exporting config sha256:7f8db8c2f69d21eafc8a83f7cdc73e1c69fd36645eb30b7f81c2f92d3fcc5157 0.0s done
+#11 exporting attestation manifest sha256:ab356d4407d87c4088153eced78a5ef0f2140b011679b984456dc007ab5d2587 0.1s done
+#11 exporting manifest list sha256:903c75a7719af120d71c54616649084cacf7af9a420e5cf4d6526ceffd465d53 0.0s done
+#11 naming to docker.io/library/regulay-task50-web:local done
+#11 unpacking to docker.io/library/regulay-task50-web:local
+#11 unpacking to docker.io/library/regulay-task50-web:local 0.2s done
+#11 DONE 1.0s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.spreadsheet
+#1 transferring dockerfile: 944B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [1/8] FROM docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f
+#5 resolve docker.io/library/python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f 0.0s done
+#5 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 273B done
+#4 DONE 0.0s
+
+#6 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends libreoffice-calc=4:25.2.3-2+deb13u8 fonts-liberation && rm -rf /var/lib/apt/lists/*
+#6 CACHED
+
+#7 [3/8] COPY ops/agent_chat/requirements.txt /tmp/spreadsheet-requirements.txt
+#7 CACHED
+
+#8 [4/8] RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/spreadsheet-requirements.txt && python -m pip check
+#8 CACHED
+
+#9 [5/8] RUN useradd --uid 1000 --create-home user && mkdir -p /skills /workspace/input /workspace/work /workspace/output /conversation_history /large_tool_results && chown user:user /workspace/work /workspace/output /conversation_history /large_tool_results
+#9 DONE 0.4s
+
+#10 [6/8] COPY --chmod=0444 regulai/front/agents/spreadsheet_program.py /skills/spreadsheet_program.py
+#10 DONE 0.1s
+
+#11 [7/8] RUN chmod 0555 /skills
+#11 DONE 0.2s
+
+#12 [8/8] WORKDIR /workspace/work
+#12 DONE 0.1s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.5s done
+#13 exporting manifest sha256:ffe6743a63caacd66c16f5931806a1b65172484a0494d65c6e54eef704aa693d 0.0s done
+#13 exporting config sha256:7ddbe6506cccfa409be324c83773b57609174fe3d31bd956697295cb0cecb590 0.0s done
+#13 exporting attestation manifest sha256:48852afcb1c9a0c4b26d6c40b69e1aa37fe90bcfb0c446b461bf7b2f2729177c 0.1s done
+#13 exporting manifest list sha256:613e79da0b54b5bb376f623eeeb8c7bf294aa8b17604927263529afcd06c8e56
+#13 exporting manifest list sha256:613e79da0b54b5bb376f623eeeb8c7bf294aa8b17604927263529afcd06c8e56 0.1s done
+#13 naming to docker.io/library/regulay-task50-spreadsheet:local done
+#13 unpacking to docker.io/library/regulay-task50-spreadsheet:local 0.1s done
+#13 DONE 0.8s
+vm.nr_hugepages = 1536
+Build started
+Requesting build for template: task50-excel
+Template created with ID: o8w5fpa1bu3exrgnbvh0, Build ID: 718c1bae-f993-4da8-b1e7-9ce2e0d6beee
+All file uploads completed
+Starting building...
+Waiting for logs...
+Building template o8w5fpa1bu3exrgnbvh0/718c1bae-f993-4da8-b1e7-9ce2e0d6beee
+CACHED [base] FROM localhost:5000/task50-sheet:latest [0010925ee800e29d56a0ec058ec97c440eef5bd65db576541a0eab8264a6f071]
+CACHED [base] DEFAULT USER user [54b92bf88957eb2221072a52b268d3ea73c9372ea063cb38a6029b808dcdf0e1]
+[finalize] Finalizing template build [43873195400e92fa68232ac13afa5c5c4c988ecf5a55254a903f786f93a25dea]
+Updating envd to version v0.9.202609130627+59497eb9134
+[config] [stdout]: Starting configuration script
+[config] [stdout]: Create default user 'user' (if doesn't exist yet)
+[config] [stdout]: Copy skeleton files to /home/user (keeping existing files)
+[config] [stdout]: skel: keeping existing .bash_logout
+[config] [stdout]: skel: keeping existing .profile
+[config] [stdout]: skel: keeping existing .bashrc
+[config] [stdout]: Add sudo to 'user' with no password
+[config] [stdout]: passwd: password changed.
+[config] [stdout]: sudoers entry already present
+[config] [stdout]: Give 'user' ownership to /home/user
+[config] [stdout]: Give 777 permission to /usr/local
+[config] [stdout]: Create /code directory
+[config] [stdout]: Give 777 permission to /code
+[config] [stdout]: Finished configuration script
+[certs] [stdout]: Updating certificates in /etc/ssl/certs...
+[certs] [stderr]: rehash: warning: skipping ca-certificates.crt, it does not contain exactly one certificate or CRL
+[certs] [stdout]: 150 added, 0 removed; done.
+[certs] [stdout]: Running hooks in /etc/ca-certificates/update.d...
+[certs] [stdout]: done.
+Adding layer to cache: 718c1bae-f993-4da8-b1e7-9ce2e0d6beee
+Uploading layer: 718c1bae-f993-4da8-b1e7-9ce2e0d6beee
+[optimize] Optimizing template [350d77101e9bc521a25c175381d25af60c25c9c2196658cff70fbfdffad0cbf1]
+Saved: 718c1bae-f993-4da8-b1e7-9ce2e0d6beee
+Build finished, took 7s
+Build finished
+Built spreadsheet template: o8w5fpa1bu3exrgnbvh0

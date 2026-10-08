@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .encrypted_fields import EncryptedCharField
+from .agents.records import (AgentArtifact, AgentEvent, AgentExecution, AgentInference, AgentInput, AgentModelProfile,
+                            AgentToolResult, ConversationAlias)
 from .policy import validate_ai_config, validate_yara
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
@@ -155,6 +157,7 @@ class Conversation(models.Model):
     """Conversación que agrupa múltiples mensajes."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversations")
     title = models.CharField(max_length=255, blank=True)
+    mode = models.CharField(max_length=12, default='chat', choices=[('chat', 'Chat'), ('agent', 'Agent')])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -296,6 +299,7 @@ class Engine(models.Model):
         ('openai', 'OpenAI SDK'),
         ('anthropic', 'Anthropic SDK'),
         ('openai_compatible', 'OpenAI Compatible (Custom URL)'),
+        ('vercel_gateway', 'Vercel AI Gateway'),
     ]
 
     name = models.CharField(max_length=100, unique=True)

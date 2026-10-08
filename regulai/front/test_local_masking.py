@@ -1,6 +1,7 @@
 """Real installed CPU detector; no provider or downloaded test-time models."""
 from concurrent.futures import ThreadPoolExecutor
 import json
+import sys
 from unittest.mock import patch
 
 from django.test import SimpleTestCase
@@ -8,13 +9,36 @@ from django.test import SimpleTestCase
 from . import local_masking
 
 
+SCHEDULING_PROMPT = (
+    'Tengo tres tareas: A dura 3 horas, B dura 2 y depende de A; C dura 4 y puede ejecutarse '
+    'en paralelo con A. Dispongo de dos trabajadores. Si dos tareas coinciden, cada una '
+    'necesita un trabajador distinto. Encuentra el tiempo mínimo para completar las tres, '
+    'propone un horario y demuestra que no existe uno más corto. Después recalcula la '
+    'solución si C también debe terminar antes de empezar B.'
+)
+SCHEDULING_ANSWER = (
+    'El mínimo es 5 horas: A de 0 a 3, B de 3 a 5 y C de 0 a 4. '
+    'La cadena A → B exige al menos 3 + 2 = 5 horas. '
+    'Si C también precede a B, el mínimo es 6 horas: A de 0 a 3, C de 0 a 4 y B de 4 a 6. '
+    'La cadena C → B exige al menos 4 + 2 = 6 horas.\n'
+    '| Tarea | Inicio | Fin |\n| --- | --- | --- |\n| A | 0 | 3 |\n| B | 4 | 6 |\n| C | 0 | 4 |'
+)
+
+
 class LocalMaskingTests(SimpleTestCase):
+    def test_task_variables_prose_and_answer_are_preserved_exactly(self):
+        texts = [SCHEDULING_PROMPT, SCHEDULING_ANSWER,
+            'Tengo una pregunta. Después explica cuál es el único contrato.',
+            'Compara Madrid con Londres y Microsoft con Apple.',
+            'John Smith and María García are characters in this fictional story.']
+        self.assertEqual(local_masking.mask_local_texts(texts, timeout=30), texts)
+
     def test_real_cpu_masks_structured_personal_data_and_secrets_without_network(self):
         samples = ['Correo: ana.perez@example.test', 'DNI: 12345678Z', 'NIE: X1234567L',
             'Cuenta: ES91 2100 0418 4502 0005 1332', 'Teléfono: +34 612 345 678',
             'Tarjeta: 4111 1111 1111 1111', 'api_key=sk_test_abcdefghijk123',
-            'Bearer abcdefghijklmnop.123456789', 'Mi nombre es María García y vivo en Madrid.',
-            'John Smith lives in London.']
+            'Bearer abcdefghijklmnop.123456789', 'Nombre: María García',
+            'Full name: John Smith']
         forbidden = ['ana.perez@example.test', '12345678Z', 'X1234567L', 'ES91 2100 0418 4502 0005 1332',
             '+34 612 345 678', '4111 1111 1111 1111', 'sk_test_abcdefghijk123',
             'abcdefghijklmnop.123456789', 'María García', 'John Smith']
@@ -69,15 +93,17 @@ class LocalMaskingTests(SimpleTestCase):
         value = '[0,-7,17.005,1.234567890123456789,1e100000000,1e-100000000]'
         self.assertEqual(local_masking.mask_local_texts([value], timeout=30)[0], value)
 
-    def test_model_unavailable_changed_or_failed_never_returns_original(self):
-        for error in (RuntimeError('Missing model'), OSError('Unreadable model')):
-            with self.subTest(error=type(error).__name__), patch.object(local_masking, '_load_model', side_effect=error):
+    def test_detector_failure_never_returns_original(self):
+        for error in (RuntimeError('Detector failed'), TimeoutError('Deadline exceeded')):
+            with self.subTest(error=type(error).__name__), patch.object(local_masking, '_mask_segment', side_effect=error):
                 with self.assertRaises(type(error)):
                     local_masking.mask_local_texts(['ana@example.test'])
-        nlp, identity = local_masking._load_model()
-        with patch.object(local_masking, 'detector_metadata', return_value={**identity, 'model_files_sha256': 'changed'}):
-            with self.assertRaises(RuntimeError):
-                local_masking.mask_local_texts(['ana@example.test'])
+
+    def test_statistical_models_are_not_needed_or_used(self):
+        with patch.dict(sys.modules, {'spacy': None, 'xx_ent_wiki_sm': None}):
+            self.assertEqual(local_masking.mask_local_texts(['ana@example.test', SCHEDULING_PROMPT]),
+                ['[[REGULAI_EMAIL]]', SCHEDULING_PROMPT])
+            self.assertEqual(local_masking.detector_metadata()['detection'], 'explicit_patterns')
 
     def test_limits_language_timeout_and_idempotence(self):
         for values in ([], ['ok', None], ['x' * (local_masking.MAX_BATCH_BYTES + 1)]):

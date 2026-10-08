@@ -1,0 +1,612 @@
+{
+  "model_calls": 2,
+  "originals_and_raw_logs_absent_from_model": true,
+  "runs": [
+    {
+      "id": "7e582c11-a050-4794-b81b-67d603579794",
+      "conversation": 1,
+      "status": "cancelled",
+      "queue_seconds": null,
+      "execution_seconds": null,
+      "events": [
+        {
+          "id": 1,
+          "kind": "queued",
+          "time": "2026-10-07T21:33:31.737822+00:00"
+        },
+        {
+          "id": 2,
+          "kind": "cancelled",
+          "time": "2026-10-07T21:39:08.484826+00:00"
+        }
+      ],
+      "files": [],
+      "inferences": [],
+      "raw_results_stored_privately": 0
+    },
+    {
+      "id": "4fdeb3f7-c8da-4729-8cec-739de329bb8e",
+      "conversation": 2,
+      "status": "completed",
+      "queue_seconds": 187.251007,
+      "execution_seconds": 6.899419,
+      "events": [
+        {
+          "id": 3,
+          "kind": "queued",
+          "time": "2026-10-07T21:57:26.741543+00:00"
+        },
+        {
+          "id": 4,
+          "kind": "claimed",
+          "time": "2026-10-07T22:00:33.970262+00:00"
+        },
+        {
+          "id": 5,
+          "kind": "input",
+          "time": "2026-10-07T22:00:35.033087+00:00"
+        },
+        {
+          "id": 6,
+          "kind": "calculate",
+          "time": "2026-10-07T22:00:35.152655+00:00"
+        },
+        {
+          "id": 7,
+          "kind": "recalculate",
+          "time": "2026-10-07T22:00:36.696671+00:00"
+        },
+        {
+          "id": 8,
+          "kind": "verify",
+          "time": "2026-10-07T22:00:39.777931+00:00"
+        },
+        {
+          "id": 9,
+          "kind": "verified",
+          "time": "2026-10-07T22:00:40.223642+00:00"
+        },
+        {
+          "id": 10,
+          "kind": "completed",
+          "time": "2026-10-07T22:00:40.870849+00:00"
+        }
+      ],
+      "files": [
+        {
+          "id": "c327032c-8ea8-499f-b958-db9f5dcee575",
+          "logical_id": "c3bb76aa-d98a-4a2d-936c-af9e82a4661e",
+          "revision": 1,
+          "sha256": "12dac7b17fa20cc3863d9fca60d4dd91058dfff9723fb7bb657ebab6dcd294be",
+          "verification": {
+            "rows": 3,
+            "checks": [
+              "structure",
+              "formulas",
+              "cached_results",
+              "independent_integer_total",
+              "layout",
+              "new_workbook"
+            ],
+            "sha256": "12dac7b17fa20cc3863d9fca60d4dd91058dfff9723fb7bb657ebab6dcd294be",
+            "call_id": "synthetic-5dccfcda80b14d58b183cd1516e767e4",
+            "formulas": 5,
+            "total_cents": 750
+          }
+        }
+      ],
+      "inferences": [
+        {
+          "status": "completed",
+          "call_id": "1bf12cd1-93a1-4dcb-ae2a-dd9d9d6a18fc"
+        },
+        {
+          "status": "completed",
+          "call_id": "28649ed3-ea0f-4cb0-937d-3e81bb42aaaa"
+        }
+      ],
+      "raw_results_stored_privately": 1
+    },
+    {
+      "id": "b50957ae-d321-424e-9941-6e7bee28d878",
+      "conversation": 2,
+      "status": "completed",
+      "queue_seconds": 0.556634,
+      "execution_seconds": 4.997029,
+      "events": [
+        {
+          "id": 11,
+          "kind": "queued",
+          "time": "2026-10-07T22:05:30.177781+00:00"
+        },
+        {
+          "id": 12,
+          "kind": "claimed",
+          "time": "2026-10-07T22:05:30.706762+00:00"
+        },
+        {
+          "id": 13,
+          "kind": "input",
+          "time": "2026-10-07T22:05:31.977122+00:00"
+        },
+        {
+          "id": 14,
+          "kind": "rename",
+          "time": "2026-10-07T22:05:32.312396+00:00"
+        },
+        {
+          "id": 15,
+          "kind": "verify",
+          "time": "2026-10-07T22:05:34.275769+00:00"
+        },
+        {
+          "id": 16,
+          "kind": "verified",
+          "time": "2026-10-07T22:05:34.849416+00:00"
+        },
+        {
+          "id": 17,
+          "kind": "completed",
+          "time": "2026-10-07T22:05:35.705162+00:00"
+        }
+      ],
+      "files": [
+        {
+          "id": "604c85c0-59dc-470f-a529-4fc2d6a851e5",
+          "logical_id": "c3bb76aa-d98a-4a2d-936c-af9e82a4661e",
+          "revision": 2,
+          "sha256": "2876b1bf728f6619f6c65758a1cbdb7897e8382840667b13a319920523173cfd",
+          "verification": {
+            "rows": 3,
+            "checks": [
+              "structure",
+              "formulas",
+              "cached_results",
+              "independent_integer_total",
+              "layout",
+              "unchanged_revision"
+            ],
+            "sha256": "2876b1bf728f6619f6c65758a1cbdb7897e8382840667b13a319920523173cfd",
+            "call_id": "synthetic-6828f804333c42b7bfc5c483f32e9c8f",
+            "formulas": 5,
+            "total_cents": 750
+          }
+        }
+      ],
+      "inferences": [
+        {
+          "status": "completed",
+          "call_id": "95e2283e-c5db-4124-bfbc-94580fc52361"
+        },
+        {
+          "status": "completed",
+          "call_id": "9b25870a-216a-4506-bba4-e2ea3bba480f"
+        }
+      ],
+      "raw_results_stored_privately": 1
+    },
+    {
+      "id": "9fb9978f-5b3d-411d-a0e5-d8af81db00e9",
+      "conversation": 3,
+      "status": "completed",
+      "queue_seconds": 0.839257,
+      "execution_seconds": 7.498259,
+      "events": [
+        {
+          "id": 18,
+          "kind": "queued",
+          "time": "2026-10-07T22:05:39.236748+00:00"
+        },
+        {
+          "id": 19,
+          "kind": "claimed",
+          "time": "2026-10-07T22:05:40.036563+00:00"
+        },
+        {
+          "id": 20,
+          "kind": "input",
+          "time": "2026-10-07T22:05:41.062304+00:00"
+        },
+        {
+          "id": 21,
+          "kind": "calculate",
+          "time": "2026-10-07T22:05:41.256160+00:00"
+        },
+        {
+          "id": 22,
+          "kind": "recalculate",
+          "time": "2026-10-07T22:05:43.332808+00:00"
+        },
+        {
+          "id": 23,
+          "kind": "verify",
+          "time": "2026-10-07T22:05:46.230436+00:00"
+        },
+        {
+          "id": 24,
+          "kind": "verified",
+          "time": "2026-10-07T22:05:46.808546+00:00"
+        },
+        {
+          "id": 25,
+          "kind": "completed",
+          "time": "2026-10-07T22:05:47.535597+00:00"
+        }
+      ],
+      "files": [
+        {
+          "id": "b087f7d1-680e-4ce8-a22e-35514d42100c",
+          "logical_id": "b3f8ec30-966f-4131-9fb8-fa7ab7193b16",
+          "revision": 1,
+          "sha256": "c8533eed361a16f02c0c5b6dcf0dfbce922563faa81b4ed35b5b17597922ff4f",
+          "verification": {
+            "rows": 3,
+            "checks": [
+              "structure",
+              "formulas",
+              "cached_results",
+              "independent_integer_total",
+              "layout",
+              "new_workbook"
+            ],
+            "sha256": "c8533eed361a16f02c0c5b6dcf0dfbce922563faa81b4ed35b5b17597922ff4f",
+            "call_id": "synthetic-ef7600e366a9456dafd82d91228ae0c6",
+            "formulas": 5,
+            "total_cents": 750
+          }
+        }
+      ],
+      "inferences": [
+        {
+          "status": "completed",
+          "call_id": "21313360-ce71-467d-9f3a-91c8d9e7e09c"
+        },
+        {
+          "status": "completed",
+          "call_id": "6e1757d9-097b-45de-ae73-57f2174d3cf9"
+        }
+      ],
+      "raw_results_stored_privately": 1
+    },
+    {
+      "id": "a6749838-6621-4308-8fef-c2cfc37d28aa",
+      "conversation": 3,
+      "status": "completed",
+      "queue_seconds": 0.603431,
+      "execution_seconds": 4.884145,
+      "events": [
+        {
+          "id": 26,
+          "kind": "queued",
+          "time": "2026-10-07T22:05:48.038112+00:00"
+        },
+        {
+          "id": 27,
+          "kind": "claimed",
+          "time": "2026-10-07T22:05:48.623563+00:00"
+        },
+        {
+          "id": 28,
+          "kind": "input",
+          "time": "2026-10-07T22:05:49.705493+00:00"
+        },
+        {
+          "id": 29,
+          "kind": "rename",
+          "time": "2026-10-07T22:05:49.853898+00:00"
+        },
+        {
+          "id": 30,
+          "kind": "verify",
+          "time": "2026-10-07T22:05:52.017240+00:00"
+        },
+        {
+          "id": 31,
+          "kind": "verified",
+          "time": "2026-10-07T22:05:52.732379+00:00"
+        },
+        {
+          "id": 32,
+          "kind": "completed",
+          "time": "2026-10-07T22:05:53.508738+00:00"
+        }
+      ],
+      "files": [
+        {
+          "id": "6387c50a-177a-4927-b814-394adb172af7",
+          "logical_id": "b3f8ec30-966f-4131-9fb8-fa7ab7193b16",
+          "revision": 2,
+          "sha256": "b3a0b0a136f21cb7727a653f01de582a20a0423c3f445e18a2e770a1cfad3464",
+          "verification": {
+            "rows": 3,
+            "checks": [
+              "structure",
+              "formulas",
+              "cached_results",
+              "independent_integer_total",
+              "layout",
+              "unchanged_revision"
+            ],
+            "sha256": "b3a0b0a136f21cb7727a653f01de582a20a0423c3f445e18a2e770a1cfad3464",
+            "call_id": "synthetic-a15d7490d4154bbebf5792d7f75064be",
+            "formulas": 5,
+            "total_cents": 750
+          }
+        }
+      ],
+      "inferences": [
+        {
+          "status": "completed",
+          "call_id": "e28fa3f0-5570-4470-98f8-6cb7f38b91ec"
+        },
+        {
+          "status": "completed",
+          "call_id": "2ff4a070-3a2c-4386-a191-c2f1ffa05493"
+        }
+      ],
+      "raw_results_stored_privately": 1
+    },
+    {
+      "id": "07610e86-0277-46fb-9727-e97f955313e3",
+      "conversation": 4,
+      "status": "completed",
+      "queue_seconds": 0.491713,
+      "execution_seconds": 7.340663,
+      "events": [
+        {
+          "id": 33,
+          "kind": "queued",
+          "time": "2026-10-07T22:05:54.150283+00:00"
+        },
+        {
+          "id": 34,
+          "kind": "claimed",
+          "time": "2026-10-07T22:05:54.620264+00:00"
+        },
+        {
+          "id": 35,
+          "kind": "input",
+          "time": "2026-10-07T22:05:55.486700+00:00"
+        },
+        {
+          "id": 36,
+          "kind": "calculate",
+          "time": "2026-10-07T22:05:55.663229+00:00"
+        },
+        {
+          "id": 37,
+          "kind": "recalculate",
+          "time": "2026-10-07T22:05:57.478943+00:00"
+        },
+        {
+          "id": 38,
+          "kind": "verify",
+          "time": "2026-10-07T22:06:00.460783+00:00"
+        },
+        {
+          "id": 39,
+          "kind": "verified",
+          "time": "2026-10-07T22:06:00.935313+00:00"
+        },
+        {
+          "id": 40,
+          "kind": "completed",
+          "time": "2026-10-07T22:06:01.962318+00:00"
+        }
+      ],
+      "files": [
+        {
+          "id": "23c09f7e-9a97-488a-8f22-b70b90cdb6ee",
+          "logical_id": "d8e965de-3dbd-4ee4-b3c3-23b932adfb43",
+          "revision": 1,
+          "sha256": "94a118949afd9769a5b55d121c145125deebeeaa7641e9bdcc77da2bfc275b8d",
+          "verification": {
+            "rows": 3,
+            "checks": [
+              "structure",
+              "formulas",
+              "cached_results",
+              "independent_integer_total",
+              "layout",
+              "new_workbook"
+            ],
+            "sha256": "94a118949afd9769a5b55d121c145125deebeeaa7641e9bdcc77da2bfc275b8d",
+            "call_id": "synthetic-f811e66668da42e3827688a73cc64de1",
+            "formulas": 5,
+            "total_cents": 375
+          }
+        }
+      ],
+      "inferences": [
+        {
+          "status": "completed",
+          "call_id": "a3c7807c-1e75-423c-b2e5-787970a699b1"
+        },
+        {
+          "status": "completed",
+          "call_id": "9d1843c1-1487-4c40-9ac2-d266117d9651"
+        }
+      ],
+      "raw_results_stored_privately": 1
+    },
+    {
+      "id": "a6932fe4-b8d3-4c3d-9f46-da650bbb0aa3",
+      "conversation": 5,
+      "status": "cancelled",
+      "queue_seconds": 0.880611,
+      "execution_seconds": 0.376852,
+      "events": [
+        {
+          "id": 41,
+          "kind": "queued",
+          "time": "2026-10-07T22:06:03.772572+00:00"
+        },
+        {
+          "id": 42,
+          "kind": "claimed",
+          "time": "2026-10-07T22:06:04.632027+00:00"
+        },
+        {
+          "id": 43,
+          "kind": "cancelled",
+          "time": "2026-10-07T22:06:05.010862+00:00"
+        }
+      ],
+      "files": [],
+      "inferences": [
+        {
+          "status": "rejected",
+          "call_id": "26b0c682-b59d-4a69-b106-f9a5ad3839e6"
+        }
+      ],
+      "raw_results_stored_privately": 0
+    },
+    {
+      "id": "39ea1e00-2431-41a8-ab91-04bff6586f68",
+      "conversation": 6,
+      "status": "cancelled",
+      "queue_seconds": 0.318835,
+      "execution_seconds": 12.554411,
+      "events": [
+        {
+          "id": 44,
+          "kind": "queued",
+          "time": "2026-10-07T22:06:17.117362+00:00"
+        },
+        {
+          "id": 45,
+          "kind": "claimed",
+          "time": "2026-10-07T22:06:17.422106+00:00"
+        },
+        {
+          "id": 46,
+          "kind": "cancelled",
+          "time": "2026-10-07T22:06:29.978083+00:00"
+        }
+      ],
+      "files": [],
+      "inferences": [
+        {
+          "status": "rejected",
+          "call_id": "d3f59178-718f-4ec5-82e2-fea97d83470a"
+        }
+      ],
+      "raw_results_stored_privately": 0
+    },
+    {
+      "id": "9920e249-3ea0-4a8b-9135-029213b7bdd6",
+      "conversation": 7,
+      "status": "interrupted",
+      "queue_seconds": 0.979498,
+      "execution_seconds": 60.087658,
+      "events": [
+        {
+          "id": 47,
+          "kind": "queued",
+          "time": "2026-10-07T22:06:30.193656+00:00"
+        },
+        {
+          "id": 48,
+          "kind": "claimed",
+          "time": "2026-10-07T22:06:31.155331+00:00"
+        },
+        {
+          "id": 49,
+          "kind": "interrupted",
+          "time": "2026-10-07T22:07:31.245249+00:00"
+        }
+      ],
+      "files": [],
+      "inferences": [
+        {
+          "status": "completed",
+          "call_id": "ecf052e2-e57d-490a-ae37-f0730f5db01a"
+        }
+      ],
+      "raw_results_stored_privately": 0
+    },
+    {
+      "id": "d671d78a-e4f8-4e24-92e8-5c80f5982322",
+      "conversation": 8,
+      "status": "completed",
+      "queue_seconds": 0.788525,
+      "execution_seconds": 6.362378,
+      "events": [
+        {
+          "id": 50,
+          "kind": "queued",
+          "time": "2026-10-07T22:14:53.926258+00:00"
+        },
+        {
+          "id": 51,
+          "kind": "claimed",
+          "time": "2026-10-07T22:14:54.697945+00:00"
+        },
+        {
+          "id": 52,
+          "kind": "input",
+          "time": "2026-10-07T22:14:55.770852+00:00"
+        },
+        {
+          "id": 53,
+          "kind": "calculate",
+          "time": "2026-10-07T22:14:55.893873+00:00"
+        },
+        {
+          "id": 54,
+          "kind": "recalculate",
+          "time": "2026-10-07T22:14:57.481520+00:00"
+        },
+        {
+          "id": 55,
+          "kind": "verify",
+          "time": "2026-10-07T22:15:00.024899+00:00"
+        },
+        {
+          "id": 56,
+          "kind": "verified",
+          "time": "2026-10-07T22:15:00.472435+00:00"
+        },
+        {
+          "id": 57,
+          "kind": "completed",
+          "time": "2026-10-07T22:15:01.061491+00:00"
+        }
+      ],
+      "files": [
+        {
+          "id": "2967d3f1-5d9a-426c-bf04-70069bc62c03",
+          "logical_id": "17b15813-36bc-4599-9b92-963513c0ab27",
+          "revision": 1,
+          "sha256": "a212c9d93c84973b9b0cb3a42250ea1d529157c49aeedb6f40c722dfdfd8abaa",
+          "verification": {
+            "rows": 3,
+            "checks": [
+              "structure",
+              "formulas",
+              "cached_results",
+              "independent_integer_total",
+              "layout",
+              "new_workbook"
+            ],
+            "sha256": "a212c9d93c84973b9b0cb3a42250ea1d529157c49aeedb6f40c722dfdfd8abaa",
+            "call_id": "synthetic-e786d73734b248c395a9dc60cc1895af",
+            "formulas": 5,
+            "total_cents": 750
+          }
+        }
+      ],
+      "inferences": [
+        {
+          "status": "completed",
+          "call_id": "b9e7eb2b-c5cc-4b3c-bcc5-ad45368eaf46"
+        },
+        {
+          "status": "completed",
+          "call_id": "493bbdcc-0878-42fc-b154-397d25058894"
+        }
+      ],
+      "raw_results_stored_privately": 1
+    }
+  ]
+}

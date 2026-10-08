@@ -71,11 +71,21 @@ class CandidateConfig(StrictConfig):
 
 class RoutingConfig(StrictConfig):
     mode: Literal['manual', 'auto'] = 'manual'
+    strategy: Literal['quality', 'difficulty'] = 'quality'
     allow_cross_engine_fallback: bool = False
     candidates: list[CandidateConfig] = Field(default_factory=list, max_length=64)
     min_quality: dict[Literal['economy', 'balanced', 'strong'], float] = Field(
         default_factory=lambda: {'economy': 0.0, 'balanced': 0.0, 'strong': 0.0})
     max_output_tokens: int = Field(default=1000, gt=0, le=32000)
+    # Optional visible-text cap, independent of tokens spent on internal reasoning.
+    # Omission preserves the existing token-derived acceptance limit.
+    max_response_bytes: int | None = Field(default=None, gt=0, le=128000)
+
+    @model_validator(mode='after')
+    def difficulty_is_not_a_quality_measurement(self):
+        if self.strategy == 'difficulty' and any(self.min_quality.values()):
+            raise ValueError('Difficulty routing cannot replace a configured minimum quality requirement.')
+        return self
 
     @field_validator('min_quality')
     @classmethod
@@ -94,6 +104,7 @@ class VerificationConfig(StrictConfig):
 
 
 class LimitsConfig(StrictConfig):
+    provider_managed: bool = False
     budget: str | None = None
     deadline_seconds: int = Field(default=90, ge=1, le=180)
     call_timeout_seconds: int = Field(default=30, ge=1, le=180)
@@ -105,6 +116,8 @@ class LimitsConfig(StrictConfig):
 
     @model_validator(mode='after')
     def coherent_timeout(self):
+        if self.provider_managed and self.budget is not None:
+            raise ValueError('A local cost ceiling requires bounded generation.')
         if self.call_timeout_seconds > self.deadline_seconds:
             if 'call_timeout_seconds' in self.model_fields_set:
                 raise ValueError('Call timeout cannot exceed the request deadline.')

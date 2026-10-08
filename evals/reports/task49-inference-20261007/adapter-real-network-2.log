@@ -1,0 +1,32 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Traceback (most recent call last):
+  File "/home/probe/task49/ops/agent_probe/vm/task49_network.py", line 98, in <module>
+    main()
+  File "/home/probe/task49/ops/agent_probe/vm/task49_network.py", line 71, in main
+    raw = run('docker', 'run', '--rm', '--network', 'task49-exec', *flags,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/probe/task49/ops/agent_probe/vm/task49_network.py", line 25, in run
+    raise RuntimeError(result.stderr.decode(errors='replace'))
+RuntimeError: Traceback (most recent call last):
+  File "/app/ops/agent_probe/network_governed.py", line 54, in <module>
+    executor_probe(json.loads(sys.argv[2]))
+  File "/app/ops/agent_probe/network_governed.py", line 40, in executor_probe
+    answer = RegulayModel(internal=internal, cache=False).invoke([HumanMessage(content='Network control')])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 488, in invoke
+    self.generate_prompt(
+  File "/usr/local/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1877, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1684, in generate
+    self._generate_with_cache(
+  File "/usr/local/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 2022, in _generate_with_cache
+    result = self._generate(
+             ^^^^^^^^^^^^^^^
+  File "/app/regulai/front/agents/adapter.py", line 108, in _generate
+    result = self.internal.operation('inference', request.model_dump())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/regulai/front/agents/adapter.py", line 53, in operation
+    raise InternalOperationError('Internal operation denied')
+front.agents.adapter.InternalOperationError: Internal operation denied
+

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    ".venv/Scripts/python.exe",
+    "regulai/manage.py",
+    "test",
+    "front.test_agent_inference",
+    "front.test_agent_state",
+    "--settings=regulai.test_settings",
+    "--noinput"
+  ],
+  "exit_code": 0,
+  "seconds": 17.172
+}
