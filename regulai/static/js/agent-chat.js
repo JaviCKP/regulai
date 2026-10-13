@@ -1,6 +1,6 @@
 /* User preview is a separate authorized projection; never model context. */
 (() => {
-  let mode = null, revision = null, stream = null, run = null, cursor = 0, command = null;
+  let mode = null, revision = null, stream = null, run = null, cursor = 0, command = null, documentReference = null;
   const byId = id => document.getElementById(id);
   const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]').value;
   const live = status => ['queued', 'active', 'outcome_unknown'].includes(status);
@@ -115,6 +115,7 @@
     return data.run;
   }
   async function watch(next, submitted = null) {
+    documentReference = null;
     mode = 'agent';
     command = submitted;
     byId('attachmentHint').textContent = 'CSV/XLSX: item y amount_cents. El archivo se conserva para las revisiones.';
@@ -155,11 +156,31 @@
     capture(file) {
       const selected = mode || byId('conversationMode')?.value;
       if (selected !== 'agent') return {};
-      return {mode: 'agent', artifactId: !file && revision?.logical_id,
-        baseRevision: !file && revision?.id};
+      return {mode: 'agent', documentReference: !file && documentReference,
+        artifactId: !file && !documentReference && revision?.logical_id,
+        baseRevision: !file && !documentReference && revision?.id};
     }, watch
   };
   document.addEventListener('DOMContentLoaded', () => {
+    byId('agentDocumentSearch')?.addEventListener('click', async () => {
+      const area = byId('agentDocumentResults'), button = byId('agentDocumentSearch');
+      button.disabled = true; documentReference = null; area.replaceChildren();
+      try {
+        const response = await fetch('/chat/agent/documents/search/', {method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()},
+          body: JSON.stringify({query: byId('agentDocumentQuery').value})});
+        if (!response.ok) throw new Error('Unavailable');
+        const data = await response.json();
+        if (!data.documents.length) node('p', 'No hay entradas compatibles autorizadas.', area);
+        data.documents.forEach(doc => {
+          const select = node('button', doc.label + ' · usar como entrada', area);
+          select.type = 'button'; select.className = 'btn btn-outline-primary btn-sm me-2';
+          select.onclick = () => { documentReference = doc.reference; area.replaceChildren();
+            node('p', doc.label + ' seleccionado. Escribe la petición del informe y envíala.', area); };
+        });
+      } catch (_) { node('p', 'Conector no disponible. Requiere una cuenta autorizada por el administrador.', area); }
+      finally { button.disabled = false; }
+    });
     const initial = JSON.parse(byId('agent-initial')?.textContent || 'null');
     if (initial) watch(initial);
     byId('conversationMode')?.addEventListener('change', event => {

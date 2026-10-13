@@ -1518,6 +1518,7 @@ def _web_command(request, conversation_id):
         'mode': request.POST.get('mode'),
         'artifact_id': request.POST.get('artifact_id'),
         'base_revision': request.POST.get('base_revision'),
+        'document_reference': request.POST.get('document_reference'),
     }
 
 

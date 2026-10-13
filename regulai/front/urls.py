@@ -24,6 +24,7 @@ from .views import (
 app_name = 'front'
 
 urlpatterns = [
+    path('chat/agent/documents/search/', agent_views.document_search, name='agent_document_search'),
     path('internal/agents/inference/', agent_views.inference, name='agent_inference'),
     path('internal/agents/tool-results/', agent_views.result, name='agent_tool_result'),
     path('internal/agents/authorize-tool/', agent_views.authorize, name='agent_authorize_tool'),

@@ -214,3 +214,20 @@ def document_review(request, artifact_id):
         response = JsonResponse({'error': 'visual_review_not_authorized'}, status=409)
     response['Cache-Control'] = 'private, no-store'
     return response
+
+
+@login_required
+@require_POST
+def document_search(request):
+    from .document_mcp import search
+    try:
+        payload = json.loads(request.body)
+        if set(payload) != {'query'}:
+            raise ValueError()
+        response = JsonResponse(search(request.user, payload['query']))
+    except AgentDenied as error:
+        response = JsonResponse({'error': error.code}, status=403)
+    except (ValueError, TypeError, KeyError):
+        response = JsonResponse({'error': 'document_query_invalid'}, status=400)
+    response['Cache-Control'] = 'private, no-store'
+    return response

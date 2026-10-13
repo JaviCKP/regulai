@@ -1,0 +1,12 @@
+{
+  "command": [
+    "rtk",
+    "proxy",
+    "ops/agent_probe/.venv/Scripts/python.exe",
+    "ops/agent_probe/verify_sdk.py",
+    "--output",
+    "evals/reports/task53-mcp-20261013/sdk"
+  ],
+  "exit_code": 0,
+  "seconds": 8.548
+}

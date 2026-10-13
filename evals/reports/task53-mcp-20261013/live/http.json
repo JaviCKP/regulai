@@ -1,0 +1,113 @@
+{
+  "run": {
+    "id": "57a8c575-4fea-4e49-b350-9bfd5f4fd373",
+    "status": "queued",
+    "events_url": "/chat/agent/runs/57a8c575-4fea-4e49-b350-9bfd5f4fd373/events/",
+    "status_url": "/chat/agent/runs/57a8c575-4fea-4e49-b350-9bfd5f4fd373/",
+    "cancel_url": "/chat/agent/runs/57a8c575-4fea-4e49-b350-9bfd5f4fd373/cancel/"
+  },
+  "reference": "6cd35fbf-0e92-4b7c-8c79-ece7ce2e54d5",
+  "artifact": {
+    "id": "724f6fc1-2d8f-4417-95b9-d0f15f30dafc",
+    "logical_id": "bc133fc6-46b7-4b57-966f-0ea88b9df0b0",
+    "revision": 1,
+    "sha256": "fc62434b10747e7d19b73f2142f78cf1a70c720dc3fcd1d903c793cea6f82fd6",
+    "format": "docx",
+    "status": "verified",
+    "preview": {
+      "title": "Informe económico de España",
+      "pages": [
+        "/chat/agent/artifacts/724f6fc1-2d8f-4417-95b9-d0f15f30dafc/pages/1/",
+        "/chat/agent/artifacts/724f6fc1-2d8f-4417-95b9-d0f15f30dafc/pages/2/"
+      ]
+    },
+    "page_sha256": [
+      "13cf4bdf0bc2cd27e66e583cf96af47905d0a5e89ca4996e2654db250f8733f7",
+      "737be76672864bdf8d4a362e02d29c77658a241d401adb8600f00a597beaf37b"
+    ],
+    "review_checks": [
+      "all_pages",
+      "no_clipping_or_overlap",
+      "tables_complete",
+      "fonts_and_spanish",
+      "no_template_residue"
+    ],
+    "review_url": "/chat/agent/artifacts/724f6fc1-2d8f-4417-95b9-d0f15f30dafc/review/",
+    "download_url": "/chat/agent/artifacts/724f6fc1-2d8f-4417-95b9-d0f15f30dafc/download/"
+  },
+  "events": [
+    {
+      "id": 1,
+      "kind": "queued",
+      "data": {
+        "text": "Petición aceptada. Esperando un entorno limpio disponible."
+      }
+    },
+    {
+      "id": 2,
+      "kind": "claimed",
+      "data": {
+        "text": "Entorno limpio reservado en exclusiva. Preparando el archivo."
+      }
+    },
+    {
+      "id": 3,
+      "kind": "input",
+      "data": {
+        "text": "Leyendo la estructura del archivo autorizado.",
+        "call_id": "synthetic-1f6cea636f3c4d4aa07b8e64f79cc4e0"
+      }
+    },
+    {
+      "id": 4,
+      "kind": "compose",
+      "data": {
+        "text": "Preparando el informe sobre la plantilla corporativa.",
+        "call_id": "synthetic-1f6cea636f3c4d4aa07b8e64f79cc4e0"
+      }
+    },
+    {
+      "id": 5,
+      "kind": "render",
+      "data": {
+        "text": "Convirtiendo y renderizando todas las páginas de la revisión final.",
+        "call_id": "synthetic-1f6cea636f3c4d4aa07b8e64f79cc4e0"
+      }
+    },
+    {
+      "id": 6,
+      "kind": "verify",
+      "data": {
+        "text": "Reabriendo y comprobando los bytes finales y sus resultados.",
+        "call_id": "synthetic-1f6cea636f3c4d4aa07b8e64f79cc4e0"
+      }
+    },
+    {
+      "id": 7,
+      "kind": "visual_pending",
+      "data": {
+        "text": "Comprobaciones automáticas completadas. Revisa todas las páginas antes de publicar.",
+        "reference": "724f6fc1-2d8f-4417-95b9-d0f15f30dafc"
+      }
+    },
+    {
+      "id": 8,
+      "kind": "visual_reviewed",
+      "data": {
+        "text": "Revisión visual registrada para estos bytes y estas páginas.",
+        "reference": "724f6fc1-2d8f-4417-95b9-d0f15f30dafc"
+      }
+    },
+    {
+      "id": 9,
+      "kind": "completed",
+      "data": {
+        "text": "Archivo verificado disponible para previsualizar y descargar."
+      }
+    }
+  ],
+  "transport": "Real MCP + simulated Drive HTTPS + real E2B + simulated model",
+  "paid_calls": 0,
+  "download_hash": "fc62434b10747e7d19b73f2142f78cf1a70c720dc3fcd1d903c793cea6f82fd6",
+  "completed": true
+}

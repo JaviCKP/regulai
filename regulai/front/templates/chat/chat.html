@@ -531,6 +531,12 @@
             <p id="agentProgress" role="status" aria-live="polite" class="small my-2"></p>
             <details><summary class="small">Actividad de la ejecución</summary><ol id="agentEvents" class="small mb-2"></ol></details>
             <div id="agentArtifacts"></div>
+            <details class="my-2"><summary>Buscar una entrada en Google Drive</summary>
+              <label for="agentDocumentQuery" class="small">Nombre del CSV/XLSX en la carpeta autorizada</label>
+              <div class="d-flex gap-2"><input id="agentDocumentQuery" class="form-control form-control-sm" maxlength="160">
+                <button id="agentDocumentSearch" type="button" class="btn btn-outline-primary btn-sm">Buscar</button></div>
+              <div id="agentDocumentResults" class="small my-2" role="status"></div>
+            </details>
             <small class="text-muted">CSV/XLSX sintético: item y amount_cents. Entradas privadas; revisiones inmutables.</small>
           </section>
           {% endif %}
@@ -749,6 +755,7 @@
     if (command.mode) form.append('mode', command.mode);
     if (command.artifactId) form.append('artifact_id', command.artifactId);
     if (command.baseRevision) form.append('base_revision', command.baseRevision);
+    if (command.documentReference) form.append('document_reference', command.documentReference);
     if (command.file) form.append('file', command.file);
     if (command.engineId) form.append('engine_id', command.engineId);
     if (command.modelId) form.append('model_id', command.modelId);

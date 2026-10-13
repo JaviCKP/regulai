@@ -126,11 +126,19 @@ def enqueue(actor, command, conversation, text, request_id):
         if conversation and conversation.mode != 'agent':
             raise AgentDenied('conversation_mode_immutable')
         uploaded = command.get('file')
+        if command.get('document_reference'):
+            if uploaded or command.get('artifact_id') or command.get('base_revision'):
+                raise AgentDenied('document_input_conflict')
+            from django.core.files.uploadedfile import SimpleUploadedFile
+            from .document_mcp import obtain
+            external, external_kind = obtain(actor, command['document_reference'])
+            uploaded = SimpleUploadedFile('document.' + external_kind, external)
         raw = uploaded.read(MAX_BYTES + 1) if uploaded else None
         kind = PurePath(uploaded.name).suffix.lower().lstrip('.') if uploaded else None
         rows = input_rows(raw, kind) if uploaded else None
         fingerprint = digest([text, sha256(raw) if raw else None, 'agent',
-                              command.get('artifact_id'), command.get('base_revision')])
+                              command.get('artifact_id'), command.get('base_revision'),
+                              command.get('document_reference')])
         reap()
         with transaction.atomic():
             previous = Prompt.objects.filter(user=actor, request_id=request_id).first()

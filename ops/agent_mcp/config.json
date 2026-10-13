@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "enabled": false,
+  "server": "regulay-drive-v1",
+  "transport": "memory",
+  "provider_origin": "https://www.googleapis.com/drive/v3/",
+  "operations": ["search", "download"],
+  "sampling": false,
+  "inference": false,
+  "stdio": false,
+  "oauth_scope": "https://www.googleapis.com/auth/drive.readonly",
+  "scope": "Per user/company, direct authorized folders only; CSV/XLSX item,amount_cents",
+  "provisioning": "AgentDocumentConnection disabled by default. Encrypted private_config: token, identity (Drive permissionId), folders. expires_at and version required. No assistant credentials."
+}

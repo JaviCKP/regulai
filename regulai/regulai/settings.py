@@ -159,6 +159,7 @@ LOGOUT_REDIRECT_URL = 'front:login'
 # Registration
 ALLOW_REGISTRATION = False  # Enable explicitly to allow public registration.
 REGULAY_AGENT_ENABLED = False  # Task 49 internal integration; no account/chat activation.
+REGULAY_AGENT_MCP_ENABLED = False  # Managed Drive grant required; assistant connections are unrelated.
 
 # Django REST Framework Configuration
 REST_FRAMEWORK = {

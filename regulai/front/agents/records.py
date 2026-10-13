@@ -138,3 +138,30 @@ class AgentArtifact(models.Model):
         constraints = [models.UniqueConstraint(fields=['logical_id', 'revision'], name='agent_revision'),
             models.UniqueConstraint(fields=['execution', 'operation_id'], name='agent_artifact_operation'),
             models.CheckConstraint(condition=models.Q(status__in=['draft', 'verified']), name='agent_artifact_status')]
+
+
+class AgentDocumentConnection(models.Model):
+    """Administrator provisioned, per-person Drive grant. Never executor state."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey('front.Company', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    enabled = models.BooleanField(default=False)
+    version = models.PositiveIntegerField(default=1)
+    # token, permission identity and direct folder allowlist; no shared credentials.
+    private_config = EncryptedTextField()
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        app_label = 'front'
+        constraints = [models.UniqueConstraint(fields=['company', 'user'], name='agent_document_account')]
+
+
+class AgentDocumentReference(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    connection = models.ForeignKey(AgentDocumentConnection, on_delete=models.CASCADE)
+    original_id = EncryptedTextField()
+    binding = models.CharField(max_length=64)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        app_label = 'front'
