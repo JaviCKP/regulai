@@ -1,0 +1,155 @@
+{
+  "method": "All 21 pages inspected through eight contact sheets using view_image, original resolution",
+  "corpus_counts_unchanged": {
+    "passed": 7,
+    "failed": 1,
+    "not_supported": 8
+  },
+  "cases": [
+    {
+      "case": "docx-template",
+      "corpus_status": "passed",
+      "observed": "Two legible pages; corporate headers, Spanish accents and table intact.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/docx-template/page-1.png",
+          "sha256": "a2cdaedd3cb8507d54694fc481d3cabe90b63756adfad074f07a0da127c8f157"
+        },
+        {
+          "file": "final-live/task54-corpus2/docx-template/page-2.png",
+          "sha256": "e8e513b3b06a570ab00227380ac80447502745645e69a7dc1fb2c5da445ba9d4"
+        }
+      ]
+    },
+    {
+      "case": "docx-pages",
+      "corpus_status": "passed",
+      "observed": "Five pages; repeated table headers, 65 rows, total 2681.25; no clipping. Sparse final notes page.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/docx-pages/page-1.png",
+          "sha256": "a2cdaedd3cb8507d54694fc481d3cabe90b63756adfad074f07a0da127c8f157"
+        },
+        {
+          "file": "final-live/task54-corpus2/docx-pages/page-2.png",
+          "sha256": "aafb936c9bcaacee5b8045725c12952c07b36ff994fa4986a07ec46bbc8a530c"
+        },
+        {
+          "file": "final-live/task54-corpus2/docx-pages/page-3.png",
+          "sha256": "21802a23de4a9d8ae2ed1e95fd5e6c7c81f8d1bcaea3319cbcd7047318d9ece6"
+        },
+        {
+          "file": "final-live/task54-corpus2/docx-pages/page-4.png",
+          "sha256": "f9ba17977c6a784bd88086379b1aeb341ab3e654618b3800199a9c593184a4bc"
+        },
+        {
+          "file": "final-live/task54-corpus2/docx-pages/page-5.png",
+          "sha256": "b030a5e52671b949ee2fc318a1f61b342175291993dcfa39db008bbf5265d56e"
+        }
+      ]
+    },
+    {
+      "case": "docx-title",
+      "corpus_status": "passed",
+      "observed": "Two pages; title changed, styles and remaining ZIP parts preserved by independent verifier.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/docx-title/page-1.png",
+          "sha256": "b10ad5fe0096dcd1bca3bf220580cc9c20df5cb935b785f4b5458acfb59b79b9"
+        },
+        {
+          "file": "final-live/task54-corpus2/docx-title/page-2.png",
+          "sha256": "e8e513b3b06a570ab00227380ac80447502745645e69a7dc1fb2c5da445ba9d4"
+        }
+      ]
+    },
+    {
+      "case": "xlsx-chart-print",
+      "corpus_status": "failed",
+      "observed": "One legible page with recalculated total 750 / 7.50 EUR; requested source chart absent. Failed remains failed.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/xlsx-chart-print/page-1.png",
+          "sha256": "d600851bc9d81f6fd51bdf46b930824fd8ecd8251c9bb8c9a84d855a5d1015d8"
+        }
+      ]
+    },
+    {
+      "case": "pptx-masters",
+      "corpus_status": "passed",
+      "observed": "Three legible slides; corporate layout, native chart/table, Spanish text and total 7.50.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/pptx-masters/page-1.png",
+          "sha256": "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6"
+        },
+        {
+          "file": "final-live/task54-corpus2/pptx-masters/page-2.png",
+          "sha256": "7e58c7235ee9e139d731d203dc7d7f005df62f84f359201c542b2b403547803a"
+        },
+        {
+          "file": "final-live/task54-corpus2/pptx-masters/page-3.png",
+          "sha256": "17537577d2fc742f6f32aab1dd0e77a8c84d7a6dfc1d22986af5e23af5482820"
+        }
+      ]
+    },
+    {
+      "case": "pptx-new",
+      "corpus_status": "passed",
+      "observed": "Three legible slides; chart/table margins and body fit without overlap.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/pptx-new/page-1.png",
+          "sha256": "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6"
+        },
+        {
+          "file": "final-live/task54-corpus2/pptx-new/page-2.png",
+          "sha256": "699d2684349cec4e68311ab1cd0ccbd8bb667945debb93683dc893653e2834a7"
+        },
+        {
+          "file": "final-live/task54-corpus2/pptx-new/page-3.png",
+          "sha256": "bf55c678edf7c98ec4425b9876987431403d015aa3beaacfa72eef1ee3532929"
+        }
+      ]
+    },
+    {
+      "case": "pptx-local-edit",
+      "corpus_status": "passed",
+      "observed": "Three legible slides; slide 2 title changed, surrounding content intact.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/pptx-local-edit/page-1.png",
+          "sha256": "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6"
+        },
+        {
+          "file": "final-live/task54-corpus2/pptx-local-edit/page-2.png",
+          "sha256": "8196541dd4f973b327b164f64af31e12f2afed2459ccbd925470d96d735523e3"
+        },
+        {
+          "file": "final-live/task54-corpus2/pptx-local-edit/page-3.png",
+          "sha256": "bf55c678edf7c98ec4425b9876987431403d015aa3beaacfa72eef1ee3532929"
+        }
+      ]
+    },
+    {
+      "case": "pdf-spanish",
+      "corpus_status": "passed",
+      "observed": "Two legible pages; Spanish accents, table and embedded fonts checked.",
+      "pages": [
+        {
+          "file": "final-live/task54-corpus2/pdf-spanish/page-1.png",
+          "sha256": "a2cdaedd3cb8507d54694fc481d3cabe90b63756adfad074f07a0da127c8f157"
+        },
+        {
+          "file": "final-live/task54-corpus2/pdf-spanish/page-2.png",
+          "sha256": "e8e513b3b06a570ab00227380ac80447502745645e69a7dc1fb2c5da445ba9d4"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "desktop": "Proposal shows destination, content SHA, expiry and explicit approve/reject",
+    "mobile": "472x800 viewport, controls accessible; DOM scrollWidth=clientWidth=457",
+    "transport": "Synthetic Drive only; no external account or paid model"
+  }
+}

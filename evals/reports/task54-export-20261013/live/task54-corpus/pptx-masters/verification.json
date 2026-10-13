@@ -1,0 +1,23 @@
+{
+  "sha256": "2921f724b7a6f118cf7d6a611be508d9aa55812d12eeef2f9eaf7a1ea9a23d24",
+  "pdf_sha256": "9c76f3af46374e323ab2c77b3e6f8cf3c796190b9c6f69cee3bc8f15b9d7ccef",
+  "page_sha256": [
+    "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6",
+    "7e58c7235ee9e139d731d203dc7d7f005df62f84f359201c542b2b403547803a",
+    "17537577d2fc742f6f32aab1dd0e77a8c84d7a6dfc1d22986af5e23af5482820"
+  ],
+  "pages": 3,
+  "rows": 3,
+  "total_cents": 750,
+  "automated_passed": true,
+  "visual_review": "required",
+  "checks": [
+    "native_text_table_chart",
+    "embedded_workbook",
+    "source_values",
+    "canvas_bounds",
+    "pdf_text_fonts",
+    "rendered_final_bytes",
+    "corporate"
+  ]
+}

@@ -40,7 +40,8 @@ class InternalClient:
 
     def operation(self, name, payload):
         if name not in ('inference', 'tool-results', 'authorize-tool', 'run/renew', 'run/bootstrap',
-                'run/step', 'run/candidate', 'run/local-fields', 'run/complete', 'run/fail', 'run/review-status'):
+                'run/step', 'run/candidate', 'run/local-fields', 'run/complete', 'run/fail', 'run/review-status',
+                'run/propose-export', 'run/approval-state', 'run/save-revision', 'run/export-complete', 'run/reconcile-export'):
             raise InternalOperationError('Unknown internal operation')
         # Retry only the SAME identified application operation after a transport
         # failure. The durable server record decides whether inference ever ran.
@@ -168,7 +169,8 @@ register_harness_profile(MODEL_NAME, HarnessProfile(
     general_purpose_subagent=GeneralPurposeSubagentProfile(enabled=False)))
 
 
-def build_agent(backend, internal, *, tools=(), model_profile=None, system_prompt=None, allowed_tools=None):
+def build_agent(backend, internal, *, tools=(), model_profile=None, system_prompt=None, allowed_tools=None,
+                checkpointer=None, interrupt_on=None):
     # Fail closed if an executor was launched with provider or external tracing
     # credentials. Actual egress enforcement belongs to the host network policy.
     if any(os.environ.get(key) for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GOOGLE_API_KEY',
@@ -179,4 +181,5 @@ def build_agent(backend, internal, *, tools=(), model_profile=None, system_promp
     model = RegulayModel(internal=internal, profile=model_profile, cache=False, allowed_tools=allowed_tools)
     return create_deep_agent(model=model, tools=list(tools), backend=backend,
         middleware=[ResultGate(internal)], subagents=[], memory=None, skills=None,
-        store=None, checkpointer=None, system_prompt=system_prompt or 'Use only authorized local operations and approved views.')
+        store=None, checkpointer=checkpointer, interrupt_on=interrupt_on,
+        system_prompt=system_prompt or 'Use only authorized local operations and approved views.')

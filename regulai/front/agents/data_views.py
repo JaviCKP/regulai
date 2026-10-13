@@ -18,6 +18,9 @@ def authorize_tool(token, attempt, payload):
     if call.name not in context[2].tools:
         raise AgentDenied('tool_not_allowed')
     validate_arguments(call)
+    if call.name == 'save_revision':
+        from .exports import bound
+        bound(execution, call.model_dump())
     issued = [c for row in AgentInference.objects.filter(execution=execution, status='completed')
               for c in row.response.get('tool_calls', [])]
     if call.model_dump() not in issued:
@@ -160,6 +163,12 @@ def tool_result(token, attempt, payload):
             view = _csv_view(execution, context[2], call, request.raw)
         except (ValueError, TypeError, KeyError, csv.Error):
             view = {'status': 'withheld', 'code': 'aggregate_not_verified'}
+    elif call.name == 'save_revision':
+        from front.models import AgentExport
+        row = AgentExport.objects.filter(execution=execution).first()
+        view = ({'status': 'approved', 'reference': str(row.pk), 'sha256': row.artifact.sha256}
+            if row and row.call == call.model_dump() and row.status == 'completed'
+            else {'status': 'withheld', 'code': 'export_not_confirmed'})
     elif call.name in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
         # The executor returns an opaque candidate reference. Approval and the
         # aggregate come only from the independent application verifier.

@@ -77,6 +77,10 @@ ERRORS = {
     'agent_input_required': 'Adjunta un CSV o XLSX para empezar, o selecciona una revisión para cambiar su título.',
     'agent_input_invalid': 'Usa un CSV UTF-8 o XLSX de una hoja con columnas item y amount_cents, importes enteros y hasta 1000 filas. No se admiten fórmulas de entrada ni enlaces externos.',
     'artifact_revision_stale': 'Esta revisión ya no es la actual. Recarga el archivo antes de editarlo.',
+    'export_disabled': 'La exportación a Drive está desactivada para esta cuenta.',
+    'export_grant_required': 'Falta autorizar una cuenta y carpeta de Drive para guardar archivos.',
+    'export_name_invalid': 'El nombre debe tener hasta 120 caracteres, sin barras, y conservar la extensión del documento.',
+    'export_base_required': 'Selecciona una revisión verificada con permiso de exportación.',
     'aggregate_group_too_small': 'El archivo no alcanza el mínimo de filas exigido por el perfil.',
 }
 

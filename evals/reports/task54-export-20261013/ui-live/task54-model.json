@@ -1,0 +1,142 @@
+[
+  {
+    "messages": [
+      {
+        "role": "system",
+        "content": [
+          {
+            "type": "text",
+            "text": "Use save_revision exactly once with the authorized references. Never change content or destination.\n\nYou are a deep agent, an AI assistant that helps users accomplish tasks using tools. You respond with text and tool calls. The user can see your responses and tool outputs in real time.\n\n## Core Behavior\n\n- Be concise and direct. Don't over-explain unless asked.\n- NEVER add unnecessary preamble (\"Sure!\", \"Great question!\", \"I'll now...\").\n- Don't say \"I'll now do X\" — just do it.\n- If the request is underspecified, ask only the minimum followup needed to take the next useful action.\n- If asked how to approach something, explain first, then act.\n\n## Professional Objectivity\n\n- Prioritize accuracy over validating the user's beliefs\n- Disagree respectfully when the user is incorrect\n- Avoid unnecessary superlatives, praise, or emotional validation\n\n## Doing Tasks\n\nWhen the user asks you to do something:\n\n1. **Understand first** — read relevant files, check existing patterns. Quick but thorough — gather enough evidence to start, then iterate.\n2. **Act** — implement the solution. Work quickly but accurately.\n3. **Verify** — check your work against what was asked, not against your own output. Your first attempt is rarely correct — iterate.\n\nKeep working until the task is fully complete. Don't stop partway and explain what you would do — just do it. Only yield back to the user when the task is done or you're genuinely blocked.\n\n**When things go wrong:**\n\n- If something fails repeatedly, stop and analyze *why* — don't keep retrying the same approach.\n- If you're blocked, tell the user what's wrong and ask for guidance.\n\n## Clarifying Requests\n\n- Do not ask for details the user already supplied.\n- Use reasonable defaults when the request clearly implies them.\n- Prioritize missing semantics like content, delivery, detail level, or alert criteria.\n- Avoid opening with a long explanation of tool, scheduling, or integration limitations when a concise blocking followup question would move the task forward.\n- Ask domain-defining questions before implementation questions.\n- For monitoring or alerting requests, ask what signals, thresholds, or conditions should trigger an alert.\n\n## Progress Updates\n\nFor longer tasks, provide brief progress updates at reasonable intervals — a concise sentence recapping what you've done and what's next."
+          },
+          {
+            "type": "text",
+            "text": "\n\n## `write_todos`\n\nYou have access to the `write_todos` tool to help you manage and plan complex objectives.\nUse this tool for complex objectives to ensure that you are tracking each necessary step.\nThis tool is very helpful for planning complex objectives, and for breaking down these larger complex objectives into smaller steps.\n\nIt is critical that you mark todos as completed as soon as you are done with a step. Do not batch up multiple steps before marking them as completed.\nFor simple objectives that only require a few steps, it is better to just complete the objective directly and NOT use this tool.\nWriting todos takes time and tokens, use it when it is helpful for managing complex many-step problems! But not for simple few-step requests.\n\n## Important To-Do List Usage Notes to Remember\n\n- The `write_todos` tool should never be called multiple times in parallel.\n- Don't be afraid to revise the To-Do list as you go. New information may reveal new tasks that need to be done, or old tasks that are irrelevant.\n\n## Finishing a task\n\nWhen you finish all work, write your final answer in the message AFTER your last `write_todos` call — not in the same turn as that call. Start the final message with the substantive content the user asked for — the data, computation, summary, or analysis. The user wants the result, not confirmation that the work is done."
+          },
+          {
+            "type": "text",
+            "text": "\n\n## Following Conventions\n\n- Read files before editing — understand existing content before making changes\n- Mimic existing style, naming conventions, and patterns\n\n## Filesystem Tools `ls`, `read_file`, `write_file`, `edit_file`, `glob`, `grep`\n\nYou have access to a filesystem which you can interact with using these tools.\nAll file paths must start with a /. Follow the tool docs for the available tools, and use pagination (offset/limit) when reading large files.\n\n- ls: list files in a directory (requires absolute path)\n- read_file: read a file from the filesystem\n- write_file: write to a file in the filesystem\n- edit_file: edit a file in the filesystem\n- glob: find files matching a pattern (e.g., \"**/*.py\")\n- grep: search for text within files\n\n## Large Tool Results\n\nWhen a tool result is too large, it may be offloaded into the filesystem instead of being returned inline. In those cases, use `read_file` to inspect the saved result in chunks, or use `grep` within `/large_tool_results/` if you need to search across offloaded tool results and do not know the exact file path. Offloaded tool results are stored under `/large_tool_results/<tool_call_id>`.\n\n## Execute Tool `execute`\n\nYou have access to an `execute` tool for running shell commands in a sandboxed environment.\nUse this tool to run commands, scripts, tests, builds, and other shell operations.\n\n- execute: run a shell command in the sandbox (returns output and exit code)"
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": "Guarda la revisión verificada en la carpeta autorizada de Drive."
+      },
+      {
+        "role": "user",
+        "content": "Referencias autorizadas del servidor: {\"operation\": \"export\", \"artifact_reference\": \"724f6fc1-2d8f-4417-95b9-d0f15f30dafc\", \"sha256\": \"fc62434b10747e7d19b73f2142f78cf1a70c720dc3fcd1d903c793cea6f82fd6\", \"name\": \"informe-recibo.docx\"}"
+      }
+    ],
+    "model": "task50-simulated",
+    "temperature": 0.1,
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "save_revision",
+          "description": "Operate locally. Raw output is withheld from the model.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "artifact_reference": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "artifact_reference",
+              "sha256",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "messages": [
+      {
+        "role": "system",
+        "content": [
+          {
+            "type": "text",
+            "text": "Use save_revision exactly once with the authorized references. Never change content or destination.\n\nYou are a deep agent, an AI assistant that helps users accomplish tasks using tools. You respond with text and tool calls. The user can see your responses and tool outputs in real time.\n\n## Core Behavior\n\n- Be concise and direct. Don't over-explain unless asked.\n- NEVER add unnecessary preamble (\"Sure!\", \"Great question!\", \"I'll now...\").\n- Don't say \"I'll now do X\" — just do it.\n- If the request is underspecified, ask only the minimum followup needed to take the next useful action.\n- If asked how to approach something, explain first, then act.\n\n## Professional Objectivity\n\n- Prioritize accuracy over validating the user's beliefs\n- Disagree respectfully when the user is incorrect\n- Avoid unnecessary superlatives, praise, or emotional validation\n\n## Doing Tasks\n\nWhen the user asks you to do something:\n\n1. **Understand first** — read relevant files, check existing patterns. Quick but thorough — gather enough evidence to start, then iterate.\n2. **Act** — implement the solution. Work quickly but accurately.\n3. **Verify** — check your work against what was asked, not against your own output. Your first attempt is rarely correct — iterate.\n\nKeep working until the task is fully complete. Don't stop partway and explain what you would do — just do it. Only yield back to the user when the task is done or you're genuinely blocked.\n\n**When things go wrong:**\n\n- If something fails repeatedly, stop and analyze *why* — don't keep retrying the same approach.\n- If you're blocked, tell the user what's wrong and ask for guidance.\n\n## Clarifying Requests\n\n- Do not ask for details the user already supplied.\n- Use reasonable defaults when the request clearly implies them.\n- Prioritize missing semantics like content, delivery, detail level, or alert criteria.\n- Avoid opening with a long explanation of tool, scheduling, or integration limitations when a concise blocking followup question would move the task forward.\n- Ask domain-defining questions before implementation questions.\n- For monitoring or alerting requests, ask what signals, thresholds, or conditions should trigger an alert.\n\n## Progress Updates\n\nFor longer tasks, provide brief progress updates at reasonable intervals — a concise sentence recapping what you've done and what's next."
+          },
+          {
+            "type": "text",
+            "text": "\n\n## `write_todos`\n\nYou have access to the `write_todos` tool to help you manage and plan complex objectives.\nUse this tool for complex objectives to ensure that you are tracking each necessary step.\nThis tool is very helpful for planning complex objectives, and for breaking down these larger complex objectives into smaller steps.\n\nIt is critical that you mark todos as completed as soon as you are done with a step. Do not batch up multiple steps before marking them as completed.\nFor simple objectives that only require a few steps, it is better to just complete the objective directly and NOT use this tool.\nWriting todos takes time and tokens, use it when it is helpful for managing complex many-step problems! But not for simple few-step requests.\n\n## Important To-Do List Usage Notes to Remember\n\n- The `write_todos` tool should never be called multiple times in parallel.\n- Don't be afraid to revise the To-Do list as you go. New information may reveal new tasks that need to be done, or old tasks that are irrelevant.\n\n## Finishing a task\n\nWhen you finish all work, write your final answer in the message AFTER your last `write_todos` call — not in the same turn as that call. Start the final message with the substantive content the user asked for — the data, computation, summary, or analysis. The user wants the result, not confirmation that the work is done."
+          },
+          {
+            "type": "text",
+            "text": "\n\n## Following Conventions\n\n- Read files before editing — understand existing content before making changes\n- Mimic existing style, naming conventions, and patterns\n\n## Filesystem Tools `ls`, `read_file`, `write_file`, `edit_file`, `glob`, `grep`\n\nYou have access to a filesystem which you can interact with using these tools.\nAll file paths must start with a /. Follow the tool docs for the available tools, and use pagination (offset/limit) when reading large files.\n\n- ls: list files in a directory (requires absolute path)\n- read_file: read a file from the filesystem\n- write_file: write to a file in the filesystem\n- edit_file: edit a file in the filesystem\n- glob: find files matching a pattern (e.g., \"**/*.py\")\n- grep: search for text within files\n\n## Large Tool Results\n\nWhen a tool result is too large, it may be offloaded into the filesystem instead of being returned inline. In those cases, use `read_file` to inspect the saved result in chunks, or use `grep` within `/large_tool_results/` if you need to search across offloaded tool results and do not know the exact file path. Offloaded tool results are stored under `/large_tool_results/<tool_call_id>`.\n\n## Execute Tool `execute`\n\nYou have access to an `execute` tool for running shell commands in a sandboxed environment.\nUse this tool to run commands, scripts, tests, builds, and other shell operations.\n\n- execute: run a shell command in the sandbox (returns output and exit code)"
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": "Guarda la revisión verificada en la carpeta autorizada de Drive."
+      },
+      {
+        "role": "user",
+        "content": "Referencias autorizadas del servidor: {\"operation\": \"export\", \"artifact_reference\": \"724f6fc1-2d8f-4417-95b9-d0f15f30dafc\", \"sha256\": \"fc62434b10747e7d19b73f2142f78cf1a70c720dc3fcd1d903c793cea6f82fd6\", \"name\": \"informe-recibo.docx\"}"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "save-1f47261bc1dc4b0bb4a97163e58e0c50",
+            "type": "function",
+            "function": {
+              "name": "save_revision",
+              "arguments": "{\"artifact_reference\": \"724f6fc1-2d8f-4417-95b9-d0f15f30dafc\", \"sha256\": \"fc62434b10747e7d19b73f2142f78cf1a70c720dc3fcd1d903c793cea6f82fd6\", \"name\": \"informe-recibo.docx\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "content": "{\"reference\": \"38cd7d34-2d1b-4b71-882c-a23c9e4d1602\", \"sha256\": \"fc62434b10747e7d19b73f2142f78cf1a70c720dc3fcd1d903c793cea6f82fd6\", \"status\": \"approved\"}",
+        "tool_call_id": "save-1f47261bc1dc4b0bb4a97163e58e0c50",
+        "name": "save_revision"
+      }
+    ],
+    "model": "task50-simulated",
+    "temperature": 0.1,
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "save_revision",
+          "description": "Operate locally. Raw output is withheld from the model.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "artifact_reference": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "artifact_reference",
+              "sha256",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "real_executor_killed_after_official_interrupt_and_resumed": true,
+      "execution": "148d68ab-d31a-4691-85fd-da0996b861c1",
+      "claims": 2,
+      "uploads": 1,
+      "sse_cursor": 18,
+      "reconnected_cursor": 19
+    },
+    {
+      "timeout_after_simulated_remote_effect_reconciled_without_new_upload": true,
+      "execution": "fd43da47-8b7f-4a11-9085-6a5babfcd9f1"
+    },
+    {
+      "cancel_pending_approval_no_effect": true
+    },
+    {
+      "grant_revocation_cuts_next_step": true
+    },
+    {
+      "two_users_two_companies_denied_state_sse_download_approval": true
+    },
+    {
+      "mode_off_blocks_new_work_preserves_authorized_history_and_download": true
+    },
+    {
+      "retention_deleted_private_artifacts_ledger_and_access_no_remote_delete": true
+    }
+  ],
+  "paid_calls": 0,
+  "real_external_writes": 0
+}

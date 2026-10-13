@@ -2,12 +2,13 @@ set -euo pipefail
 test "$(hostname)" = task48-e2b-vm
 cd /home/probe/task50
 tar -xf /home/probe/task50-source.tar
-docker build --network none -t regulay-task50-executor:local -f ops/agent_chat/Dockerfile.executor .
+docker build -t regulay-task50-executor:local -f ops/agent_chat/Dockerfile.executor .
 docker build -t regulay-task50-web:local -f ops/agent_chat/Dockerfile.web .
 for name in task50-worker task50-web; do
   if docker ps -a --format '{{.Names}}' | grep -qx "$name"; then
     test "$(docker inspect "$name" --format '{{index .Config.Labels "regulay.task"}}')" = 50
     docker stop -t 30 "$name"
+    docker rm "$name" 2>/dev/null || true
     for iteration in $(seq 1 60); do
       if ! docker inspect "$name" >/dev/null 2>&1; then break; fi
       sleep 1

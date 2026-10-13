@@ -78,12 +78,36 @@ def worker_claim(request):
 
 @csrf_exempt
 @require_POST
+def worker_checkpoints(request):
+    """Opaque retention allowlist; only the isolated executor credential."""
+    from .jobs import worker_authorized
+    from front.models import AgentExport
+    from django.utils import timezone
+    try:
+        header = request.headers.get('Authorization', '')
+        worker_authorized(header.removeprefix('Bearer ') if header.startswith('Bearer ') else '')
+        if json.loads(request.body) != {}:
+            raise ValueError()
+        response = JsonResponse({'keep': [str(key) for key in AgentExport.objects.filter(
+            expires_at__gt=timezone.now()).values_list('execution_id', flat=True)]})
+    except (AgentDenied, ValueError, TypeError):
+        response = JsonResponse({'status': 'rejected'}, status=403)
+    response['Cache-Control'] = 'no-store'
+    return response
+
+
+@csrf_exempt
+@require_POST
 def execution_operation(request, operation):
     from . import jobs
     from .document_jobs import review_status
+    from . import exports
     handlers = {'renew': jobs.renew, 'bootstrap': jobs.bootstrap, 'step': jobs.step,
         'candidate': jobs.candidate, 'local-fields': jobs.local_fields,
-        'complete': jobs.complete, 'fail': jobs.fail, 'review-status': review_status}
+        'complete': jobs.complete, 'fail': jobs.fail, 'review-status': review_status,
+        'propose-export': exports.propose, 'approval-state': exports.approval_state,
+        'save-revision': exports.execute, 'export-complete': exports.complete,
+        'reconcile-export': exports.reconcile}
     if operation not in handlers:
         return JsonResponse({'status': 'rejected'}, status=404)
     return _operation(request, handlers[operation])
@@ -98,7 +122,17 @@ def _snapshot(actor, run_id, cursor=None):
         return {'run': run_data(run), 'events': events}
     from front.chat_service import request_result
     current = latest(run.conversation, run.job['logical_id'])
-    return {'run': run_data(run), 'result': request_result(run.prompt).data,
+    from .exports import display, writable
+    from django.conf import settings
+    export_enabled = False
+    try:
+        if getattr(settings, 'REGULAY_AGENT_ENABLED', False):
+            writable(actor)
+            export_enabled = True
+    except AgentDenied:
+        pass
+    return {'run': run_data(run), 'result': request_result(run.prompt).data, 'export': display(run),
+        'export_enabled': export_enabled,
         'current_revision': artifact_data(current) if current else None,
         'events': list(run.events.values('id', 'kind', 'data')),
         'artifacts': [artifact_data(row) for row in run.artifacts.order_by('revision')
@@ -229,5 +263,31 @@ def document_search(request):
         response = JsonResponse({'error': error.code}, status=403)
     except (ValueError, TypeError, KeyError):
         response = JsonResponse({'error': 'document_query_invalid'}, status=400)
+    response['Cache-Control'] = 'private, no-store'
+    return response
+
+
+@login_required
+@require_POST
+def export_decision(request, export_id):
+    from .exports import decide
+    from front.models import AgentExport
+    try:
+        response = JsonResponse(decide(request.user, export_id, json.loads(request.body)))
+    except (AgentDenied, AgentExport.DoesNotExist, ValueError, KeyError, TypeError):
+        response = JsonResponse({'error': 'export_approval_not_authorized'}, status=409)
+    response['Cache-Control'] = 'private, no-store'
+    return response
+
+
+@login_required
+@require_POST
+def export_recovery(request, run_id):
+    from .exports import recover
+    from front.models import AgentExport
+    try:
+        response = JsonResponse(recover(request.user, run_id))
+    except (AgentDenied, AgentExport.DoesNotExist, ValueError, KeyError):
+        response = JsonResponse({'error': 'export_recovery_not_authorized'}, status=409)
     response['Cache-Control'] = 'private, no-store'
     return response

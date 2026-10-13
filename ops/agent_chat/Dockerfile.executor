@@ -1,4 +1,6 @@
 FROM regulay-task48-executor:local
+COPY ops/agent_chat/executor-requirements.txt /tmp/executor-requirements.txt
+RUN pip install --no-deps --require-hashes -r /tmp/executor-requirements.txt && pip check
 # Only SDK-side modules. No application models, database driver or alias registry.
 COPY regulai/front/agents/adapter.py regulai/front/agents/protocol.py regulai/front/agents/worker.py regulai/front/agents/sandbox_pool.py /app/regulai/front/agents/
 COPY regulai/front/agents/runtime /app/regulai/front/agents/runtime

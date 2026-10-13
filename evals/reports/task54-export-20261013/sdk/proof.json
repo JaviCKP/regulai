@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "official_interrupt_before_effect": true,
+  "sqlite_close_reopen_resume": true,
+  "native_call_id_preserved": true,
+  "effects": 1,
+  "official_retention_delete": true,
+  "scope": "Real installed SDK, simulated sandbox/model; PostgreSQL and real E2B tested separately",
+  "versions": {
+    "deepagents": "0.6.12",
+    "langgraph": "1.2.14",
+    "langgraph-checkpoint-sqlite": "3.0.3",
+    "langchain-e2b": "0.0.6"
+  },
+  "adapter_sha256": "8f5c558580234217ef90d4be680659e9ca98eb9bf2ac8db2217968e537eb3027"
+}

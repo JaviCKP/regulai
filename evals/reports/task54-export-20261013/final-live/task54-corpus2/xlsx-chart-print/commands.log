@@ -1,0 +1,12 @@
+{"rows": 3, "pandas_total_cents": 750}
+convert /evidence/task54-corpus2/xlsx-chart-print/candidate.xlsx as a Calc document -> /evidence/task54-corpus2/xlsx-chart-print/recalc/candidate.xlsx using filter : Calc Office Open XML
+Warning: failed to launch javaldx - java may not function correctly
+Workbook reopened and checked
+convert /evidence/task54-corpus2/xlsx-chart-print/final.xlsx as a Calc document -> /evidence/task54-corpus2/xlsx-chart-print/final.pdf using filter : calc_pdf_Export
+Warning: failed to launch javaldx - java may not function correctly
+Traceback (most recent call last):
+  File "/source/ops/agent_chat/document_corpus.py", line 194, in <module>
+    (verify if sys.argv[1]=='verify' else run)(Path(sys.argv[2]))
+  File "/source/ops/agent_chat/document_corpus.py", line 52, in verify
+    raise ValueError('corpus_requested_chart_not_preserved')
+ValueError: corpus_requested_chart_not_preserved

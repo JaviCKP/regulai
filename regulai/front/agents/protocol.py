@@ -76,6 +76,8 @@ class ToolResultRequest(Strict):
 # Minimal initial contract. This catalogue is owned by Regulay, never by a model,
 # dynamic tool schema, skill, or MCP server. Additional views require reviewed code.
 TOOL_PARAMETERS = {
+    'save_revision': {'artifact_reference': {'type': 'string'}, 'sha256': {'type': 'string'},
+                      'name': {'type': 'string'}},
     'build_presentation': {'input_reference': {'type': 'string'}, 'template': {'type': 'string'},
                           'title': {'type': 'string'}, 'section': {'type': 'string'}},
     'edit_presentation': {'logical_id': {'type': 'string'}, 'base_revision': {'type': 'string'},
@@ -99,6 +101,7 @@ TOOL_PARAMETERS = {
     'write_todos': {'todos': {'type': 'array', 'items': {'type': 'object'}}},
 }
 REQUIRED = {'execute': ['command'], 'read_file': ['file_path'], 'ls': ['path'],
+    'save_revision': ['artifact_reference', 'sha256', 'name'],
     'build_presentation': ['input_reference', 'template', 'title', 'section'],
     'edit_presentation': ['logical_id', 'base_revision', 'slide', 'field', 'value'],
     'build_document': ['input_reference', 'format', 'title', 'section'],

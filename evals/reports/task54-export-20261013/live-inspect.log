@@ -1,0 +1,17 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+task50-worker Up 50 seconds
+task50-web Up 3 minutes
+task50-postgres Up 43 minutes
+e2b-ready-1 Up 51 minutes
+e2b-dashboard-1 Up 51 minutes (healthy)
+e2b-client-proxy-1 Up 51 minutes (healthy)
+e2b-api-1 Up 51 minutes (healthy)
+e2b-orchestrator-1 Up 51 minutes (healthy)
+e2b-dashboard-api-1 Up 51 minutes (healthy)
+e2b-vector-1 Up 51 minutes (healthy)
+e2b-postgres-1 Up 51 minutes (healthy)
+e2b-redis-1 Up 51 minutes (healthy)
+e2b-clickhouse-1 Up 51 minutes (healthy)
+{'id': '148d68ab-d31a-4691-85fd-da0996b861c1', 'status': 'active', 'job': {'base': '9400e544-d244-4725-aa4e-dc26eeb570d5', 'kind': 'export', 'source': '328b7977-1e11-4cc0-9398-d7de818d3dfd', 'logical_id': '368743eb-acde-4c6d-a015-f509b548b2b1', 'export_name': 'approved.xlsx', 'checkpoint_ready': True}, 'events': ['queued', 'claimed', 'approval_pending'], 'attempt': 'c419ecdc-63f4-4d76-8d2a-4feabfe376fc', 'active_call': 'None', 'expires': '2026-10-13 15:01:55.620980+00:00'}
+{'id': '07a9221f-cca8-4fe0-b023-18ae6d44fbe0', 'status': 'completed', 'job': {'base': None, 'kind': 'build', 'source': 'b8301937-face-47a0-ad39-a6007049ebb0', 'logical_id': '368743eb-acde-4c6d-a015-f509b548b2b1'}, 'events': ['queued', 'claimed', 'input', 'calculate', 'recalculate', 'verify', 'verified', 'completed'], 'attempt': '96885782-ae98-4e1d-8d87-a39982ea78db', 'active_call': 'None', 'expires': '2026-10-13 15:01:46.100073+00:00'}
+{'id': '57a8c575-4fea-4e49-b350-9bfd5f4fd373', 'status': 'completed', 'job': {'base': None, 'kind': 'build', 'source': '3958a56f-4ab0-4aaf-b174-85beccbfc008', 'logical_id': 'bc133fc6-46b7-4b57-966f-0ea88b9df0b0'}, 'events': ['queued', 'claimed', 'input', 'compose', 'render', 'verify', 'visual_pending', 'visual_reviewed', 'completed'], 'attempt': 'f5075832-5229-41d4-886c-c64360c93531', 'active_call': 'None', 'expires': '2026-10-13 14:29:48.835216+00:00'}

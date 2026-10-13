@@ -24,11 +24,14 @@ from .views import (
 app_name = 'front'
 
 urlpatterns = [
+    path('chat/agent/exports/<uuid:export_id>/decision/', agent_views.export_decision, name='agent_export_decision'),
+    path('chat/agent/runs/<uuid:run_id>/recover-export/', agent_views.export_recovery, name='agent_export_recovery'),
     path('chat/agent/documents/search/', agent_views.document_search, name='agent_document_search'),
     path('internal/agents/inference/', agent_views.inference, name='agent_inference'),
     path('internal/agents/tool-results/', agent_views.result, name='agent_tool_result'),
     path('internal/agents/authorize-tool/', agent_views.authorize, name='agent_authorize_tool'),
     path('internal/agents/claim/', agent_views.worker_claim, name='agent_worker_claim'),
+    path('internal/agents/checkpoints/', agent_views.worker_checkpoints, name='agent_worker_checkpoints'),
     path('internal/agents/run/<str:operation>/', agent_views.execution_operation, name='agent_execution_operation'),
     path('chat/agent/runs/<uuid:run_id>/', agent_views.run_status, name='agent_run_status'),
     path('chat/agent/runs/<uuid:run_id>/events/', agent_views.events, name='agent_events'),

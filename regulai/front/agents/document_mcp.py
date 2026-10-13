@@ -8,7 +8,9 @@ import base64
 from contextlib import asynccontextmanager
 from datetime import timedelta
 import json
+import hashlib
 import re
+import uuid
 from urllib.parse import quote
 
 import httpx
@@ -35,6 +37,14 @@ SCHEMAS = {
     'download': {'type': 'object', 'properties': {'document': {'type': 'string'}},
         'required': ['document'], 'additionalProperties': False},
 }
+EXPORT_SCHEMAS = {
+    'reserve': {'type': 'object', 'properties': {}, 'additionalProperties': False},
+    'save_revision': {'type': 'object', 'properties': {key: {'type': 'string'} for key in
+        ('document', 'name', 'mime', 'base64', 'sha256')},
+        'required': ['document', 'name', 'mime', 'base64', 'sha256'], 'additionalProperties': False},
+    'reconcile': {'type': 'object', 'properties': {'document': {'type': 'string'}, 'sha256': {'type': 'string'}},
+        'required': ['document', 'sha256'], 'additionalProperties': False},
+}
 ID = re.compile(r'^[a-zA-Z0-9_-]{1,200}$')
 
 
@@ -50,7 +60,9 @@ def account(actor):
         raise AgentDenied('document_account_unavailable')
     try:
         private = json.loads(connection.private_config)
-        if (set(private) != {'token', 'identity', 'folders'} or not isinstance(private['token'], str)
+        if (set(private) not in ({'token', 'identity', 'folders'},
+                {'token', 'identity', 'folders', 'write_folder', 'account_label', 'folder_label'})
+                or not isinstance(private['token'], str)
                 or not private['token'] or not ID.fullmatch(private['identity'])
                 or not isinstance(private['folders'], list) or not 1 <= len(private['folders']) <= 10
                 or any(not isinstance(f, str) or not ID.fullmatch(f) for f in private['folders'])):
@@ -58,7 +70,7 @@ def account(actor):
     except (ValueError, TypeError, KeyError):
         raise AgentDenied('document_account_invalid') from None
     binding = digest([str(connection.pk), connection.company_id, connection.user_id,
-        connection.version, connection.expires_at.isoformat(), private])
+        connection.version, connection.expires_at.isoformat(), private, connection.write_enabled])
     return connection, private, binding
 
 
@@ -70,14 +82,16 @@ class Drive:
             headers={'Authorization': 'Bearer ' + private['token']}, transport=transport,
             trust_env=False, follow_redirects=False, timeout=15)
 
-    async def get(self, path, params):
+    async def get(self, path, params, *, allow_missing=False, limit=MAX_BYTES):
         async with self.client.stream('GET', path, params=params) as response:
+            if allow_missing and response.status_code == 404:
+                return None
             if response.status_code != 200:
                 raise AgentDenied('document_remote_denied')
             data = bytearray()
             async for chunk in response.aiter_bytes():
                 data.extend(chunk)
-                if len(data) > MAX_BYTES:
+                if len(data) > limit:
                     raise AgentDenied('document_too_large')
             return bytes(data)
 
@@ -123,13 +137,71 @@ class Drive:
         input_rows(raw, kind)
         return {'kind': kind, 'base64': base64.b64encode(raw).decode()}
 
+    async def folder(self):
+        await self.identity()
+        folder = self.private.get('write_folder')
+        if not isinstance(folder, str) or not ID.fullmatch(folder):
+            raise AgentDenied('export_folder_invalid')
+        value = json.loads(await self.get('files/' + folder,
+            {'fields': 'id,mimeType,trashed,capabilities(canAddChildren)'}))
+        if (value.get('id') != folder or value.get('mimeType') != 'application/vnd.google-apps.folder'
+                or value.get('trashed') is not False or value.get('capabilities', {}).get('canAddChildren') is not True):
+            raise AgentDenied('export_folder_denied')
+        return folder
 
-def server(drive):
+    async def reserve(self):
+        await self.folder()
+        value = json.loads(await self.get('files/generateIds', {'count': 1, 'space': 'drive', 'type': 'files'}))
+        ids = value.get('ids')
+        if not isinstance(ids, list) or len(ids) != 1 or not ID.fullmatch(ids[0]):
+            raise AgentDenied('export_reservation_failed')
+        return {'document': ids[0]}
+
+    async def reconcile(self, document, sha256):
+        folder = await self.folder()
+        if not ID.fullmatch(document):
+            raise AgentDenied('export_id_invalid')
+        raw = await self.get('files/' + document,
+            {'fields': 'id,parents,trashed,appProperties'}, allow_missing=True)
+        if raw is None:
+            return {'matched': False}
+        value = json.loads(raw)
+        if (value.get('id') != document or value.get('parents') != [folder] or value.get('trashed') is not False
+                or value.get('appProperties', {}).get('regulay_sha256') != sha256):
+            raise AgentDenied('export_reconciliation_conflict')
+        content = await self.get('files/' + document, {'alt': 'media'}, limit=20_000_000)
+        if hashlib.sha256(content).hexdigest() != sha256:
+            raise AgentDenied('export_reconciliation_conflict')
+        return {'matched': True}
+
+    async def save_revision(self, document, name, mime, base64, sha256):
+        folder = await self.folder()
+        if not ID.fullmatch(document):
+            raise AgentDenied('export_id_invalid')
+        import base64 as encoding
+        content = encoding.b64decode(base64, validate=True)
+        if len(content) > 20_000_000 or hashlib.sha256(content).hexdigest() != sha256:
+            raise AgentDenied('export_content_changed')
+        boundary = 'regulay-' + uuid.uuid4().hex
+        metadata = json.dumps({'id': document, 'name': name, 'parents': [folder],
+            'appProperties': {'regulay_sha256': sha256}}, ensure_ascii=False).encode()
+        body = (f'--{boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'.encode() + metadata +
+            f'\r\n--{boundary}\r\nContent-Type: {mime}\r\n\r\n'.encode() + content + f'\r\n--{boundary}--\r\n'.encode())
+        response = await self.client.post('https://www.googleapis.com/upload/drive/v3/files',
+            params={'uploadType': 'multipart', 'fields': 'id'}, content=body,
+            headers={'Content-Type': 'multipart/related; boundary=' + boundary})
+        if response.status_code not in (200, 201) or response.json().get('id') != document:
+            raise AgentDenied('export_outcome_unknown')
+        return await self.reconcile(document, sha256)
+
+
+def server(drive, *, writing=False):
     app = Server(SERVER, version=VERSION)
 
     @app.list_tools()
     async def tools():
-        return [types.Tool(name=name, inputSchema=schema) for name, schema in SCHEMAS.items()]
+        catalog = {**SCHEMAS, **(EXPORT_SCHEMAS if writing else {})}
+        return [types.Tool(name=name, inputSchema=schema) for name, schema in catalog.items()]
 
     @app.call_tool()
     async def invoke(name, arguments):
@@ -138,6 +210,8 @@ def server(drive):
                 value = await drive.search(arguments['query'])
             elif name == 'download' and set(arguments) == {'document'}:
                 value = await drive.download(arguments['document'])
+            elif writing and name in EXPORT_SCHEMAS and set(arguments) == set(EXPORT_SCHEMAS[name].get('required', [])):
+                value = await getattr(drive, name)(**arguments)
             else:
                 raise AgentDenied('document_operation_denied')
             return types.CallToolResult(content=[], structuredContent=value)
@@ -150,10 +224,12 @@ def server(drive):
 async def _call(private, operation, arguments, *, transport=None):
     drive = Drive(private, transport=transport)
     try:
-        async with session(server(drive)) as client:
+        writing = operation in EXPORT_SCHEMAS
+        async with session(server(drive, writing=writing)) as client:
             # Pin the whole catalog. An extra tool or changed schema closes access.
             catalog = await client.list_tools()
-            if {t.name: t.inputSchema for t in catalog.tools} != SCHEMAS or catalog.nextCursor:
+            expected = {**SCHEMAS, **(EXPORT_SCHEMAS if writing else {})}
+            if {t.name: t.inputSchema for t in catalog.tools} != expected or catalog.nextCursor:
                 raise AgentDenied('document_catalog_changed')
             result = await client.call_tool(operation, arguments)
             if result.isError or result.content or not isinstance(result.structuredContent, dict):

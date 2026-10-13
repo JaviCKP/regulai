@@ -1,0 +1,830 @@
+{
+  "scope": "Offline production helpers in pinned Linux image, independent verifier process; no agent/model quality claim",
+  "cases": [
+    {
+      "id": "docx-template",
+      "format": "docx",
+      "task": "Informe con plantilla",
+      "status": "passed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "build",
+            "--output",
+            "/evidence/task54-corpus2/docx-template",
+            "--source",
+            "/evidence/task54-corpus2/docx-template/source.csv",
+            "--fields",
+            "/evidence/task54-corpus2/docx-template/fields.json",
+            "--template",
+            "/skills/corporate.docx"
+          ],
+          "exit_code": 0,
+          "seconds": 0.254
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "render",
+            "--output",
+            "/evidence/task54-corpus2/docx-template"
+          ],
+          "exit_code": 0,
+          "seconds": 1.158
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "seal",
+            "--output",
+            "/evidence/task54-corpus2/docx-template"
+          ],
+          "exit_code": 0,
+          "seconds": 0.265
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/docx-template"
+          ],
+          "exit_code": 0,
+          "seconds": 0.447
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "required",
+      "seconds": 2.124,
+      "files": {
+        "render.json": "97447c16028a7cdda3adc1a5d7b7c9f1ca06d79b3c2d55649c749579dd8bb03c",
+        "spec.json": "4691acf70229250a310da64bf7092d331d56a03d63361c696ae2fc476df94178",
+        "fields.json": "94912d44a2df98c3b985bcaa9cb10c5be186bfb156eec35b0b45dc080ef7a01f",
+        "verification.json": "96e8dab34bdbad38c37939e539b484e3a2e1179af49b172b281f2ba23c8a3fe8",
+        "source.csv": "81b56db9ff4e2ebe45e3f99a7bbf1c4ed8b92c145c6295eee593e7a93ee40a30",
+        "final.docx": "0d1a0e8283612cf4313ae211f674347409440c06f7cb83bd8ab1d3b5b2d3fdca",
+        "page-2.png": "e8e513b3b06a570ab00227380ac80447502745645e69a7dc1fb2c5da445ba9d4",
+        "final.pdf": "71f02c1dea27f0ca9d3c073589ef980c0c0404f01e96e0fbbd3fae40d914f4e6",
+        "page-1.png": "a2cdaedd3cb8507d54694fc481d3cabe90b63756adfad074f07a0da127c8f157"
+      },
+      "previews": [
+        "page-1.png",
+        "page-2.png"
+      ]
+    },
+    {
+      "id": "docx-pages",
+      "format": "docx",
+      "task": "Tabla que cruza páginas",
+      "status": "passed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "build",
+            "--output",
+            "/evidence/task54-corpus2/docx-pages",
+            "--source",
+            "/evidence/task54-corpus2/docx-pages/source.csv",
+            "--fields",
+            "/evidence/task54-corpus2/docx-pages/fields.json",
+            "--template",
+            "/skills/corporate.docx"
+          ],
+          "exit_code": 0,
+          "seconds": 0.289
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "render",
+            "--output",
+            "/evidence/task54-corpus2/docx-pages"
+          ],
+          "exit_code": 0,
+          "seconds": 1.455
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "seal",
+            "--output",
+            "/evidence/task54-corpus2/docx-pages"
+          ],
+          "exit_code": 0,
+          "seconds": 0.4
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/docx-pages"
+          ],
+          "exit_code": 0,
+          "seconds": 0.519
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "required",
+      "seconds": 2.663,
+      "files": {
+        "render.json": "4826ec714a35e6727fc9b756b8d349446ddc76a40cbe6549cbf5ae0abfa449de",
+        "spec.json": "4691acf70229250a310da64bf7092d331d56a03d63361c696ae2fc476df94178",
+        "fields.json": "94912d44a2df98c3b985bcaa9cb10c5be186bfb156eec35b0b45dc080ef7a01f",
+        "verification.json": "f1089d447643ec6570a05c106685746e2ac3b6bd40ca3eafb0a9d25e8cbf235d",
+        "page-4.png": "f9ba17977c6a784bd88086379b1aeb341ab3e654618b3800199a9c593184a4bc",
+        "page-3.png": "21802a23de4a9d8ae2ed1e95fd5e6c7c81f8d1bcaea3319cbcd7047318d9ece6",
+        "page-5.png": "b030a5e52671b949ee2fc318a1f61b342175291993dcfa39db008bbf5265d56e",
+        "source.csv": "1b49599ce2f232007285cd77dc6ec7969ab4d72fa761b24839d10321a5379d33",
+        "final.docx": "b7189cb11a4bfe6c448330a4a126e271dea3b34a499469fd69fcdd2f8c4efcba",
+        "page-2.png": "aafb936c9bcaacee5b8045725c12952c07b36ff994fa4986a07ec46bbc8a530c",
+        "final.pdf": "31d68371152f89f0af2bdb1bfb22b3b4de5489653cc368bc1dd685179ea74ec1",
+        "page-1.png": "a2cdaedd3cb8507d54694fc481d3cabe90b63756adfad074f07a0da127c8f157"
+      },
+      "previews": [
+        "page-1.png",
+        "page-2.png",
+        "page-3.png",
+        "page-4.png",
+        "page-5.png"
+      ]
+    },
+    {
+      "id": "docx-title",
+      "format": "docx",
+      "task": "Cambiar título conservando estilos",
+      "status": "passed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "edit",
+            "--output",
+            "/evidence/task54-corpus2/docx-title",
+            "--source",
+            "/evidence/task54-corpus2/docx-template/final.docx",
+            "--fields",
+            "/evidence/task54-corpus2/docx-title/fields.json",
+            "--template",
+            "/skills/corporate.docx"
+          ],
+          "exit_code": 0,
+          "seconds": 0.196
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "render",
+            "--output",
+            "/evidence/task54-corpus2/docx-title"
+          ],
+          "exit_code": 0,
+          "seconds": 1.161
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "seal",
+            "--output",
+            "/evidence/task54-corpus2/docx-title"
+          ],
+          "exit_code": 0,
+          "seconds": 0.265
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/docx-title"
+          ],
+          "exit_code": 0,
+          "seconds": 0.449
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "required",
+      "seconds": 2.072,
+      "files": {
+        "render.json": "0498dc2bca05fa524e258a146b2f197494ccdf579dbf92d0866fdefdca8a5bd6",
+        "spec.json": "b672f83253dd621657407eab08b28a365f84d53ba06e3ba960e8b9e255f2e8e8",
+        "fields.json": "510f7f2bcb573a22ba580975950cbcf6ce70318b2f7656924bdd40b7627c9b4c",
+        "verification.json": "93bc0ec355d494f50b2888efa46c7884e01459da9c090999f52b1f052986f260",
+        "source.csv": "81b56db9ff4e2ebe45e3f99a7bbf1c4ed8b92c145c6295eee593e7a93ee40a30",
+        "final.docx": "95b5f6156fe3f806ee3542261ec198729a1ab57f0c532a60edfb3e6091465603",
+        "page-2.png": "e8e513b3b06a570ab00227380ac80447502745645e69a7dc1fb2c5da445ba9d4",
+        "final.pdf": "e7decc9240d7f672fe676ed6b9f477c0e0dacb583f056933dc697716937a4341",
+        "page-1.png": "b10ad5fe0096dcd1bca3bf220580cc9c20df5cb935b785f4b5458acfb59b79b9"
+      },
+      "previews": [
+        "page-1.png",
+        "page-2.png"
+      ]
+    },
+    {
+      "id": "docx-comments",
+      "format": "docx",
+      "task": "Editar comentarios/control de cambios",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "input_format",
+      "gate": "production input_rows",
+      "seconds": 0.014,
+      "files": {
+        "source.docx": "9b5ef4e27d9ee3e15860530d880e323eaaec7f44f2eb52fb338625706680ad41"
+      },
+      "previews": []
+    },
+    {
+      "id": "xlsx-dates",
+      "format": "xlsx",
+      "task": "CSV con identificadores y fechas",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "input_columns",
+      "gate": "production input_rows",
+      "seconds": 0.001,
+      "files": {
+        "source.csv": "8bd0d326727cf53ccb2c50124acb939c30bde76a64e8324d2d3dc567e8dacb9a"
+      },
+      "previews": []
+    },
+    {
+      "id": "xlsx-cross-sheet",
+      "format": "xlsx",
+      "task": "Fórmulas entre hojas y nulos",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "excel_shape",
+      "gate": "production input_rows",
+      "seconds": 0.006,
+      "files": {
+        "source.xlsx": "13f4240874e47c5a5d6fc3be4ae8e2b87471b3c49e78a813f58ee15fae136cab"
+      },
+      "previews": []
+    },
+    {
+      "id": "xlsx-formula-fill",
+      "format": "xlsx",
+      "task": "Relleno que cruza celdas de fórmula",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "input_formulas_unsupported",
+      "gate": "production input_rows",
+      "seconds": 0.005,
+      "files": {
+        "source.xlsx": "025edda097a0c879c912c5bfef21882380f941a2c7839adbc02e220f91cd9e5f"
+      },
+      "previews": []
+    },
+    {
+      "id": "xlsx-chart-print",
+      "format": "xlsx",
+      "task": "Gráfico y vista de impresión",
+      "status": "failed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/spreadsheet_program.py",
+            "build",
+            "/evidence/task54-corpus2/xlsx-chart-print/source.xlsx",
+            "--output",
+            "/evidence/task54-corpus2/xlsx-chart-print/candidate.xlsx",
+            "--fields",
+            "/evidence/task54-corpus2/xlsx-chart-print/fields.json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.438
+        },
+        {
+          "argv": [
+            "libreoffice",
+            "-env:UserInstallation=file:///evidence/task54-corpus2/xlsx-chart-print/lo2",
+            "--headless",
+            "--convert-to",
+            "xlsx",
+            "--outdir",
+            "/evidence/task54-corpus2/xlsx-chart-print/recalc",
+            "/evidence/task54-corpus2/xlsx-chart-print/candidate.xlsx"
+          ],
+          "exit_code": 0,
+          "seconds": 0.732
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/spreadsheet_program.py",
+            "check",
+            "/evidence/task54-corpus2/xlsx-chart-print/final.xlsx"
+          ],
+          "exit_code": 0,
+          "seconds": 0.384
+        },
+        {
+          "argv": [
+            "libreoffice",
+            "-env:UserInstallation=file:///evidence/task54-corpus2/xlsx-chart-print/lo3",
+            "--headless",
+            "--convert-to",
+            "pdf",
+            "--outdir",
+            "/evidence/task54-corpus2/xlsx-chart-print",
+            "/evidence/task54-corpus2/xlsx-chart-print/final.xlsx"
+          ],
+          "exit_code": 0,
+          "seconds": 0.832
+        },
+        {
+          "argv": [
+            "pdftoppm",
+            "-r",
+            "100",
+            "-png",
+            "/evidence/task54-corpus2/xlsx-chart-print/final.pdf",
+            "/evidence/task54-corpus2/xlsx-chart-print/page"
+          ],
+          "exit_code": 0,
+          "seconds": 0.06
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/xlsx-chart-print"
+          ],
+          "exit_code": 1,
+          "seconds": 0.408
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "failure_detail": "ValueError: corpus_requested_chart_not_preserved",
+      "reason": "local_command_failed",
+      "seconds": 2.859,
+      "files": {
+        "candidate.xlsx": "cd0a706a28081b3c0c79486b081dcb25769c814995adaa5d51a4653844d7015e",
+        "spec.json": "bd10a5ace3d71a6134e0feaa6ef8f55a47600aca0d778d473bf8a18b10ab2fbe",
+        "fields.json": "bdeac0d92659886f9b6771d3eadf701570972831b92ae8461df23bcc08cffe65",
+        "source.xlsx": "1c8b81f2649be64d10b56390f8e35479447dcfb386cc197af0f99b9d8e070eff",
+        "final.xlsx": "2fbdb453a8ed77a8bd9953789475c6092ac32221e4dd245f1fdb4db041be8979",
+        "final.pdf": "936f182c4cfaddfd98ac8df67455f17a9b9134e5590934d9a894cb854e2ae7f1",
+        "page-1.png": "d600851bc9d81f6fd51bdf46b930824fd8ecd8251c9bb8c9a84d855a5d1015d8"
+      },
+      "previews": [
+        "page-1.png"
+      ]
+    },
+    {
+      "id": "pptx-masters",
+      "format": "pptx",
+      "task": "Plantilla con maestros",
+      "status": "passed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "build",
+            "--output",
+            "/evidence/task54-corpus2/pptx-masters",
+            "--source",
+            "/evidence/task54-corpus2/pptx-masters/source.csv",
+            "--fields",
+            "/evidence/task54-corpus2/pptx-masters/fields.json",
+            "--template",
+            "/skills/corporate.pptx"
+          ],
+          "exit_code": 0,
+          "seconds": 20.649
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "render",
+            "--output",
+            "/evidence/task54-corpus2/pptx-masters"
+          ],
+          "exit_code": 0,
+          "seconds": 3.995
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "seal",
+            "--output",
+            "/evidence/task54-corpus2/pptx-masters"
+          ],
+          "exit_code": 0,
+          "seconds": 0.284
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/pptx-masters"
+          ],
+          "exit_code": 0,
+          "seconds": 0.435
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "required",
+      "seconds": 25.365,
+      "files": {
+        "render.json": "f06862953485dac76a8fd3a07489a74133379f09fcd92772c7cae362f13e38c3",
+        "spec.json": "1b18a41eba7c99c713190a083f97ad987f8da26995b08b220f531ab40c04d4db",
+        "fields.json": "937eebfc3aeea0b2a82ff7384451f566fb837b87d98edb779301f9d0cb2038d9",
+        "verification.json": "ef9874686650ae2eb4a2111dda27cc28e8f57114e83af0f033819af992d8905d",
+        "page-3.png": "17537577d2fc742f6f32aab1dd0e77a8c84d7a6dfc1d22986af5e23af5482820",
+        "final.pptx": "e08241c87b9900c415926902b10f7cac2e49407d7deb0d5cba9da6e51f7d35b8",
+        "source.csv": "81b56db9ff4e2ebe45e3f99a7bbf1c4ed8b92c145c6295eee593e7a93ee40a30",
+        "page-2.png": "7e58c7235ee9e139d731d203dc7d7f005df62f84f359201c542b2b403547803a",
+        "final.pdf": "a6dcc3ced7290563e56179d7b876197fd26eef3a0f2e825f805578a9f50af509",
+        "page-1.png": "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6"
+      },
+      "previews": [
+        "page-1.png",
+        "page-2.png",
+        "page-3.png"
+      ]
+    },
+    {
+      "id": "pptx-new",
+      "format": "pptx",
+      "task": "Deck nuevo",
+      "status": "passed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "build",
+            "--output",
+            "/evidence/task54-corpus2/pptx-new",
+            "--source",
+            "/evidence/task54-corpus2/pptx-new/source.csv",
+            "--fields",
+            "/evidence/task54-corpus2/pptx-new/fields.json",
+            "--template",
+            "/skills/corporate.pptx"
+          ],
+          "exit_code": 0,
+          "seconds": 33.222
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "render",
+            "--output",
+            "/evidence/task54-corpus2/pptx-new"
+          ],
+          "exit_code": 0,
+          "seconds": 3.642
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "seal",
+            "--output",
+            "/evidence/task54-corpus2/pptx-new"
+          ],
+          "exit_code": 0,
+          "seconds": 0.291
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/pptx-new"
+          ],
+          "exit_code": 0,
+          "seconds": 0.537
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "required",
+      "seconds": 37.693,
+      "files": {
+        "render.json": "0863955736f5a216b6be8ea431b67165a9df5394d158b8a72fa03d2c48d394c7",
+        "spec.json": "bf0a2235ef61e55cd67bc463c2ef4b8ca82883a1284361109d5747fd907c912e",
+        "fields.json": "88c5a9ecfba778b00431853f4d6a47c1b0cb036d0057aca3e0c6bd409b1de835",
+        "verification.json": "ce1e59361a498bd71e704d5bf4d38d88631037a94e2a5d70d854832f35ae2bb0",
+        "page-3.png": "bf55c678edf7c98ec4425b9876987431403d015aa3beaacfa72eef1ee3532929",
+        "final.pptx": "325a7349634bafb0192f678e0f045a2c5c6df6cd0ffcc1b89aea7a71a719c008",
+        "source.csv": "81b56db9ff4e2ebe45e3f99a7bbf1c4ed8b92c145c6295eee593e7a93ee40a30",
+        "page-2.png": "699d2684349cec4e68311ab1cd0ccbd8bb667945debb93683dc893653e2834a7",
+        "final.pdf": "2dc6a79cbb9d83bb9e7bec745da6e4ff3bb01eb6b1be1df190dffc091a43dca9",
+        "page-1.png": "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6"
+      },
+      "previews": [
+        "page-1.png",
+        "page-2.png",
+        "page-3.png"
+      ]
+    },
+    {
+      "id": "pptx-local-edit",
+      "format": "pptx",
+      "task": "Cambio localizado",
+      "status": "passed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "edit",
+            "--output",
+            "/evidence/task54-corpus2/pptx-local-edit",
+            "--source",
+            "/evidence/task54-corpus2/pptx-new/final.pptx",
+            "--fields",
+            "/evidence/task54-corpus2/pptx-local-edit/fields.json",
+            "--template",
+            "/skills/corporate.pptx"
+          ],
+          "exit_code": 0,
+          "seconds": 1.778
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "render",
+            "--output",
+            "/evidence/task54-corpus2/pptx-local-edit"
+          ],
+          "exit_code": 0,
+          "seconds": 3.554
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/presentation_program.py",
+            "seal",
+            "--output",
+            "/evidence/task54-corpus2/pptx-local-edit"
+          ],
+          "exit_code": 0,
+          "seconds": 0.298
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/pptx-local-edit"
+          ],
+          "exit_code": 0,
+          "seconds": 0.405
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "required",
+      "seconds": 6.036,
+      "files": {
+        "render.json": "879b673b6a15de2b9fae6a7a1b9f0c22ac18c9f01fd94b83e03e918fd5452e09",
+        "spec.json": "9b2ddb5b6f873e05702b6c3ef3abcb62c75baf28c8127874e839ba8ec526df1f",
+        "fields.json": "3d016f6707a5cf383ff847f2110b4c5230c6ab7a9141773cdd42efcf7f49ae60",
+        "verification.json": "5711d8e8ac6dc5dc5bbdbd42f4b8fe86a6b457d95b09d3edab2613c2976a4ac7",
+        "page-3.png": "bf55c678edf7c98ec4425b9876987431403d015aa3beaacfa72eef1ee3532929",
+        "final.pptx": "6679296ed6402d0356100d7bb5c565d384d3b07ba994fd01e4e40b76c0606748",
+        "source.csv": "81b56db9ff4e2ebe45e3f99a7bbf1c4ed8b92c145c6295eee593e7a93ee40a30",
+        "page-2.png": "8196541dd4f973b327b164f64af31e12f2afed2459ccbd925470d96d735523e3",
+        "final.pdf": "d47208a499788714728bad2892ac78d2dcd46a552c07594922ec587495813cca",
+        "page-1.png": "2e8715c025af1d5dc0c915f195fd5962a512ba1c6dcd3116919cf0abb869b2e6"
+      },
+      "previews": [
+        "page-1.png",
+        "page-2.png",
+        "page-3.png"
+      ]
+    },
+    {
+      "id": "pptx-long",
+      "format": "pptx",
+      "task": "Gráfico/tabla editables y texto largo",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "presentation_text",
+      "gate": "production valid_text",
+      "seconds": 0.0,
+      "files": {
+        "request.json": "0dd03417cb790ede79dde216c6d6b0c7a70fe989e21fa2c66dda210ec3d2bcb1",
+        "source.pptx": "325a7349634bafb0192f678e0f045a2c5c6df6cd0ffcc1b89aea7a71a719c008"
+      },
+      "previews": []
+    },
+    {
+      "id": "pdf-spanish",
+      "format": "pdf",
+      "task": "Informe español con fuentes",
+      "status": "passed",
+      "commands": [
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "build",
+            "--output",
+            "/evidence/task54-corpus2/pdf-spanish",
+            "--source",
+            "/evidence/task54-corpus2/pdf-spanish/source.csv",
+            "--fields",
+            "/evidence/task54-corpus2/pdf-spanish/fields.json",
+            "--template",
+            "/skills/corporate.docx"
+          ],
+          "exit_code": 0,
+          "seconds": 0.284
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "render",
+            "--output",
+            "/evidence/task54-corpus2/pdf-spanish"
+          ],
+          "exit_code": 0,
+          "seconds": 1.312
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "-I",
+            "/skills/document_program.py",
+            "seal",
+            "--output",
+            "/evidence/task54-corpus2/pdf-spanish"
+          ],
+          "exit_code": 0,
+          "seconds": 0.282
+        },
+        {
+          "argv": [
+            "/usr/local/bin/python",
+            "/source/ops/agent_chat/document_corpus.py",
+            "verify",
+            "/evidence/task54-corpus2/pdf-spanish"
+          ],
+          "exit_code": 0,
+          "seconds": 0.49
+        }
+      ],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "required",
+      "seconds": 2.369,
+      "files": {
+        "render.json": "eb4b4710f57dacdeecf80628017c2defd4ef978949f42cec42d6325fdb1d779b",
+        "spec.json": "aedeab154c875d36539f81eb90d9f1d9eefa2374d7eb118821a13b20e7f65892",
+        "fields.json": "94912d44a2df98c3b985bcaa9cb10c5be186bfb156eec35b0b45dc080ef7a01f",
+        "verification.json": "d335ba5e089ee317b9b1551127130d6c0f97900f7c7584fcb0e0994ac3d13c9f",
+        "source.csv": "81b56db9ff4e2ebe45e3f99a7bbf1c4ed8b92c145c6295eee593e7a93ee40a30",
+        "final.docx": "0d1a0e8283612cf4313ae211f674347409440c06f7cb83bd8ab1d3b5b2d3fdca",
+        "page-2.png": "e8e513b3b06a570ab00227380ac80447502745645e69a7dc1fb2c5da445ba9d4",
+        "final.pdf": "d7c5e341715ccbad62d0325b3004c503a9fa78b64827595ed27423f08efe9ef0",
+        "page-1.png": "a2cdaedd3cb8507d54694fc481d3cabe90b63756adfad074f07a0da127c8f157"
+      },
+      "previews": [
+        "page-1.png",
+        "page-2.png"
+      ]
+    },
+    {
+      "id": "pdf-form",
+      "format": "pdf",
+      "task": "Formulario",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "input_format",
+      "gate": "production input_rows",
+      "seconds": 0.001,
+      "files": {
+        "source.pdf": "162e5bfb54634a9c6504eab1556eede657928fcb1d93479342c85b25178855fa"
+      },
+      "previews": []
+    },
+    {
+      "id": "pdf-ocr",
+      "format": "pdf",
+      "task": "Extracción de escaneo con OCR",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "input_format",
+      "gate": "production input_rows",
+      "seconds": 0.038,
+      "files": {
+        "source.pdf": "c7f07c6e3d930debbb979efe6f398a5ed75263a43530fbed1f909bcb35f31620"
+      },
+      "previews": []
+    },
+    {
+      "id": "pdf-redact",
+      "format": "pdf",
+      "task": "Eliminación verificable de información",
+      "status": "not_supported",
+      "commands": [],
+      "repairs": 0,
+      "model_calls": 0,
+      "cost_usd": "0",
+      "visual_review": "not_applicable",
+      "reason": "input_format",
+      "gate": "production input_rows",
+      "seconds": 0.0,
+      "files": {
+        "request.json": "d0626e01d42ddad64807a8e41508ad37193f743d52732ffe9bc259bdc2966920",
+        "source.pdf": "d7c5e341715ccbad62d0325b3004c503a9fa78b64827595ed27423f08efe9ef0"
+      },
+      "previews": []
+    }
+  ],
+  "passed": 7,
+  "failed": 1,
+  "not_supported": 8,
+  "paid_calls": 0
+}

@@ -146,6 +146,7 @@ class AgentDocumentConnection(models.Model):
     company = models.ForeignKey('front.Company', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     enabled = models.BooleanField(default=False)
+    write_enabled = models.BooleanField(default=False)
     version = models.PositiveIntegerField(default=1)
     # token, permission identity and direct folder allowlist; no shared credentials.
     private_config = EncryptedTextField()
@@ -165,3 +166,25 @@ class AgentDocumentReference(models.Model):
 
     class Meta:
         app_label = 'front'
+
+
+class AgentExport(models.Model):
+    """Regulay owns approval and effect ledger; checkpoints never grant access."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    execution = models.OneToOneField(AgentExecution, on_delete=models.CASCADE, related_name='export')
+    artifact = models.ForeignKey(AgentArtifact, on_delete=models.RESTRICT)
+    connection = models.ForeignKey(AgentDocumentConnection, on_delete=models.PROTECT)
+    call = models.JSONField()
+    proposal = EncryptedTextField()
+    binding = models.CharField(max_length=64)
+    status = models.CharField(max_length=24, default='pending')
+    expires_at = models.DateTimeField()
+    approved_at = models.DateTimeField(null=True)
+    remote_id = EncryptedTextField(default='')
+    intent_at = models.DateTimeField(null=True)
+    finished_at = models.DateTimeField(null=True)
+
+    class Meta:
+        app_label = 'front'
+        constraints = [models.CheckConstraint(condition=models.Q(status__in=[
+            'pending', 'approved', 'rejected', 'intent', 'uncertain', 'completed']), name='agent_export_status')]

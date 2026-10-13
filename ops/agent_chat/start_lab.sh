@@ -3,7 +3,7 @@ set -euo pipefail
 test "$(hostname)" = task48-e2b-vm
 cd /home/probe/task50
 tar -xf /home/probe/task50-source.tar
-docker build --network none -t regulay-task50-executor:local -f ops/agent_chat/Dockerfile.executor .
+docker build -t regulay-task50-executor:local -f ops/agent_chat/Dockerfile.executor .
 docker build -t regulay-task50-web:local -f ops/agent_chat/Dockerfile.web .
 docker run -d --rm --name task50-postgres --label regulay.task=50 \
   -p 127.0.0.1:55450:5432 -e POSTGRES_USER=lab -e POSTGRES_PASSWORD=synthetic-task50-only \
@@ -39,8 +39,5 @@ Path('.runtime/config.json').write_text(json.dumps({'api_url':'http://172.30.50.
     'sandbox_url':'http://172.30.50.1:3002','api_key_file':'/run/task50/e2b-key', 'template':'task50-excel',
     'internal_endpoint':'http://172.30.50.1:31049/internal/agents/', 'worker_token_file':'/run/task50/worker-token'}))
 PY
-docker run -d --rm --name task50-worker --label regulay.task=50 --network task50-exec \
-  --user 1000:1000 --read-only --cap-drop ALL --security-opt no-new-privileges --dns 127.0.0.1 \
-  --memory 768m --cpus 1 --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000 \
-  --mount type=bind,src=/home/probe/task50/.runtime,dst=/run/task50,readonly regulay-task50-executor:local
+bash ops/agent_chat/start_worker.sh
 echo 'Synthetic ASGI service and fenced worker ready'

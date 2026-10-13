@@ -34,15 +34,15 @@ class AgentDenied(ValueError):
         super().__init__(code)
 
 
-def _context(prompt, profile_id):
-    if not getattr(settings, 'REGULAY_AGENT_ENABLED', False):
+def _context(prompt, profile_id, *, allow_disabled=False):
+    if not allow_disabled and not getattr(settings, 'REGULAY_AGENT_ENABLED', False):
         raise AgentDenied('agent_disabled')
     actor = prompt.user
     profile = Profile.objects.select_related('company', 'department', 'user').get(user=actor)
     actor.profile = profile
     if prompt.conversation and prompt.conversation.mode == 'agent':
         from .jobs import development_profile
-        if development_profile(actor) != profile_id:
+        if development_profile(actor, allow_disabled=allow_disabled) != profile_id:
             raise AgentDenied('agent_profile_unavailable')
     if (not profile.user.is_active or profile.company_id != prompt.company_id
             or not authorized_conversations(actor).filter(pk=prompt.conversation_id).exists()):
@@ -51,7 +51,7 @@ def _context(prompt, profile_id):
     if not agent or not isinstance(agent.tools, list) or any(t not in TOOL_PARAMETERS for t in agent.tools):
         raise AgentDenied('agent_profile_unavailable')
     if prompt.conversation and prompt.conversation.mode == 'agent' and (
-            not agent.tools or set(agent.tools) - {'build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'}):
+            not agent.tools or set(agent.tools) - {'build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation', 'save_revision'}):
         raise AgentDenied('agent_profile_unavailable')
     if not 2 <= agent.min_group_size <= 1000:
         raise AgentDenied('agent_profile_unavailable')

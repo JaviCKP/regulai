@@ -81,7 +81,10 @@ def prepare(*, database_host='127.0.0.1', database_port='55450', evidence=None):
         last_result = json.loads(tool_messages[-1]['content']) if tool_messages else {}
         success = last_result.get('status') == 'approved' or last_result.get('code') == 'visual_review_required'
         call = None
-        if not success and len(tool_messages) < 2:
+        if context['operation'] == 'export' and not tool_messages:
+            call = {'id': 'save-' + uuid.uuid4().hex, 'type': 'function', 'function': {
+                'name': 'save_revision', 'arguments': json.dumps({k: context[k] for k in ('artifact_reference', 'sha256', 'name')})}}
+        if context['operation'] != 'export' and not success and len(tool_messages) < 2:
             name = 'rename_excel' if context['operation'] == 'rename' else 'build_excel'
             title = 'Ventas revisadas' if name == 'rename_excel' else 'Ventas sintéticas'
             args = {'title': title, **({'logical_id': context['logical_id'], 'base_revision': context['base_revision']}

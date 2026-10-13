@@ -1,0 +1,26 @@
+{
+  "sha256": "b7189cb11a4bfe6c448330a4a126e271dea3b34a499469fd69fcdd2f8c4efcba",
+  "rows": 65,
+  "total_cents": 268125,
+  "pages": 5,
+  "docx_sha256": "b7189cb11a4bfe6c448330a4a126e271dea3b34a499469fd69fcdd2f8c4efcba",
+  "pdf_sha256": "31d68371152f89f0af2bdb1bfb22b3b4de5489653cc368bc1dd685179ea74ec1",
+  "page_sha256": [
+    "a2cdaedd3cb8507d54694fc481d3cabe90b63756adfad074f07a0da127c8f157",
+    "aafb936c9bcaacee5b8045725c12952c07b36ff994fa4986a07ec46bbc8a530c",
+    "21802a23de4a9d8ae2ed1e95fd5e6c7c81f8d1bcaea3319cbcd7047318d9ece6",
+    "f9ba17977c6a784bd88086379b1aeb341ab3e654618b3800199a9c593184a4bc",
+    "b030a5e52671b949ee2fc318a1f61b342175291993dcfa39db008bbf5265d56e"
+  ],
+  "automated_passed": true,
+  "visual_review": "required",
+  "checks": [
+    "template_parts",
+    "sections",
+    "table_values",
+    "pdf_text",
+    "embedded_fonts",
+    "rendered_final_bytes",
+    "new_document"
+  ]
+}

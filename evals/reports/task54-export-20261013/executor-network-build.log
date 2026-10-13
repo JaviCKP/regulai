@@ -1,0 +1,69 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.executor
+#1 transferring dockerfile: 924B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/regulay-task48-executor:local
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 38.92kB done
+#4 DONE 0.0s
+
+#5 [1/8] FROM docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0
+#5 resolve docker.io/library/regulay-task48-executor:local@sha256:3b9f0e1fd12fa0e66d382c0aa93165f15eefd81ff73074740fb198e8f261b0f0 0.1s done
+#5 CACHED
+
+#6 [2/8] COPY ops/agent_chat/executor-requirements.txt /tmp/executor-requirements.txt
+#6 DONE 0.2s
+
+#7 [3/8] RUN pip install --no-deps --require-hashes -r /tmp/executor-requirements.txt && pip check
+#7 0.634 Defaulting to user installation because normal site-packages is not writeable
+#7 0.842 Collecting aiosqlite==0.22.1 (from -r /tmp/executor-requirements.txt (line 3))
+#7 0.923   Downloading aiosqlite-0.22.1-py3-none-any.whl (17 kB)
+#7 0.967 Collecting langgraph-checkpoint-sqlite==3.0.3 (from -r /tmp/executor-requirements.txt (line 7))
+#7 0.983   Downloading langgraph_checkpoint_sqlite-3.0.3-py3-none-any.whl (33 kB)
+#7 1.046 Collecting sqlite-vec==0.1.9 (from -r /tmp/executor-requirements.txt (line 11))
+#7 1.061   Downloading sqlite_vec-0.1.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux1_x86_64.whl (163 kB)
+#7 1.095 Installing collected packages: sqlite-vec, langgraph-checkpoint-sqlite, aiosqlite
+#7 1.156 Successfully installed aiosqlite-0.22.1 langgraph-checkpoint-sqlite-3.0.3 sqlite-vec-0.1.9
+#7 1.254 
+#7 1.254 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#7 1.254 [notice] To update, run: pip install --upgrade pip
+#7 1.618 No broken requirements found.
+#7 DONE 1.7s
+
+#8 [4/8] COPY regulai/front/agents/adapter.py regulai/front/agents/protocol.py regulai/front/agents/worker.py regulai/front/agents/sandbox_pool.py /app/regulai/front/agents/
+#8 DONE 0.1s
+
+#9 [5/8] COPY regulai/front/agents/runtime /app/regulai/front/agents/runtime
+#9 DONE 0.1s
+
+#10 [6/8] COPY regulai/front/agents/spreadsheet_program.py /app/regulai/front/agents/spreadsheet_program.py
+#10 DONE 0.1s
+
+#11 [7/8] COPY ops/agent_chat/requirements.txt ops/agent_chat/build_template.py /app/ops/agent_chat/
+#11 DONE 0.1s
+
+#12 [8/8] COPY ops/agent_chat/network_probe.py /app/ops/agent_chat/
+#12 DONE 0.1s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.8s done
+#13 exporting manifest sha256:8d8fd143c5f3bb6e1a728a75b28ff511b1b7efc8b8b9599731d1b3baa5dc379c 0.0s done
+#13 exporting config sha256:982f7b8a1e71c1d3b7962116ffc22a686b32fd11780bb2839bf6dca3fc827b63 0.0s done
+#13 exporting attestation manifest sha256:86848ea6b5ad73fb8cd7157587e1562a98e58064dfafb42f7c9f40c76565dbc5
+#13 exporting attestation manifest sha256:86848ea6b5ad73fb8cd7157587e1562a98e58064dfafb42f7c9f40c76565dbc5 0.1s done
+#13 exporting manifest list sha256:31b95f89f3c13521754f328345018cce41c1e9c7a70e653eee32159d24e7d993 0.0s done
+#13 naming to docker.io/library/regulay-task50-executor:local done
+#13 unpacking to docker.io/library/regulay-task50-executor:local
+#13 unpacking to docker.io/library/regulay-task50-executor:local 0.2s done
+#13 DONE 1.2s
+{"passed": true, "positive_before": [{"address": "172.30.51.2", "port": 8080, "denied": false, "control": "echo-confirmed"}, {"address": "fd50:51::2", "port": 8080, "denied": false, "control": "echo-confirmed"}], "negative": {"executor_sockets": [{"address": "172.30.51.2", "port": 8080, "denied": true, "error": "OSError", "errno": 101, "ipv6_disabled_by_kernel": false}, {"address": "fd50:51::2", "port": 8080, "denied": true, "error": "OSError", "errno": 101, "ipv6_disabled_by_kernel": false}, {"address": "172.30.50.1", "port": 55450, "denied": true, "error": "OSError", "errno": 113, "ipv6_disabled_by_kernel": false}, {"address": "169.254.169.254", "port": 80, "denied": true, "error": "OSError", "errno": 101, "ipv6_disabled_by_kernel": false}], "sandbox": {"filesystem": {"uid": 1000, "effective_capabilities": 0, "input_readonly": true, "work_writable": true, "output_writable": true, "docker_socket": false, "provider_credentials": false, "no_new_privs": "0"}, "sockets": [{"address": "172.30.51.2", "port": 8080, "denied": true, "error": "TimeoutError", "errno": null, "ipv6_disabled_by_kernel": false}, {"address": "fd50:51::2", "port": 8080, "denied": true, "error": "OSError", "errno": 99, "ipv6_disabled_by_kernel": true}, {"address": "172.30.50.1", "port": 55450, "denied": true, "error": "TimeoutError", "errno": null, "ipv6_disabled_by_kernel": false}, {"address": "169.254.169.254", "port": 80, "denied": true, "error": "PermissionError", "errno": 13, "ipv6_disabled_by_kernel": false}]}, "sandbox_id": "iph4no31ersaronhzrrht", "versions": "{\"python\": \"3.12.11 (main, Sep 30 2025, 00:38:52) [GCC 14.2.0]\", \"pandas\": \"2.3.3\", \"openpyxl\": \"3.1.5\"}\nLibreOffice 25.2.3.2 520(Build:2)\n\n", "executor_without_database_provider_keys_or_alias_modules": true}, "positive_after": [{"address": "172.30.51.2", "port": 8080, "denied": false, "control": "echo-confirmed"}, {"address": "fd50:51::2", "port": 8080, "denied": false, "control": "echo-confirmed"}], "commands": [{"command": ["docker", "network", "create", "--internal", "--ipv6", "--subnet", "172.30.51.0/24", "--subnet", "fd50:51::/64", "--label", "regulay.task=50", "task50-receiver"], "exit_code": 0}, {"command": ["docker", "run", "-d", "--name", "task50-receiver", "--network", "task50-receiver", "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--user", "1000:1000", "--dns", "127.0.0.1", "regulay-task48-sandbox:local", "python", "-I", "/probe/runtime_checks.py", "serve"], "exit_code": 0}, {"command": ["docker", "inspect", "task50-receiver", "--format", "{{json .NetworkSettings.Networks}}"], "exit_code": 0}, {"command": ["docker", "run", "--rm", "--network", "task50-receiver", "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--user", "1000:1000", "--dns", "127.0.0.1", "regulay-task48-sandbox:local", "python", "-I", "/probe/runtime_checks.py", "allow", "172.30.51.2", "8080"], "exit_code": 0}, {"command": ["docker", "run", "--rm", "--network", "task50-receiver", "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--user", "1000:1000", "--dns", "127.0.0.1", "regulay-task48-sandbox:local", "python", "-I", "/probe/runtime_checks.py", "allow", "fd50:51::2", "8080"], "exit_code": 0}, {"command": ["docker", "run", "--rm", "--network", "task50-exec", "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--user", "1000:1000", "--dns", "127.0.0.1", "--mount", "type=bind,src=/home/probe/task50/.runtime,dst=/run/task50,readonly", "regulay-task50-executor:local", "python", "/app/ops/agent_chat/network_probe.py", "[{\"address\": \"172.30.51.2\", \"port\": 8080}, {\"address\": \"fd50:51::2\", \"port\": 8080}, {\"address\": \"172.30.50.1\", \"port\": 55450}, {\"address\": \"169.254.169.254\", \"port\": 80}]"], "exit_code": 0}, {"command": ["docker", "run", "--rm", "--network", "task50-receiver", "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--user", "1000:1000", "--dns", "127.0.0.1", "regulay-task48-sandbox:local", "python", "-I", "/probe/runtime_checks.py", "allow", "172.30.51.2", "8080"], "exit_code": 0}, {"command": ["docker", "run", "--rm", "--network", "task50-receiver", "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--user", "1000:1000", "--dns", "127.0.0.1", "regulay-task48-sandbox:local", "python", "-I", "/probe/runtime_checks.py", "allow", "fd50:51::2", "8080"], "exit_code": 0}, {"command": ["docker", "rm", "-f", "task50-receiver"], "exit_code": 0}, {"command": ["docker", "network", "rm", "task50-receiver"], "exit_code": 0}]}

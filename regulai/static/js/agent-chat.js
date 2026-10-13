@@ -1,6 +1,6 @@
 /* User preview is a separate authorized projection; never model context. */
 (() => {
-  let mode = null, revision = null, stream = null, run = null, cursor = 0, command = null, documentReference = null;
+  let mode = null, revision = null, stream = null, run = null, cursor = 0, command = null, documentReference = null, pendingExport = null;
   const byId = id => document.getElementById(id);
   const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]').value;
   const live = status => ['queued', 'active', 'outcome_unknown'].includes(status);
@@ -13,11 +13,26 @@
     if (parent) parent.appendChild(element);
     return element;
   }
-  function showArtifact(artifact, parent) {
+  function showArtifact(artifact, parent, canExport) {
     const card = node('article', null, parent);
     card.className = 'border-top pt-2 mt-2';
     const heading = node('strong', artifact.preview.title, card);
     heading.style.overflowWrap = 'anywhere';
+    if (artifact.status === 'verified' && canExport) {
+      const area = node('div', null, card);
+      area.className = 'd-flex flex-wrap gap-2 my-2';
+      const label = node('label', 'Nombre al guardar en Drive', area);
+      const name = node('input', null, label);
+      name.className = 'form-control form-control-sm'; name.maxLength = 120;
+      name.value = `informe-r${artifact.revision}.${artifact.format || 'xlsx'}`;
+      const save = node('button', 'Preparar exportación a Drive', area);
+      save.type = 'button'; save.className = 'btn btn-outline-primary btn-sm';
+      save.onclick = () => {
+        pendingExport = {artifactId: artifact.logical_id, baseRevision: artifact.id, exportName: name.value};
+        byId('prompt').value = 'Guarda la revisión verificada en la carpeta autorizada de Drive.';
+        byId('chatForm').requestSubmit();
+      };
+    }
     if (artifact.format && artifact.format !== 'xlsx') {
       const pending = artifact.status !== 'verified';
       const pageName = artifact.format === 'pptx' ? 'Diapositiva' : 'Página';
@@ -94,6 +109,7 @@
     if (!response.ok) throw new Error('Access unavailable');
     const data = await response.json();
     if (run.id !== expected) return;
+    showExport(data.export, data.run);
     data.events.forEach(progress);
     byId('agentCancel').hidden = !live(data.run.status);
     revision = data.current_revision || null;
@@ -101,7 +117,7 @@
     if (visible.length) {
       const artifacts = byId('agentArtifacts');
       artifacts.replaceChildren();
-      visible.forEach(artifact => showArtifact(artifact, artifacts));
+      visible.forEach(artifact => showArtifact(artifact, artifacts, data.export_enabled && !live(data.run.status)));
     }
     if (!live(data.run.status)) {
       stream?.close();
@@ -116,6 +132,7 @@
   }
   async function watch(next, submitted = null) {
     documentReference = null;
+    pendingExport = null;
     mode = 'agent';
     command = submitted;
     byId('attachmentHint').textContent = 'CSV/XLSX: item y amount_cents. El archivo se conserva para las revisiones.';
@@ -137,7 +154,7 @@
       stream.addEventListener('progress', message => {
         const event = JSON.parse(message.data);
         progress(event);
-        if (event.kind === 'visual_pending') snapshot().catch(unavailable);
+        if (['visual_pending', 'approval_pending', 'export_completed', 'export_uncertain'].includes(event.kind)) snapshot().catch(unavailable);
       });
       stream.addEventListener('terminal', () => { stream?.close(); snapshot().catch(unavailable); });
       stream.addEventListener('revoked', unavailable);
@@ -149,6 +166,7 @@
     stream = null;
     byId('agentCancel').hidden = true;
     byId('agentArtifacts').replaceChildren();
+    byId('agentExport')?.replaceChildren();
     revision = null;
     text('El estado ya no está autorizado o no está disponible. Recarga el chat para comprobar el acceso.');
   }
@@ -156,11 +174,57 @@
     capture(file) {
       const selected = mode || byId('conversationMode')?.value;
       if (selected !== 'agent') return {};
+      if (pendingExport) return {mode: 'agent', ...pendingExport};
       return {mode: 'agent', documentReference: !file && documentReference,
         artifactId: !file && !documentReference && revision?.logical_id,
         baseRevision: !file && !documentReference && revision?.id};
     }, watch
   };
+  function showExport(proposal, state) {
+    const area = byId('agentExport');
+    if (!area) return;
+    area.replaceChildren();
+    if (!proposal) return;
+    const card = node('article', null, area);
+    card.className = 'border rounded p-2 mt-2';
+    node('strong', 'Guardar revisión en Google Drive', card);
+    const details = node('dl', null, card); details.className = 'small my-2';
+    const statuses = {pending: 'Esperando aprobación', approved: 'Aprobado', rejected: 'Rechazado',
+      intent: 'Guardando; resultado pendiente', uncertain: 'Resultado por confirmar', completed: 'Guardado confirmado'};
+    for (const [key, value] of [['Cuenta', proposal.account], ['Carpeta', proposal.folder],
+      ['Nombre', proposal.name], ['Revisión', proposal.revision], ['Efecto', 'Crear un archivo nuevo'],
+      ['Contenido', `${proposal.bytes} bytes`], ['SHA-256 del contenido', proposal.sha256],
+      ['Estado', statuses[proposal.status] || proposal.status], ['Caduca', new Date(proposal.expires_at).toLocaleString('es-ES')]]) {
+      node('dt', key, details); const item = node('dd', value, details); item.style.overflowWrap = 'anywhere';
+    }
+    const content = node('a', 'Revisar el contenido exacto antes de aprobar', card);
+    content.href = proposal.preview_url; content.className = 'd-block small mb-2';
+    if (proposal.status === 'pending' && state.status === 'active' && Date.parse(proposal.expires_at) > Date.now()) {
+      for (const [decision, label] of [['approve', 'Aprobar esta exportación'], ['reject', 'Rechazar']]) {
+        const button = node('button', label, card); button.type = 'button'; button.className = 'btn btn-outline-primary btn-sm me-2';
+        button.onclick = async () => {
+          button.disabled = true;
+          try {
+            const response = await fetch(proposal.decision_url, {method: 'POST',
+              headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()},
+              body: JSON.stringify({binding: proposal.binding, decision})});
+            if (!response.ok) throw new Error('Approval changed');
+            await snapshot();
+          } catch (_) { text('La propuesta ha caducado o sus permisos han cambiado. Recarga para comprobar el estado.'); }
+        };
+      }
+    }
+    if (proposal.status === 'uncertain' && state.status === 'interrupted') {
+      const recover = node('button', 'Reconciliar el resultado de esta exportación', card);
+      recover.type = 'button'; recover.className = 'btn btn-outline-primary btn-sm';
+      recover.onclick = async () => {
+        recover.disabled = true;
+        const response = await fetch(`/chat/agent/runs/${state.id}/recover-export/`, {
+          method: 'POST', headers: {'X-CSRFToken': csrf()}});
+        if (response.ok) await watch(state); else text('La recuperación requiere permisos y aprobación vigentes.');
+      };
+    }
+  }
   document.addEventListener('DOMContentLoaded', () => {
     byId('agentDocumentSearch')?.addEventListener('click', async () => {
       const area = byId('agentDocumentResults'), button = byId('agentDocumentSearch');

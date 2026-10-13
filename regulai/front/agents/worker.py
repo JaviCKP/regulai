@@ -60,6 +60,8 @@ class Lease:
 def run_job(internal, sandbox):
     with Lease(internal, sandbox) as lease:
         granted = internal.operation('run/bootstrap', {})
+        if granted['model_context']['operation'] == 'export':
+            return run_export(internal, sandbox, lease, granted)
         data = base64.b64decode(granted['input']['base64'], validate=True)
         if hashlib.sha256(data).hexdigest() != granted['input']['sha256']:
             raise InternalOperationError('Input digest changed')
@@ -211,6 +213,81 @@ def run_job(internal, sandbox):
         return {'status': 'completed', 'message_count': len(result['messages'])}
 
 
+def run_export(internal, sandbox, lease, granted):
+    """Official HITL + SQLite checkpointer; only protected graph state on disk."""
+    from langgraph.checkpoint.sqlite import SqliteSaver
+    from langgraph.types import Command
+    from langchain_core.messages import ToolMessage
+    state = Path('/state/checkpoints.sqlite')
+    if not state.parent.is_dir():
+        raise InternalOperationError('Private durable checkpoint directory required')
+
+    @tool
+    def save_revision(artifact_reference: str, sha256: str, name: str, runtime: ToolRuntime):
+        """Create the exact verified revision in the configured authorized Drive folder."""
+        lease.check()
+        call = {'id': runtime.tool_call_id, 'name': 'save_revision',
+            'args': {'artifact_reference': artifact_reference, 'sha256': sha256, 'name': name}}
+        response = internal.operation('run/save-revision', call)
+        return ToolMessage(content=json.dumps({'reference': response['reference']}),
+            tool_call_id=runtime.tool_call_id, name='save_revision')
+
+    with SqliteSaver.from_conn_string(str(state)) as checkpointer:
+        graph = build_agent(E2BSandbox(sandbox=sandbox, workdir='/workspace/work'), internal,
+            tools=[save_revision], allowed_tools=['save_revision'], checkpointer=checkpointer,
+            interrupt_on={'save_revision': {'allowed_decisions': ['approve', 'reject']}},
+            model_profile={'max_input_tokens': 200000, 'max_output_tokens': 8000},
+            system_prompt='Use save_revision exactly once with the authorized references. Never change content or destination.')
+        config = {'configurable': {'thread_id': granted['execution']}, 'recursion_limit': 8}
+        snapshot = graph.get_state(config)
+        if not snapshot.values:
+            if granted.get('checkpoint_ready'):
+                raise InternalOperationError('Durable export checkpoint missing; manual recovery required')
+            result = graph.invoke({'messages': [HumanMessage(content=granted['message']),
+                HumanMessage(content='Referencias autorizadas del servidor: ' + json.dumps(granted['model_context']))]}, config=config)
+            if not result.get('__interrupt__'):
+                raise InternalOperationError('Official export interrupt required')
+            snapshot = graph.get_state(config)
+        calls = [call for message in snapshot.values['messages'] if hasattr(message, 'tool_calls') for call in message.tool_calls]
+        if len(calls) != 1 or calls[0]['name'] != 'save_revision':
+            raise InternalOperationError('Exactly one export proposal required')
+        internal.operation('run/propose-export', {k: calls[0][k] for k in ('id', 'name', 'args')})
+        while True:
+            lease.check()
+            decision = internal.operation('run/approval-state', {})['decision']
+            if decision in ('intent', 'uncertain', 'completed'):
+                response = internal.operation('run/reconcile-export', {})
+                if response['status'] != 'approved':
+                    raise InternalOperationError('Export outcome requires reconciliation')
+                break
+            if decision == 'approved':
+                if not snapshot.next:
+                    raise InternalOperationError('Approval requires an interrupted checkpoint')
+                graph.invoke(Command(resume={'decisions': [{'type': 'approve'}]}), config=config)
+                break
+            if decision == 'rejected':
+                graph.invoke(Command(resume={'decisions': [{'type': 'reject', 'message': 'Rejected by authorized user'}]}), config=config)
+                raise InternalOperationError('Export rejected')
+            time.sleep(1)
+        lease.check()
+        internal.operation('run/export-complete', {})
+        return {'status': 'completed'}
+
+
+def prune_checkpoints(client, endpoint, token):
+    state = Path('/state/checkpoints.sqlite')
+    if not state.is_file():
+        return
+    response = client.post(endpoint + 'checkpoints/', json={}, headers={'Authorization': 'Bearer ' + token})
+    response.raise_for_status()
+    keep = set(response.json()['keep'])
+    from langgraph.checkpoint.sqlite import SqliteSaver
+    with SqliteSaver.from_conn_string(str(state)) as saver:
+        threads = {item.config['configurable']['thread_id'] for item in saver.list(None)}
+        for thread_id in threads - keep:
+            saver.delete_thread(thread_id)
+
+
 def run(config, *, once=False):
     worker_id = str(uuid.uuid4())
     token = Path(config['worker_token_file']).read_text().strip()
@@ -227,6 +304,7 @@ def run(config, *, once=False):
                     continue
                 internal = None
                 try:
+                    prune_checkpoints(client, endpoint, token)
                     claim_id = str(uuid.uuid4())
                     response = None
                     for retry in range(2):

@@ -44,12 +44,17 @@ EVENT_TEXT = {
     'cancelled': 'Ejecución cancelada. No se iniciarán nuevos pasos.',
     'interrupted': 'Ejecución interrumpida. No se repetirán automáticamente operaciones de resultado incierto.',
     'failed': 'No se pudo completar un archivo verificado. Los borradores se conservan.',
+    'approval_pending': 'Exportación preparada. Revisa cuenta, carpeta, nombre y revisión antes de aprobar.',
+    'export_intent': 'Aprobación revalidada. Intención de exportación registrada.',
+    'export_completed': 'Exportación confirmada; contenido y destino comprobados.',
+    'export_uncertain': 'Resultado externo incierto. Se requiere reconciliación; no se repetirá la creación.',
+    'export_recovery': 'Checkpoint recuperable. Se revalidarán los permisos antes de continuar.',
 }
 
 
-def development_profile(actor):
+def development_profile(actor, *, allow_disabled=False):
     """Explicit laboratory allowlist, empty by default; no account mutations."""
-    if (not settings.DEBUG or not getattr(settings, 'REGULAY_AGENT_ENABLED', False)
+    if (not settings.DEBUG or (not allow_disabled and not getattr(settings, 'REGULAY_AGENT_ENABLED', False))
             or not getattr(settings, 'REGULAY_AGENT_DEVELOPMENT', False) or not actor.is_active
             or not actor.username.startswith('agent-synthetic-')):
         raise AgentDenied('agent_development_only')
@@ -86,6 +91,15 @@ def reap():
     with transaction.atomic():
         for run in AgentExecution.objects.select_for_update(skip_locked=True).filter(
                 conversation__isnull=False, status__in=LIVE, expires_at__lte=timezone.now()):
+            if (run.status == 'active' and run.job.get('kind') == 'export'
+                    and run.job.get('checkpoint_ready') and not run.active_call
+                    and run.export.expires_at > timezone.now()):
+                run.status = 'queued'
+                run.claim_id = None
+                run.expires_at = timezone.now() + timedelta(seconds=LEASE_SECONDS)
+                run.save(update_fields=['status', 'claim_id', 'expires_at'])
+                event(run, 'export_recovery')
+                continue
             _terminal(run, 'interrupted')
 
 
@@ -136,15 +150,21 @@ def enqueue(actor, command, conversation, text, request_id):
         raw = uploaded.read(MAX_BYTES + 1) if uploaded else None
         kind = PurePath(uploaded.name).suffix.lower().lstrip('.') if uploaded else None
         rows = input_rows(raw, kind) if uploaded else None
-        fingerprint = digest([text, sha256(raw) if raw else None, 'agent',
+        identity = [text, sha256(raw) if raw else None, 'agent',
                               command.get('artifact_id'), command.get('base_revision'),
-                              command.get('document_reference')])
+                              command.get('document_reference')]
+        if command.get('export_name'):
+            identity.append(command['export_name'])
+        fingerprint = digest(identity)
+        accepted_fingerprints = {fingerprint}
+        if not command.get('document_reference') and not command.get('export_name'):
+            accepted_fingerprints.add(digest(identity[:-1]))  # Pre-53 HTTP receipts remain replayable.
         reap()
         with transaction.atomic():
             previous = Prompt.objects.filter(user=actor, request_id=request_id).first()
             if previous:
                 if (previous.company_id != actor.profile.company_id
-                        or previous.decision.get('input_digest') != fingerprint
+                        or previous.decision.get('input_digest') not in accepted_fingerprints
                         or (conversation and previous.conversation_id != conversation.pk)):
                     return error_result('idempotency_conflict', 409)
                 run = AgentExecution.objects.get(prompt=previous)
@@ -161,6 +181,10 @@ def enqueue(actor, command, conversation, text, request_id):
                 if uploaded:
                     raise AgentDenied('revision_input_immutable')
                 base = _base(conversation, command.get('artifact_id'), command.get('base_revision'))
+                if command.get('export_name'):
+                    from .exports import writable, export_name
+                    writable(actor)
+                    export_name(command['export_name'], base.format)
             elif not uploaded:
                 raise AgentDenied('agent_input_required')
             message = Message.objects.create(conversation=conversation, role='user', content=text,
@@ -190,6 +214,10 @@ def enqueue(actor, command, conversation, text, request_id):
             run.expires_at = timezone.now() + timedelta(seconds=MAX_RUN_SECONDS)
             run.job = {'source': str(asset.pk), 'logical_id': str(base.logical_id if base else uuid.uuid4()),
                 'base': str(base.pk) if base else None, 'kind': 'rename' if base else 'build'}
+            if command.get('export_name'):
+                if not base or 'save_revision' not in context[2].tools:
+                    raise AgentDenied('export_base_required')
+                run.job.update(kind='export', export_name=command['export_name'])
             run.save()
             prompt.status = 'received'
             prompt.save(update_fields=['status'])
@@ -307,6 +335,12 @@ def bootstrap(token, attempt, payload):
             'columns': [alias_value(run, 'FIELD', name) for name in ('item', 'amount_cents')],
             'synthetic_example': {'item': 'Ejemplo', 'amount_cents': 125}}
         base = _base(run.conversation, run.job['logical_id'], run.job['base']) if run.job['base'] else None
+        if run.job['kind'] == 'export':
+            return {'status': 'authorized', 'execution': str(run.pk),
+                'checkpoint_ready': bool(run.job.get('checkpoint_ready')), 'model_context': {
+                'operation': 'export', 'artifact_reference': str(base.pk), 'sha256': base.sha256,
+                'name': alias_text(run, run.job['export_name'])},
+                'message': alias_text(run, run.prompt.content), 'tools': ['save_revision']}
         model_context['base_format'] = base.format if base else None
         companion = None
         if base and base.format in ('docx', 'pdf') and base.render_bundle:
@@ -422,7 +456,8 @@ def fail(token, attempt, payload):
     if payload:
         raise ValueError('Invalid failure')
     with locked(token, attempt) as (run, _):
-        _terminal(run, 'interrupted' if run.active_call else 'failed')
+        uncertain_export = run.job.get('kind') == 'export' and hasattr(run, 'export') and run.export.status in ('intent', 'uncertain')
+        _terminal(run, 'interrupted' if run.active_call or uncertain_export else 'failed')
     return {'status': 'completed'}
 
 
@@ -431,9 +466,9 @@ def authorized_run(actor, run_id):
     # a user changes company or an administrator revokes the profile/connection.
     run = AgentExecution.objects.select_related('prompt__user', 'conversation').filter(pk=run_id,
         prompt__user=actor, conversation__in=authorized_conversations(actor)).first()
-    if not run or development_profile(actor) != run.profile_id:
+    if not run or development_profile(actor, allow_disabled=True) != run.profile_id:
         raise AgentDenied('agent_not_found')
-    _context(run.prompt, run.profile_id)
+    _context(run.prompt, run.profile_id, allow_disabled=True)
     return run
 
 
