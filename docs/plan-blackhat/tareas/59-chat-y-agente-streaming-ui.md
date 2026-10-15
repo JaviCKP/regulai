@@ -1,7 +1,7 @@
 # 59. Chat y agente: respuesta progresiva y actividad legible
 
-Status: Aplicado el 2026-10-14 en la rama `claude/aplicar-rediseno-chat`, sobre el estado sin commitear de las tareas 55–58 (ver «Aplicación sobre el checkout principal»), y desplegado en la instalación local `regulai-v2-vm` con autorización del usuario. El arreglo posterior del motivo de fallo está en la rama, pendiente de desplegar. Sin ensayo nuevo con el proveedor real.
-Blocked by: Autorización para volver a desplegar con ese arreglo. Los ensayos con proveedores reales necesitan autorización de gasto.
+Status: Aplicado en la rama `claude/aplicar-rediseno-chat`, publicado en `JaviCKP/RegulaiV.2` (`main`) y desplegado en la instalación local `regulai-v2-vm` con autorización del usuario (2026-10-15, incluidos el motivo de fallo real y la duración de las ejecuciones interrumpidas). Sin ensayo nuevo con el proveedor real.
+Blocked by: Nada para lo desplegado. Pendiente de decisión del usuario: qué regla de la empresa bloquea la investigación web, si mostrar los borradores verificados de ejecuciones interrumpidas y si acotar la memoria de WSL2. Los ensayos con proveedores reales necesitan autorización de gasto.
 
 Numeración: se creó como «57» en el worktree del rediseño; se renumera a 59 porque la 57 del checkout principal es la activación real y la 58 el instalador.
 
@@ -234,5 +234,35 @@ no tenía este rediseño: el chat real seguía con la interfaz anterior. Se apli
   - Por el túnel del 8800: login de `admin`, chat con el rediseño, «Agente» por defecto y la
     conversación de la desamortización. Sin errores de consola.
   - No se envió ningún mensaje, para no generar llamadas de pago.
-- **Volver atrás.** Parar y borrar `regulai-v2-web` y `regulai-v2-worker`, quitar el sufijo a los
-  contenedores `-before-redesign-20261014` y arrancarlos.
+- **Volver atrás.** Recrear `regulai-v2-web` con los argumentos de `install.py` sobre la imagen
+  `regulai-v2-web:redesign-20261014` (despliegue del 14) o `regulai-v2-web:before-redesign-20261014`
+  (antes del rediseño), y el worker sobre `regulai-v2-worker:before-redesign-20261014`. El código
+  anterior sigue en `/opt/regulai/source-before-redesign-20261014`. Los contenedores parados de
+  respaldo se retiraron el 15 tras verificar la versión nueva.
+
+### Caída del equipo y redespliegue (2026-10-15)
+
+- **Qué pasó.** Windows registró un apagado inesperado durante la noche (Kernel-Power 41, sin
+  BugCheck) y no volvió hasta las 8:24. La consola de la VM termina mientras el chat 3 seguía en
+  marcha. Docker Desktop no reinicia `regulai-v2-vm` (sin política de reinicio): el 8800 quedó caído
+  hasta ejecutar `setup.py start`.
+- **Chat 3 (simulación de paseos aleatorios 2D/3D).** 35 inferencias en unos 17 minutos:
+  - el entregable se publicó y verificó a los 14 minutos;
+  - la simulación tardaba unos 68 s y se relanzó tres veces mientras se corregía el código;
+  - hubo respuestas de hasta 13.600 tokens (75 s);
+  - el contexto llegó a unos 105.000 tokens por llamada;
+  - después leyó seis páginas web que no se pedían.
+  - La ejecución quedó `active` con la sesión caída y el worker la cerró como `interrupted` al
+    arrancar (`reap`), sin repetir nada. Una ejecución interrumpida no muestra sus borradores
+    verificados: es la regla de entrega vigente.
+- **Duración de ejecuciones interrumpidas.** La interfaz mostraba «10 h 24 min», porque contaba
+  hasta que se detectó el abandono. Ahora mide hasta el último evento registrado (17 min 20 s).
+  Prueba nueva en `test_agent_frontend`; recursos `overhaul-6`.
+- **Memoria.** El equipo tiene 31,8 GB y WSL2 puede usar hasta la mitad (sin `.wslconfig`), con
+  una VM de 9 GB, E2B y los sandboxes. La presión de memoria es la causa más probable de la
+  lentitud y del bloqueo, aunque no está demostrada. Acotar WSL2 es una decisión del usuario.
+- **Verificación.**
+  - `setup.py start` completo: web, PostgreSQL y E2B; renderizado en microVM real y worker.
+  - Login y chat en el 8800, con la duración corregida.
+  - 57 pruebas de interfaz en verde.
+  - CI de `RegulaiV.2` en verde para `f706147`.
