@@ -1,7 +1,7 @@
 from django.urls import path
 from .ai_connections import ai_connections
 from .agents import views as agent_views
-from .chat_ui import request_receipt, request_evidence
+from .chat_ui import request_receipt, request_evidence, request_stream, request_cancel
 from .policy_simulator import policy_simulator, policy_simulator_activate
 from .views import (
     home_view, login_view, logout_view, signup_view, profile_view,
@@ -60,6 +60,8 @@ urlpatterns = [
     path("chat/send/", chat_send_message, name="chat_send"),
     path("chat/requests/<uuid:request_id>/receipt/", request_receipt, name="chat_request_receipt"),
     path("chat/requests/<uuid:request_id>/evidence/", request_evidence, name="chat_request_evidence"),
+    path("chat/requests/<uuid:request_id>/stream/", request_stream, name="chat_request_stream"),
+    path("chat/requests/<uuid:request_id>/cancel/", request_cancel, name="chat_request_cancel"),
     path("chat/select-engine/", chat_select_engine, name="chat_select_engine"),
     path("chat/select-model/", chat_select_model, name="chat_select_model"),
     path("chat/<int:conversation_id>/send/", chat_send_message, name="chat_send_conversation"),

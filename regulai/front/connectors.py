@@ -111,7 +111,7 @@ class OpenAIConnector(BaseConnector):
                 wire['name'] = msg.name
             api_messages.append(wire)
 
-        response = self.client.chat.completions.create(
+        request = dict(
             model=model,
             messages=api_messages,
             **({} if max_tokens is None else
@@ -122,6 +122,11 @@ class OpenAIConnector(BaseConnector):
             **({'tools': kwargs['tools']} if kwargs.get('tools') else {}),
             **({'extra_body': kwargs['extra_body']} if 'extra_body' in kwargs else {}),
         )
+        if kwargs.get('on_delta') is not None:
+            if kwargs.get('tools'):
+                raise ValueError('Incremental delivery does not carry tool calls.')
+            return self._stream(request, model, kwargs['on_delta'], kwargs.get('on_open'))
+        response = self.client.chat.completions.create(**request)
 
         tool_calls = []
         for call in getattr(response.choices[0].message, 'tool_calls', None) or []:
@@ -139,6 +144,46 @@ class OpenAIConnector(BaseConnector):
             provider_request_id=getattr(response, 'id', None),
             usage=response.usage.model_dump() if response.usage else {},
             tool_calls=tool_calls,
+        )
+
+    def _stream(self, request, model, on_delta, on_open=None):
+        """Server-sent chunks; on_delta sees each text fragment as it arrives.
+
+        An exception from on_delta closes the HTTP stream, which stops reading
+        and lets the provider end the generation. on_open receives a callable
+        that closes the stream from another thread (a user's stop). Usage
+        arrives in the final chunk only when the endpoint honours
+        stream_options.include_usage.
+        """
+        parts, finish, usage, effective, identifier = [], None, None, model, None
+        stream = self.client.chat.completions.create(**request, stream=True,
+                                                     stream_options={'include_usage': True})
+        if on_open is not None:
+            on_open(stream.close)
+        with stream:
+            for chunk in stream:
+                identifier = identifier or getattr(chunk, 'id', None)
+                effective = getattr(chunk, 'model', None) or effective
+                if getattr(chunk, 'usage', None):
+                    usage = chunk.usage
+                for choice in chunk.choices or []:
+                    if getattr(choice, 'index', 0) != 0:
+                        continue
+                    text = getattr(choice.delta, 'content', None) if choice.delta else None
+                    if text:
+                        parts.append(text)
+                        on_delta(text)
+                    if choice.finish_reason:
+                        finish = choice.finish_reason
+        return ChatResponse(
+            content=''.join(parts),
+            tokens_used=usage.total_tokens if usage else 0,
+            model=effective,
+            finish_reason=finish,
+            input_tokens=usage.prompt_tokens if usage else None,
+            output_tokens=usage.completion_tokens if usage else None,
+            provider_request_id=identifier,
+            usage=usage.model_dump() if usage else {},
         )
 
     def supports_vision(self) -> bool:
@@ -253,7 +298,16 @@ class AnthropicConnector(BaseConnector):
         if system_messages:
             request_kwargs["system"] = '\n\n'.join(system_messages)
 
-        response = self.client.messages.create(**request_kwargs)
+        if kwargs.get('on_delta') is not None:
+            # Same request as create(); the final message carries usage and stop reason.
+            with self.client.messages.stream(**request_kwargs) as stream:
+                if kwargs.get('on_open') is not None:
+                    kwargs['on_open'](stream.close)
+                for text in stream.text_stream:
+                    kwargs['on_delta'](text)
+                response = stream.get_final_message()
+        else:
+            response = self.client.messages.create(**request_kwargs)
 
         # Extract text from Anthropic response
         content_text = ""

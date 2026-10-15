@@ -4,10 +4,6 @@ Expected failures assert the intended behavior; all external responses are synth
 """
 import io
 import json
-from pathlib import Path
-import re
-import shutil
-import subprocess
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -21,7 +17,7 @@ from front.connectors import ChatResponse
 from front.documents import extract_document
 from front.models import Alert, Company, ObfuscationConfig, Rule, RulesGroup
 from front.test_chat_flow import ChatFixture
-from front import test_pipeline
+from front import offline_browser, test_pipeline
 
 
 class ReviewRegressionTests(ChatFixture):
@@ -207,51 +203,21 @@ class ReviewRegressionTests(ChatFixture):
         self.assertEqual(completed['user_message']['id'], first['user_message']['id'])
 
     def test_b10_chat_can_submit_without_crypto_random_uuid(self):
-        node = shutil.which('node')
-        self.assertIsNotNone(node, 'Node is required to exercise browser JavaScript without dependencies.')
+        # Plain-HTTP origins other than localhost are not secure contexts: no randomUUID.
         response = self.client.get('/chat/')
         self.assertEqual(response.status_code, 200)
-        scripts = re.findall(r'<script\b[^>]*>(.*?)</script>', response.content.decode(), re.S | re.I)
-        source = next(script for script in scripts if 'async function sendMessage' in script)
-        harness = r"""
-const vm = require('node:vm');
-const {webcrypto} = require('node:crypto');
-const fs = require('node:fs');
-const source = JSON.parse(fs.readFileSync(0, 'utf8'));
-const input = {value: 'Synthetic chat', style: {}};
-const container = {querySelector: () => null, appendChild: () => {}};
-let submitted = null;
-const context = {
-  window: {regulayAgent: {capture: () => ({})}},
-  crypto: {getRandomValues: array => webcrypto.getRandomValues(array)},
-  document: {
-    addEventListener: () => {},
-    getElementById: id => ({prompt: input, fileInput: {files: []}, chatContainer: container,
-                            automaticRouting: {checked: false}}[id] || null),
-    querySelector: () => null,
-  },
-};
-vm.createContext(context);
-vm.runInContext(source, context);
-context.createUserBubble = () => ({});
-context.removeFile = () => {};
-context.submitCommand = async command => {submitted = command;};
-(async () => {
-  try {
-    await context.sendMessage();
-    console.log(JSON.stringify({submitted: Boolean(submitted), requestId: submitted?.requestId}));
-  } catch (error) {
-    console.log(JSON.stringify({submitted: false, error: String(error)}));
-  }
-})();
-"""
-        run = subprocess.run([node, '-e', harness], input=json.dumps(source), text=True,
-                             capture_output=True, timeout=15, cwd=Path(__file__).resolve().parents[2])
-        self.assertEqual(run.returncode, 0, run.stderr)
-        observed = json.loads(run.stdout)
-        self.assertTrue(observed.get('submitted'), observed)
-        self.assertRegex(observed['requestId'],
-                         r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$')
+        run = offline_browser.run(r"""
+Object.defineProperty(crypto, 'randomUUID', {value: undefined, configurable: true});
+net.on('POST /chat/send/', request => net.json({status: 'completed', success: true,
+  request_id: request.body.get('request_id'), receipt: {verification: {status: 'passed'}, calls: []},
+  assistant_message: {content: 'Enviado.'}}));
+await typeInto($('#prompt'), 'Synthetic chat');
+await click($('#sendButton'));
+const posts = net.find('POST', '/chat/send/');
+assert.equal(posts.length, 1);
+assert.match(posts[0].body.get('request_id'), /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+""", response.content, path='/chat/')
+        self.assertEqual(run.returncode, 0, run.stderr or run.stdout)
 
     def test_c01_uncertain_ordinal_category_completes_as_confidential(self):
         self.configure()

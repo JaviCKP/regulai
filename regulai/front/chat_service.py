@@ -14,8 +14,9 @@ from django.utils import timezone
 
 from .connectors import ChatMessage, DOCUMENT_RESPONSE_SCHEMA, get_connector
 from .models import Alert, CompanyEngine, Conversation, EngineModel, Message, ObfuscationConfig, Profile, Prompt, Response
-from .policy import AIConfig, digest, evaluate_policy
+from .policy import AIConfig, active_rules, digest, evaluate_policy
 from .routing import Candidate, RoutingError, route
+from .chat_streaming import StreamGuard, delivery_plan
 from .verification import MAX_CLAIMS, verify_response
 from .sources import build_sources
 from .classification import decide, difficulty_level
@@ -86,6 +87,8 @@ ERRORS = {
     'agent_research_denied': 'La petición requiere fuentes, pero el perfil o la política de la empresa no autoriza ningún destino de investigación. El administrador debe autorizar fuentes del catálogo.',
     'agent_research_unavailable': 'La petición requiere fuentes, pero el catálogo de investigación no está disponible o su configuración no es válida. No se han consultado fuentes.',
     'agent_research_no_sources': 'No se obtuvo ninguna fuente consultada utilizable para esta petición. La consulta admite únicamente el catálogo autorizado; no se ha generado un informe factual sin respaldo.',
+    'agent_security_check_failed': 'Regulay detuvo la tarea antes de enviar al modelo lo que el agente había leído o generado, y ese contenido no se ha enviado. Al comprobarlo con la política de tu empresa, activa una regla que bloquea o exige confirmación, o la política cambió durante la tarea.',
+    'agent_research_no_sources_web': 'No se pudo abrir ninguna fuente para investigar el tema, así que no se ha creado un documento sin respaldo. Incluye en la petición enlaces a las fuentes que quieras usar o pide al administrador que active la búsqueda web.',
     'agent_multiple_formats_unsupported': 'Solicita un formato por ejecución, o Word y PDF del mismo informe.',
     'agent_page_limit': 'Esta versión admite entre una y veinte páginas o diapositivas por documento.',
     'agent_language_unsupported': 'La composición de documentos admite español e inglés en esta versión. No se ha sustituido el idioma solicitado.',
@@ -96,6 +99,7 @@ ERRORS = {
     'export_name_invalid': 'El nombre debe tener hasta 120 caracteres, sin barras, y conservar la extensión del documento.',
     'export_base_required': 'Selecciona una revisión verificada con permiso de exportación.',
     'aggregate_group_too_small': 'El archivo no alcanza el mínimo de filas exigido por el perfil.',
+    'cancelled_by_user': 'Respuesta detenida. No se ha guardado el texto parcial.',
 }
 
 
@@ -129,7 +133,7 @@ def request_result(prompt):
             'requires_consent': status == 'pending_consent',
             'consent_rules': policy.get('rules', []) if status == 'pending_consent' else [],
             'user_message': message_data(prompt.user_message),
-            'receipt': {key: meta[key] for key in ('schema_version', 'policy', 'jev', 'coverage', 'route', 'calls', 'verification', 'total', 'notices', 'history', 'limits', 'consent_reason') if key in meta}}
+            'receipt': {key: meta[key] for key in ('schema_version', 'policy', 'jev', 'coverage', 'route', 'calls', 'verification', 'total', 'notices', 'history', 'limits', 'consent_reason', 'delivery') if key in meta}}
     if status == 'pending_consent':
         data['consent_token'] = meta.get('consent_token')
         data['consent_reason'] = meta.get('consent_reason')
@@ -146,6 +150,13 @@ def request_result(prompt):
 
 
 def finish(prompt, status, code=None):
+    events = getattr(prompt, '_events', None)
+    if events is not None and getattr(prompt, '_shown', 0) and status != 'completed':
+        # Text shown during generation never outlives a failed final check.
+        prompt.decision.setdefault('delivery', {}).setdefault('withdrawn', []).append(
+            {'attempt': prompt._shown, 'reason': code or status})
+        events.emit('retract', reason=code or status, attempt=prompt._shown)
+        prompt._shown = 0
     prompt.status = status
     if code:
         prompt.decision['error_type'] = code
@@ -207,8 +218,12 @@ def authorized_history(actor, conversation, *, window=True):
     return selected
 
 
-def send_chat_message(actor, command, *, call_observer=None):
-    """The actor is authenticated by the adapter; all command values are untrusted."""
+def send_chat_message(actor, command, *, call_observer=None, events=None):
+    """The actor is authenticated by the adapter; all command values are untrusted.
+
+    ``events`` (web chat only) receives real stage changes and, when the request
+    qualifies, checked answer text while it is generated (see chat_streaming).
+    """
     started = time.monotonic()
     try:
         profile = Profile.objects.select_related('company', 'department').get(user=actor)
@@ -252,7 +267,9 @@ def send_chat_message(actor, command, *, call_observer=None):
         with transaction.atomic():
             prompt, created = Prompt.objects.get_or_create(user=actor, request_id=request_id, defaults={
                 'company': profile.company, 'content': text, 'status': 'received',
-                'decision': {'schema_version': 1, 'input_digest': input_digest, 'calls': []}})
+                'decision': {'schema_version': 1, 'input_digest': input_digest, 'calls': [],
+                             # Lets a later confirmation resend the same selection after a reload.
+                             'requested': {'engine_id': engine_id, 'model_id': model_id}}})
             if created:
                 if command.get('action') == 'cancel':
                     prompt.status = 'cancelled'
@@ -273,6 +290,8 @@ def send_chat_message(actor, command, *, call_observer=None):
         return error_result('idempotency_conflict', 409)
     if conversation_id and prompt.conversation_id != conversation_id:
         return error_result('idempotency_conflict', 409)
+    if events is not None:
+        events.emit('accepted', request_id=str(prompt.request_id), conversation_id=prompt.conversation_id)
     if command.get('action') == 'cancel':
         if Prompt.objects.filter(pk=prompt.pk, status='pending_consent').update(status='cancelled', updated_at=timezone.now()):
             prompt.refresh_from_db()
@@ -292,6 +311,7 @@ def send_chat_message(actor, command, *, call_observer=None):
     prompt._started = started
     prompt._call_observer = call_observer
     prompt._observer_tokens = []
+    prompt._events, prompt._shown = events, 0
     if document and document.status not in ('complete', 'complete_text_only'):
         return finish(prompt, 'validation_error', 'input_unreadable')
     try:
@@ -321,7 +341,7 @@ def send_chat_message(actor, command, *, call_observer=None):
                 'description': 'Contenido bloqueado por política local.'})
         return finish(prompt, 'blocked' if local.status == 'block' else 'validation_error', local.reason_codes[0])
     return run_pipeline(actor, command, prompt, profile, text, document, system, history,
-                        policy_texts, local, created, engine_id, model_id, input_digest)
+                        policy_texts, local, created, engine_id, model_id, input_digest, events)
 
 
 def _catalog_rows(engines, cfg):
@@ -349,8 +369,12 @@ def candidates_for(actor, cfg, task):
 
 
 def run_pipeline(actor, command, prompt, profile, text, document, system, history,
-                 policy_texts, local, created, engine_id, model_id, input_digest):
+                 policy_texts, local, created, engine_id, model_id, input_digest, events=None):
     """One bounded execution; closures share the immutable authorization and ledger."""
+    def stage(name, **data):
+        if events is not None:
+            events.stage(name, **data)
+
     cfg = AIConfig.model_validate(profile.company.ai_config)
     provider_managed = cfg.limits.provider_managed
     output_tokens = None if provider_managed else cfg.routing.max_output_tokens
@@ -545,6 +569,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             segments = [text] + [m.content for m in system + history]
             if document:
                 segments += [value for fragment in document.fragments for value in (fragment['text'], fragment['locator'])]
+            stage('protecting', backend='local' if all(mask.backend == 'local' for mask in masks) else 'remote')
             masked = iter(government.protect_texts(segments, policy_texts))
             text = next(masked)
             system = [ChatMessage(m.role, next(masked)) for m in system]
@@ -561,6 +586,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                  'sources': json.loads(sources.prompt_json) if sources else []}
         check_judge_capacity(state)
         if classify:
+            stage('classifying', service='jev')
             answers = evaluate('classification', state, {**jev.classification_questions(), **jev.task_questions()})
             prompt.decision['calls'][-1].update(signals=answers, threshold=cfg.jev.threshold,
                 rubric_version=jev.CLASSIFICATION_RUBRIC_VERSION, task_rubric_version=jev.TASK_RUBRIC_VERSION)
@@ -580,6 +606,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             destinations = sorted(set(destinations) & set(classified.allowed_destinations))
             government.destinations = destinations
         elif detect_difficulty:
+            stage('classifying', service='jev')
             answers = evaluate('difficulty', state, jev.difficulty_questions(), reserve=jev_bound if semantic else Decimal(0))
             prompt.decision['calls'][-1].update(signals=answers, threshold=cfg.jev.threshold,
                 rubric_version=jev.DIFFICULTY_RUBRIC_VERSION)
@@ -658,15 +685,51 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             required_destinations = (['jev'] if semantic else []) + [f'obfuscation:{mask.pk}' for mask in masks]
             for destination in required_destinations:
                 preflight(destination, policy_texts + [('prompts', m.content) for m in messages])
+            guard = None
+            if events is not None:
+                mode, reason = delivery_plan(document=document, semantic=semantic, masks=masks,
+                                             engine=engine, rules=active_rules(actor))
+                prompt.decision['delivery'] = {**prompt.decision.get('delivery', {}), 'mode': mode, 'reason': reason}
+                if prompt._shown:  # The previous attempt failed its checks; its text goes.
+                    prompt.decision['delivery'].setdefault('withdrawn', []).append({'attempt': prompt._shown, 'reason': 'retry'})
+                    events.emit('retract', reason='retry', attempt=prompt._shown)
+                    prompt._shown = 0
+                events.delivery(mode, reason, attempt=attempt)
+                stage('generating', attempt=attempt, model=model.name)
+                if mode == 'streamed':
+                    guard = StreamGuard(events, government, masks, policy_texts, response_bytes=response_bytes,
+                                        attempt=attempt, prompt=prompt)
             call, started = start_call('generation', f'engine:{engine.pk}', model.model_id,
                 policy_texts + [('prompts', m.content) for m in messages], selection.estimated_cost,
                 selection.price_snapshot, verify_reserve, model_pk=model.pk)
             connector = get_connector(engine.engine.connector_type, engine.api_key, engine.engine.base_url or None)
             try:
-                response = connector.chat(messages, model=model.model_id, max_tokens=selection.max_output_tokens,
-                    temperature=0.1 if document else 0.6, timeout=remaining(),
-                    supports_json=bool(document and model.supports_json), reasoning=getattr(model, 'reasoning', False))
+                try:
+                    response = connector.chat(messages, model=model.model_id, max_tokens=selection.max_output_tokens,
+                        temperature=0.1 if document else 0.6, timeout=remaining(),
+                        supports_json=bool(document and model.supports_json), reasoning=getattr(model, 'reasoning', False),
+                        **({'on_delta': guard.feed, 'on_open': guard.opened} if guard else {}))
+                finally:
+                    if guard is not None:
+                        guard.closed()
+                if guard is not None and guard.interrupted:
+                    raise PipelineStop('cancelled_by_user', 'cancelled')  # Text after the stop is discarded.
+            except PipelineStop:
+                # A check or the user stopped reading the stream; the provider may
+                # still bill what it generated, so the cost stays unknown. Other
+                # stops (deadline before the call) keep the existing record.
+                if guard is not None and call['status'] == 'started':
+                    call.update(status='cancelled' if events.cancelled() else 'stopped',
+                                duration_ms=round((time.monotonic() - started) * 1000))
+                    prompt.save(update_fields=['decision', 'updated_at'])
+                raise
             except Exception as error:
+                if events is not None and events.cancelled():
+                    # The user's stop closed the provider stream mid-read.
+                    if call['status'] == 'started':
+                        call.update(status='cancelled', duration_ms=round((time.monotonic() - started) * 1000))
+                        prompt.save(update_fields=['decision', 'updated_at'])
+                    raise PipelineStop('cancelled_by_user', 'cancelled') from None
                 if (attempt == 1 and retry and getattr(error, 'status_code', None) in (429, 503)
                         and not getattr(error, 'outcome_unknown', False) and 'timeout' not in type(error).__name__.lower()):
                     call.update(status='failed', duration_ms=round((time.monotonic() - started) * 1000))
@@ -675,8 +738,12 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                     continue
                 raise
             complete_call(call, started, response)
+            if events is not None and events.cancelled():
+                raise PipelineStop('cancelled_by_user', 'cancelled')
             if response_bytes is not None and len(response.content.encode('utf-8')) > response_bytes:
                 raise PipelineStop('evaluation_input_too_large')
+            if semantic:
+                stage('verifying', service='jev')
             checks = verify_response(response.content, response.finish_reason,
                 fragments=document.fragments if document else None, require_semantic=semantic,
                 alias_to_id=sources.alias_to_id if sources else None,
@@ -685,6 +752,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                 for mask in masks:
                     preflight(f'obfuscation:{mask.pk}', policy_texts + [('prompts', response.content)])
                 response = replace(response, content=government.protect_texts([response.content], policy_texts)[0])
+                if guard is not None and not response.content.startswith(guard.emitted):
+                    raise PipelineStop('security_check_failed')  # Shown text must equal the final masking.
                 if response_bytes is not None and len(response.content.encode('utf-8')) > response_bytes:
                     raise PipelineStop('evaluation_input_too_large')
                 if checks['local_status'] == 'passed':

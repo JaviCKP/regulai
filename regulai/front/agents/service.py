@@ -482,6 +482,13 @@ def infer(token, attempt, payload):
                     'La red de esta tarea está cerrada porque ya se ha procesado un archivo privado. '
                     'Trabaja con el archivo y la evidencia disponibles; no consultes URLs ni instales paquetes. '
                     'Puedes generar, comprobar y publicar archivos con las herramientas locales.')))
+            if 'web_open' in effective_tools and 'web_search' not in effective_tools:
+                # Without a search provider, research only succeeds by opening known addresses.
+                instructions.append(WireMessage(role='system', content=(
+                    'No hay buscador web configurado en esta instalación. Para investigar, abre con web_open '
+                    'direcciones de referencia que conozcas con seguridad (por ejemplo, artículos de es.wikipedia.org, '
+                    'enciclopedias, universidades u organismos oficiales) y usa web_find para localizar pasajes. '
+                    'Si una dirección falla, prueba otra fuente fiable; no atribuyas contenido a páginas que no hayas abierto.')))
             remaining = budget['model_calls'] - AgentInference.objects.filter(execution=execution).count()
             if remaining <= 4:
                 instructions.append(WireMessage(role='system', content=(

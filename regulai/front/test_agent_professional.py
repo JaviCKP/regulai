@@ -14,7 +14,8 @@ from django.test import TestCase, SimpleTestCase, TransactionTestCase, override_
 from django.utils import timezone
 from openpyxl import Workbook
 
-from front.models import AgentAccessGrant, AgentExecution, AgentInput, AgentOperation, AgentToolResult, Company, Profile
+from front.models import (AgentAccessGrant, AgentExecution, AgentInput, AgentOperation, AgentToolResult, Company, Profile,
+                          Rule, RulesGroup)
 from front.agents import jobs, public_web, web_tools, general_tools, professional_artifacts
 from front.agents.capabilities import GENERAL
 from front.agents.data_views import authorize_tool, tool_result
@@ -389,6 +390,50 @@ class ProfessionalTests(AgentFixture, TestCase):
         self.assertEqual(result['status'], 'completed')
         names = {tool['function']['name'] for tool in self.requests[-1].get('tools', [])}
         self.assertEqual(names, {'execute'})
+
+    def test_direct_reading_without_search_tells_the_model_how_to_find_sources(self):
+        self.activate(self.queued())
+        systems = lambda: [m['content'] for m in self.requests[-1]['messages'] if m['role'] == 'system']
+        infer(self.token, self.execution.attempt, self.request(tools=['web_open', 'web_find']))
+        self.assertTrue(any('No hay buscador web configurado' in text for text in systems()))
+        infer(self.token, self.execution.attempt, self.request(tools=['web_search', 'web_open', 'web_find']))
+        self.assertFalse(any('No hay buscador web configurado' in text for text in systems()))
+
+    def test_research_without_any_opened_source_explains_the_open_web_limit(self):
+        self.activate(self.queued('Investiga las causas de la desamortización y crea un Word de tres páginas'))
+        self.assertTrue(self.execution.job['request']['research_required'])
+        jobs.fail(self.token, self.execution.attempt, {})
+        snapshot = self.client.get(f'/chat/agent/runs/{self.execution.pk}/').json()
+        self.assertEqual(snapshot['run']['status'], 'failed')
+        self.assertEqual(snapshot['result']['error_type'], 'agent_research_no_sources_web')
+        self.assertIn('enlaces', snapshot['result']['error'])
+        self.assertNotIn('catálogo', snapshot['result']['error'])
+
+    def test_failure_after_a_security_rejection_reports_the_check_not_missing_sources(self):
+        group = RulesGroup.objects.create(name='Agent YARA', company=self.company)
+        Rule.objects.create(name='Block explicit email', rules_group=group,
+            yara_rule='rule Synthetic { strings: $s = "blocked@example.invalid" condition: $s }')
+        self.activate(self.queued('Investiga las causas de la desamortización y crea un Word de tres páginas'))
+        # Text read from a public page reaches the next inference and matches a blocking rule.
+        result = infer(self.token, self.execution.attempt, self.request(messages=[
+            {'role': 'user', 'content': 'Fuente leída: contacto blocked@example.invalid'}]))
+        self.assertEqual((result['status'], result['code']), ('rejected', 'security_check_failed'))
+        jobs.fail(self.token, self.execution.attempt, {})
+        snapshot = self.client.get(f'/chat/agent/runs/{self.execution.pk}/').json()
+        self.assertEqual(snapshot['result']['error_type'], 'agent_security_check_failed')
+        self.assertIn('política', snapshot['result']['error'])
+        self.assertNotIn('fuente', snapshot['result']['error'].lower())
+
+    def test_read_web_sources_are_not_reported_as_missing_after_another_failure(self):
+        self.activate(self.queued('Investiga las causas de la desamortización y crea un Word de tres páginas'))
+        row = AgentInput.objects.create(execution=self.execution, kind='web_source', path='web/synthetic', original='', digest='')
+        web_tools._save(row, {'url': 'https://es.wikipedia.org/wiki/Synthetic', 'final_url': 'https://es.wikipedia.org/wiki/Synthetic',
+            'title': 'Synthetic', 'sha256': '0' * 64, 'retrieved_at': timezone.now().isoformat(), 'publication_date': None,
+            'updated_at': None, 'read_ranges': [[0, 100]], 'extraction': 'partial', 'parts': []})
+        jobs.fail(self.token, self.execution.attempt, {})
+        snapshot = self.client.get(f'/chat/agent/runs/{self.execution.pk}/').json()
+        self.assertEqual(snapshot['run']['status'], 'failed')
+        self.assertNotIn(snapshot['result'].get('error_type'), ('agent_research_no_sources', 'agent_research_no_sources_web'))
 
     def test_sealed_network_still_rejects_an_unsolicited_provider_web_call(self):
         self.activate(self.queued())

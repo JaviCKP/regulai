@@ -1,14 +1,19 @@
-/* Authorized user projections only. Never insert document or inference content as HTML. */
+/* Agent runs inside the conversation: one activity component per request.
+ * It shows registered events, the server's interpretation of the request,
+ * recorded tool operations, sources and checks. Nothing is inferred: no plan,
+ * percentage, time or verification is shown unless the server recorded it.
+ * Document and inference content is only ever inserted as text. */
 (() => {
-  let mode = null, revision = null, stream = null, run = null, cursor = 0, command = null;
-  let documentReference = null, pendingExport = null, artifactKey = '', snapshotVersion = 0;
-  let chosenRevision = null;
+  'use strict';
   const byId = id => document.getElementById(id);
-  const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]').value;
-  const live = status => ['queued', 'active', 'outcome_unknown'].includes(status);
   const list = value => Array.isArray(value) ? value : [];
   const present = value => value !== null && value !== undefined && value !== '';
-  const professional = () => run?.professional || byId('agentActivity')?.dataset.professional === 'true';
+  const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+  const LIVE = ['queued', 'active', 'outcome_unknown'];
+  const live = status => LIVE.includes(status);
+  const SVG = 'http://www.w3.org/2000/svg';
+  const chat = () => window.regulayChat || null;
+
   const labels = {
     queued: 'En cola', active: 'En curso', outcome_unknown: 'Resultado por confirmar',
     completed: 'Finalizado', failed: 'No completado', interrupted: 'Interrumpido', cancelled: 'Cancelado',
@@ -21,10 +26,35 @@
     verification: 'Comprobación', not_used: 'Sin fallback de Regulay', used: 'Utilizado', unknown: 'No disponible',
     reviewed: 'Revisada por el modelo', web_search: 'Búsqueda web', web_read: 'Lectura web',
     web_browser_resource: 'Recurso del navegador', package_download: 'Descarga de dependencia',
-    configured_upper_bound_estimate: 'Estimación máxima configurada',
+    configured_upper_bound_estimate: 'Estimación máxima configurada', started: 'Iniciada',
   };
   const label = value => labels[value] || (present(value) ? String(value) : 'No disponible');
-  const text = value => { if (byId('agentProgress')) byId('agentProgress').textContent = value || ''; };
+  // Short names for registered event kinds; the server sentence stays available on the step.
+  const STEP = {
+    queued: 'En cola', claimed: 'Entorno aislado reservado', recovered: 'Recuperación solicitada',
+    input: 'Leyendo el archivo', calculate: 'Calculando con Python', recalculate: 'Recalculando fórmulas',
+    rename: 'Renombrando la revisión', compose: 'Redactando el documento', render: 'Renderizando páginas',
+    verify: 'Comprobando el archivo final', searching: 'Buscando fuentes', reading: 'Leyendo fuentes',
+    executing: 'Trabajando con archivos y código', installing: 'Preparando dependencias', verifying: 'Comprobando el resultado',
+    visual_pending: 'Revisión visual pendiente', visual_reviewed: 'Revisión visual registrada',
+    draft: 'Comprobación no superada', verified: 'Comprobaciones técnicas superadas',
+    approval_pending: 'Exportación pendiente de aprobación', export_intent: 'Exportando a Google Drive',
+    export_completed: 'Exportación confirmada', export_uncertain: 'Exportación por confirmar',
+    export_recovery: 'Recuperación de la exportación', completed: 'Finalizado', cancelled: 'Cancelado',
+    interrupted: 'Interrumpido', failed: 'No completado',
+  };
+  const TOOLS = {web_search: 'búsqueda web', web_open: 'abrir página', web_find: 'buscar en la página',
+    web_download: 'descarga', web_browse: 'navegador', ls: 'listar archivos', read_file: 'leer archivo',
+    write_file: 'escribir archivo', edit_file: 'editar archivo', glob: 'buscar archivos', grep: 'buscar texto',
+    execute: 'ejecutar código', install_packages: 'instalar dependencias', publish_artifact: 'publicar entregable',
+    inspect_image: 'revisar imagen', read_output: 'leer salida'};
+  const WAITING = new Set(['visual_pending', 'approval_pending']);
+  const FAILED = new Set(['draft', 'failed']);
+  const UNCERTAIN = new Set(['interrupted', 'export_uncertain']);
+  const REFRESH = new Set(['claimed', 'input', 'calculate', 'compose', 'render', 'verify', 'recalculate', 'rename',
+    'visual_pending', 'verified', 'draft', 'approval_pending', 'export_completed', 'export_uncertain', 'inference_completed',
+    'visual_reviewed', 'searching', 'reading', 'executing', 'installing', 'verifying']);
+
   function node(tag, value, parent, className = '') {
     const element = document.createElement(tag);
     if (value != null) element.textContent = String(value);
@@ -32,17 +62,33 @@
     if (parent) parent.appendChild(element);
     return element;
   }
-  function button(value, parent, action, className = 'btn btn-outline-primary btn-sm') {
-    const element = node('button', value, parent, className);
-    element.type = 'button'; element.addEventListener('click', action); return element;
+  function icon(name, parent, className = 'rg-i') {
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('class', className);
+    svg.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS(SVG, 'use');
+    use.setAttribute('href', '#i-' + name);
+    svg.appendChild(use);
+    if (parent) parent.appendChild(svg);
+    return svg;
+  }
+  function button(value, parent, action, className = 'rg-btn', iconName = null) {
+    const element = node('button', null, parent, className);
+    element.type = 'button';
+    if (iconName) icon(iconName, element);
+    element.appendChild(document.createTextNode(value));
+    element.addEventListener('click', action);
+    return element;
   }
   function detail(parent, name, value) {
     if (!present(value)) return;
-    node('dt', name, parent); node('dd', value, parent);
+    node('dt', name, parent);
+    node('dd', value, parent);
   }
-  function details(parent, title, className = 'agent-details') {
+  function details(parent, title, className = 'rg-disclosure') {
     const element = node('details', null, parent, className);
-    node('summary', title, element); return element;
+    node('summary', title, element);
+    return element;
   }
   function amount(value, currency) {
     return present(value) && Number.isFinite(Number(value)) ? `${value} ${currency || ''}`.trim() : 'No disponible';
@@ -51,26 +97,60 @@
     if (!value || !Number.isFinite(Date.parse(value))) return 'No disponible';
     return new Date(value).toLocaleString('es-ES');
   }
+  function duration(ms) {
+    if (!Number.isFinite(ms) || ms < 1000) return '';
+    const seconds = Math.round(ms / 1000);
+    if (seconds < 60) return `${seconds} s`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return seconds % 60 ? `${minutes} min ${seconds % 60} s` : `${minutes} min`;
+    return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+  }
+  const time = value => (value && Number.isFinite(Date.parse(value)) ? Date.parse(value) : null);
   function artifactUrl(value, action) {
     const query = action === 'download' ? '(?:\\?format=(?:docx|pdf))?' : '';
     return typeof value === 'string' && new RegExp('^/chat/agent/artifacts/[0-9a-f-]+/' + action + '/' + query + '$').test(value);
   }
+  async function post(url, body) {
+    const options = {method: 'POST', headers: {'X-CSRFToken': csrf()}};
+    if (body !== undefined) {
+      options.headers['Content-Type'] = 'application/json';
+      options.body = JSON.stringify(body);
+    }
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error('unavailable');
+    return response.json();
+  }
+
+  /* ------------------------------------------------------------ records */
   function checkRows(parent, checks) {
     const names = {integrity: 'Integridad del archivo', instructions: 'Formato e instrucciones',
       layout: 'Maquetación y paginación', sources: 'Fuentes y respaldo factual', security: 'Seguridad y políticas'};
-    const area = node('ul', null, parent, 'agent-checks');
+    const area = node('ul', null, parent, 'rg-checks');
+    const counts = {passed: 0, failed: 0, reviewed: 0, not_performed: 0};
     Object.entries(names).forEach(([key, title]) => {
       const check = checks?.[key] || {};
       const status = ['passed', 'failed', 'reviewed'].includes(check.status) ? check.status : 'not_performed';
-      const item = node('li', null, area);
-      node('span', title, item, 'agent-check-label');
-      node('span', status === 'failed' ? 'Fallida' : label(status), item, 'agent-check-status agent-check-' + status);
+      counts[status]++;
+      const item = node('li', null, area, 'rg-check');
+      item.dataset.status = status;
+      node('span', title, item, 'rg-check-label');
+      node('span', status === 'failed' ? 'Fallida' : label(status), item, 'rg-check-status');
       node('small', check.detail || 'No hay una comprobación registrada para esta categoría.', item);
     });
+    return counts;
+  }
+  function checkSummary(counts) {
+    const parts = [];
+    const add = (count, one, many) => { if (count) parts.push(`${count} ${count === 1 ? one : many}`); };
+    add(counts.passed, 'superada', 'superadas');
+    add(counts.reviewed, 'revisada por el modelo', 'revisadas por el modelo');
+    add(counts.failed, 'fallida', 'fallidas');
+    add(counts.not_performed, 'no realizada', 'no realizadas');
+    return 'Comprobaciones técnicas · ' + parts.join(', ');
   }
   function renderJev(parent, jev = {}) {
     jev = jev && typeof jev === 'object' ? jev : {};
-    const area = node('dl', null, parent, 'agent-definition-list');
+    const area = node('dl', null, parent, 'rg-facts');
     detail(area, 'Estado de Jev', jev.status === 'failed' ? 'Falló' : label(jev.status || 'unknown'));
     detail(area, 'Propósito', label(jev.purpose));
     detail(area, 'Consulta', jev.consulted_at ? timestamp(jev.consulted_at) : 'No consta una consulta');
@@ -90,17 +170,17 @@
     }
     detail(area, 'Motivos locales del efecto', list(jev.reason_codes).join(' · '));
     if (jev.signals && typeof jev.signals === 'object' && Object.keys(jev.signals).length) {
-      node('pre', JSON.stringify(jev.signals, null, 2), details(parent, 'Señales estructuradas devueltas por Jev'), 'agent-signals');
+      node('pre', JSON.stringify(jev.signals, null, 2), details(parent, 'Señales estructuradas devueltas por Jev'), 'rg-signals');
     }
-    node('p', 'La decisión de enrutamiento se muestra en cada llamada. Una autorización local no es una aprobación de Jev.', parent, 'agent-explanation');
+    node('p', 'La decisión de enrutamiento se muestra en cada llamada. Una autorización local no es una aprobación de Jev.', parent, 'rg-explain');
   }
   function renderCalls(parent, calls) {
-    if (!calls.length) { node('p', 'No hay llamadas registradas.', parent, 'agent-explanation'); return; }
-    const area = node('ol', null, parent, 'agent-calls');
+    if (!calls.length) { node('p', 'No hay llamadas registradas.', parent, 'rg-explain'); return; }
+    const area = node('ol', null, parent, 'rg-calls');
     calls.forEach((call, index) => {
       const noModel = call.purpose === 'research' ? 'Lectura sin modelo' : 'No disponible';
       const row = details(node('li', null, area), `${call.sequence || index + 1}. ${label(call.purpose)} · ${call.model_effective || noModel}`);
-      const values = node('dl', null, row, 'agent-definition-list');
+      const values = node('dl', null, row, 'rg-facts');
       detail(values, 'Estado', label(call.status));
       detail(values, 'Proveedor', call.provider_name || call.provider || 'No disponible');
       detail(values, 'Modelo solicitado', call.model_requested || call.model || noModel);
@@ -116,341 +196,853 @@
       detail(values, 'Inicio', call.started_at ? timestamp(call.started_at) : null);
       detail(values, 'Duración', present(call.duration_ms) ? `${call.duration_ms} ms` : 'No disponible');
       detail(values, 'Coste', amount(call.cost, call.currency));
-      detail(values, 'Origen del coste', ({provider_reported: 'Informado por el proveedor', tariff_estimate: 'Estimación con las tarifas configuradas', no_api_charge: labels.no_api_charge, unknown: 'No disponible'})[call.cost_kind] || 'No disponible');
+      detail(values, 'Origen del coste', ({provider_reported: 'Informado por el proveedor', tariff_estimate: 'Estimación con las tarifas configuradas',
+        no_api_charge: labels.no_api_charge, configured_upper_bound_estimate: labels.configured_upper_bound_estimate, unknown: 'No disponible'})[call.cost_kind] || 'No disponible');
       if (call.jev) renderJev(details(row, 'Consulta Jev de esta llamada'), call.jev);
     });
   }
   function renderReceipt(parent, receipt = {}) {
     parent.replaceChildren();
+    receipt = receipt && typeof receipt === 'object' ? receipt : {};
     renderJev(details(parent, 'Consulta y decisión de Jev'), receipt.jev);
     const calls = list(receipt.calls);
     renderCalls(details(parent, `Secuencia de llamadas · ${calls.length} ${calls.length === 1 ? 'llamada' : 'llamadas'}`), calls);
+    return parent;
   }
-  function showOversight(receipt = {}) {
-    const summary = byId('agentSummary'), trace = byId('agentTrace'); if (!summary || !trace) return;
-    summary.replaceChildren();
+  function oversight(parent, receipt = {}, data = {}) {
+    parent.replaceChildren();
     const calls = list(receipt.calls), total = receipt.total || {};
     const models = [...new Set(calls.map(call => call.model_effective).filter(Boolean))], cost = amount(total.cost, total.currency);
     const estimated = calls.some(call => ['tariff_estimate', 'configured_upper_bound_estimate'].includes(call.cost_kind)) ? ' · incluye estimación' : '';
+    const summary = node('dl', null, parent, 'rg-facts rg-oversight');
     [['Seguridad local', label(receipt.policy?.status)],
       ['Jev', receipt.jev?.status === 'failed' ? 'Falló' : receipt.jev?.status ? label(receipt.jev.status) : 'Sin registro'],
       ['Modelo efectivo', models.length > 1 ? `${models.length} modelos · ${calls.length} llamadas` : models[0] || 'Sin dato efectivo'],
-      ['Coste', cost === 'No disponible' && present(total.known_cost) ? `${amount(total.known_cost, total.currency)} conocido${estimated} · total no disponible` : cost + (cost === 'No disponible' ? '' : estimated)]
-    ].forEach(([name, value]) => {
-      const item = node('div', null, summary, 'agent-summary-item'); node('dt', name, item); node('dd', value, item);
-    });
-    renderReceipt(trace, receipt);
-    if (receipt.policy?.reason_codes?.length) node('p', receipt.policy.reason_codes.join(' · '), details(trace, 'Decisión de la política local'), 'agent-explanation');
+      ['Coste', cost === 'No disponible' && present(total.known_cost) ? `${amount(total.known_cost, total.currency)} conocido${estimated} · total no disponible` : cost + (cost === 'No disponible' ? '' : estimated)],
+    ].forEach(([name, value]) => detail(summary, name, value));
+    if (data.infrastructure) node('p', 'El coste mostrado corresponde a APIs. El coste del sandbox y del tráfico no está disponible.', parent, 'rg-explain');
+    renderReceipt(parent.appendChild(document.createElement('div')), receipt);
+    if (list(receipt.policy?.reason_codes).length) node('p', receipt.policy.reason_codes.join(' · '), details(parent, 'Decisión de la política local'), 'rg-explain');
   }
-  function documentPreview(artifact, parent) {
-    const preview = artifact.preview || {}, urls = list(preview.pages), pending = artifact.status !== 'verified';
-    const pane = details(parent, `Vista previa · ${urls.length} ${artifact.format === 'pptx' ? 'diapositivas' : 'páginas'}`); pane.open = pending;
-    const pages = node('div', null, pane, 'agent-document-pages'), valid = urls.filter(url => artifactUrl(url, 'pages/\\d+'));
-    let loaded = 0, reviewButton;
-    valid.forEach((url, index) => {
-      const figure = node('figure', null, pages), pageName = artifact.format === 'pptx' ? 'Diapositiva' : 'Página';
-      node('figcaption', `${pageName} ${index + 1} de ${urls.length}`, figure);
-      const img = node('img', null, figure);
-      img.alt = `${pageName} ${index + 1}: ${preview.title || 'documento'}. Abre la imagen para revisarla a tamaño completo.`;
-      img.onload = () => { loaded++; if (reviewButton) reviewButton.disabled = loaded !== urls.length; };
-      img.onerror = () => node('p', `No se ha podido cargar la ${pageName.toLowerCase()} ${index + 1}. Recarga antes de aprobar la revisión.`, figure, 'agent-error');
-      img.src = url;
-      const link = node('a', `Abrir ${pageName.toLowerCase()} ${index + 1}`, figure); link.href = url; link.target = '_blank'; link.rel = 'noopener';
+
+  /* ------------------------------------------------------------ steps */
+  function groupSteps(events) {
+    const steps = [];
+    events.forEach(event => {
+      const last = steps[steps.length - 1];
+      if (last && last.kind === event.kind) {
+        last.count++;
+        last.end = event;
+        if (event.data?.text) last.text = event.data.text;  // The latest sentence describes the step now.
+        if (event.data?.tool) last.tools.add(event.data.tool);
+        return;
+      }
+      steps.push({kind: event.kind, count: 1, start: event, end: event, text: event.data?.text || '',
+        tools: new Set(event.data?.tool ? [event.data.tool] : [])});
     });
-    if (pending) {
-      node('p', 'Revisa la legibilidad, las tablas, los símbolos y los cortes de todas las páginas. Tu confirmación registra únicamente la revisión visual.', pane, 'agent-explanation');
-      reviewButton = button('Confirmar revisión visual de todas las páginas', pane, async () => {
-        if (!artifactUrl(artifact.review_url, 'review')) return;
-        reviewButton.disabled = true;
-        try {
-          const response = await fetch(artifact.review_url, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()},
-            body: JSON.stringify({sha256: artifact.sha256, page_sha256: artifact.page_sha256, checks: artifact.review_checks})});
-          if (!response.ok) throw new Error('Review unavailable');
-          text('Revisión visual registrada. Esperando la finalización de la entrega.'); await snapshot();
-        } catch (_) { text('No se pudo registrar la revisión visual. Recarga el estado para comprobar los permisos y la ejecución.'); reviewButton.disabled = loaded !== urls.length; }
-      }, 'btn btn-primary btn-sm');
-      reviewButton.disabled = !urls.length || valid.length !== urls.length || loaded !== urls.length;
-    }
+    return steps;
   }
-  function sheetPreview(artifact, parent) {
-    const preview = artifact.preview || {}, pane = details(parent, 'Vista previa de la hoja');
+  function stepState(step, index, steps, status) {
+    if (FAILED.has(step.kind)) return 'failed';
+    if (step.kind === 'cancelled') return 'cancelled';
+    const last = index === steps.length - 1;
+    if ((WAITING.has(step.kind) || UNCERTAIN.has(step.kind)) && last) return 'waiting';
+    if (last && live(status)) return 'active';
+    return 'done';
+  }
+  function headline(watcher) {
+    const {status} = watcher.run;
+    const steps = watcher.steps;
+    const last = steps[steps.length - 1];
+    if (watcher.unavailable) return {text: 'Estado no disponible', tone: 'bad', icon: 'alert'};
+    if (status === 'completed') return {text: 'Listo', tone: 'ok', icon: 'check'};
+    if (status === 'failed') return {text: 'No completado', tone: 'bad', icon: 'alert'};
+    if (status === 'cancelled') return {text: 'Cancelado', tone: 'muted', icon: 'x'};
+    if (status === 'interrupted') return {text: 'Interrumpido', tone: 'warn', icon: 'alert'};
+    if (status === 'outcome_unknown') return {text: 'Resultado por confirmar', tone: 'warn', icon: 'clock'};
+    if (!live(status)) return {text: label(status), tone: 'muted', icon: 'info'};
+    if (last && WAITING.has(last.kind)) return {text: STEP[last.kind], tone: 'warn', icon: last.kind === 'visual_pending' ? 'eye' : 'shield'};
+    if (!watcher.loaded) return {text: 'Consultando el estado', tone: 'live', icon: null};
+    return {text: last ? STEP[last.kind] || label(last.kind) : 'Preparando', tone: 'live', icon: null};
+  }
+  function brief(request) {
+    if (!request || typeof request !== 'object' || !list(request.formats).length) return '';
+    const operation = {create: 'Crear', transform: 'Transformar', edit: 'Editar'}[request.operation] || 'Crear';
+    const parts = [`${operation} ${list(request.formats).map(value => String(value).toUpperCase()).join(' y ')}`];
+    if (Number.isInteger(request.pages)) parts.push(`${request.pages} ${list(request.formats).includes('pptx') ? 'diapositivas' : 'páginas'}`);
+    if (request.language) parts.push(request.language === 'en' ? 'en inglés' : 'en español');
+    if (request.research_required) parts.push('con fuentes actuales');
+    if (request.allow_mock) parts.push('datos ficticios solicitados');
+    return 'Petición interpretada: ' + parts.join(' · ');
+  }
+
+  /* ------------------------------------------------------------ preview dialog */
+  function dialogParts() {
+    const dialog = byId('previewDialog');
+    return dialog ? {dialog, title: byId('previewTitle'), meta: byId('previewMeta'), body: byId('previewBody'), foot: byId('previewFoot')} : null;
+  }
+  function openDialog(title, meta, fill, trigger) {
+    const parts = dialogParts();
+    if (!parts) return;
+    parts.title.textContent = title;
+    parts.meta.textContent = meta;
+    parts.body.replaceChildren();
+    parts.foot.replaceChildren();
+    fill(parts.body, parts.foot);
+    if (typeof parts.dialog.showModal === 'function') {
+      if (!parts.dialog.open) parts.dialog.showModal();
+    } else parts.dialog.setAttribute('open', '');
+    parts.dialog.addEventListener('close', () => trigger?.focus?.(), {once: true});
+  }
+  function sheetTables(parent, preview) {
     if (Array.isArray(preview.sheets)) {
       preview.sheets.forEach(sheet => {
-        node('h4', `${sheet.name} · ${sheet.rows} filas · ${sheet.columns} columnas`, pane);
-        const table = node('table', null, node('div', null, pane, 'table-responsive'), 'table table-sm agent-sheet');
+        const block = node('section', null, parent, 'rg-sheet');
+        node('h4', `${sheet.name} · ${sheet.rows} filas · ${sheet.columns} columnas`, block);
+        const table = node('table', null, node('div', null, block, 'rg-table'));
         const body = node('tbody', null, table);
         list(sheet.preview).forEach(row => { const tr = node('tr', null, body); list(row).forEach(value => node('td', value, tr)); });
       });
       return;
     }
-    const table = node('table', null, node('div', null, pane, 'table-responsive'), 'table table-sm agent-sheet');
-    node('caption', 'Muestra del archivo generado', table);
+    const table = node('table', null, node('div', null, parent, 'rg-table'));
+    node('caption', 'Muestra del archivo generado', table).className = 'rg-sr';
     const header = node('tr', null, node('thead', null, table));
     list(preview.headers).forEach(value => { node('th', value, header).scope = 'col'; });
     const body = node('tbody', null, table);
     list(preview.rows).forEach(row => { const tr = node('tr', null, body); list(row).forEach(value => node('td', value, tr)); });
-    if (present(preview.total_euros)) node('p', `Total del archivo: ${preview.total_euros} €`, pane, 'agent-explanation');
-    if (present(preview.rows_total)) node('p', `${preview.rows_total} filas en el archivo.`, pane, 'agent-explanation');
+    if (present(preview.total_euros)) node('p', `Total del archivo: ${preview.total_euros} €`, parent, 'rg-explain');
+    if (present(preview.rows_total)) node('p', `${preview.rows_total} filas en el archivo.`, parent, 'rg-explain');
   }
-  function showArtifact(artifact, parent, canExport) {
-    const preview = artifact.preview || {}, format = (artifact.format || '').toUpperCase();
-    const card = node('article', null, parent, 'agent-artifact'), header = node('div', null, card, 'agent-artifact-heading');
-    node('span', format || 'ARCHIVO', header, 'agent-file-mark');
-    const titleArea = node('div', null, header); node('h3', preview.title || 'Entregable', titleArea);
-    const count = artifact.format === 'xlsx' ? (present(preview.sheet_count) ? `${preview.sheet_count} hojas` : 'Hojas: sin dato') :
-      ['docx', 'pdf', 'pptx'].includes(artifact.format) ? `${preview.page_count ?? list(preview.pages).length} ${artifact.format === 'pptx' ? 'diapositivas' : 'páginas'}` : 'Archivo';
-    node('p', `${format} · ${count} · Revisión ${artifact.revision}`, titleArea, 'agent-artifact-meta');
-    if (artifact.data_mode === 'mock' || preview.data_mode === 'mock') node('p', 'Datos ficticios solicitados expresamente', card, 'agent-notice');
-    const actions = node('div', null, card, 'agent-artifact-actions');
-    if (artifact.status === 'verified') {
-      const seen = new Set();
-      [{format: artifact.format, url: artifact.download_url}, ...list(artifact.downloads)].forEach(download => {
-        const downloadFormat = String(download.format || artifact.format || '').toLowerCase();
-        if (!artifactUrl(download.url, 'download') || seen.has(downloadFormat)) return;
-        seen.add(downloadFormat);
-        const link = node('a', `Descargar ${downloadFormat.toUpperCase()}`, actions, 'btn btn-primary btn-sm');
-        link.href = download.url; link.setAttribute('download', '');
-      });
-    } else node('span', 'Revisión visual pendiente', actions, 'agent-notice');
-    if (professional() && artifact.status === 'verified' && !live(run?.status)) {
-      button('Editar esta revisión', actions, () => {
-        chosenRevision = artifact;
-        const selection = byId('agentRevision');
-        if (selection) {
-          selection.hidden = false; selection.replaceChildren();
-          node('span', `Edición de «${preview.title || 'Archivo'}», revisión ${artifact.revision}. Escribe los cambios. `, selection);
-          button('Quitar selección', selection, () => { chosenRevision = null; selection.hidden = true; });
-        }
-        byId('prompt').focus();
+
+  /* ------------------------------------------------------------ one run */
+  const watchers = new Map();
+  let latest = null;
+  let documentReference = null, documentLabel = '', pendingExport = null, chosenRevision = null;
+
+  class Watcher {
+    constructor(host, run) {
+      this.host = host;
+      this.run = {...run};
+      this.events = [];
+      this.steps = [];
+      this.cursor = 0;
+      this.version = 0;
+      this.stream = null;
+      this.timer = null;
+      this.ticker = null;
+      this.userOpen = null;
+      this.loaded = false;
+      this.unavailable = false;
+      this.data = null;
+      this.artifactKey = '';
+      this.reviews = new Map();
+      this.skew = null;
+      this.failure = '';
+      // A professional run's stored answer is rendered by the page; keep it inside the run.
+      const next = host.nextElementSibling;
+      this.answerNode = next?.classList?.contains('rg-md') ? next : null;
+      this.build();
+      this.paint();
+    }
+    build() {
+      const {host, run} = this;
+      host.replaceChildren();
+      host.dataset.state = run.status;
+      this.activity = node('section', null, host, 'rg-activity');
+      this.activity.setAttribute('aria-label', 'Actividad del agente');
+      this.head = node('button', null, this.activity, 'rg-activity-head');
+      this.head.type = 'button';
+      this.head.setAttribute('aria-controls', 'activity-' + run.id);
+      this.iconSlot = node('span', null, this.head, 'rg-activity-icon');
+      this.title = node('span', null, this.head, 'rg-activity-title');
+      this.title.setAttribute('aria-live', 'polite');
+      this.meta = node('span', null, this.head, 'rg-activity-meta');
+      icon('chevron', this.head, 'rg-i rg-activity-chevron');
+      this.body = node('div', null, this.activity, 'rg-activity-body');
+      this.body.id = 'activity-' + run.id;
+      this.brief = node('p', null, this.body, 'rg-brief');
+      this.list = node('ol', null, this.body, 'rg-steps');
+      this.extra = node('div', null, this.body);
+      this.limits = node('ul', null, host, 'rg-limits');
+      this.limits.hidden = true;
+      // Empty until the first snapshot; visible, its tinted box flashes before any text.
+      this.message = node('div', null, host, 'rg-agent-message');
+      this.message.hidden = true;
+      this.answerSlot = node('div', null, host, 'rg-agent-answer');
+      if (this.answerNode) this.answerSlot.appendChild(this.answerNode);
+      this.deliverables = node('div', null, host, 'rg-deliverables');
+      this.exportArea = node('div', null, host);
+      this.actions = node('div', null, host, 'rg-agent-actions');
+      this.tech = node('div', null, host, 'rg-receipt');
+      this.tech.id = 'agent-details-' + run.id;
+      this.tech.hidden = true;
+      this.head.addEventListener('click', () => {
+        this.userOpen = !this.isOpen();
+        this.paintOpen();
       });
     }
-    if (artifact.format === 'xlsx') sheetPreview(artifact, card);
-    else if (['docx', 'pdf', 'pptx'].includes(artifact.format)) documentPreview(artifact, card);
-    const checks = details(card, 'Comprobaciones del entregable'); checks.open = true;
-    checkRows(checks, artifact.verification_checks);
-    if (artifact.status === 'verified' && canExport) {
-      const exportArea = details(card, 'Guardar una copia en Google Drive'), nameId = `agent-export-name-${artifact.id}`;
-      const nameLabel = node('label', 'Nombre del archivo', exportArea, 'form-label small'); nameLabel.htmlFor = nameId;
-      const name = node('input', null, exportArea, 'form-control form-control-sm mb-2'); name.id = nameId; name.maxLength = 120;
-      name.value = `informe-r${artifact.revision}.${artifact.format || 'xlsx'}`;
-      button('Preparar exportación', exportArea, () => {
-        pendingExport = {artifactId: artifact.logical_id, baseRevision: artifact.id, exportName: name.value};
-        byId('prompt').value = 'Guarda la revisión verificada en la carpeta autorizada de Drive.'; byId('chatForm').requestSubmit();
+    isOpen() {
+      if (this.userOpen !== null) return this.userOpen;
+      // Open while work is visible and running; summarized afterwards.
+      return live(this.run.status) && !this.unavailable && !WAITING.has(this.steps[this.steps.length - 1]?.kind);
+    }
+    paintOpen() {
+      const open = this.isOpen();
+      this.activity.dataset.open = String(open);
+      this.head.setAttribute('aria-expanded', String(open));
+      this.body.hidden = !open;
+    }
+    addEvent(event) {
+      if (!event || typeof event.id !== 'number' || event.id <= this.cursor) return false;
+      this.cursor = event.id;
+      this.events.push(event);
+      return true;
+    }
+    paint() {
+      const {run} = this;
+      this.host.dataset.state = this.unavailable ? 'unavailable' : run.status;
+      this.steps = groupSteps(this.events);
+      const head = headline(this);
+      this.activity.dataset.tone = head.tone;
+      this.title.textContent = head.text;
+      this.iconSlot.replaceChildren();
+      if (head.icon) icon(head.icon, this.iconSlot);
+      else node('span', null, this.iconSlot, 'rg-pulse').setAttribute('aria-hidden', 'true');
+      this.paintMeta();
+      this.brief.textContent = brief(run.request);
+      this.brief.hidden = !this.brief.textContent;
+      this.paintSteps();
+      this.paintOpen();
+      const running = live(run.status) && !this.unavailable;
+      if (running && !this.ticker) this.ticker = window.setInterval(() => this.paintMeta(), 1000);
+      if (!running && this.ticker) { window.clearInterval(this.ticker); this.ticker = null; }
+      if (this === latest) {
+        const waiting = this.steps[this.steps.length - 1]?.kind;
+        chat()?.busy(running, running ? () => this.cancel() : null, waiting === 'visual_pending' ? 'Pendiente de tu revisión visual' :
+          waiting === 'approval_pending' ? 'Pendiente de tu aprobación' : 'El agente está trabajando');
+      }
+    }
+    paintMeta() {
+      const count = this.steps.length;
+      const start = time(this.run.created_at) ?? time(this.events[0]?.created_at);
+      // Running time uses the server clock (Date header), never a client guess.
+      const end = live(this.run.status) ? (this.skew === null ? null : Date.now() + this.skew) :
+        time(this.run.finished_at) ?? time(this.events[this.events.length - 1]?.created_at);
+      const parts = [];
+      if (count) parts.push(`${count} ${count === 1 ? 'paso' : 'pasos'}`);
+      const sources = list(this.data?.sources).filter(source => source.opened).length;
+      if (sources) parts.push(`${sources} ${sources === 1 ? 'fuente' : 'fuentes'}`);
+      const spent = start && end ? duration(end - start) : '';
+      if (spent) parts.push(spent);
+      this.meta.textContent = parts.join(' · ');
+    }
+    paintSteps() {
+      const {steps} = this;
+      const previous = this.list.children.length;
+      this.list.replaceChildren();
+      steps.forEach((step, index) => {
+        const state = stepState(step, index, steps, this.run.status);
+        const item = node('li', null, this.list, 'rg-step' + (index >= previous && this.loaded ? ' rg-enter' : ''));
+        item.dataset.state = state;
+        item.dataset.kind = step.kind;
+        const dot = node('span', null, item, 'rg-step-dot');
+        if (state === 'done') icon('check', dot);
+        else if (state === 'failed' || state === 'cancelled') icon('x', dot);
+        else if (state === 'waiting') icon('clock', dot);
+        const text = node('span', null, item);
+        node('span', STEP[step.kind] || label(step.kind), text, 'rg-step-label');
+        if (step.count > 1) node('span', `×${step.count}`, text, 'rg-step-count');
+        const next = steps[index + 1];
+        const spent = next ? time(next.start.created_at) - time(step.start.created_at) :
+          (!live(this.run.status) ? (time(this.run.finished_at) ?? time(step.end.created_at)) - time(step.start.created_at) : NaN);
+        node('span', duration(spent), item, 'rg-step-time');
+        const tools = [...step.tools].map(name => TOOLS[name] || name);
+        const last = index === steps.length - 1;
+        // The failure message is shown once, below the activity.
+        const sentence = last && step.text && step.text.trim() !== this.failure ? step.text : '';
+        const extra = [tools.join(', '), sentence].filter(Boolean).join(' — ');
+        if (extra) node('p', extra, item, 'rg-step-text');
+        if (step.text) item.title = step.text;
       });
     }
-  }
-  function progress(event) {
-    if (!event || event.id <= cursor) return;
-    cursor = event.id;
-    if (!event.data?.text) return;
-    text(event.data.text); node('li', event.data.text, byId('agentEvents'));
-  }
-  function showSources(sources) {
-    const area = byId('agentSources'); if (!area) return; area.replaceChildren();
-    if (!sources.length) return;
-    const pane = details(area, `Fuentes · ${sources.filter(source => source.opened).length} consultadas`);
-    const items = node('ol', null, pane, 'agent-event-list');
-    sources.forEach(source => {
-      const item = node('li', null, items);
-      const title = node('a', source.title || source.final_url || source.url, item);
-      const url = source.final_url || source.url;
-      if (typeof url === 'string' && /^https?:\/\/[^\s]+$/i.test(url)) { title.href = url; title.target = '_blank'; title.rel = 'noopener noreferrer'; }
-      node('p', source.opened ? (source.reading === 'complete' ? 'Lectura completa' : 'Lectura parcial') : 'Resultado del buscador · no abierto', item, 'agent-artifact-meta');
-      if (source.excerpt || source.snippet) node('p', source.excerpt || source.snippet, item);
-      if (source.opened) node('small', `Consulta: ${timestamp(source.retrieved_at)} · Publicación: ${source.publication_date || 'fecha desconocida'}`, item);
-    });
-  }
-  async function snapshot() {
-    if (!run) return;
-    const expected = run.id, version = ++snapshotVersion;
-    let data;
-    try {
-      const response = await fetch(run.status_url, {headers: {'Accept': 'application/json'}});
-      if (!response.ok) throw new Error('Access unavailable');
-      data = await response.json();
-    } catch (error) {
-      if (run?.id !== expected || version !== snapshotVersion) return;
-      throw error;
+    showFailure(data) {
+      const error = this.run.status === 'failed' && typeof data?.result?.error === 'string' ? data.result.error.trim() : '';
+      this.failure = error;
+      this.message.replaceChildren();
+      this.message.hidden = !error;
+      this.message.className = 'rg-agent-message';
+      if (!error) return;
+      icon('alert', this.message);
+      node('p', error, this.message);
     }
-    if (run?.id !== expected || version !== snapshotVersion) return;
-    run = {...run, ...data.run}; showExport(data.export, data.run); list(data.events).forEach(progress);
-    byId('agentState').textContent = label(data.run.status); byId('agentActivity').dataset.state = data.run.status;
-    byId('agentCancel').hidden = !live(data.run.status);
-    if (byId('agentResume')) byId('agentResume').hidden = !data.run.resumable;
-    const limitation = byId('agentLimitations'); limitation.replaceChildren();
-    list(data.run.limitations).forEach(value => node('li', value, limitation)); limitation.hidden = !limitation.children.length;
-    showOversight(data.receipt || data.result?.receipt || {}); revision = data.current_revision || null;
-    showSources(list(data.sources));
-    const operations = byId('agentOperations');
-    if (operations) {
-      operations.replaceChildren();
-      if (data.infrastructure) node('p', 'El coste mostrado corresponde a APIs. El coste del sandbox y del tráfico no está disponible.', operations, 'agent-explanation');
-      list(data.operations).forEach(operation => {
-        const entry = details(operations, `${label(operation.name)} · ${label(operation.status)}`);
+    showLimits(run) {
+      this.limits.replaceChildren();
+      list(run.limitations).forEach(value => node('li', value, this.limits));
+      this.limits.hidden = !this.limits.children.length;
+    }
+    showActions() {
+      const {run} = this;
+      this.actions.replaceChildren();
+      if (live(run.status) && !this.unavailable) button('Detener', this.actions, () => this.cancel(), 'rg-link-btn', 'stop');
+      if (run.resumable) button('Reanudar', this.actions, event => this.resume(event.currentTarget), 'rg-link-btn', 'play');
+      if (this.unavailable) button('Actualizar estado', this.actions, () => this.refresh(), 'rg-link-btn', 'refresh');
+      if (this.data && !this.unavailable) {
+        const toggle = button('Detalles', this.actions, () => {
+          const open = toggle.getAttribute('aria-expanded') !== 'true';
+          toggle.setAttribute('aria-expanded', String(open));
+          this.tech.hidden = !open;
+        }, 'rg-link-btn');
+        icon('chevron', toggle);
+        toggle.setAttribute('aria-controls', this.tech.id);
+        toggle.setAttribute('aria-expanded', String(!this.tech.hidden));
+      }
+      this.actions.hidden = !this.actions.children.length;
+    }
+    showSources(sources) {
+      if (!sources.length) return;
+      const opened = sources.filter(source => source.opened).length;
+      node('p', `Fuentes · ${opened} ${opened === 1 ? 'consultada' : 'consultadas'}`, this.extra, 'rg-subhead');
+      const items = node('ol', null, this.extra, 'rg-sources');
+      sources.forEach(source => {
+        const item = node('li', null, items);
+        const url = source.final_url || source.url;
+        const title = node('a', source.title || url, item);
+        if (typeof url === 'string' && /^https?:\/\/[^\s]+$/i.test(url)) { title.href = url; title.target = '_blank'; title.rel = 'noopener noreferrer'; }
+        node('span', source.opened ? (source.reading === 'complete' ? 'Lectura completa' : 'Lectura parcial') : 'Resultado del buscador · no abierto', item, 'rg-meta');
+        if (source.excerpt || source.snippet) node('p', source.excerpt || source.snippet, item);
+        if (source.opened) node('span', `Consulta: ${timestamp(source.retrieved_at)} · Publicación: ${source.publication_date || 'fecha desconocida'}`, item, 'rg-meta');
+      });
+    }
+    showOperations(operations) {
+      if (!operations.length) return;
+      node('p', `Herramientas · ${operations.length}`, this.extra, 'rg-subhead');
+      const items = node('ul', null, this.extra, 'rg-ops');
+      operations.forEach(operation => {
+        const item = node('li', null, items);
+        const head = node('div', null, item, 'rg-op-head');
+        node('span', `${TOOLS[operation.name] || label(operation.name)} · ${label(operation.status)}`, head);
         if (typeof operation.details_url !== 'string' || !/^\/chat\/agent\/runs\/[0-9a-f-]+\/operations\/\d+\/$/.test(operation.details_url)) return;
-        const control = button('Ver código y salida autorizada', entry, async () => {
+        const control = button('Ver código y salida autorizada', head, async () => {
           control.disabled = true;
           try {
-            const response = await fetch(operation.details_url, {headers: {'Accept': 'application/json'}});
-            if (!response.ok) throw new Error('Unavailable');
-            const value = await response.json();
-            node('pre', JSON.stringify(value, null, 2), entry, 'agent-code-output');
-          } catch (_) { node('p', 'El detalle ya no está disponible con tus permisos actuales.', entry); }
-        });
+            const response = await fetch(operation.details_url, {headers: {Accept: 'application/json'}});
+            if (!response.ok) throw new Error('unavailable');
+            node('pre', JSON.stringify(await response.json(), null, 2), item, 'rg-op-output');
+            control.remove();
+          } catch (_) {
+            node('p', 'El detalle ya no está disponible con tus permisos actuales.', item, 'rg-meta');
+            control.disabled = false;
+          }
+        }, 'rg-link-btn');
       });
     }
-    const visible = list(data.artifacts).length ? data.artifacts : (revision ? [revision] : []);
-    const nextKey = JSON.stringify([visible, data.export_enabled, live(data.run.status)]);
-    if (nextKey !== artifactKey) {
-      artifactKey = nextKey; const artifacts = byId('agentArtifacts'); artifacts.replaceChildren();
-      visible.forEach(artifact => showArtifact(artifact, artifacts, data.export_enabled && !live(data.run.status)));
-      if (!live(data.run.status)) artifacts.querySelector?.('.agent-artifact-actions')?.scrollIntoView?.({block: 'nearest'});
+    async snapshot() {
+      const expected = this.run.id, version = ++this.version;
+      let data;
+      try {
+        const response = await fetch(this.run.status_url, {headers: {Accept: 'application/json'}});
+        if (!response.ok) throw new Error('unavailable');
+        const served = Date.parse(response.headers?.get?.('Date') || '');
+        if (Number.isFinite(served)) this.skew = served - Date.now();
+        data = await response.json();
+      } catch (error) {
+        if (this.run.id !== expected || version !== this.version) return null;
+        throw error;
+      }
+      if (this.run.id !== expected || version !== this.version || !data?.run) return null;
+      this.apply(data);
+      return data.run;
     }
-    if (!live(data.run.status)) {
-      stream?.close(); stream = null;
-      if (list(data.events).length) text(data.events[data.events.length - 1].data.text);
-      if (command && data.result && typeof window.renderResult === 'function') { window.renderResult(data.result, command); command = null; }
+    apply(data) {
+      this.loaded = true;
+      this.unavailable = false;
+      this.data = data;
+      this.run = {...this.run, ...data.run};
+      list(data.events).forEach(event => this.addEvent(event));
+      this.showFailure(data);
+      this.showLimits(data.run);
+      this.extra.replaceChildren();
+      this.showSources(list(data.sources));
+      this.showOperations(list(data.operations));
+      oversight(this.tech, data.receipt || data.result?.receipt || {}, data);
+      showExport(this, data.export, data.run);
+      const visible = list(data.artifacts).length ? data.artifacts : (data.current_revision ? [data.current_revision] : []);
+      const key = JSON.stringify([visible, data.export_enabled, live(data.run.status)]);
+      if (key !== this.artifactKey) {
+        this.artifactKey = key;
+        this.deliverables.replaceChildren();
+        this.reviews.clear();
+        visible.forEach(artifact => this.deliverables.appendChild(this.card(artifact, data.export_enabled && !live(data.run.status))));
+      }
+      if (this === latest) updateContext();
+      this.answer(data);
+      this.paint();
+      this.showActions();
+      if (!live(data.run.status)) this.close();
+      chat()?.follow();
     }
-    const failure = byId('agentFailure');
-    if (failure) {
-      const error = data.run.status === 'failed' && typeof data.result?.error === 'string' ? data.result.error.trim() : '';
-      failure.textContent = error;
-      failure.hidden = !error || error === byId('agentProgress').textContent.trim();
+    answer(data) {
+      // Professional runs answer in text as well; the stored message is shown once.
+      const message = data.result?.assistant_message;
+      if (!this.run.professional || live(this.run.status) || !message?.content) return;
+      if (this.answerSlot.querySelector('.rg-md')) return;
+      const body = node('div', null, this.answerSlot, 'rg-md');
+      if (window.RegulayMarkdown) window.RegulayMarkdown.render(body, message.content, {animate: true});
+      else body.textContent = message.content;
     }
-    return data.run;
-  }
-  async function watch(next, submitted = null) {
-    chosenRevision = null; if (byId('agentRevision')) byId('agentRevision').hidden = true;
-    documentReference = null; pendingExport = null; mode = 'agent'; command = submitted; setMode(true);
-    if (command) command.agentRun = next.id;
-    byId('conversationMode')?.setAttribute('disabled', '');
-    const panel = byId('agentActivity'); if (!panel) return;
-    if (submitted?.userBubble) submitted.userBubble.after(panel);
-    stream?.close(); stream = null;
-    if (byId('agentFailure')) { byId('agentFailure').textContent = ''; byId('agentFailure').hidden = true; }
-    if (run?.id !== next.id) { cursor = 0; artifactKey = ''; byId('agentEvents').replaceChildren(); byId('agentArtifacts').replaceChildren(); }
-    run = next; setMode(true); byId('agentState').textContent = label(next.status); text('Petición recibida. Consultando el estado de la ejecución.');
-    try {
-      const state = await snapshot(); if (!state || !live(state.status)) return;
-      const source = new EventSource(run.events_url + '?cursor=' + cursor); stream = source;
-      const current = () => run?.id === next.id && stream === source;
+    card(artifact, canExport) {
+      const preview = artifact.preview || {}, format = String(artifact.format || '').toLowerCase();
+      const verified = artifact.status === 'verified';
+      const pageUrls = list(preview.pages), pages = pageUrls.filter(url => artifactUrl(url, 'pages/\\d+'));
+      const document_ = ['docx', 'pdf', 'pptx'].includes(format);
+      const unit = format === 'pptx' ? 'diapositivas' : 'páginas';
+      const count = format === 'xlsx' ? (present(preview.sheet_count) ? `${preview.sheet_count} hojas` : 'Hojas: sin dato') :
+        document_ ? `${preview.page_count ?? pageUrls.length} ${unit}` : 'Archivo';
+      const meta = `${format.toUpperCase() || 'ARCHIVO'} · ${count} · Revisión ${artifact.revision}`;
+      const title = preview.title || 'Entregable';
+      const card = node('article', null, null, 'rg-deliverable');
+      card.dataset.status = artifact.status || '';
+      const head = node('div', null, card, 'rg-deliverable-head');
+      const canPreview = document_ ? pages.length > 0 && pages.length === pageUrls.length : format === 'xlsx' && (Array.isArray(preview.sheets) || list(preview.rows).length);
+      const open = trigger => this.preview(artifact, title, meta, trigger);
+      if (verified && document_ && canPreview) {
+        const thumb = node('button', null, head, 'rg-thumb');
+        thumb.type = 'button';
+        thumb.setAttribute('aria-label', `Vista previa de ${title}`);
+        const img = node('img', null, thumb);
+        img.alt = '';
+        img.loading = 'lazy';
+        img.src = pages[0];
+        thumb.addEventListener('click', () => open(thumb));
+      } else {
+        const mark = node('span', format.toUpperCase() || 'ARCHIVO', head, 'rg-file-mark');
+        mark.dataset.format = format;
+      }
+      const titleArea = node('div', null, head, 'rg-deliverable-title');
+      node('h3', title, titleArea);
+      node('p', meta, titleArea);
+      const actions = node('div', null, head, 'rg-deliverable-actions');
+      if (canPreview && verified) button('Vista previa', actions, event => open(event.currentTarget), 'rg-btn', 'eye');
+      if (verified) {
+        const seen = new Set();
+        [{format: artifact.format, url: artifact.download_url}, ...list(artifact.downloads)].forEach(download => {
+          const downloadFormat = String(download.format || artifact.format || '').toLowerCase();
+          if (!artifactUrl(download.url, 'download') || seen.has(downloadFormat)) return;
+          const first = !seen.size;
+          seen.add(downloadFormat);
+          const link = node('a', null, actions, first ? 'rg-btn rg-btn-primary' : 'rg-btn');
+          icon('download', link);
+          link.appendChild(document.createTextNode(downloadFormat.toUpperCase()));
+          link.setAttribute('aria-label', `Descargar ${downloadFormat.toUpperCase()}`);
+          link.title = `Descargar ${downloadFormat.toUpperCase()}`;
+          link.href = download.url;
+          link.setAttribute('download', '');
+        });
+      }
+      if (this.run.professional && verified && !live(this.run.status)) {
+        button('Editar', actions, () => {
+          chosenRevision = {...artifact, title};
+          updateContext();
+          byId('prompt')?.focus();
+        }, 'rg-btn', 'pencil');
+      }
+      const foot = node('div', null, card, 'rg-deliverable-foot');
+      if (artifact.data_mode === 'mock' || preview.data_mode === 'mock') node('span', 'Datos ficticios solicitados expresamente', foot, 'rg-chip is-warn');
+      if (!verified) this.review(artifact, card, title, meta);
+      const checks = details(foot, '');
+      const counts = checkRows(checks, artifact.verification_checks);
+      checks.querySelector('summary').textContent = checkSummary(counts);
+      if (counts.failed) checks.classList.add('has-failed');
+      if (verified && canExport) {
+        const area = details(foot, 'Guardar una copia en Google Drive');
+        const formRow = node('div', null, area, 'rg-export-form');
+        const nameLabel = node('label', 'Nombre del archivo', formRow);
+        const name = node('input', null, nameLabel);
+        name.maxLength = 120;
+        name.value = `informe-r${artifact.revision}.${artifact.format || 'xlsx'}`;
+        button('Preparar exportación', formRow, () => {
+          pendingExport = {artifactId: artifact.logical_id, baseRevision: artifact.id, exportName: name.value};
+          const prompt = byId('prompt');
+          if (!prompt) return;
+          prompt.value = 'Guarda la revisión verificada en la carpeta autorizada de Drive.';
+          prompt.dispatchEvent(new Event('input', {bubbles: true}));
+          byId('chatForm')?.requestSubmit();
+        }, 'rg-btn', 'cloud');
+      }
+      return card;
+    }
+    review(artifact, card, title, meta) {
+      const preview = artifact.preview || {}, urls = list(preview.pages), valid = urls.filter(url => artifactUrl(url, 'pages/\\d+'));
+      const pageName = artifact.format === 'pptx' ? 'Diapositiva' : 'Página';
+      const state = {loaded: new Set(), total: urls.length, controls: [], valid: valid.length === urls.length && urls.length > 0};
+      this.reviews.set(artifact.id, state);
+      const box = node('div', null, card, 'rg-review');
+      const plural = artifact.format === 'pptx' ? 'diapositivas' : 'páginas';
+      node('strong', `Revisa ${urls.length === 1 ? (artifact.format === 'pptx' ? 'la diapositiva' : 'la página') : `las ${urls.length} ${plural}`} antes de publicar`, box);
+      node('p', `Comprueba la legibilidad, las tablas, los símbolos y los cortes de todas las ${plural}. Tu confirmación registra únicamente la revisión visual.`, box);
+      const strip = node('div', null, box, 'rg-pages');
+      valid.forEach((url, index) => {
+        const page = node('button', null, strip, 'rg-pagethumb');
+        page.type = 'button';
+        page.dataset.format = artifact.format;
+        page.setAttribute('aria-label', `${pageName} ${index + 1} de ${urls.length}: abrir a tamaño completo`);
+        const img = node('img', null, page);
+        img.alt = `${pageName} ${index + 1}: ${preview.title || 'documento'}.`;
+        img.onload = () => this.pageLoaded(artifact.id, index);
+        img.onerror = () => {
+          page.classList.add('is-error');
+          node('p', `No se ha podido cargar la ${pageName.toLowerCase()} ${index + 1}. Recarga antes de aprobar la revisión.`, box, 'rg-meta');
+        };
+        img.src = url;
+        node('span', String(index + 1), page);
+        page.addEventListener('click', () => this.preview(artifact, title, meta, page, index));
+      });
+      const row = node('div', null, box, 'rg-btn-row');
+      this.reviewButton(artifact, row);
+      button('Ver a tamaño completo', row, event => this.preview(artifact, title, meta, event.currentTarget), 'rg-btn', 'eye');
+    }
+    reviewButton(artifact, parent) {
+      const state = this.reviews.get(artifact.id);
+      const control = button('Confirmar revisión visual', parent, async () => {
+        if (!artifactUrl(artifact.review_url, 'review')) return;
+        state.controls.forEach(item => { item.disabled = true; });
+        try {
+          await post(artifact.review_url, {sha256: artifact.sha256, page_sha256: artifact.page_sha256, checks: artifact.review_checks});
+          chat()?.announce('Revisión visual registrada');
+          byId('previewDialog')?.open && byId('previewDialog').close();
+          await this.snapshot();
+        } catch (_) {
+          this.note('No se pudo registrar la revisión visual. Recarga el estado para comprobar los permisos y la ejecución.');
+          state.controls.forEach(item => { item.disabled = state.loaded.size !== state.total; });
+        }
+      }, 'rg-btn rg-btn-primary', 'check');
+      control.disabled = !state.valid || state.loaded.size !== state.total;
+      state.controls.push(control);
+      return control;
+    }
+    pageLoaded(id, index) {
+      const state = this.reviews.get(id);
+      if (!state) return;
+      state.loaded.add(index);
+      state.controls.forEach(control => { control.disabled = !state.valid || state.loaded.size !== state.total; });
+    }
+    preview(artifact, title, meta, trigger, focusIndex = 0) {
+      const preview = artifact.preview || {};
+      const verified = artifact.status === 'verified';
+      openDialog(title, meta, (body, foot) => {
+        if (artifact.format === 'xlsx') {
+          sheetTables(body, preview);
+        } else {
+          const urls = list(preview.pages), valid = urls.filter(url => artifactUrl(url, 'pages/\\d+'));
+          const pageName = artifact.format === 'pptx' ? 'Diapositiva' : 'Página';
+          const view = node('div', null, body, 'rg-pageview');
+          valid.forEach((url, index) => {
+            const figure = node('figure', null, view);
+            const caption = node('figcaption', null, figure);
+            node('span', `${pageName} ${index + 1} de ${urls.length}`, caption);
+            const link = node('a', 'Abrir en una pestaña', caption);
+            link.href = url; link.target = '_blank'; link.rel = 'noopener';
+            const img = node('img', null, figure);
+            img.alt = `${pageName} ${index + 1}: ${preview.title || 'documento'}.`;
+            if (!verified) img.onload = () => this.pageLoaded(artifact.id, index);
+            img.src = url;
+            if (index === focusIndex && focusIndex) window.setTimeout(() => figure.scrollIntoView({block: 'start'}), 60);
+          });
+        }
+        if (!verified && this.reviews.has(artifact.id)) {
+          node('p', 'Tu confirmación registra únicamente la revisión visual; la exportación se autoriza aparte.', foot, 'rg-meta');
+          this.reviewButton(artifact, foot);
+        } else if (verified) {
+          const seen = new Set();
+          [{format: artifact.format, url: artifact.download_url}, ...list(artifact.downloads)].forEach(download => {
+            const downloadFormat = String(download.format || artifact.format || '').toLowerCase();
+            if (!artifactUrl(download.url, 'download') || seen.has(downloadFormat)) return;
+            seen.add(downloadFormat);
+            const link = node('a', null, foot, seen.size === 1 ? 'rg-btn rg-btn-primary' : 'rg-btn');
+            icon('download', link);
+            link.appendChild(document.createTextNode(`Descargar ${downloadFormat.toUpperCase()}`));
+            link.href = download.url;
+            link.setAttribute('download', '');
+          });
+        }
+      }, trigger);
+    }
+    note(text) {
+      this.message.replaceChildren();
+      this.message.className = 'rg-agent-message is-info';
+      icon('info', this.message);
+      node('p', text, this.message);
+      this.message.hidden = false;
+    }
+    async start() {
+      try {
+        const state = await this.snapshot();
+        if (!state || !live(state.status)) return;
+        this.listen();
+      } catch (_) {
+        this.revoke();
+      }
+    }
+    listen() {
+      this.close();
+      if (typeof EventSource !== 'function') { this.poll(); return; }
+      const source = new EventSource(this.run.events_url + '?cursor=' + this.cursor);
+      this.stream = source;
+      const current = () => this.stream === source;
+      let pending = null;
+      const refresh = () => {
+        if (pending) return;
+        pending = window.setTimeout(() => { pending = null; this.snapshot().catch(() => this.revoke()); }, 150);
+      };
       source.addEventListener('progress', message => {
         if (!current()) return;
         try {
-          const event = JSON.parse(message.data); progress(event);
-          if (['claimed', 'input', 'calculate', 'compose', 'render', 'verify', 'recalculate', 'rename', 'visual_pending', 'verified', 'draft', 'approval_pending', 'export_completed', 'export_uncertain', 'inference_completed', 'visual_reviewed', 'searching', 'reading', 'executing', 'installing', 'verifying'].includes(event.kind)) snapshot().catch(unavailable);
-        } catch (_) { text('Se recibió un evento que no se pudo leer. Recarga el estado para continuar.'); }
+          const event = JSON.parse(message.data);
+          if (this.addEvent(event)) this.paint();
+          if (REFRESH.has(event.kind)) refresh();
+        } catch (_) {
+          this.note('Se recibió un evento que no se pudo leer. Actualiza el estado para continuar.');
+        }
       });
-      source.addEventListener('terminal', () => { if (current()) { source.close(); snapshot().catch(unavailable); } });
-      source.addEventListener('revoked', () => { if (current()) unavailable(); });
-      source.onerror = () => { if (current()) text('Conexión interrumpida. Reconectando desde el último evento; el trabajo no se repite.'); };
-    } catch (_) { unavailable(); }
+      source.addEventListener('terminal', () => { if (current()) { this.close(); this.snapshot().catch(() => this.revoke()); } });
+      source.addEventListener('revoked', () => { if (current()) this.revoke(); });
+      source.onerror = () => {
+        if (!current()) return;
+        // EventSource reconnects with Last-Event-ID; a closed source (no SSE here) falls back to polling.
+        if (source.readyState === 2) { this.close(); this.poll(); }
+      };
+    }
+    poll() {
+      window.clearTimeout(this.timer);
+      this.timer = window.setTimeout(async () => {
+        try {
+          const state = await this.snapshot();
+          if (state && live(state.status)) this.poll();
+        } catch (_) {
+          this.revoke();
+        }
+      }, 2500);
+    }
+    close() {
+      this.stream?.close();
+      this.stream = null;
+      window.clearTimeout(this.timer);
+      this.timer = null;
+    }
+    revoke() {
+      this.close();
+      this.unavailable = true;
+      this.data = null;
+      this.artifactKey = '';
+      this.deliverables.replaceChildren();
+      this.exportArea.replaceChildren();
+      this.extra.replaceChildren();
+      this.tech.replaceChildren();
+      this.tech.hidden = true;
+      this.limits.replaceChildren();
+      this.limits.hidden = true;
+      this.reviews.clear();
+      if (this === latest) { chosenRevision = null; updateContext(); }
+      this.note('El estado no está autorizado o no está disponible. Actualiza el estado para comprobar el acceso.');
+      this.paint();
+      this.showActions();
+      if (this === latest) chat()?.busy(false);
+    }
+    async refresh() {
+      try {
+        const state = await this.snapshot();
+        if (state && live(state.status)) this.listen();
+      } catch (_) {
+        this.revoke();
+      }
+    }
+    async cancel() {
+      if (!live(this.run.status) || !this.run.cancel_url) return;
+      try {
+        await post(this.run.cancel_url);
+        await this.snapshot();
+      } catch (_) {
+        this.revoke();
+      }
+    }
+    async resume(control) {
+      if (!this.run.resumable) return;
+      if (control) control.disabled = true;
+      try {
+        const value = await post(this.run.resume_url);
+        if (value?.run) {
+          this.run = {...this.run, ...value.run};
+          this.events = [];
+          this.cursor = 0;
+          this.artifactKey = '';
+          await this.start();
+        }
+      } catch (_) {
+        this.note('No se puede reanudar: el punto guardado, los permisos o el presupuesto ya no son válidos.');
+      } finally {
+        if (control) control.disabled = false;
+      }
+    }
   }
-  function unavailable() {
-    stream?.close(); stream = null;
-    byId('agentCancel').hidden = true; byId('agentState').textContent = 'Estado no disponible'; byId('agentActivity').dataset.state = 'failed';
-    byId('agentArtifacts').replaceChildren(); byId('agentExport')?.replaceChildren();
-    byId('agentSummary')?.replaceChildren(); byId('agentTrace')?.replaceChildren(); revision = null; artifactKey = '';
-    byId('agentSources')?.replaceChildren(); byId('agentOperations')?.replaceChildren(); chosenRevision = null;
-    if (byId('agentFailure')) { byId('agentFailure').textContent = ''; byId('agentFailure').hidden = true; }
-    text('El estado no está autorizado o no está disponible. Recarga el estado para comprobar el acceso.');
-  }
-  window.regulayAgent = {
-    capture(file) {
-      const selected = mode || byId('conversationMode')?.value;
-      if (selected !== 'agent') return {};
-      if (pendingExport) return {mode: 'agent', ...pendingExport};
-      const selectedRevision = professional() ? chosenRevision : revision;
-      return {mode: 'agent', documentReference: !file && documentReference,
-        artifactId: !file && !documentReference && selectedRevision?.logical_id, baseRevision: !file && !documentReference && selectedRevision?.id};
-    }, watch, renderReceipt
-  };
-  function showExport(proposal, state) {
-    const area = byId('agentExport'); if (!area) return; area.replaceChildren(); if (!proposal) return;
-    const card = node('article', null, area, 'agent-artifact'); node('h3', 'Guardar revisión en Google Drive', card);
-    const values = node('dl', null, card, 'agent-definition-list');
-    const statuses = {pending: 'Esperando aprobación', approved: 'Aprobado', rejected: 'Rechazado', intent: 'Guardando; resultado pendiente', uncertain: 'Resultado por confirmar', completed: 'Guardado confirmado'};
+
+  function showExport(watcher, proposal, state) {
+    const area = watcher.exportArea;
+    area.replaceChildren();
+    if (!proposal) return;
+    const card = node('article', null, area, 'rg-export');
+    const heading = node('h3', null, card);
+    icon('cloud', heading);
+    heading.appendChild(document.createTextNode('Guardar revisión en Google Drive'));
+    const values = node('dl', null, card, 'rg-facts');
+    const statuses = {pending: 'Esperando aprobación', approved: 'Aprobado', rejected: 'Rechazado', intent: 'Guardando; resultado pendiente',
+      uncertain: 'Resultado por confirmar', completed: 'Guardado confirmado'};
     [['Cuenta', proposal.account], ['Carpeta', proposal.folder], ['Nombre', proposal.name], ['Revisión', proposal.revision],
       ['Efecto', 'Crear un archivo nuevo'], ['Contenido', `${proposal.bytes} bytes`], ['SHA-256 del contenido', proposal.sha256],
       ['Estado', statuses[proposal.status] || proposal.status], ['Caduca', timestamp(proposal.expires_at)]].forEach(([name, value]) => detail(values, name, value));
     if (artifactUrl(proposal.preview_url, 'download')) {
-      const content = node('a', 'Revisar el contenido exacto antes de aprobar', card, 'd-block small mb-2'); content.href = proposal.preview_url;
+      const content = node('a', 'Revisar el contenido exacto antes de aprobar', card, 'rg-meta');
+      content.href = proposal.preview_url;
     }
+    const row = node('div', null, card, 'rg-btn-row');
     if (proposal.status === 'pending' && state.status === 'active' && Date.parse(proposal.expires_at) > Date.now()) {
-      [['approve', 'Aprobar esta exportación'], ['reject', 'Rechazar']].forEach(([decision, title]) => {
-        const control = button(title, card, async () => {
+      [['approve', 'Aprobar esta exportación', 'rg-btn rg-btn-primary'], ['reject', 'Rechazar', 'rg-btn']].forEach(([decision, title, className]) => {
+        const control = button(title, row, async () => {
           control.disabled = true;
           try {
-            const response = await fetch(proposal.decision_url, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()}, body: JSON.stringify({binding: proposal.binding, decision})});
-            if (!response.ok) throw new Error('Approval changed'); await snapshot();
-          } catch (_) { text('La propuesta ha caducado o sus permisos han cambiado. Recarga para comprobar el estado.'); }
-        }, 'btn btn-outline-primary btn-sm me-2');
+            await post(proposal.decision_url, {binding: proposal.binding, decision});
+            await watcher.snapshot();
+          } catch (_) {
+            watcher.note('La propuesta ha caducado o sus permisos han cambiado. Actualiza para comprobar el estado.');
+            control.disabled = false;
+          }
+        }, className);
       });
     }
     if (proposal.status === 'uncertain' && state.status === 'interrupted') {
-      const recover = button('Reconciliar el resultado de la exportación', card, async () => {
+      const recover = button('Reconciliar el resultado de la exportación', row, async () => {
         recover.disabled = true;
         try {
-          const response = await fetch(`/chat/agent/runs/${state.id}/recover-export/`, {method: 'POST', headers: {'X-CSRFToken': csrf()}});
-          if (!response.ok) throw new Error('Recovery unavailable'); await watch(state);
-        } catch (_) { text('No se pudo recuperar el resultado. Comprueba los permisos y la aprobación.'); recover.disabled = false; }
-      });
+          await post(`/chat/agent/runs/${state.id}/recover-export/`);
+          await watcher.start();
+        } catch (_) {
+          watcher.note('No se pudo recuperar el resultado. Comprueba los permisos y la aprobación.');
+          recover.disabled = false;
+        }
+      }, 'rg-btn', 'refresh');
+    }
+    if (!row.children.length) row.remove();
+  }
+
+  /* ------------------------------------------------------------ composer context */
+  const professional = () => latest?.run?.professional || byId('chatApp')?.dataset.professional === 'true';
+  function updateContext() {
+    const area = byId('composerContext');
+    if (!area) return;
+    area.replaceChildren();
+    let text = '', clear = null;
+    if (documentReference) {
+      text = `Archivo de Drive: ${documentLabel}`;
+      clear = () => { documentReference = null; documentLabel = ''; updateContext(); };
+    } else if (professional() && chosenRevision) {
+      text = `Editando «${chosenRevision.title || chosenRevision.preview?.title || 'Archivo'}», revisión ${chosenRevision.revision}`;
+      clear = () => { chosenRevision = null; updateContext(); };
+    } else if (!professional() && latest?.data?.current_revision && !live(latest.run.status)) {
+      const revision = latest.data.current_revision;
+      text = `Los cambios se aplicarán a «${revision.preview?.title || 'Entregable'}», revisión ${revision.revision}`;
+    }
+    area.hidden = !text;
+    if (!text) return;
+    icon(documentReference ? 'cloud' : 'pencil', area);
+    node('span', text, area);
+    if (clear) {
+      const control = node('button', null, area, 'rg-icon-btn rg-sm');
+      control.type = 'button';
+      control.setAttribute('aria-label', 'Quitar selección');
+      icon('x', control);
+      control.addEventListener('click', clear);
     }
   }
-  function setMode(active) {
-    byId('agentActivity')?.classList.toggle('d-none', !active); byId('chatContainer')?.classList.toggle('agent-conversation', active);
-    if (byId('attachmentHint')) byId('attachmentHint').textContent = active ?
-      (professional() ? 'Investiga, calcula o crea archivos. Puedes adjuntar datos y documentos; elige «Editar esta revisión» para modificar un entregable.' :
-        'Puedes crear sin adjunto. Para transformar datos: CSV o XLSX con item y amount_cents. Las revisiones conservan el archivo.') : 'Adjunta un documento compatible para el chat.';
-    if (byId('fileInput')) byId('fileInput').accept = active && !professional() ? '.csv,.xlsx' : '.txt,.pdf,.docx,.pptx,.csv,.json,.py,.js,.md,.xlsx';
-    if (byId('prompt')) byId('prompt').placeholder = active ? (professional() ? 'Describe qué quieres investigar, calcular o crear…' : 'Describe el documento, su formato, idioma y extensión…') : 'Escribe tu mensaje…';
-  }
-  document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = byId('conversationSidebar'), toggle = byId('conversationSidebarToggle');
-    if (sidebar && toggle) {
-      let collapsed = window.matchMedia?.('(max-width: 900px)').matches || false;
-      const updateSidebar = () => { sidebar.hidden = collapsed; toggle.setAttribute('aria-expanded', String(!collapsed)); toggle.textContent = collapsed ? 'Mostrar conversaciones' : 'Ocultar conversaciones'; };
-      updateSidebar(); toggle.addEventListener('click', () => { collapsed = !collapsed; updateSidebar(); });
+
+  function mount(host, run, {fresh = false} = {}) {
+    if (!host || !run?.id) return null;
+    watchers.get(run.id)?.close();
+    const watcher = new Watcher(host, run);
+    watchers.set(run.id, watcher);
+    latest = watcher;
+    if (fresh) {
+      documentReference = null; documentLabel = ''; pendingExport = null; chosenRevision = null;
+      updateContext();
     }
-    byId('agentRefresh')?.addEventListener('click', () => { if (run) snapshot().catch(unavailable); });
-    byId('agentResume')?.addEventListener('click', async () => {
-      if (!run?.resumable) return;
-      byId('agentResume').disabled = true;
-      try {
-        const response = await fetch(run.resume_url, {method: 'POST', headers: {'X-CSRFToken': csrf()}});
-        if (!response.ok) throw new Error('Resume unavailable');
-        const value = await response.json(); await watch(value.run);
-      } catch (_) { text('No se puede reanudar: el punto guardado, los permisos o el presupuesto ya no son válidos.'); }
-      finally { byId('agentResume').disabled = false; }
+    watcher.start();
+    return watcher;
+  }
+
+  window.regulayAgent = {
+    capture(file) {
+      const app = byId('chatApp');
+      const mode = app?.dataset.conversation ? app.dataset.mode : document.querySelector('input[name=conversation_mode]:checked')?.value;
+      if (mode !== 'agent') return {};
+      if (pendingExport) return {mode: 'agent', ...pendingExport};
+      const selected = professional() ? chosenRevision : latest?.data?.current_revision;
+      return {mode: 'agent', documentReference: !file && documentReference,
+        artifactId: !file && !documentReference && selected?.logical_id, baseRevision: !file && !documentReference && selected?.id};
+    },
+    consumed() {
+      pendingExport = null; documentReference = null; documentLabel = ''; chosenRevision = null;
+      updateContext();
+    },
+    modeChanged(agent) {
+      // A Drive file is only an agent input: leaving agent mode drops the selection.
+      if (!agent) { documentReference = null; documentLabel = ''; }
+      updateContext();
+    },
+    mount, renderReceipt,
+    watchers,
+  };
+
+  function init() {
+    let runs = {};
+    try { runs = JSON.parse(byId('agent-runs')?.textContent || '{}') || {}; } catch (_) { runs = {}; }
+    const hosts = Array.from(document.querySelectorAll('[data-agent-run]'));
+    const lazy = typeof IntersectionObserver === 'function' ? new IntersectionObserver(entries => entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      lazy.unobserve(entry.target);
+      watchers.get(entry.target.dataset.agentRun)?.start();
+    }), {rootMargin: '600px 0px'}) : null;
+    hosts.forEach((host, index) => {
+      const run = runs[host.dataset.agentRun];
+      if (!run) return;
+      const watcher = new Watcher(host, run);
+      watchers.set(run.id, watcher);
+      const last = index === hosts.length - 1;
+      if (last) latest = watcher;
+      if (last || live(run.status) || !lazy) watcher.start();
+      else lazy.observe(host);
     });
     byId('agentDocumentSearch')?.addEventListener('click', async () => {
-      const area = byId('agentDocumentResults'), control = byId('agentDocumentSearch'); control.disabled = true; documentReference = null; area.replaceChildren();
+      const area = byId('agentDocumentResults'), control = byId('agentDocumentSearch');
+      control.disabled = true; documentReference = null; area.replaceChildren(); updateContext();
       try {
-        const response = await fetch('/chat/agent/documents/search/', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()}, body: JSON.stringify({query: byId('agentDocumentQuery').value})});
-        if (!response.ok) throw new Error('Unavailable'); const data = await response.json();
+        const data = await post('/chat/agent/documents/search/', {query: byId('agentDocumentQuery').value});
         if (!list(data.documents).length) node('p', 'No hay archivos compatibles en la carpeta autorizada.', area);
         list(data.documents).forEach(doc => {
-          button(doc.label + ' · usar como entrada', area, () => { documentReference = doc.reference; area.replaceChildren(); node('p', doc.label + ' seleccionado. Escribe la petición y envíala.', area); byId('prompt').focus(); });
+          button(doc.label, area, () => {
+            documentReference = doc.reference; documentLabel = doc.label;
+            area.replaceChildren();
+            byId('drivePanel').hidden = true;
+            updateContext();
+            byId('prompt')?.focus();
+          }, 'rg-btn', 'file');
         });
-      } catch (_) { node('p', 'Conector no disponible. Requiere una cuenta autorizada por el administrador.', area); }
-      finally { control.disabled = false; }
+      } catch (_) {
+        node('p', 'Conector no disponible. Requiere una cuenta autorizada por el administrador.', area);
+      } finally {
+        control.disabled = false;
+      }
     });
-    let initial = null;
-    try { initial = JSON.parse(byId('agent-initial')?.textContent || 'null'); } catch (_) { text('No se pudo restaurar la ejecución. Recarga la página.'); }
-    if (initial) watch(initial);
-    else if (byId('conversationMode')?.value === 'agent') setMode(true);
-    byId('conversationMode')?.addEventListener('change', event => {
-      setMode(event.target.value === 'agent'); byId('agentCancel').hidden = true;
-      text('Crea un informe Word/PDF, una hoja Excel o una presentación a partir de tu petición. Los datos ficticios requieren una solicitud expresa.');
-    });
-    byId('agentCancel')?.addEventListener('click', async () => {
-      if (!run) return; byId('agentCancel').disabled = true;
-      try {
-        const response = await fetch(run.cancel_url, {method: 'POST', headers: {'X-CSRFToken': csrf()}});
-        if (!response.ok) throw new Error('Cancel unavailable'); await snapshot();
-      } catch (_) { unavailable(); }
-      finally { byId('agentCancel').disabled = false; }
-    });
-  });
-  window.addEventListener('pagehide', () => stream?.close());
+  }
+  window.addEventListener('pagehide', () => watchers.forEach(watcher => watcher.close()));
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

@@ -17,7 +17,7 @@ from django.db.models import Max
 from django.utils import timezone
 
 from front.access import authorized_conversations
-from front.models import (AgentArtifact, AgentEvent, AgentExecution, AgentInput,
+from front.models import (AgentArtifact, AgentEvent, AgentExecution, AgentInference, AgentInput,
                          Conversation, Message, Profile, Prompt, Response)
 from front.policy import digest
 from .excel_contract import MAX_BYTES, input_rows, sha256, valid_title, verify
@@ -279,6 +279,10 @@ def run_data(run):
         'professional': run.job.get('kind') == 'professional', 'resumable': resumable(run),
         'resume_url': f'/chat/agent/runs/{run.pk}/resume/',
         'status': run.status, 'request': run.job.get('request', {}),
+        # Server timestamps let the viewer show measured durations only.
+        'created_at': run.created_at.isoformat() if run.created_at else None,
+        'started_at': run.started_at.isoformat() if run.started_at else None,
+        'finished_at': run.finished_at.isoformat() if run.finished_at else None,
         'events_url': f'/chat/agent/runs/{run.pk}/events/',
         'status_url': f'/chat/agent/runs/{run.pk}/',
         'cancel_url': f'/chat/agent/runs/{run.pk}/cancel/'}
@@ -551,9 +555,24 @@ def fail(token, attempt, payload):
     with locked(token, attempt) as (run, _):
         uncertain_export = run.job.get('kind') == 'export' and hasattr(run, 'export') and run.export.status in ('intent', 'uncertain')
         if not run.active_call and not uncertain_export:
-            from .research import consulted_sources
-            if run.job.get('request', {}).get('research_required') and not consulted_sources(run) and not run.job.get('base'):
-                run.prompt.decision['error_type'] = 'agent_research_no_sources'
+            # The professional agent reads the open web; only the document agent uses the catalogue.
+            professional = run.job.get('kind') == 'professional'
+            if professional:
+                from .web_tools import consulted_sources
+            else:
+                from .research import consulted_sources
+            from front.chat_service import ERRORS
+            last = AgentInference.objects.filter(execution=run).order_by('-id').first()
+            rejected = last.response.get('code') if last and last.status == 'rejected' else None
+            if rejected == 'security_check_failed':
+                # Stopped by Regulay's own check on content read or produced mid-run.
+                run.prompt.decision['error_type'] = 'agent_security_check_failed'
+                run.prompt.save(update_fields=['decision'])
+            elif rejected in ERRORS:
+                run.prompt.decision['error_type'] = rejected
+                run.prompt.save(update_fields=['decision'])
+            elif run.job.get('request', {}).get('research_required') and not consulted_sources(run) and not run.job.get('base'):
+                run.prompt.decision['error_type'] = 'agent_research_no_sources_web' if professional else 'agent_research_no_sources'
                 run.prompt.save(update_fields=['decision'])
         _terminal(run, 'interrupted' if run.active_call or uncertain_export else 'failed')
     return {'status': 'completed'}

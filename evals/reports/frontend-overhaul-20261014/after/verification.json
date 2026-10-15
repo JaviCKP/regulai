@@ -1,0 +1,72 @@
+{
+  "base": "http://127.0.0.1:8801",
+  "drive": "http://127.0.0.1:8802",
+  "results": [
+    {
+      "name": "Streaming: texto comprobado antes de que termine la generación, y parada",
+      "ok": true,
+      "detail": "105 caracteres visibles con el proveedor en pausa; tras Detener se retira y queda «Respuesta detenida»"
+    },
+    {
+      "name": "Recarga durante la generación: se reengancha sin volver a enviar",
+      "ok": true,
+      "detail": "el texto parcial se repite desde el registro en memoria; 1 envío en total; respuesta única al terminar"
+    },
+    {
+      "name": "Cambio de conversación durante la generación: al volver, la respuesta está guardada",
+      "ok": true,
+      "detail": "aún en curso al volver: se reenganchó y terminó"
+    },
+    {
+      "name": "Móvil: generación progresiva",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Teclado: salto al compositor, selector de modelo, actividad y vista previa",
+      "ok": true,
+      "detail": "menú: Proveedor simuladoLaboratorio · OpenAI Compatible (Custom URL) → Proveedor simulado (Messages)Laboratorio · Anthropic SDK; actividad false → true; diálogo abre con foco dentro y Escape devuelve el foco"
+    },
+    {
+      "name": "Teclado móvil: cajón con foco dentro, fondo inerte y Escape",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Movimiento reducido: animaciones anuladas y sin brillo animado",
+      "ok": true,
+      "detail": "9 animaciones a ≤1 ms; ping del indicador: none"
+    },
+    {
+      "name": "Contraste AA del texto visible (chat, consentimiento, error, documento, agente, revisión)",
+      "ok": true,
+      "detail": "489 elementos con texto comprobados en 7 conversaciones"
+    },
+    {
+      "name": "Adjuntos en chat: txt validado, formato no admitido, arrastrar y soltar, respuesta con citas",
+      "ok": true,
+      "detail": "exe rechazado; csv por arrastre; respuesta: «El documento indica: Acta del comité de compras. Se aprueba el. 1»"
+    },
+    {
+      "name": "Adjuntos en modo agente: solo CSV/XLSX",
+      "ok": true,
+      "detail": "accept=.csv,.xlsx; .txt rechazado; .csv aceptado; sin botón de Drive sin REGULAY_AGENT_MCP_ENABLED"
+    },
+    {
+      "name": "Selector de Drive solo en modo agente con REGULAY_AGENT_MCP_ENABLED",
+      "ok": true,
+      "detail": "respuesta del laboratorio sin concesión de Drive: «Conector no disponible. Requiere una cuenta autorizada por el administrador.»"
+    },
+    {
+      "name": "Envío real en modo agente (laboratorio SQLite, sin worker)",
+      "ok": true,
+      "detail": "estado mostrado: «En cola · 1 paso · 3 s»"
+    },
+    {
+      "name": "Sin errores de consola ni excepciones de página",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "consoleErrors": []
+}

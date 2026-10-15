@@ -1,0 +1,238 @@
+# 59. Chat y agente: respuesta progresiva y actividad legible
+
+Status: Aplicado el 2026-10-14 en la rama `claude/aplicar-rediseno-chat`, sobre el estado sin commitear de las tareas 55–58 (ver «Aplicación sobre el checkout principal»), y desplegado en la instalación local `regulai-v2-vm` con autorización del usuario. El arreglo posterior del motivo de fallo está en la rama, pendiente de desplegar. Sin ensayo nuevo con el proveedor real.
+Blocked by: Autorización para volver a desplegar con ese arreglo. Los ensayos con proveedores reales necesitan autorización de gasto.
+
+Numeración: se creó como «57» en el worktree del rediseño; se renumera a 59 porque la 57 del checkout principal es la activación real y la 58 el instalador.
+
+Especificación: encargo del 2026-10-14. Es un rediseño real del chat y del modo agente:
+- menos texto redundante, con la conversación y los entregables en primer plano;
+- respuesta progresiva real;
+- actividad del agente comprensible;
+- complejidad plegada bajo demanda.
+
+Se conservan conversaciones, adjuntos, documentos, revisiones, descargas, citas, permisos por
+empresa y aprobaciones. Sin dependencias nuevas, sin push ni despliegue y sin llamadas a APIs de pago.
+
+## Aceptación
+
+- El texto aparece mientras se genera, y solo después de las mismas comprobaciones de salida
+  que la respuesta final: enmascarado local, YARA y destinos. Si una comprobación final
+  falla, se retira y no se persiste. Cuando el control necesita el texto completo, se entrega
+  completo y se muestra el motivo.
+- Detener, reenganchar tras un corte o una recarga y cambiar de conversación no repiten la
+  inferencia ni crean otro envío.
+- Las tres entradas HTTP sin `stream=1` mantienen su contrato JSON. Se conservan los
+  invariantes de estado y dinero: el coste desconocido nunca aparece como 0.
+- Cada estado tiene un aviso con sus acciones, también tras recargar: bloqueado,
+  consentimiento, error, cancelado y en curso.
+- El agente muestra en cada turno los eventos registrados, las herramientas y la duración
+  medida por el servidor, sin plan, porcentaje ni verificación inventados. La comprobación
+  técnica, la revisión visual humana y la autorización de exportación siguen separadas.
+- Se verifica en navegador real, en escritorio y móvil: teclado, foco, contraste,
+  movimiento reducido, adjuntos y estados.
+
+## Secuencia de trabajo
+
+1. [hecho] Streaming en el backend: conectores OpenAI y Anthropic, `StreamGuard`, motivos de
+   entrega completa, registro en memoria, reenganche y parada (`chat_streaming.py`,
+   `chat_service.py`, `chat_ui.py`).
+2. [hecho] Interfaz:
+   - plantillas `chat.html` y `_turn.html`;
+   - proyección `chat_page.py`;
+   - `chat.css`;
+   - `chat-markdown.js`, `chat.js` y `agent-chat.js`.
+3. [hecho] Laboratorio aislado: proveedor simulado, semilla, capturas y verificación con Playwright.
+4. [hecho] Reescritura de las pruebas de interfaz con un navegador sin red
+   (`front/offline_browser.cjs` y `.py`), conservando cada invariante de las antiguas.
+5. [hecho] Suite completa en serie y comparación con `fa375ad`.
+6. [hecho] Verificación en navegador, capturas «después», este documento y el informe.
+7. [pendiente externo] Aplicar el parche en el checkout principal y ensayarlo con worker y
+   PostgreSQL y con proveedores reales bajo autorización.
+
+## Verificación observada
+
+### Pruebas de aplicación
+
+- **En verde:**
+  - `test_frontend_chat` 19;
+  - `test_agent_frontend` 17;
+  - `test_chat_page` 7;
+  - `test_chat_streaming` 20;
+  - `test_chat_ui` y `test_pipeline`.
+
+  Las de navegador ejecutan la plantilla real y los tres scripts. `innerHTML` lanza un
+  error, y unas comprobaciones que no terminan cuentan como fallo.
+- **Consentimiento tras recargar.** Lo que envía la página (misma petición, token y
+  selección de modelo) lo acepta el servidor como la misma petición, con una sola inferencia.
+
+### Suite completa en serie
+
+- En `a0a5078`: 700 pruebas, 23 fallos + 31 errores. Las 51 pruebas distintas que fallan se
+  ejecutaron sobre una copia `git archive fa375ad` y fallan igual: todas son de módulos
+  agent, `ai_connections` o `review_regressions` que exigen PostgreSQL. La línea base
+  documentada era 675 pruebas, con 46 fallos + 23 errores.
+- La única regresión del WIP fuera de esos módulos (notificaciones de seguridad en
+  `test_backend_hardening`) se corrigió.
+- Resultado sobre `dd7dba9`: 700 pruebas en 194 s, 23 fallos + 31 errores. Son 52 pruebas
+  distintas: 51 son las preexistentes de `fa375ad` y 1 es intermitente.
+- La intermitente es `LiveStreamingTests.test_stop_closes_a_silent_provider_stream_at_once`.
+  - Falló su última aserción: el servidor simulado no detectó el socket cerrado en 5 s.
+  - La parada en menos de 5 s, el estado `cancelled` y el coste desconocido sí se cumplieron
+    en esa misma ejecución.
+  - Pasó en la ejecución completa de `a0a5078`, 3/3 veces aislada y 20/20 con su módulo.
+  - Es una prueba de la sesión anterior que usa hilos y sockets reales. Se deja sin tocar y
+    se anota como inestable bajo carga.
+
+### Navegador (Chromium con Playwright)
+
+`ops/chat_ui_lab/verify.cjs` dio 13/13 sobre el laboratorio, con un proveedor simulado en
+loopback y BD sintética:
+
+- texto antes del final y parada con retirada;
+- recarga con reenganche y un solo envío;
+- cambio de conversación;
+- móvil;
+- teclado y foco;
+- cajón con fondo inerte;
+- movimiento reducido;
+- contraste AA de 489 elementos;
+- adjuntos (txt, formato no admitido, arrastre, y CSV/XLSX en modo agente);
+- selector de Drive;
+- envío en modo agente;
+- consola sin errores.
+
+Evidencia, contrato de eventos, librerías evaluadas, capturas «antes» y «después» y
+limitaciones: [frontend-overhaul-20261014](../../../evals/reports/frontend-overhaul-20261014/README.md).
+
+## Defectos del WIP corregidos en la verificación
+
+- **Markdown:**
+  - recursión infinita con URLs;
+  - enlaces con paréntesis cortados;
+  - `plain()` solo sustituía un marcador;
+  - marcadores crudos en listas o encabezados en streaming.
+- **Títulos con medio valor sensible.** El valor quedaba cortado en el carácter 50 y se
+  veía en la barra lateral, la cabecera, `<title>` y la página de borrado. Ahora se enmascara
+  el primer mensaje entero y después se recorta. Los títulos explícitos se conservan.
+- **Entradas JSON.** Un `PipelineStop` en la llamada de generación terminaba como
+  `provider_failed` por un `AttributeError`.
+- **Paridad:**
+  - alertas recientes para el personal de seguridad;
+  - selector de Drive al empezar en modo agente (solo con `REGULAY_AGENT_MCP_ENABLED`).
+- **Agente:**
+  - el paso agrupado mostraba la primera frase;
+  - el error salía duplicado;
+  - concordancia de número;
+  - el reenganche con 404 decía «sigue registrada»;
+  - un recibo antiguo sin `calls` mostraba «0».
+- **Accesibilidad:**
+  - dos pares de color por debajo de AA (4,35:1 y 4,51:1);
+  - fondo inerte con el cajón abierto;
+  - enlace de salto con foco explícito.
+
+## Decisiones y límites de la entrega
+
+- **Sin dependencias nuevas.** AI Elements, assistant-ui y Motion se usaron como referencia
+  (ver el informe). Se eligió CSS y WAAPI nativos y un Markdown propio que solo crea nodos DOM.
+- **Entrega completa cuando el control necesita el texto entero:**
+  - verificación semántica;
+  - citas;
+  - JSON;
+  - enmascarado remoto;
+  - proveedores sin streaming verificado;
+  - YARA no decidible por prefijo.
+- **Texto en directo.** Siempre se retienen 96 caracteres. El texto parcial vive solo en
+  memoria y nunca se persiste.
+- **Varios workers.** El reenganche desde otro proceso solo ve el resultado final guardado
+  (espera hasta 60 s).
+- **Detener.** En streaming corta el stream del proveedor al momento; en entrega completa se
+  aplica al volver la llamada. El coste queda siempre desconocido, nunca 0.
+- **Agente.** No tiene plan explícito; las duraciones son solo las medidas por el servidor.
+  El SSE del agente exige ASGI; sin él, se consulta cada 2,5 s.
+- **No verificado aquí:**
+  - ejecución real del agente (SQLite sin worker: queda «En cola»);
+  - proveedores reales;
+  - lectores de pantalla.
+- **Pendiente, fuera de alcance.** `log_action` guarda el título crudo al borrar una conversación.
+
+Entrega: `entrega/frontend-overhaul.patch` (código, pruebas, documentación y laboratorio) y
+`entrega/frontend-overhaul-capturas.patch` (PNG), ambos sobre `fa375ad`.
+
+## Aplicación sobre el checkout principal (2026-10-14)
+
+La instalación real (`regulai-v2-vm`, tareas 57 y 58) se construyó desde `codex/tasks-53-54`, que
+no tenía este rediseño: el chat real seguía con la interfaz anterior. Se aplica en la rama
+`claude/aplicar-rediseno-chat`, sin commit y sin tocar el trabajo previo sin commitear.
+
+- **Fusión.** Desde `fa375ad`, el checkout principal solo cambió dos archivos del parche:
+  `chat.html` (el chat nuevo abre el agente profesional por defecto) y `agent-chat.js` (activa
+  ese modo al cargar). Se toma el rediseño y se conserva ese comportamiento: «Agente» queda
+  marcado cuando `agent_professional`, y `chat.js` ya aplica al cargar el modo marcado. El resto
+  se copia tal cual de `22c50d7`. Recursos con versión `overhaul-5`, para no reutilizar en el
+  navegador copias del laboratorio.
+- **`test_b10`.** Buscaba el `sendMessage` en línea que el rediseño retiró. Se reescribe sobre el
+  navegador sin red con la página real: sin `crypto.randomUUID`, el envío lleva un UUID v4.
+  Falla si se quita el respaldo de `chat.js`.
+- **Franja rosa al cargar.** La tarjeta del agente creaba el aviso de error visible y vacío hasta
+  el primer estado del servidor. Ahora nace oculto, igual que los límites. Nueva prueba con el
+  estado retenido; falla sin la corrección.
+- **Agente profesional sin buscador.** Sin clave Tavily, `bootstrap` retira `web_search`, pero las
+  instrucciones daban por hecho un buscador. Si se ofrece `web_open` sin `web_search`, Regulay
+  añade una instrucción: abrir direcciones de referencia conocidas y no atribuir contenido a
+  páginas no abiertas. Prueba nueva. **No ensayado con el modelo real.**
+- **Motivo de fallo falso.** La petición real sobre la desamortización (`1c9b3c34…`) sí leyó seis
+  fuentes con `web_open` (dos de Wikipedia, una búsqueda HTML de DuckDuckGo y dos PDF). La cuarta
+  inferencia fue rechazada por Regulay con `security_check_failed`: en `governance.preflight`,
+  la política evaluada con el texto leído no quedó en `allow`/consentimiento ya aceptado. Después,
+  `jobs.fail` usaba `research.consulted_sources` (catálogo, `kind='research'`) para todas las
+  ejecuciones y la etiquetó como «ninguna fuente consultada».
+  - `jobs.fail` cuenta las fuentes web (`web_tools.consulted_sources`) en ejecuciones profesionales.
+  - Si la última inferencia fue rechazada, el motivo pasa al usuario: `security_check_failed` usa el
+    nuevo `agent_security_check_failed`; otros códigos con mensaje en `ERRORS` se muestran tal cual.
+  - El fallo profesional sin ninguna fuente leída usa `agent_research_no_sources_web`, sin mencionar
+    el catálogo del agente de documentos.
+  - Tres pruebas nuevas por la vía real (regla de bloqueo y texto leído que la activa). Las dos de
+    etiquetado fallan con la lógica anterior.
+  - No se identificó qué regla de la empresa activó el texto leído: requiere leer contenido
+    privado de la instalación y no se ha autorizado.
+
+### Verificación observada
+
+- Suite por módulos como CI, con PostgreSQL 17 desechable para `test_agent*`: 65 módulos,
+  724 pruebas, sin fallos. Con el código final se repitieron los módulos `test_agent*` y los de
+  chat e interfaz: todos en verde (`test_agent_professional` 36, `test_agent_frontend` 18).
+- `test_chat_streaming` falló una vez de seis ejecuciones, con el laboratorio y dos PostgreSQL
+  en paralelo; las otras cinco, incluidas cuatro seguidas, pasaron. No se cambió ese código.
+  Es coherente con la prueba de sockets reales ya anotada arriba como inestable bajo carga.
+- `makemigrations --check --dry-run`: sin cambios.
+- Laboratorio (`ops/chat_ui_lab`, puerto 8801, BD sintética nueva) en escritorio y móvil:
+  chat nuevo con «Agente» por defecto; conversación profesional con fuentes; ejecución fallida
+  sin fuentes, con pasos desplegados; página de inicio con la plantilla base; consola sin errores.
+- `ops/agent_chat/preview_document_ui.py` y `preview_professional_ui.py` pasan el contexto
+  antiguo (`messages`, `agent_initial`) y ya no muestran los turnos. La vista previa de
+  referencia pasa a ser el laboratorio.
+
+### Despliegue en `regulai-v2-vm` (2026-10-14, autorizado por el usuario)
+
+- **Comprobaciones previas.** Sin ejecuciones `queued`/`active`/`outcome_unknown`. El código de la
+  VM solo difería de la rama en los 16 archivos nuevos y 19 modificados del rediseño y sus
+  arreglos; ninguno existía solo en la VM. El worker en marcha usaba una imagen ya borrada, pero
+  su código y su `pip freeze` eran idénticos a `regulai-v2-worker:local`.
+- **Respaldos.**
+  - Imágenes `regulai-v2-web:before-redesign-20261014` y `regulai-v2-worker:before-redesign-20261014`.
+  - Copia `/opt/regulai/source-before-redesign-20261014`.
+  - Contenedores anteriores parados y renombrados con el sufijo `-before-redesign-20261014`.
+- **Código y construcción.** Copiado con `setup.bundle()`; 856 archivos idénticos a la rama.
+  Imagen web reconstruida. El worker salió entero de la caché: su Dockerfile solo copia
+  módulos del SDK, ninguno cambiado.
+- **Contenedores.** Recreados con los argumentos de `install.py`.
+- **Verificación.**
+  - `verify_web.py` correcto.
+  - `verify_sandbox.py`: renderizado DOCX/PDF y aislamiento de salida en microVM E2B real, sin
+    llamadas al modelo.
+  - Por el túnel del 8800: login de `admin`, chat con el rediseño, «Agente» por defecto y la
+    conversación de la desamortización. Sin errores de consola.
+  - No se envió ningún mensaje, para no generar llamadas de pago.
+- **Volver atrás.** Parar y borrar `regulai-v2-web` y `regulai-v2-worker`, quitar el sufijo a los
+  contenedores `-before-redesign-20261014` y arrancarlos.

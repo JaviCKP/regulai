@@ -1236,9 +1236,6 @@ def chat_view(request, conversation_id=None):
             return redirect('front:chat_conversation', conversation_id=result.data['conversation_id'])
         return JsonResponse(result.data, status=result.http_status)
     user = request.user
-    blocked = False
-    blocked_rules = []
-
     actor_company(user)
     profile = user.profile
 
@@ -1290,30 +1287,33 @@ def chat_view(request, conversation_id=None):
     conversation = None
     if conversation_id:
         conversation = get_object_or_404(authorized_conversations(user), id=conversation_id)
-    conversations = authorized_conversations(user).order_by('-updated_at')[:20]
-
-    # Get messages for current conversation
-    chat_messages = []
-    if conversation:
-        chat_messages = list(conversation.messages.all())
+    conversations = authorized_conversations(user).order_by('-updated_at')[:100]
 
     from .agents.jobs import available, run_data
     from .models import AgentExecution, AgentModelProfile
     from .agents.jobs import development_profile
+    from .chat_page import conversation_groups, display_title, turns
     agent_available = available(user)
     agent_professional = agent_available and AgentModelProfile.objects.filter(pk=development_profile(user), professional=True).exists()
-    agent_run = AgentExecution.objects.filter(conversation=conversation).order_by('-created_at').first() if conversation and conversation.mode == 'agent' else None
+    agent_mode = bool(conversation and conversation.mode == 'agent')
+    runs = {}
+    if agent_mode:
+        for run in AgentExecution.objects.filter(conversation=conversation).select_related('prompt').order_by('created_at'):
+            runs[run.prompt_id] = run_data(run)
+    # The Drive picker belongs to agent requests: agent conversations, or a new one
+    # that may start in agent mode. Without the managed connector it never appears.
+    agent_drive = (agent_mode or (agent_available and not conversation)) and getattr(settings, 'REGULAY_AGENT_MCP_ENABLED', False)
 
     return render(request, "chat/chat.html", {
         "conversation": conversation,
-        "conversations": conversations,
-        "messages": chat_messages,
+        "conversation_title": display_title(conversation) if conversation else '',
+        "conversation_groups": conversation_groups(conversations),
+        "turns": turns(conversation, runs) if conversation else [],
+        "agent_runs": {str(item['id']): item for item in runs.values()},
         "agent_available": agent_available,
         "agent_professional": agent_professional,
-        "agent_mode": bool(conversation and conversation.mode == 'agent'),
-        "agent_initial": run_data(agent_run) if agent_run else None,
-        "blocked": blocked,
-        "blocked_rules": blocked_rules,
+        "agent_mode": agent_mode,
+        "agent_drive": agent_drive,
         "available_engines": available_engines,
         "current_engine": current_engine,
         "available_models": available_models,
@@ -1342,10 +1342,11 @@ def chat_delete(request, conversation_id):
             'title': conversation.title
         }, request)
         conversation.delete()
-        messages.success(request, 'Conversation deleted successfully.')
+        messages.success(request, 'Conversación eliminada.')
         return redirect('front:chat')
 
-    return render(request, 'chat/delete.html', {'conversation': conversation})
+    from .chat_page import display_title
+    return render(request, 'chat/delete.html', {'conversation': conversation, 'conversation_title': display_title(conversation)})
 
 
 from django.http import JsonResponse
@@ -1504,6 +1505,10 @@ def extract_file_from_ai_response(content):
 @chat_rate_limit
 def chat_send_message(request, conversation_id=None):
     from .chat_service import send_chat_message
+    if request.POST.get('stream') == '1':
+        # Same command and checks; stage changes and checked text arrive as events.
+        from .chat_streaming import stream_send
+        return stream_send(request, _web_command(request, conversation_id))
     result = send_chat_message(request.user, _web_command(request, conversation_id))
     return JsonResponse(result.data, status=result.http_status)
 

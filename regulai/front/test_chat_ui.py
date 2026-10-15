@@ -28,6 +28,7 @@ class ChatUITests(TestCase):
                 'calls': [{'purpose': 'generation', 'status': 'completed', 'api_key': 'private-key', 'cost': None}],
                 'coverage': {'status': 'complete', 'text': 'private document', 'digest': 'document-hash'},
                 'limits': {'history_max_bytes': 32768, 'history_max_turns': 20},
+                'verification': {'status': 'passed'},
             })
         assistant = Message.objects.create(conversation=conversation, role='assistant', content='<img src=x onerror=alert(1)>')
         self.response = Response.objects.create(prompt=self.prompt, assistant_message=assistant,
@@ -80,8 +81,21 @@ class ChatUITests(TestCase):
         restored = self.client.get(self.receipt_url).json()['receipt']
         self.assertEqual(restored.get('limits'), {'history_max_bytes': 32768, 'history_max_turns': 20})
         self.assertContains(page, self.evidence_url)
+        self.assertContains(page, '&lt;script&gt;evidence&lt;/script&gt;')
         self.assertContains(page, reverse('front:chat_download_file', args=[assistant.pk]))
-        self.assertContains(page, 'Excluded from future context')
+        self.assertContains(page, 'Excluido del contexto')
+        self.assertNotContains(page, 'No verificado')
+
+    def test_unverified_answer_is_labelled_and_shows_no_document_evidence(self):
+        self.prompt.decision['verification'] = {'status': 'failed'}
+        self.prompt.save(update_fields=['decision'])
+        self.client.force_login(self.owner)
+        page = self.client.get(reverse('front:chat_conversation', args=[self.prompt.conversation_id]))
+        self.assertContains(page, 'No verificado', count=1)
+        self.assertNotContains(page, self.evidence_url)
+        self.assertNotContains(page, 'evidence&lt;/script&gt;')
+        self.assertNotContains(page, 'Citas del documento')
+        self.assertContains(page, self.receipt_url)
 
     def test_generated_code_download_stays_owner_scoped(self):
         with TemporaryDirectory() as media, override_settings(MEDIA_ROOT=media):

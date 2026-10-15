@@ -123,13 +123,18 @@ def execution_operation(request, operation):
     return _operation(request, handlers[operation])
 
 
+def _events(rows, limit=None):
+    rows = rows.values('id', 'kind', 'data', 'created_at')
+    return [{**row, 'created_at': row['created_at'].isoformat()} for row in (rows[:limit] if limit else rows)]
+
+
 def _snapshot(actor, run_id, cursor=None):
     from .jobs import reap, authorized_run, artifact_data, run_data, latest
     from .professional_artifacts import current_artifacts as professional_artifacts_for_run
     reap()
     run = authorized_run(actor, run_id)
     if cursor is not None:
-        events = list(run.events.filter(pk__gt=cursor).values('id', 'kind', 'data')[:100])
+        events = _events(run.events.filter(pk__gt=cursor), limit=100)
         return {'run': run_data(run), 'events': events}
     from front.chat_service import request_result
     current = latest(run.conversation, run.job['logical_id'])
@@ -153,7 +158,7 @@ def _snapshot(actor, run_id, cursor=None):
         'infrastructure': {'cost': None, 'scope': 'sandbox_and_bandwidth', 'status': 'not_reported'} if professional else None,
         'export_enabled': export_enabled,
         'current_revision': artifact_data(current) if current else None,
-        'events': list(run.events.values('id', 'kind', 'data')),
+        'events': _events(run.events.all()),
         'artifacts': [artifact_data(row) for row in (professional_artifacts_for_run(run) if professional else run.artifacts.order_by('revision'))
             if (run.status == 'completed' and row.status == 'verified') or
                (run.status == 'active' and row.verification.get('automated_passed'))]}

@@ -79,7 +79,7 @@ class PipelineTests(test_chat_flow.ChatFixture):
         session['selected_engine_id'] = 99999
         session['selected_model_id'] = 99999
         session.save()
-        self.assertContains(self.client.get('/chat/'), 'Automatic model selection')
+        self.assertContains(self.client.get('/chat/'), 'Selección automática del modelo')
         result = self.send('/chat/send/', auto_route='true', engine_id=99999, model_id=99999).json()
         self.assertEqual(result['status'], 'completed')
         self.assertEqual(result['receipt']['route']['mode'], 'auto')

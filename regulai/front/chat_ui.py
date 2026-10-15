@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 
 from .chat_service import request_result
 from .models import Profile, Prompt, Response
@@ -26,6 +26,7 @@ RECEIPT_KEYS = {
     'limits', 'jev_state_bytes', 'max_output_tokens', 'call_timeout_seconds', 'deadline_seconds',
     'response_bytes', 'judge_input_bytes_bound', 'consent_reason', 'disclosures', 'locators',
     'jev_call_timeout_seconds', 'history_max_bytes', 'history_max_turns',
+    'delivery', 'withdrawn',
 }
 
 
@@ -67,3 +68,35 @@ def request_evidence(request, request_id):
     prompt = _owned_prompt(request, request_id)
     response = Response.objects.filter(prompt=prompt).first()
     return _json({'request_id': str(prompt.request_id), 'evidence': response.evidence if response else {}})
+
+
+@login_required
+@require_GET
+def request_stream(request, request_id):
+    """Rejoin a request's events after a disconnect or reload. Never starts work."""
+    from .chat_streaming import _async_db, _sync_db, event_stream, frames, lookup
+    prompt = _owned_prompt(request, request_id)
+    try:
+        after = max(0, int(request.headers.get('Last-Event-ID') or request.GET.get('after') or 0))
+    except ValueError:
+        after = 0
+    events = lookup(request.user.pk, prompt.request_id)
+    if events is not None:
+        return event_stream(request, frames(request, events, after))
+    source = _async_db if hasattr(request, 'scope') else _sync_db
+    return event_stream(request, source(prompt.pk, request.user.pk, after))
+
+
+@login_required
+@require_POST
+def request_cancel(request, request_id):
+    """Stop a running web request at its next stage or stream fragment."""
+    from .chat_streaming import lookup
+    prompt = _owned_prompt(request, request_id)
+    events = lookup(request.user.pk, prompt.request_id)
+    if events is None or events.done:
+        return _json({'request_id': str(prompt.request_id), 'status': prompt.status, 'cancelling': False})
+    events.cancel()
+    response = _json({'request_id': str(prompt.request_id), 'status': prompt.status, 'cancelling': True})
+    response.status_code = 202
+    return response

@@ -75,12 +75,14 @@ def _matching_view(text):
     return ''.join(normalized), offsets
 
 
-def _mask_plain(text, deadline):
-    if time.monotonic() >= deadline:
-        raise TimeoutError('Local masking deadline exceeded.')
-    protected = [match.span() for match in _PLACEHOLDER.finditer(text)]
+def detect_spans(text, view=None):
+    """Raw offsets the detector replaces in plain text (before merging).
+
+    Shared by masking and by incremental delivery, so both use one detector.
+    ``view`` may pass a precomputed ``_matching_view(text)``.
+    """
     spans = []
-    matching, offsets = _matching_view(text)
+    matching, offsets = view or _matching_view(text)
     # Normalization can introduce delimiters inside a secret. Keep the original
     # matches as well so a normalized view can only add to their masked extent.
     views = [(text, None)] + ([(matching, offsets)] if matching != text else [])
@@ -93,6 +95,14 @@ def _mask_plain(text, deadline):
                 if mapping is not None:
                     start, end = mapping[start], mapping[end - 1] + 1
                 spans.append((start, end, category))
+    return spans
+
+
+def _mask_plain(text, deadline):
+    if time.monotonic() >= deadline:
+        raise TimeoutError('Local masking deadline exceeded.')
+    protected = [match.span() for match in _PLACEHOLDER.finditer(text)]
+    spans = detect_spans(text)
     # A statistical entity label is not evidence of private data. In particular,
     # it confused task variables and ordinary words with people and locations.
     # Only explicit pattern matches above may change the user's text.
