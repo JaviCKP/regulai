@@ -1,7 +1,7 @@
 """Backend security behavior at HTTP, command and persistent-state interfaces."""
 from unittest.mock import patch
 import io
-import ast
+from hashlib import sha256
 import subprocess
 import os
 import shutil
@@ -26,14 +26,21 @@ from front.encryption import encrypt_value, decrypt_value, EncryptionError
 
 
 class PublicTemplateKeyTests(TestCase):
+    def test_original_public_key_fingerprints_remain_blocked(self):
+        from front.checks import PUBLIC_KEY_HASHES
+        self.assertEqual(PUBLIC_KEY_HASHES, {
+            'SECRET_KEY': 'aef52ed18752c7b7f0e97f6e0debb70bee30f70471a454d52d19512602a2a980',
+            'ENCRYPTION_KEY': '72766c4f5dfbb6080b34186f85c1127883648d1b07aa512e12382bcc9257b7dd',
+        })
+
     def test_known_public_keys_are_rejected_without_disclosing_values(self):
-        root = Path(__file__).resolve().parents[2]
-        source = subprocess.check_output(['git', 'show',
-            '6a0f667:regulai/regulai/local_settings_template.py'], cwd=root, text=True)
-        tree = ast.parse(source)
-        keys = {node.targets[0].id: ast.literal_eval(node.value) for node in tree.body
-            if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
-            and node.targets[0].id in ('SECRET_KEY', 'ENCRYPTION_KEY')}
+        from front.checks import PUBLIC_KEY_HASHES
+        # Exercise real hashing, settings and rotation without Git history or
+        # redistributing the old template secrets in source archives.
+        keys = {'SECRET_KEY': 'synthetic-public-template-key-for-tests-only',
+                'ENCRYPTION_KEY': Fernet.generate_key().decode()}
+        self.enterContext(patch.dict(PUBLIC_KEY_HASHES,
+            {name: sha256(key.encode()).hexdigest() for name, key in keys.items()}))
         for name, key in keys.items():
             for option in (name, name + '_FALLBACKS'):
                 with self.subTest(setting=option), override_settings(**{option: [key] if option.endswith('_FALLBACKS') else key}):

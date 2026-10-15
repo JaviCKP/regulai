@@ -1298,14 +1298,18 @@ def chat_view(request, conversation_id=None):
         chat_messages = list(conversation.messages.all())
 
     from .agents.jobs import available, run_data
-    from .models import AgentExecution
+    from .models import AgentExecution, AgentModelProfile
+    from .agents.jobs import development_profile
+    agent_available = available(user)
+    agent_professional = agent_available and AgentModelProfile.objects.filter(pk=development_profile(user), professional=True).exists()
     agent_run = AgentExecution.objects.filter(conversation=conversation).order_by('-created_at').first() if conversation and conversation.mode == 'agent' else None
 
     return render(request, "chat/chat.html", {
         "conversation": conversation,
         "conversations": conversations,
         "messages": chat_messages,
-        "agent_available": available(user),
+        "agent_available": agent_available,
+        "agent_professional": agent_professional,
         "agent_mode": bool(conversation and conversation.mode == 'agent'),
         "agent_initial": run_data(agent_run) if agent_run else None,
         "blocked": blocked,

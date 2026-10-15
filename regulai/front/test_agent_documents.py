@@ -78,6 +78,10 @@ class DocumentContractTests(SimpleTestCase):
 
 @override_settings(REGULAY_AGENT_ENABLED=True)
 class DocumentAuthorityTests(ChatFixture, TestCase):
+    def send(self, **kwargs):
+        text = 'Crea un informe Word con la fuente adjunta'
+        return super().send(**{'prompt': text, 'content': text, **kwargs})
+
     def setUp(self):
         super().setUp()
         self.agent.tools += ['build_document', 'edit_document', 'export_pdf']

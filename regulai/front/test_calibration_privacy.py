@@ -4,7 +4,6 @@ import json
 import os
 from pathlib import Path
 import socket
-from unittest import expectedFailure
 from unittest.mock import patch
 
 import httpx
@@ -57,14 +56,12 @@ class CalibrationNormalizationTests(SimpleTestCase):
                 self.assertNotIn('efgh', masked)
                 self.assertIn('46 EUR.', masked)
 
-    @expectedFailure
     def test_known_ner_limit_overlapping_identifier_does_not_remove_field_label(self):
         original = 'DNI/NIE: １２３４５６７８Ｚ. Plazo: 19 días. Total: 46 EUR.'
         masked = mask_local_texts([original], timeout=60)[0]
         self.assertNotIn('１２３４５６７８Ｚ', masked)
         self.assertIn('Plazo: 19 días.', masked)
 
-    @expectedFailure
     def test_known_ner_limit_common_unicode_letters_are_not_an_organization(self):
         original = 'ＡＢＣ son letras; el precio es ４６ EUR.'
         self.assertEqual(mask_local_texts([original], timeout=60)[0], original)

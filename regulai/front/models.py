@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .encrypted_fields import EncryptedCharField
-from .agents.records import (AgentArtifact, AgentEvent, AgentExecution, AgentInference, AgentInput, AgentModelProfile,
+from .agents.records import (AgentAccessGrant, AgentOperation, AgentArtifact, AgentEvent, AgentExecution, AgentInference, AgentInput, AgentModelProfile,
                             AgentToolResult, ConversationAlias, AgentDocumentConnection, AgentDocumentReference, AgentExport)
 from .policy import validate_ai_config, validate_yara
 from django.core.validators import MinValueValidator

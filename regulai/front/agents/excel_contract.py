@@ -14,6 +14,27 @@ MAX_ROWS = 1000
 HEADERS = ['item', 'amount_cents']
 
 
+def mock_source(rows):
+    """Validate generated values before storing an immutable synthetic source."""
+    if not isinstance(rows, list) or not 3 <= len(rows) <= MAX_ROWS:
+        raise ValueError('mock_rows')
+    stream = io.StringIO(newline='')
+    writer = csv.writer(stream, lineterminator='\n')
+    writer.writerow(HEADERS)
+    for row in rows:
+        if (not isinstance(row, dict) or set(row) != set(HEADERS)
+                or type(row['item']) is not str or type(row['amount_cents']) is not int):
+            raise ValueError('mock_row')
+        writer.writerow([row['item'], row['amount_cents']])
+    data = stream.getvalue().encode('utf-8')
+    input_rows(data, 'csv')
+    return data
+
+
+def mock_title(title):
+    return valid_title('Datos ficticios · ' + valid_title(title))
+
+
 def sha256(data):
     return hashlib.sha256(data).hexdigest()
 

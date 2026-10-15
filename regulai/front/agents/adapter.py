@@ -2,6 +2,7 @@
 import asyncio
 import json
 import os
+import threading
 import uuid
 from typing import Any
 from urllib.parse import urlsplit
@@ -40,8 +41,9 @@ class InternalClient:
 
     def operation(self, name, payload):
         if name not in ('inference', 'tool-results', 'authorize-tool', 'run/renew', 'run/bootstrap',
-                'run/step', 'run/candidate', 'run/local-fields', 'run/complete', 'run/fail', 'run/review-status',
-                'run/propose-export', 'run/approval-state', 'run/save-revision', 'run/export-complete', 'run/reconcile-export'):
+                'run/step', 'run/candidate', 'run/local-fields', 'run/research', 'run/complete', 'run/fail', 'run/review-status',
+                'run/propose-export', 'run/approval-state', 'run/save-revision', 'run/export-complete', 'run/reconcile-export',
+                'run/web', 'run/packages', 'run/publish', 'run/image', 'run/output', 'run/browser-fetch', 'run/browser-result', 'run/checkpoint'):
             raise InternalOperationError('Unknown internal operation')
         # Retry only the SAME identified application operation after a transport
         # failure. The durable server record decides whether inference ever ran.
@@ -52,10 +54,15 @@ class InternalClient:
                     headers={'Authorization': 'Bearer ' + self.token, 'X-Regulay-Attempt': self.attempt,
                              'Content-Type': 'application/json'})
                 if response.status_code != 200:
-                    raise InternalOperationError('Internal operation denied')
+                    try:
+                        code = response.json().get('code', 'internal_operation_denied')
+                    except (ValueError, AttributeError):
+                        code = 'internal_operation_denied'
+                    raise InternalOperationError(str(code)[:120])
                 value = response.json()
                 if not isinstance(value, dict) or value.get('status') not in ('completed', 'authorized', 'approved', 'withheld'):
-                    raise InternalOperationError('Internal operation did not complete')
+                    code = value.get('code') if isinstance(value, dict) else None
+                    raise InternalOperationError(str(code)[:120] if isinstance(code, str) else 'Internal operation did not complete')
                 return value
             except httpx.TransportError:
                 if transport_attempt:
@@ -109,12 +116,28 @@ class RegulayModel(BaseChatModel):
         metadata = getattr(run_manager, 'metadata', {}) or {}
         purpose = 'compaction' if metadata.get('lc_source') == 'summarization' else 'generation'
         wire = [_wire(m) for m in messages]
+        # Only opaque, application-issued references can add pixels. Tool output
+        # is still a data message; no raw URL/base64 is accepted from the model.
+        for message in reversed(messages):
+            if not isinstance(message, ToolMessage):
+                break
+            try:
+                view = json.loads(message.content)
+            except (ValueError, TypeError):
+                continue
+            if message.name == 'inspect_image' and view.get('image_reference'):
+                wire.append({'role': 'user', 'content': [{'type': 'text', 'text': view['question']},
+                    {'type': 'image_ref', 'reference': view['image_reference']}]})
         if any(isinstance(m['content'], list) and any(p.get('type') == 'image_ref' for p in m['content']) for m in wire):
             purpose = 'vision'
         request = InferenceRequest(call_id=str(uuid.uuid4()), purpose=purpose, messages=wire, tools=kwargs.get('tools', []))
         result = self.internal.operation('inference', request.model_dump())
         calls = [ToolCall.model_validate(c).model_dump() for c in result['tool_calls']]
-        reply = AIMessage(content=result['content'], tool_calls=calls)
+        # The model's public alias remains internal. The application's receipt
+        # carries the actual provider/model of this invocation, including when a
+        # graph made earlier generation, compaction, or vision calls.
+        reply = AIMessage(content=result['content'], tool_calls=calls,
+            response_metadata={'regulay': result['inference']} if result.get('inference') else {})
         return ChatResult(generations=[ChatGeneration(message=reply)])
 
     async def _agenerate(self, messages, stop=None, run_manager=None, **kwargs):
@@ -136,33 +159,38 @@ def _raw(value):
 class ResultGate(AgentMiddleware):
     def __init__(self, internal):
         self.internal = internal
+        self.tool_lock = threading.RLock()
 
     def _call(self, request):
         return {k: request.tool_call[k] for k in ('id', 'name', 'args')}
 
     def _result(self, call, raw, failed=False):
         view = self.internal.operation('tool-results', {'call': call, 'raw': _raw(raw), 'failed': failed})
-        # Never forward Command.update, artifacts, metadata, stderr or logs.
+        # Never apply Command.update or metadata. Only the server's protected
+        # projection (including permitted diagnostics) becomes a data message.
         return ToolMessage(content=json.dumps(view, sort_keys=True, ensure_ascii=False),
             tool_call_id=call['id'], name=call['name'])
 
     def wrap_tool_call(self, request, handler):
-        call = self._call(request)
-        self.internal.operation('authorize-tool', call)
-        try:
-            raw = handler(request)
-        except Exception as error:
-            return self._result(call, {'exception': str(error)}, True)
-        return self._result(call, raw)
+        with self.tool_lock:
+            call = self._call(request)
+            grant = self.internal.operation('authorize-tool', call)
+            if 'replay' in grant:
+                return ToolMessage(content=json.dumps(grant['replay'], sort_keys=True, ensure_ascii=False),
+                    tool_call_id=call['id'], name=call['name'])
+            try:
+                raw = handler(request)
+            except Exception as error:
+                return self._result(call, {'exception': str(error)}, True)
+            return self._result(call, raw)
 
     async def awrap_tool_call(self, request, handler):
-        call = self._call(request)
-        await asyncio.to_thread(self.internal.operation, 'authorize-tool', call)
-        try:
-            raw = await handler(request)
-        except Exception as error:
-            return await asyncio.to_thread(self._result, call, {'exception': str(error)}, True)
-        return await asyncio.to_thread(self._result, call, raw)
+        # Run the sync gate on one thread so both SDK paths share the same lock.
+        # The actual async handler stays on its caller's event loop.
+        loop = asyncio.get_running_loop()
+        def handle(value):
+            return asyncio.run_coroutine_threadsafe(handler(value), loop).result()
+        return await asyncio.to_thread(self.wrap_tool_call, request, handle)
 
 
 register_harness_profile(MODEL_NAME, HarnessProfile(
@@ -170,7 +198,7 @@ register_harness_profile(MODEL_NAME, HarnessProfile(
 
 
 def build_agent(backend, internal, *, tools=(), model_profile=None, system_prompt=None, allowed_tools=None,
-                checkpointer=None, interrupt_on=None):
+                checkpointer=None, interrupt_on=None, middleware=()):
     # Fail closed if an executor was launched with provider or external tracing
     # credentials. Actual egress enforcement belongs to the host network policy.
     if any(os.environ.get(key) for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GOOGLE_API_KEY',
@@ -180,6 +208,6 @@ def build_agent(backend, internal, *, tools=(), model_profile=None, system_promp
     os.environ['LANGCHAIN_TRACING_V2'] = 'false'
     model = RegulayModel(internal=internal, profile=model_profile, cache=False, allowed_tools=allowed_tools)
     return create_deep_agent(model=model, tools=list(tools), backend=backend,
-        middleware=[ResultGate(internal)], subagents=[], memory=None, skills=None,
+        middleware=[ResultGate(internal), *middleware], subagents=[], memory=None, skills=None,
         store=None, checkpointer=checkpointer, interrupt_on=interrupt_on,
         system_prompt=system_prompt or 'Use only authorized local operations and approved views.')

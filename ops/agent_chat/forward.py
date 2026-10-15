@@ -1,8 +1,9 @@
-"""Local-only raw TCP tunnel to the synthetic ASGI server in our disposable VM.
+"""Local-only raw TCP tunnel to the ASGI service in the existing private VM.
 
 Uses the VM's existing private SSH key in its own container; never exports keys.
-No production host, public listener or deployment is involved.
+No public listener is created. The destination service controls authentication.
 """
+import argparse
 import socket
 import socketserver
 import subprocess
@@ -50,6 +51,9 @@ class Server(socketserver.ThreadingTCPServer):
 
 
 if __name__ == '__main__':
-    with Server(('127.0.0.1', 8500), Handler) as server:
-        print('Synthetic lab tunnel on http://127.0.0.1:8500', flush=True)
+    parser = argparse.ArgumentParser(description='Loopback tunnel to the existing VM web service; never starts a simulator.')
+    parser.add_argument('--port', type=int, default=8500)
+    args = parser.parse_args()
+    with Server(('127.0.0.1', args.port), Handler) as server:
+        print(f'VM web service on http://127.0.0.1:{args.port}', flush=True)
         server.serve_forever()

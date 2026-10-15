@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-14",
+  "checks": [
+    {"command": "rtk git diff --check", "exit_code": 0},
+    {"command": "rtk proxy node --check regulai/static/js/agent-chat.js", "exit_code": 0},
+    {"command": "rtk proxy .venv/Scripts/python.exe -m compileall -q regulai/front/agents regulai/front/management/commands ops/agent_chat", "exit_code": 0},
+    {"command": "rtk proxy .venv/Scripts/python.exe regulai/manage.py makemigrations --check --dry-run --settings=regulai.agent_professional_test_settings", "exit_code": 0, "result": "No changes detected"}
+  ],
+  "oci_base_check": {
+    "image": "python:3.12.11-slim@sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f",
+    "method": "Public Docker Registry manifest and first-layer os-release inspection",
+    "observed_os": "Debian GNU/Linux 13.1 trixie",
+    "docker_build": "not_run: local Docker Desktop socket access failure"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "started_at": "2026-10-14T10:19:25.818918+00:00",
+  "finished_at": "2026-10-14T10:20:45.980562+00:00",
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe",
+    "-m",
+    "unittest",
+    "ops.agent_chat.test_professional_runtime",
+    "ops.agent_chat.test_runtime",
+    "ops.agent_chat.test_worker",
+    "-v"
+  ],
+  "exit_code": 0,
+  "tests": 14,
+  "seconds": 77.153,
+  "real": [
+    "Linux namespaces",
+    "Python",
+    "Node",
+    "offline pip/npm installs",
+    "LibreOffice/Poppler",
+    "Chromium",
+    "Deep Agents SDK"
+  ],
+  "simulated": [
+    "model responses",
+    "search responses",
+    "E2B administrative transport"
+  ],
+  "not_run": [
+    "paid models",
+    "paid search",
+    "new E2B image build or deployment"
+  ]
+}

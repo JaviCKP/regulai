@@ -110,6 +110,10 @@ class PresentationContractTests(SimpleTestCase):
 
 @override_settings(REGULAY_AGENT_ENABLED=True)
 class PresentationAuthorityTests(ChatFixture, TestCase):
+    def send(self, **kwargs):
+        text = 'Crea una presentación con la fuente adjunta'
+        return super().send(**{'prompt': text, 'content': text, **kwargs})
+
     def setUp(self):
         super().setUp()
         self.agent.tools += ['build_presentation', 'edit_presentation']

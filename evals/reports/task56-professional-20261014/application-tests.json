@@ -1,0 +1,30 @@
+{
+  "started_at": "2026-10-14T10:22:24.482555+00:00",
+  "finished_at": "2026-10-14T10:24:55.560460+00:00",
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\regulai\\manage.py",
+    "test",
+    "front.test_agent_professional",
+    "front.test_agent_professional_http",
+    "front.test_agent_chat",
+    "front.test_agent_inference",
+    "front.test_agent_documents",
+    "front.test_agent_presentations",
+    "front.test_agent_reports",
+    "front.test_agent_research",
+    "front.test_agent_mock_excel",
+    "front.test_agent_transparency",
+    "front.test_agent_frontend",
+    "--settings=regulai.agent_professional_test_settings",
+    "--noinput",
+    "--verbosity=1"
+  ],
+  "exit_code": 0,
+  "database": "isolated PostgreSQL 18.6 on loopback 55456",
+  "tests": 141,
+  "seconds": 147.535,
+  "provider_boundary": "simulated HTTP; no paid model/search calls"
+}

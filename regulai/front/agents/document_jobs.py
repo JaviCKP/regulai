@@ -33,6 +33,10 @@ def local_fields(run, call):
             for alias, original in resolve_for_operation(run, aliases, operation='local_document_fields').items():
                 value = value.replace(alias, original)
         return value
+    base = jobs._base(run.conversation, run.job['logical_id'], run.job['base']) if run.job.get('base') else None
+    if call.args.get('content') is not None or (base and base.verification.get('narrative')):
+        from .report_contract import local_fields as report_fields
+        return report_fields(run, call, resolve)
     if call.name in ('build_presentation', 'edit_presentation'):
         from . import presentation_contract as pptx
         asset = AgentInput.objects.get(pk=run.job['source'], execution=run)
@@ -76,7 +80,8 @@ def candidate(token, attempt, payload):
     if call.name not in ('build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
         raise AgentDenied('candidate_denied')
     content = local_fields(run, call)
-    asset = AgentInput.objects.get(pk=run.job['source'], execution=run)
+    narrative = content.get('narrative')
+    asset = AgentInput.objects.get(pk=run.job['source'], execution=run) if run.job.get('source') else None
     base = jobs._base(run.conversation, run.job['logical_id'], run.job['base']) if run.job['base'] else None
     previous = (source_document(base) if base and base.format in ('docx', 'pdf') else None)
     encoded = payload['document_bundle']
@@ -84,7 +89,13 @@ def candidate(token, attempt, payload):
         raise ValueError('Document candidate too large')
     submitted = base64.b64decode(encoded, validate=True)
     try:
-        if content['format'] == 'pptx':
+        if narrative:
+            from .report_contract import verify_bundle as verify_report
+            preserving = call.name in ('edit_document', 'edit_presentation', 'export_pdf')
+            raw, proof, bundle = verify_report(encoded, narrative, format=content['format'], request=run.job.get('request'),
+                base=(previous if base.format in ('docx', 'pdf') else jobs._bytes(base)) if base and preserving else None,
+                export=call.name == 'export_pdf')
+        elif content['format'] == 'pptx':
             from .presentation_contract import verify_bundle as verify_presentation
             editing = call.name == 'edit_presentation'
             raw, proof, bundle = verify_presentation(encoded, jobs._decode(asset), asset.kind, content['texts'],
@@ -94,6 +105,9 @@ def candidate(token, attempt, payload):
             raw, proof, bundle = verify_bundle(encoded, jobs._decode(asset), asset.kind,
                 {key: content[key] for key in ('title', 'section')}, format=content['format'],
                 base=previous if call.name != 'build_document' else None, changed=content.get('field'))
+        from .request_contract import check_delivery
+        check_delivery(run.job.get('request'), content['format'], proof)
+        proof['request_checked'] = bool(run.job.get('request'))
     except Exception:
         # Retain the failed package encrypted as a draft, never preview or deliver it.
         raw, bundle = submitted, ''
@@ -107,6 +121,12 @@ def candidate(token, attempt, payload):
             return {'status': 'withheld', 'reference': str(prior.pk)}
         if base:
             jobs._base(run.conversation, run.job['logical_id'], run.job['base'])
+        if narrative:
+            original = json.dumps(narrative, ensure_ascii=False, sort_keys=True).encode()
+            asset = AgentInput.objects.create(execution=run, kind='narrative', path='/workspace/input/narrative-' + str(operation) + '.json',
+                original=base64.b64encode(original).decode(), digest=sha256(original))
+            run.authorization_digest = _context(run.prompt, run.profile_id)[-1]
+            run.save(update_fields=['authorization_digest'])
         revision = (AgentArtifact.objects.filter(logical_id=run.job['logical_id']).aggregate(n=Max('revision'))['n'] or 0) + 1
         artifact = AgentArtifact.objects.create(execution=run, logical_id=run.job['logical_id'], revision=revision,
             base=base, source=asset, operation_id=operation, content=base64.b64encode(raw).decode(),
@@ -120,8 +140,11 @@ def review_status(token, attempt, payload):
     if payload:
         raise ValueError('Invalid review status')
     with jobs.locked(token, attempt) as (run, _):
-        candidate = run.artifacts.order_by('-revision').first()
-        return {'status': 'authorized', 'pending': bool(candidate and candidate.status == 'draft' and candidate.verification.get('automated_passed'))}
+        latest = {}
+        for artifact in run.artifacts.order_by('revision'):
+            latest[artifact.logical_id] = artifact
+        return {'status': 'authorized', 'pending': any(item.status == 'draft' and
+            item.verification.get('automated_passed') for item in latest.values())}
 
 
 def render_page(artifact, number):
@@ -150,7 +173,7 @@ def review(actor, artifact_id, payload):
         artifact = AgentArtifact.objects.select_for_update().get(pk=artifact_id)
         if run.status != 'active' or run.expires_at <= timezone.now():
             raise AgentDenied('attempt_not_active')
-        if str(run.artifacts.order_by('-revision').first().pk) != str(artifact.pk):
+        if str(run.artifacts.filter(logical_id=artifact.logical_id).order_by('-revision').first().pk) != str(artifact.pk):
             raise AgentDenied('artifact_revision_stale')
         proof = artifact.verification
         if (set(payload) != {'sha256', 'page_sha256', 'checks'} or payload['sha256'] != artifact.sha256
@@ -173,7 +196,10 @@ def review(actor, artifact_id, payload):
 
 def artifact_data(artifact):
     jobs._bytes(artifact)
-    if artifact.format == 'pptx':
+    if artifact.verification.get('narrative'):
+        from .report_contract import source_content
+        title = source_content(artifact)['title']
+    elif artifact.format == 'pptx':
         from .presentation_contract import fields as presentation_fields
         title = presentation_fields(jobs._bytes(artifact))[0]['title']
     else:
@@ -181,8 +207,12 @@ def artifact_data(artifact):
     proof = artifact.verification
     return {'id': str(artifact.pk), 'logical_id': str(artifact.logical_id), 'revision': artifact.revision,
         'sha256': artifact.sha256, 'format': artifact.format, 'status': artifact.status,
-        'preview': {'title': title, 'pages': [
+        'verification_checks': jobs.verification_checks(artifact),
+        'preview': {'title': title, 'page_count': proof['pages'], 'pages': [
             f'/chat/agent/artifacts/{artifact.pk}/pages/{n}/' for n in range(1, proof['pages'] + 1)]},
         'page_sha256': proof['page_sha256'], 'review_checks': VISUAL_CHECKS,
         'review_url': f'/chat/agent/artifacts/{artifact.pk}/review/',
-        'download_url': f'/chat/agent/artifacts/{artifact.pk}/download/'}
+        'download_url': f'/chat/agent/artifacts/{artifact.pk}/download/',
+        'downloads': [{'format': format, 'url': f'/chat/agent/artifacts/{artifact.pk}/download/?format={format}'}
+            for format in (('docx', 'pdf') if artifact.format in ('docx', 'pdf') else ('pptx',))
+            if format == artifact.format or proof.get(format + '_sha256')]}

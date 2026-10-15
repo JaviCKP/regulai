@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}regulAI{% endblock %} | AI Security Auditing</title>
   <link rel="shortcut icon" type="image/png" href="{% static 'images/logos/favicon.png' %}" />
-  <link rel="stylesheet" href="{% static 'css/styles.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/styles.min.css' %}?v=sidebar-toggle-1" />
   <style>
     /* Fix header and sidebar alignment to top */
     .app-header {
@@ -47,7 +47,7 @@
     data-sidebar-position="fixed" data-header-position="fixed">
 
     <!-- Sidebar Start -->
-    <aside class="left-sidebar">
+    <aside class="left-sidebar" id="main-sidebar">
       <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
@@ -55,9 +55,10 @@
             <img src="{% static 'images/logos/logo.png' %}" alt="regulAI" style="height: 35px; width: auto;" />
             <span style="font-family: Inter, system-ui, sans-serif; font-size: 26px; font-weight: 600; color: #1E293B; margin-left: 8px; line-height: 35px;">regul<span style="color: #635BFF; font-weight: 700;">AI</span></span>
           </a>
-          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-            <i class="ti ti-x fs-8"></i>
-          </div>
+          <button type="button" class="close-btn d-xl-none d-block sidebartoggler cursor-pointer border-0 bg-transparent" id="sidebarCollapse"
+                  aria-label="Cerrar menú lateral" aria-controls="main-sidebar" aria-expanded="false">
+            <i class="ti ti-x fs-8" aria-hidden="true"></i>
+          </button>
         </div>
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
@@ -204,10 +205,10 @@
       <header class="app-header">
         <nav class="navbar navbar-expand-lg navbar-light">
           <ul class="navbar-nav">
-            <li class="nav-item d-block d-xl-none">
-              <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+            <li class="nav-item d-block">
+              <button type="button" class="nav-link sidebartoggler nav-icon-hover border-0 bg-transparent" id="headerCollapse" aria-controls="main-sidebar" aria-expanded="true" aria-label="Ocultar menú lateral" title="Ocultar menú lateral">
                 <i class="ti ti-menu-2"></i>
-              </a>
+              </button>
             </li>
             <!-- Notifications Bell -->
             <li class="nav-item dropdown">
@@ -328,7 +329,7 @@
   <script src="{% static 'vendor/jquery.min.js' %}"></script>
   <script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/sidebarmenu.js' %}"></script>
-  <script src="{% static 'js/app.min.js' %}"></script>
+  <script src="{% static 'js/app.min.js' %}?v=sidebar-toggle-1"></script>
   <!-- Iconify icons -->
   <script src="{% static 'vendor/iconify-icon.min.js' %}"></script>
   <script src="{% static 'vendor/solar-icons.js' %}"></script>

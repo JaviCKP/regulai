@@ -274,52 +274,53 @@
   }
 
 </style>
+<link rel="stylesheet" href="{% static 'css/agent-chat.css' %}?v=professional-1">
 {% endblock %}
 
 {% block content %}
 <div class="chat-layout">
   <!-- Conversations Sidebar -->
-  <div class="conversations-sidebar">
+  <aside class="conversations-sidebar" id="conversationSidebar" aria-label="Conversaciones">
     <div class="card h-100">
       <div class="card-body d-flex flex-column">
         <div class="d-flex align-items-center justify-content-between mb-3">
           <h6 class="card-title fw-semibold mb-0">
             <iconify-icon icon="solar:chat-round-dots-bold" class="text-primary me-2"></iconify-icon>
-            Conversations
+            Conversaciones
           </h6>
           <a href="{% url 'front:chat' %}" class="btn btn-primary btn-sm">
             <iconify-icon icon="solar:add-circle-bold"></iconify-icon>
-            New
+            Nueva
           </a>
         </div>
 
         <div class="conversations-list">
           {% if conversations %}
             {% for conv in conversations %}
-            <a href="{% url 'front:chat_conversation' conv.id %}"
-               class="conversation-item {% if conversation and conversation.id == conv.id %}active{% endif %}">
-              <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
+            <div class="conversation-item {% if conversation and conversation.id == conv.id %}active{% endif %}">
+              <a href="{% url 'front:chat_conversation' conv.id %}" class="conversation-link d-flex flex-column"
+                 {% if conversation and conversation.id == conv.id %}aria-current="page"{% endif %}>
                 <span class="conversation-title">{{ conv.get_title }}</span>
                 <span class="conversation-date">{{ conv.updated_at|date:"M d, H:i" }}</span>
-              </div>
+              </a>
               <a href="{% url 'front:chat_delete' conv.id %}"
                  class="delete-btn btn btn-sm btn-outline-danger p-1"
                  onclick="event.stopPropagation();"
-                 title="Delete">
+                 title="Eliminar conversación" aria-label="Eliminar conversación: {{ conv.get_title }}">
                 <iconify-icon icon="solar:trash-bin-trash-bold" style="font-size: 14px;"></iconify-icon>
               </a>
-            </a>
+            </div>
             {% endfor %}
           {% else %}
             <div class="text-center text-muted py-4">
               <iconify-icon icon="solar:chat-round-dots-line-duotone" style="font-size: 2rem;"></iconify-icon>
-              <p class="mt-2 mb-0 small">No conversations yet</p>
+              <p class="mt-2 mb-0 small">Tus conversaciones aparecerán aquí.</p>
             </div>
           {% endif %}
         </div>
       </div>
     </div>
-  </div>
+  </aside>
 
   <!-- Chat Main Area -->
   <div class="chat-main">
@@ -343,10 +344,12 @@
               {{ conversation.get_title|truncatewords:5 }}
             {% else %}
               <iconify-icon icon="solar:chat-round-dots-bold" class="text-primary me-2"></iconify-icon>
-              New Conversation
+              Nueva conversación
             {% endif %}
           </h5>
           <div class="chat-controls d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="conversationSidebarToggle"
+                    aria-controls="conversationSidebar" aria-expanded="true">Ocultar conversaciones</button>
             {% if available_engines %}
             <!-- Engine Selector -->
             <div class="custom-dropdown" id="engineDropdownContainer">
@@ -442,11 +445,13 @@
                   </div>
                   <div class="message-content">{{ msg.content }}</div>
                   {% if msg.request_record %}
+                  {% if not agent_mode or msg.request_record.request_id|stringformat:'s' != agent_initial.request_id %}
                   <details class="request-receipt mt-2" data-receipt-url="{% url 'front:chat_request_receipt' msg.request_record.request_id %}">
                     <summary>Decision receipt: {{ msg.request_record.status }}</summary>
                     <div class="receipt-content"><p>Security: {{ msg.request_record.decision.policy.status|default:'unknown' }}</p></div>
                     <a href="{% url 'front:chat_request_receipt' msg.request_record.request_id %}" download>Export receipt JSON</a>
                   </details>
+                  {% endif %}
                   {% else %}
                   <p class="small">Excluded from future context: this legacy message has no validated request record.</p>
                   {% endif %}
@@ -464,12 +469,14 @@
               {% elif msg.role == 'assistant' %}
                 <div class="chat-bubble assistant">
                   <div class="message-role text-primary">
-                    <iconify-icon icon="solar:atom-bold"></iconify-icon>
-                    AI Assistant
+                    <svg class="chat-identity" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 8 4v6c0 4-5 7-8 8-3-1-8-4-8-8V7l8-4Z" stroke="currentColor" stroke-width="1.8"/><path d="m8 12 3 3 5-6" stroke="currentColor" stroke-width="1.8"/></svg>
+                    Regulay
                   </div>
                   <div class="message-content">{{ msg.content }}</div>
                   {% if msg.response_record %}
-                  {% if msg.response_record.prompt.decision.verification.status != 'passed' %}
+                  {% if agent_mode %}
+                  <p class="small text-muted mb-0">Consulta las comprobaciones por categoría en el entregable.</p>
+                  {% elif msg.response_record.prompt.decision.verification.status != 'passed' %}
                   <p role="status" class="badge bg-warning text-dark">No verificado</p>
                   <a href="{% url 'front:chat_request_evidence' msg.response_record.prompt.request_id %}">Retained evidence JSON (not verified)</a>
                   {% else %}
@@ -505,9 +512,46 @@
           {% else %}
             <div class="empty-chat">
               <iconify-icon icon="solar:chat-round-dots-line-duotone" style="font-size: 4rem;"></iconify-icon>
-              <h5 class="mt-3">Start a new conversation</h5>
-              <p class="text-muted">Send a message to begin chatting with the AI assistant.</p>
+              <h5 class="mt-3">¿En qué trabajamos?</h5>
+              <p class="text-muted">Consulta con Regulay o elige el agente de documentos para crear un informe, una hoja de cálculo o una presentación.</p>
             </div>
+          {% endif %}
+          {% if agent_available or agent_mode %}
+          <section id="agentActivity" class="agent-workspace d-none" aria-label="Agente de Regulay" aria-live="off" data-state="idle" data-professional="{{ agent_professional|yesno:'true,false' }}">
+            <div class="agent-workspace-header">
+              <div>
+                <p class="agent-eyebrow">Regulay · agente</p>
+                <div class="agent-workspace-heading"><h2>{% if agent_professional %}Tu tarea, paso a paso{% else %}Tu documento, paso a paso{% endif %}</h2><span id="agentState" class="agent-state">Listo para empezar</span></div>
+              </div>
+              <button type="button" id="agentCancel" class="btn btn-outline-danger btn-sm" hidden>Cancelar</button>
+            </div>
+            <p id="agentProgress" role="status" aria-live="polite" aria-atomic="true" class="agent-progress">Describe qué necesitas crear, su formato, idioma y extensión.</p>
+            <p id="agentFailure" role="alert" class="agent-error" hidden></p>
+            <ul id="agentLimitations" class="agent-limitations" hidden></ul>
+            <div id="agentArtifacts"></div>
+            <div id="agentSources"></div>
+            <p id="agentRevision" class="agent-notice" hidden></p>
+            <button type="button" id="agentResume" class="btn btn-outline-primary btn-sm" hidden>Reanudar desde el punto guardado</button>
+            <div id="agentExport"></div>
+            <dl id="agentSummary" class="agent-summary" aria-label="Resumen de ejecución"></dl>
+            <details class="agent-details agent-technical">
+              <summary>Seguridad, Jev y modelos</summary>
+              <div id="agentTrace"></div>
+            </details>
+            <details class="agent-details">
+              <summary>Actividad de la ejecución</summary>
+              <ol id="agentEvents" class="agent-event-list"></ol>
+              <div id="agentOperations"></div>
+              <button type="button" id="agentRefresh" class="btn btn-outline-secondary btn-sm">Recargar estado</button>
+            </details>
+            <details class="agent-details">
+              <summary>Usar un archivo de Google Drive</summary>
+              <label for="agentDocumentQuery" class="form-label small">Nombre del CSV/XLSX en la carpeta autorizada</label>
+              <div class="agent-search-row"><input id="agentDocumentQuery" class="form-control form-control-sm" maxlength="160" autocomplete="off">
+                <button id="agentDocumentSearch" type="button" class="btn btn-outline-primary btn-sm">Buscar</button></div>
+              <div id="agentDocumentResults" class="small my-2" role="status"></div>
+            </details>
+          </section>
           {% endif %}
         </div>
 
@@ -519,29 +563,10 @@
             <label for="conversationMode" class="form-label small">Modo del nuevo chat</label>
             <select id="conversationMode" class="form-select form-select-sm" aria-label="Modo del nuevo chat">
               <option value="chat">Chat</option>
-              <option value="agent">Agente documentos · laboratorio sintético</option>
+              <option value="agent"{% if agent_professional %} selected{% endif %}>{% if agent_professional %}Agente · investigación, código y archivos{% else %}Agente de documentos · Word, PDF, Excel y presentaciones{% endif %}</option>
             </select>
           </div>
           {% endif %}
-          {% if agent_available or agent_mode %}
-          <section id="agentActivity" class="border rounded p-3 mb-3 d-none" aria-label="Actividad del agente" style="max-height: 70vh; overflow: auto;">
-            <div class="d-flex justify-content-between gap-2 align-items-start">
-              <strong>Agente documentos</strong><button type="button" id="agentCancel" class="btn btn-outline-danger btn-sm">Cancelar ejecución</button>
-            </div>
-            <p id="agentProgress" role="status" aria-live="polite" class="small my-2"></p>
-            <details><summary class="small">Actividad de la ejecución</summary><ol id="agentEvents" class="small mb-2"></ol></details>
-            <div id="agentArtifacts"></div>
-            <div id="agentExport"></div>
-            <details class="my-2"><summary>Buscar una entrada en Google Drive</summary>
-              <label for="agentDocumentQuery" class="small">Nombre del CSV/XLSX en la carpeta autorizada</label>
-              <div class="d-flex gap-2"><input id="agentDocumentQuery" class="form-control form-control-sm" maxlength="160">
-                <button id="agentDocumentSearch" type="button" class="btn btn-outline-primary btn-sm">Buscar</button></div>
-              <div id="agentDocumentResults" class="small my-2" role="status"></div>
-            </details>
-            <small class="text-muted">CSV/XLSX sintético: item y amount_cents. Entradas privadas; revisiones inmutables.</small>
-          </section>
-          {% endif %}
-
           <!-- File Preview Area -->
           <div id="filePreview" class="mb-2 d-none">
             <div class="d-inline-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2">
@@ -566,14 +591,14 @@
                        onchange="handleFileSelect(this)">
 
                 <textarea name="prompt" id="prompt" class="form-control" rows="2"
-                  aria-label="Message" placeholder="Type your message here... You can also attach a supported document."></textarea>
-                <button type="submit" class="btn btn-primary px-4" id="sendButton" aria-label="Send message">
+                  aria-label="Tu petición" placeholder="Escribe tu mensaje…" aria-describedby="attachmentHint"></textarea>
+                <button type="submit" class="btn btn-primary px-4" id="sendButton" aria-label="Enviar petición">
                   <iconify-icon icon="solar:plain-bold" style="font-size: 1.25rem;" id="sendIcon"></iconify-icon>
                   <span class="spinner-border spinner-border-sm d-none" id="sendSpinner" role="status"></span>
                 </button>
               </div>
               <div class="form-text mt-1 d-flex justify-content-between">
-                <small>Press Enter to send, Shift+Enter for new line</small>
+                <small>Intro para enviar · Mayús + Intro para otra línea</small>
                 <small class="text-muted" id="attachmentHint">Supported: txt, pdf with text, docx, xlsx, csv, json, py, js, md. Reattach files for later questions.</small>
               </div>
             </div>
@@ -638,7 +663,7 @@
 
 {% block extra_js %}
 {{ agent_initial|json_script:"agent-initial" }}
-<script src="{% static 'js/agent-chat.js' %}"></script>
+<script src="{% static 'js/agent-chat.js' %}?v=professional-real-20261014"></script>
 <script>
   let currentConversationId = {{ conversation.id|default:"null" }};
   let isLoading = false;
@@ -862,6 +887,16 @@
       if (receipt.route.level || receipt.route.tier) receiptLine(parent, 'Route tier', receipt.route.level || receipt.route.tier);
       if (receipt.route.reason_codes?.length) receiptLine(parent, 'Route reasons', receipt.route.reason_codes.join(', '));
     }
+    if (receipt.jev && window.regulayAgent) {
+      const trace = document.createElement('div');
+      window.regulayAgent.renderReceipt(trace, receipt);
+      parent.appendChild(trace);
+      receiptLine(parent, 'Comprobaciones del entregable', 'Consulta los estados separados de integridad, instrucciones, maquetación, fuentes y seguridad.');
+      receiptLine(parent, 'Total cost', receipt.total?.cost ?? 'unknown');
+      if (receipt.total?.cost == null && receipt.total?.known_cost != null) receiptLine(parent, 'Known subtotal (incomplete)', receipt.total.known_cost);
+      if (receipt.total?.currency) receiptLine(parent, 'Currency', receipt.total.currency);
+      return;
+    }
     receiptLine(parent, 'Verification', receipt.verification?.status || 'not performed');
     if (receipt.verification?.reason_codes?.length) receiptLine(parent, 'Verification reasons', receipt.verification.reason_codes.join(', '));
     const calls = Array.isArray(receipt.calls) ? receipt.calls : [];
@@ -947,8 +982,10 @@
     exportLink.download = '';
     exportLink.textContent = 'Export receipt JSON';
     details.appendChild(exportLink);
-    command.userBubble.appendChild(details);
-    command.receipt = details;
+    if (command.mode !== 'agent' || !(command.agentRun || data.agent)) {
+      command.userBubble.appendChild(details);
+      command.receipt = details;
+    }
     command.notice?.remove();
     if (data.error || !data.success) {
       command.notice = createSystemBubble(data.error || 'The request could not be completed.');
@@ -972,14 +1009,15 @@
       const message = data.assistant_message;
       command.assistantBubble = createAssistantBubble(message.content, message.file_name, message.file_size, message.file_url);
       const verified = data.receipt?.verification?.status === 'passed';
-      if (!verified) {
+      const agentResult = command.mode === 'agent' || Boolean(data.receipt?.jev && data.agent);
+      if (!verified && !agentResult) {
         const label = document.createElement('p');
         label.className = 'badge bg-warning text-dark';
         label.textContent = 'No verificado';
         label.setAttribute?.('role', 'status');
         command.assistantBubble.appendChild(label);
       }
-      if (verified && data.evidence) {
+      if (verified && data.evidence && !agentResult) {
         const evidence = document.createElement('details');
         const heading = document.createElement('summary');
         heading.textContent = 'Document evidence';
@@ -1071,8 +1109,8 @@
     }
     bubble.innerHTML = `
       <div class="message-role text-primary">
-        <iconify-icon icon="solar:atom-bold"></iconify-icon>
-        AI Assistant
+        <svg class="chat-identity" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 8 4v6c0 4-5 7-8 8-3-1-8-4-8-8V7l8-4Z" stroke="currentColor" stroke-width="1.8"/><path d="m8 12 3 3 5-6" stroke="currentColor" stroke-width="1.8"/></svg>
+        Regulay
       </div>
       <div class="message-content">${escapeHtml(content)}</div>${fileHtml}
     `;

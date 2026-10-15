@@ -30,7 +30,7 @@ from front.test_agent_inference import AgentFixture
 CSV = b'item,amount_cents\nNombre: Private Synthetic Marker,125\n<script>alert(1)</script>,250\n=HYPERLINK("invalid"),375\n'
 
 
-def candidate_bytes(title='Ventas sintéticas', corrupt=False):
+def candidate_bytes(title='Ventas sintéticas', corrupt=False, source=CSV):
     """Simulated cached workbook for boundary tests, never claimed as LO proof."""
     book = Workbook()
     sheet = book.active
@@ -41,7 +41,7 @@ def candidate_bytes(title='Ventas sintéticas', corrupt=False):
     for pos, value in {'A3': 'Concepto', 'B3': 'Importe (céntimos)', 'C3': 'Importe (€)'}.items():
         sheet[pos] = value
     from front.agents.excel_contract import input_rows
-    for n, (name, amount) in enumerate(input_rows(CSV, 'csv'), 4):
+    for n, (name, amount) in enumerate(input_rows(source, 'csv'), 4):
         sheet.cell(n, 1, name).data_type = 's'
         sheet.cell(n, 2, amount)
         sheet.cell(n, 3, f'=B{n}/100')

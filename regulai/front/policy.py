@@ -167,9 +167,9 @@ class AIConfig(StrictConfig):
     @classmethod
     def validate_destinations(cls, value):
         import re
-        if any(not re.fullmatch(r'(engine|obfuscation):[1-9][0-9]*|jev', item)
+        if any(not re.fullmatch(r'(engine|obfuscation):[1-9][0-9]*|jev|research:[a-z][a-z0-9_-]{0,63}', item)
                for items in value.values() for item in items):
-            raise ValueError('Use explicit engine/obfuscation IDs or jev.')
+            raise ValueError('Use explicit engine/obfuscation IDs, jev or reviewed research source IDs.')
         return value
 
     @model_validator(mode='after')

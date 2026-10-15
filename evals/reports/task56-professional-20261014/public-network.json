@@ -1,0 +1,75 @@
+{
+  "retrieved_at": "2026-10-14T10:22:27.833324+00:00",
+  "public_http": [
+    {
+      "succeeded": true,
+      "url": "https://www.python.org/",
+      "final_url": "https://www.python.org/",
+      "redirects": [],
+      "media_type": "text/html",
+      "browser_headers": {
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "updated_at": null,
+      "sha256": "8e9a2fd5da117fbba5fa85589cd32c4d46518663fd3491675d4f92a542a9f758",
+      "bytes": 52149
+    },
+    {
+      "succeeded": true,
+      "url": "https://www.eia.gov/",
+      "final_url": "https://www.eia.gov/",
+      "redirects": [],
+      "media_type": "text/html",
+      "browser_headers": {},
+      "updated_at": null,
+      "sha256": "4d891706a16e08b9a4fdcd0c25bf23121379b741b9ce3171d1c354f210c4e1a6",
+      "bytes": 48729
+    },
+    {
+      "succeeded": true,
+      "url": "https://www.unwto.org/",
+      "final_url": "https://www.untourism.int/",
+      "redirects": [
+        "https://www.unwto.org/"
+      ],
+      "media_type": "text/html",
+      "browser_headers": {
+        "x-frame-options": "SAMEORIGIN",
+        "referrer-policy": "same-origin"
+      },
+      "updated_at": "Wed, 14 Oct 2026 10:07:53 GMT",
+      "sha256": "3fb341b1df1c107afd324c25a237e4feaf28139fbb90434a1b81a509d91e1c75",
+      "bytes": 200029
+    }
+  ],
+  "packages": [
+    {
+      "manifest": [
+        {
+          "name": "humanize",
+          "version": "4.13.0",
+          "filename": "humanize-4.13.0-py3-none-any.whl",
+          "sha256": "b810820b31891813b1673e8fec7f1ed3312061eab2f26e3fa192c393d11ed25f",
+          "bytes": 128869,
+          "registry": "pypi"
+        }
+      ],
+      "ecosystem": "pip"
+    },
+    {
+      "manifest": [
+        {
+          "name": "is-number",
+          "version": "7.0.0",
+          "filename": "is-number-7.0.0.tgz",
+          "sha256": "7b75c1057198cf97696909a9bee176c9c5e9bcb5b03bf3ecef2f484defadd51e",
+          "bytes": 3730,
+          "registry": "npm"
+        }
+      ],
+      "ecosystem": "npm"
+    }
+  ],
+  "paid_search": "not_run",
+  "model": "not_run"
+}

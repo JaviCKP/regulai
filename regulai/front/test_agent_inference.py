@@ -253,7 +253,7 @@ class AgentInferenceTests(AgentFixture, TestCase):
         self.company.save()
         with self.assertRaises(AgentDenied) as error:
             self.infer()
-        self.assertEqual(error.exception.code, 'agent_policy_incompatible')
+        self.assertEqual(error.exception.code, 'agent_policy_denied')
         self.assertEqual(len(self.requests), 0)
 
     def test_structure_and_explicit_fields_have_stable_references(self):
@@ -299,7 +299,8 @@ class AgentInferenceTests(AgentFixture, TestCase):
         self.assertEqual(self.infer(request)['status'], 'completed')
         self.assertEqual(self.requests[-1]['messages'][-1]['content'][-1]['type'], 'image_url')
         request['call_id'] = str(uuid.uuid4())
-        request['messages'][0]['content'][-1]['reference'] = str(uuid.uuid4())
+        # A numeric-looking opaque reference must not be masked as card/phone data.
+        request['messages'][0]['content'][-1]['reference'] = '12345678-1234-1234-1234-123456789012'
         self.assertEqual(self.infer(request)['status'], 'rejected')
         self.assertEqual(len(self.requests), 3)
 
@@ -314,7 +315,7 @@ class AgentSDKHTTPTests(AgentFixture, LiveServerTestCase):
         self.after_request = next_reply
         root = Path(__file__).resolve().parents[2]
         python = root / 'ops/agent_probe/.venv' / ('Scripts/python.exe' if __import__('os').name == 'nt' else 'bin/python')
-        result = subprocess.run(['rtk', 'proxy', str(python), str(root / 'ops/agent_probe/verify_governed_sdk.py')],
+        result = subprocess.run([str(python), str(root / 'ops/agent_probe/verify_governed_sdk.py')],
             input=json.dumps({'endpoint': self.live_server_url + '/internal/agents/', 'token': self.token,
                 'attempt': str(self.execution.attempt), 'scenario': scenario}), text=True, capture_output=True, timeout=90, cwd=root)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

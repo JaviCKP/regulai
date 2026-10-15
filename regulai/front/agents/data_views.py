@@ -3,6 +3,7 @@ import csv
 import base64
 import io
 import json
+import re
 from pathlib import PurePosixPath
 
 from front.models import AgentArtifact, AgentInference, AgentInput, AgentToolResult
@@ -18,6 +19,16 @@ def authorize_tool(token, attempt, payload):
     if call.name not in context[2].tools:
         raise AgentDenied('tool_not_allowed')
     validate_arguments(call)
+    if context[2].professional:
+        from .capabilities import limits
+        budget = limits(context[2])
+        if call.name == 'execute' and not 1 <= call.args.get('timeout', budget['command_seconds']) <= budget['command_seconds']:
+            raise AgentDenied('command_timeout_limit')
+        if len(json.dumps(call.args, ensure_ascii=False).encode()) > 250000:
+            raise AgentDenied('tool_argument_size_limit')
+        for path in [*call.args.get('page_paths', []), *([call.args['pdf_path']] if call.args.get('pdf_path') else [])]:
+            if not path.startswith(('/workspace/work/', '/workspace/output/')) or '..' in PurePosixPath(path).parts or '\\' in path:
+                raise AgentDenied('tool_path_denied')
     if call.name == 'save_revision':
         from .exports import bound
         bound(execution, call.model_dump())
@@ -25,7 +36,26 @@ def authorize_tool(token, attempt, payload):
               for c in row.response.get('tool_calls', [])]
     if call.model_dump() not in issued:
         raise AgentDenied('unissued_tool_call')
-    if call.name in ('build_excel', 'rename_excel'):
+    if execution.job.get('request') and call.name in ('create_mock_excel', 'build_excel', 'rename_excel',
+            'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
+        from .request_contract import allowed_tools
+        base = AgentArtifact.objects.filter(pk=execution.job.get('base')).first() if execution.job.get('base') else None
+        allowed = allowed_tools(execution.job['request'], context[2].tools,
+            base=bool(base), source=bool(execution.job.get('source')) and execution.job.get('kind') != 'mock',
+            narrative=bool(base and base.verification.get('narrative')))
+        if call.name not in allowed:
+            raise AgentDenied('tool_does_not_match_request')
+    if call.name == 'create_mock_excel':
+        from .excel_contract import mock_source, mock_title, sha256
+        raw = mock_source(call.args['rows'])
+        mock_title(call.args['title'])
+        if execution.job.get('kind') != 'mock':
+            raise AgentDenied('artifact_reference_denied')
+        if execution.job.get('source'):
+            asset = AgentInput.objects.get(pk=execution.job['source'], execution=execution)
+            if asset.digest != sha256(raw):
+                raise AgentDenied('mock_source_immutable')
+    elif call.name in ('build_excel', 'rename_excel'):
         from .excel_contract import valid_title
         valid_title(call.args['title'])
         job = execution.job
@@ -39,26 +69,47 @@ def authorize_tool(token, attempt, payload):
         from .presentation_contract import valid_text
         job = execution.job
         if call.name == 'build_presentation':
-            valid_text(call.args['title'], 'title')
+            if call.args.get('content'):
+                from .report_contract import text
+                text(call.args['title'], 160)
+            else:
+                valid_text(call.args['title'], 'title')
             valid_text(call.args['section'], 'body')
-            if call.args['template'] not in ('new', 'corporate') or call.args['input_reference'] != job.get('source'):
+            if call.args['template'] not in ('new', 'corporate') or call.args['input_reference'] != (job.get('source') or ''):
                 raise AgentDenied('artifact_reference_denied')
+            if not job.get('source') and not call.args.get('content'):
+                raise AgentDenied('report_content_required')
         else:
             if (not job.get('base') or call.args['logical_id'] != job.get('logical_id')
-                    or call.args['base_revision'] != job['base'] or not 1 <= call.args['slide'] <= 3):
+                    or call.args['base_revision'] != job['base'] or not 1 <= call.args['slide'] <= 20):
                 raise AgentDenied('artifact_reference_denied')
-            if AgentArtifact.objects.get(pk=job['base']).format != 'pptx':
+            base = AgentArtifact.objects.get(pk=job['base'])
+            if base.format != 'pptx':
                 raise AgentDenied('presentation_base_required')
-            valid_text(call.args['value'], call.args['field'])
+            if base.verification.get('narrative'):
+                from .report_contract import text
+                text(call.args['value'], 110 if call.args['field'] == 'title' else 2000)
+            else:
+                if call.args['slide'] > 3:
+                    raise AgentDenied('artifact_reference_denied')
+                valid_text(call.args['value'], call.args['field'])
     elif call.name in ('build_document', 'edit_document', 'export_pdf'):
         from .document_contract import valid_section
         from .excel_contract import valid_title
         job = execution.job
         if call.name == 'build_document':
-            valid_title(call.args['title'])
+            if call.args.get('content'):
+                from .report_contract import text
+                text(call.args['title'], 160)
+            else:
+                valid_title(call.args['title'])
             valid_section(call.args['section'])
-            if call.args['format'] not in ('docx', 'pdf') or call.args['input_reference'] != job.get('source'):
+            if call.args['format'] not in ('docx', 'pdf') or call.args['input_reference'] != (job.get('source') or ''):
                 raise AgentDenied('artifact_reference_denied')
+            if call.args['format'] not in job.get('request', {}).get('formats', ('docx', 'pdf')):
+                raise AgentDenied('deliverable_format_mismatch')
+            if not job.get('source') and not call.args.get('content'):
+                raise AgentDenied('report_content_required')
         else:
             if (not job.get('base') or call.args['logical_id'] != job.get('logical_id')
                     or call.args['base_revision'] != job['base']):
@@ -67,16 +118,21 @@ def authorize_tool(token, attempt, payload):
             if base.format not in ('docx', 'pdf'):
                 raise AgentDenied('document_base_required')
             if call.name == 'edit_document':
-                if call.args['field'] not in ('title', 'section'):
+                if call.args['field'] not in ('title', 'section') and not (
+                        base.verification.get('narrative') and re.fullmatch(r'page:[1-9]\d*:block:[1-9]\d*', call.args['field'])):
                     raise AgentDenied('document_field_denied')
-                (valid_title if call.args['field'] == 'title' else valid_section)(call.args['value'])
+                if base.verification.get('narrative'):
+                    from .report_contract import text
+                    text(call.args['value'], 160 if call.args['field'] == 'title' else 2000)
+                else:
+                    (valid_title if call.args['field'] == 'title' else valid_section)(call.args['value'])
     for key in ('input_path', 'file_path', 'path'):
         if key not in call.args:
             continue
         path = PurePosixPath(call.args[key])
-        if not path.is_absolute() or '..' in path.parts or not str(path).startswith('/workspace/'):
+        if not path.is_absolute() or '..' in path.parts or not (str(path) + '/').startswith('/workspace/') or '\\' in call.args[key]:
             raise AgentDenied('tool_path_denied')
-        if call.name in ('write_file', 'edit_file') and not str(path).startswith(('/workspace/work/', '/workspace/output/')):
+        if call.name in ('write_file', 'edit_file', 'web_download') and not str(path).startswith(('/workspace/work/', '/workspace/output/')):
             raise AgentDenied('tool_path_denied')
     return execution, context, call
 
@@ -152,7 +208,11 @@ def tool_result(token, attempt, payload):
     if previous:
         if previous.request_digest != fingerprint:
             raise AgentDenied('tool_result_id_conflict')
-        return previous.view
+        from .general_tools import result_view
+        return result_view(previous)
+    if context[2].professional:
+        from .general_tools import finish
+        return finish(execution, context, call, request)
     # Fixed views are intentionally unable to encode arbitrary output. Do not
     # replace this with a regex or a model-generated "safe summary" of raw logs.
     view = {'status': 'withheld', 'code': 'raw_tool_output_withheld'}
@@ -169,7 +229,10 @@ def tool_result(token, attempt, payload):
         view = ({'status': 'approved', 'reference': str(row.pk), 'sha256': row.artifact.sha256}
             if row and row.call == call.model_dump() and row.status == 'completed'
             else {'status': 'withheld', 'code': 'export_not_confirmed'})
-    elif call.name in ('build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
+    elif call.name == 'research_sources':
+        from .research import approved_view
+        view = approved_view(execution, call, request.raw)
+    elif call.name in ('create_mock_excel', 'build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation'):
         # The executor returns an opaque candidate reference. Approval and the
         # aggregate come only from the independent application verifier.
         try:
@@ -181,8 +244,8 @@ def tool_result(token, attempt, payload):
                 view = {'status': 'withheld', 'code': 'visual_review_required' if artifact.verification.get('automated_passed') else 'document_not_verified'}
             else:
                 view = {'status': 'approved', 'reference': str(artifact.pk),
-                'logical_id': str(artifact.logical_id), 'revision': artifact.revision,
-                'rows': artifact.verification['rows'], 'total_cents': artifact.verification['total_cents']}
+                'logical_id': str(artifact.logical_id), 'revision': artifact.revision, 'format': artifact.format,
+                **{key: artifact.verification[key] for key in ('rows', 'total_cents', 'pages') if key in artifact.verification}}
         except (ValueError, TypeError, KeyError, AgentArtifact.DoesNotExist):
             view = {'status': 'withheld', 'code': 'excel_not_verified'}
     authenticate(token, attempt)

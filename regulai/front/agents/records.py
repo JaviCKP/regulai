@@ -15,9 +15,26 @@ class AgentModelProfile(models.Model):
     vision = models.BooleanField(default=False)
     tools = models.JSONField(default=list)
     min_group_size = models.PositiveIntegerField(default=3)
+    professional = models.BooleanField(default=False)
+    limits = models.JSONField(default=dict)
+    # Provider credentials never enter bootstrap, graph state or sandbox.
+    search_config = EncryptedTextField(default='', blank=True)
 
     class Meta:
         app_label = 'front'
+
+
+class AgentAccessGrant(models.Model):
+    """Explicit per-account capability grant; migrations grant nobody access."""
+    company = models.ForeignKey('front.Company', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    profile = models.ForeignKey(AgentModelProfile, on_delete=models.PROTECT)
+    enabled = models.BooleanField(default=False)
+    version = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        app_label = 'front'
+        constraints = [models.UniqueConstraint(fields=['company', 'user'], name='agent_access_account')]
 
 
 class AgentExecution(models.Model):
@@ -98,10 +115,28 @@ class AgentToolResult(models.Model):
     request_digest = models.CharField(max_length=64)
     view = models.JSONField(default=dict)
     raw = EncryptedTextField()
+    protected_view = EncryptedTextField(default='', blank=True)
 
     class Meta:
         app_label = 'front'
         constraints = [models.UniqueConstraint(fields=['execution', 'call_id'], name='agent_unique_tool_result')]
+
+
+class AgentOperation(models.Model):
+    """Durable intent before any tool effect. Contents stay encrypted."""
+    execution = models.ForeignKey(AgentExecution, on_delete=models.CASCADE, related_name='operations')
+    call_id = models.CharField(max_length=160)
+    name = models.CharField(max_length=64)
+    request_digest = models.CharField(max_length=64)
+    request = EncryptedTextField()
+    result = EncryptedTextField(default='')
+    status = models.CharField(max_length=24, default='started')
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True)
+
+    class Meta:
+        app_label = 'front'
+        constraints = [models.UniqueConstraint(fields=['execution', 'call_id'], name='agent_operation_once')]
 
 
 class AgentEvent(models.Model):

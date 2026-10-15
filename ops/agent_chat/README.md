@@ -1,5 +1,12 @@
 # Tarea 50: laboratorio de chat y Excel
 
+Este documento conserva el laboratorio histórico acotado de la tarea 50. El
+runtime general, los permisos por cuenta y la evidencia local de la tarea 56 se
+documentan en [PROFESSIONAL.md](PROFESSIONAL.md). La activación real local del
+14 de octubre se registra en [la tarea 57](../../docs/plan-blackhat/tareas/57-activacion-real-local.md).
+Para arrancar esa instancia existente, usar `start_real_local.py`; los comandos
+de laboratorio siguientes no son el arranque del servicio real.
+
 Solo cuentas `agent-synthetic-*` en la base PostgreSQL `regulai_task50`. El servidor
 ASGI de prueba usa el SDK OpenAI real con `httpx.MockTransport`. Nunca se importa
 `lab_server.py` desde la aplicación. Los valores de autenticación del laboratorio

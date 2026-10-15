@@ -73,8 +73,22 @@ ERRORS = {
     'currency_mismatch': 'La tarifa del modelo no usa la moneda del presupuesto.',
     'agent_development_only': 'El modo agente solo está disponible para cuentas sintéticas autorizadas del laboratorio.',
     'agent_conversation_busy': 'Este chat ya tiene una ejecución en curso. Puedes seguir su actividad o cancelarla.',
+    'agent_professional_input_invalid': 'No se pudo leer el archivo o su estructura no es válida. Comprueba el formato y los límites del perfil; se conserva el original.',
+    'agent_input_unreadable': 'El archivo no contiene texto legible por los lectores disponibles. Aporta una versión con texto o datos accesibles.',
+    'agent_input_policy_coverage_incomplete': 'El archivo supera la cobertura del lector de políticas. Reduce su tamaño o separa el contenido antes de procesarlo.',
+    'agent_input_size_limit': 'El archivo está vacío o supera el tamaño permitido por el perfil de agente.',
+    'agent_access_denied': 'Esta cuenta no tiene habilitado el perfil de agente solicitado.',
     'conversation_mode_immutable': 'El modo de un chat existente no se puede cambiar. Crea un chat nuevo.',
-    'agent_input_required': 'Adjunta un CSV o XLSX para empezar, o selecciona una revisión para cambiar su título.',
+    'agent_input_required': 'La herramienta seleccionada necesita una fuente o una revisión de base.',
+    'agent_source_required': 'Para crear el Excel con datos reales, adjunta un CSV o XLSX con columnas item y amount_cents. No se han inventado datos.',
+    'agent_format_not_authorized': 'El perfil de agente no tiene autorizada una herramienta para este formato. Revisa las herramientas del perfil con el administrador.',
+    'agent_research_disabled': 'La petición requiere fuentes, pero la consulta externa está deshabilitada en esta instancia. No se han consultado fuentes ni generado un informe factual.',
+    'agent_research_denied': 'La petición requiere fuentes, pero el perfil o la política de la empresa no autoriza ningún destino de investigación. El administrador debe autorizar fuentes del catálogo.',
+    'agent_research_unavailable': 'La petición requiere fuentes, pero el catálogo de investigación no está disponible o su configuración no es válida. No se han consultado fuentes.',
+    'agent_research_no_sources': 'No se obtuvo ninguna fuente consultada utilizable para esta petición. La consulta admite únicamente el catálogo autorizado; no se ha generado un informe factual sin respaldo.',
+    'agent_multiple_formats_unsupported': 'Solicita un formato por ejecución, o Word y PDF del mismo informe.',
+    'agent_page_limit': 'Esta versión admite entre una y veinte páginas o diapositivas por documento.',
+    'agent_language_unsupported': 'La composición de documentos admite español e inglés en esta versión. No se ha sustituido el idioma solicitado.',
     'agent_input_invalid': 'Usa un CSV UTF-8 o XLSX de una hoja con columnas item y amount_cents, importes enteros y hasta 1000 filas. No se admiten fórmulas de entrada ni enlaces externos.',
     'artifact_revision_stale': 'Esta revisión ya no es la actual. Recarga el archivo antes de editarlo.',
     'export_disabled': 'La exportación a Drive está desactivada para esta cuenta.',
@@ -115,7 +129,7 @@ def request_result(prompt):
             'requires_consent': status == 'pending_consent',
             'consent_rules': policy.get('rules', []) if status == 'pending_consent' else [],
             'user_message': message_data(prompt.user_message),
-            'receipt': {key: meta[key] for key in ('schema_version', 'policy', 'coverage', 'route', 'calls', 'verification', 'total', 'notices', 'history', 'limits', 'consent_reason') if key in meta}}
+            'receipt': {key: meta[key] for key in ('schema_version', 'policy', 'jev', 'coverage', 'route', 'calls', 'verification', 'total', 'notices', 'history', 'limits', 'consent_reason') if key in meta}}
     if status == 'pending_consent':
         data['consent_token'] = meta.get('consent_token')
         data['consent_reason'] = meta.get('consent_reason')

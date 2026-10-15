@@ -10,7 +10,15 @@ perfil puede exigir un mínimo superior). Se conservan filas duplicadas: cada fi
 cuenta. Nulos, fórmulas de entrada, enlaces externos, macros y esquemas distintos
 se rechazan; no se adivinan conversiones de moneda ni reglas de imputación.
 
-Para crear el libro llama a build_excel con la referencia opaca y un título. El
+Solo si el usuario solicita expresamente datos ficticios y request.allow_mock es true,
+la operación mock permite create_mock_excel sin adjunto con un título y una lista
+de objetos con item (texto) y amount_cents (entero). Inventa datos de ejemplo
+coherentes con el tema solicitado, normalmente 8 a 12 filas, respetando min_rows
+y max_rows del servidor. No pidas que el usuario prepare un CSV. El servidor
+valida y conserva esta fuente inmutable y marca el título como «Datos ficticios».
+Nunca presentes estos importes como datos reales ni consultes fuentes externas.
+
+Con un adjunto, llama a build_excel con la referencia opaca y un título. El
 Python preinstalado usa pandas y openpyxl, escribe fórmulas y estilos y LibreOffice
 recalcula una copia local. La aplicación reabre los bytes finales y contrasta
 fórmulas, resultados almacenados y la suma entera contra la entrada inmutable.

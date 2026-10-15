@@ -16748,7 +16748,16 @@ textarea.form-control-lg {
   #main-wrapper[data-layout=vertical][data-header-position=fixed] .app-header {
     width: calc(100% - 260px);
   }
-  #main-wrapper[data-layout=vertical][data-sidebartype=full] .body-wrapper {
+  #main-wrapper[data-layout=vertical].sidebar-hidden .left-sidebar {
+    display: none;
+  }
+  #main-wrapper[data-layout=vertical].sidebar-hidden .body-wrapper {
+    margin-left: 0;
+  }
+  #main-wrapper[data-layout=vertical].sidebar-hidden .app-header {
+    width: 100%;
+  }
+  #main-wrapper[data-layout=vertical][data-sidebartype=full]:not(.sidebar-hidden) .body-wrapper {
     margin-left: 260px;
   }
 }

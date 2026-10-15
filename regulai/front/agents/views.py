@@ -19,7 +19,7 @@ def _operation(request, handler):
         authenticate(token, attempt, allow_uncertain=handler is infer)
         # The large private candidate is authenticated before its bounded read.
         # Other operations retain Django's usual body-size limit.
-        if request.path.endswith('/run/candidate/'):
+        if request.path.endswith(('/run/candidate/', '/run/publish/', '/run/image/', '/run/checkpoint/')):
             raw = request.read(40_500_001)
             if len(raw) > 40_500_000:
                 raise ValueError('Candidate request too large')
@@ -30,8 +30,12 @@ def _operation(request, handler):
         response = JsonResponse(result, status=200)
     except AgentDenied as error:
         response = JsonResponse({'status': 'rejected', 'code': error.code}, status=403)
-    except (ValueError, TypeError, KeyError):
-        response = JsonResponse({'status': 'rejected', 'code': 'invalid_agent_request'}, status=400)
+    except (ValueError, TypeError, KeyError) as error:
+        import re
+        reason = str(error)
+        code = reason if isinstance(error, ValueError) and re.fullmatch(
+            r'(artifact|office|pdf|workbook|presentation|checkpoint|image|package|web)_[a-z0-9_]{1,100}', reason) else 'invalid_agent_request'
+        response = JsonResponse({'status': 'rejected', 'code': code}, status=400)
     except Exception:
         # Never interpolate raw validation, database, provider or tool exceptions.
         response = JsonResponse({'status': 'unavailable', 'code': 'agent_operation_unavailable'}, status=503)
@@ -55,8 +59,9 @@ def result(request):
 @require_POST
 def authorize(request):
     def check(token, attempt, payload):
-        authorize_tool(token, attempt, payload)
-        return {'status': 'authorized'}
+        from .general_tools import begin
+        run, context, call = authorize_tool(token, attempt, payload)
+        return begin(run, context, call)
     return _operation(request, check)
 
 
@@ -102,12 +107,17 @@ def execution_operation(request, operation):
     from . import jobs
     from .document_jobs import review_status
     from . import exports
+    from . import research
+    from . import web_tools, packages, professional_artifacts, vision, general_tools, web_browser, checkpoints
     handlers = {'renew': jobs.renew, 'bootstrap': jobs.bootstrap, 'step': jobs.step,
         'candidate': jobs.candidate, 'local-fields': jobs.local_fields,
         'complete': jobs.complete, 'fail': jobs.fail, 'review-status': review_status,
         'propose-export': exports.propose, 'approval-state': exports.approval_state,
         'save-revision': exports.execute, 'export-complete': exports.complete,
-        'reconcile-export': exports.reconcile}
+        'reconcile-export': exports.reconcile, 'research': research.execute,
+        'web': web_tools.execute, 'packages': packages.execute, 'publish': professional_artifacts.candidate,
+        'image': vision.submit, 'output': general_tools.read_output,
+        'browser-fetch': web_browser.fetch_resource, 'browser-result': web_browser.submit, 'checkpoint': checkpoints.save}
     if operation not in handlers:
         return JsonResponse({'status': 'rejected'}, status=404)
     return _operation(request, handlers[operation])
@@ -115,6 +125,7 @@ def execution_operation(request, operation):
 
 def _snapshot(actor, run_id, cursor=None):
     from .jobs import reap, authorized_run, artifact_data, run_data, latest
+    from .professional_artifacts import current_artifacts as professional_artifacts_for_run
     reap()
     run = authorized_run(actor, run_id)
     if cursor is not None:
@@ -126,16 +137,24 @@ def _snapshot(actor, run_id, cursor=None):
     from django.conf import settings
     export_enabled = False
     try:
-        if getattr(settings, 'REGULAY_AGENT_ENABLED', False):
+        if getattr(settings, 'REGULAY_AGENT_ENABLED', False) and run.job.get('kind') != 'professional':
             writable(actor)
             export_enabled = True
     except AgentDenied:
         pass
-    return {'run': run_data(run), 'result': request_result(run.prompt).data, 'export': display(run),
+    result = request_result(run.prompt).data
+    from .web_tools import source_summary
+    professional = run.job.get('kind') == 'professional'
+    return {'run': run_data(run), 'result': result, 'receipt': result.get('receipt', {}), 'export': display(run),
+        'sources': source_summary(run) if professional else [],
+        'operations': [{'name': row.name, 'status': row.status, 'created_at': row.created_at,
+            'completed_at': row.completed_at, 'details_url': f'/chat/agent/runs/{run.pk}/operations/{row.pk}/'}
+            for row in run.operations.all()] if professional else [],
+        'infrastructure': {'cost': None, 'scope': 'sandbox_and_bandwidth', 'status': 'not_reported'} if professional else None,
         'export_enabled': export_enabled,
         'current_revision': artifact_data(current) if current else None,
         'events': list(run.events.values('id', 'kind', 'data')),
-        'artifacts': [artifact_data(row) for row in run.artifacts.order_by('revision')
+        'artifacts': [artifact_data(row) for row in (professional_artifacts_for_run(run) if professional else run.artifacts.order_by('revision'))
             if (run.status == 'completed' and row.status == 'verified') or
                (run.status == 'active' and row.verification.get('automated_passed'))]}
 
@@ -158,6 +177,34 @@ def cancel_run(request, run_id):
         return JsonResponse({'run': cancel(request.user, run_id)})
     except AgentDenied:
         return JsonResponse({'error': 'agent_not_found'}, status=404)
+
+
+@login_required
+@require_POST
+def resume_run(request, run_id):
+    from .checkpoints import resume
+    try:
+        return JsonResponse(resume(request.user, run_id))
+    except AgentDenied as error:
+        return JsonResponse({'error': error.code}, status=409)
+
+
+@login_required
+def operation_details(request, run_id, operation_id):
+    from .jobs import authorized_run
+    from .general_tools import result_view
+    from front.models import AgentOperation, AgentToolResult
+    try:
+        run = authorized_run(request.user, run_id)
+        row = AgentOperation.objects.get(pk=operation_id, execution=run)
+        result = AgentToolResult.objects.filter(execution=run, call_id=row.call_id).first()
+        value = {'name': row.name, 'arguments': json.loads(row.request)['args'],
+            'result': result_view(result) if result else {'status': row.status}}
+        response = JsonResponse(value)
+    except (AgentDenied, AgentOperation.DoesNotExist, ValueError, KeyError):
+        response = JsonResponse({'error': 'agent_not_found'}, status=404)
+    response['Cache-Control'] = 'private, no-store'
+    return response
 
 
 @login_required
@@ -209,12 +256,25 @@ def download(request, artifact_id):
         artifact = AgentArtifact.objects.select_related('execution').get(pk=artifact_id,
             status='verified', execution__status='completed')
         authorized_run(request.user, artifact.execution_id)
+        selected_format = request.GET.get('format', artifact.format)
+        raw = _bytes(artifact)
+        if selected_format != artifact.format:
+            if artifact.format not in ('docx', 'pdf') or selected_format not in ('docx', 'pdf'):
+                raise AgentDenied('artifact_format_unavailable')
+            import base64
+            from .excel_contract import sha256
+            raw = base64.b64decode(json.loads(artifact.render_bundle)['final.' + selected_format], validate=True)
+            if sha256(raw) != artifact.verification.get(selected_format + '_sha256'):
+                raise AgentDenied('artifact_digest_changed')
         types = {'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                  'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'pdf': 'application/pdf',
                  'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}
-        response = HttpResponse(_bytes(artifact), content_type=types[artifact.format])
-        response['Content-Disposition'] = f'attachment; filename="document-{artifact.logical_id}-r{artifact.revision}.{artifact.format}"'
-    except (AgentDenied, AgentArtifact.DoesNotExist, ValueError):
+        if artifact.verification.get('contract') == 'professional-v1':
+            from .professional_artifacts import MIMES
+            types = MIMES
+        response = HttpResponse(raw, content_type=types[selected_format])
+        response['Content-Disposition'] = f'attachment; filename="document-{artifact.logical_id}-r{artifact.revision}.{selected_format}"'
+    except (AgentDenied, AgentArtifact.DoesNotExist, ValueError, KeyError, TypeError):
         return HttpResponse(status=404)
     response['X-Content-Type-Options'] = 'nosniff'
     response['Cache-Control'] = 'private, no-store'

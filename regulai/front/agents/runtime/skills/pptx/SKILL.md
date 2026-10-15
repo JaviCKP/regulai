@@ -1,13 +1,25 @@
 ---
 name: regulay-pptx
-description: Crear y editar una presentación editable de tres diapositivas con datos locales autorizados.
+description: Crear y editar presentaciones narrativas o transformar datos locales autorizados.
 ---
 
 # PowerPoint en Regulay
 
-OfficeCLI 1.0.155 es el motor principal. La imagen incluye el binario verificado,
-Impress, Poppler y Liberation. No instales, descargues, invoques plugins ni abras
-servicios de vista previa. No uses imágenes remotas ni un segundo motor.
+OfficeCLI 1.0.155 compone la plantilla tabular; python-pptx compone las diapositivas
+narrativas. La imagen incluye ambos, Impress, Poppler y Liberation.
+No instales, descargues, invoques plugins ni abras
+servicios de vista previa. No uses imágenes remotas ni motores no instalados.
+
+Sin tabla de entrada, build_presentation admite input_reference="", template=new,
+title, section, language y content. El procedimiento narrativo instalado usa
+python-pptx para texto editable y renderiza con Impress. content es una lista de
+diapositivas con heading y blocks; cada bloque tiene kind (fact, analysis,
+recommendation, estimate, example), text y sources de research_sources. Estimaciones
+necesitan justification y fuente; ejemplos ficticios solo si fueron pedidos.
+Usa entre 12 y 105 palabras por diapositiva y hasta veinte diapositivas, respetando
+la extensión solicitada. Este modo no inventa tablas ni gráficos. Las referencias
+se incorporan a la última diapositiva; reserva espacio para ellas. La edición
+mantiene las otras diapositivas; title cambia el encabezado y body el bloque único.
 
 Usa `build_presentation` con la referencia de entrada y `template=new` o
 `template=corporate`. La entrada acotada admite hasta seis conceptos, etiquetas

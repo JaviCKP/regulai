@@ -222,6 +222,7 @@ const input = {value: 'Synthetic chat', style: {}};
 const container = {querySelector: () => null, appendChild: () => {}};
 let submitted = null;
 const context = {
+  window: {regulayAgent: {capture: () => ({})}},
   crypto: {getRandomValues: array => webcrypto.getRandomValues(array)},
   document: {
     addEventListener: () => {},

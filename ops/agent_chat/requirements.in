@@ -8,3 +8,5 @@ Pillow==12.3.0
 pypdf==6.19.0
 python-pptx==1.0.2
 XlsxWriter==3.2.9
+# Isolated read-only browser; the Python package pins its Chromium revision.
+playwright==1.64.0

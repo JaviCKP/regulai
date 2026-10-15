@@ -142,8 +142,9 @@ class RuntimeConfigTests(SimpleTestCase):
         self.assertEqual(checkout['with']['fetch-depth'], 0)
         self.assertTrue(any(step.get('uses', '').startswith('actions/setup-node@') for step in steps))
         commands = '\n'.join(step.get('run', '') for step in steps)
-        for gate in ('check --settings=regulai.test_settings', 'test front api --settings=regulai.test_settings',
+        for gate in ('check --settings=regulai.test_settings', 'python scripts/run_ci_tests.py',
                      'makemigrations --check --dry-run --settings=regulai.test_settings',
                      'evaluate_ai --settings=regulai.test_settings', 'pip-audit==2.10.1'):
             self.assertIn(gate, commands)
         self.assertIn('mktemp -d', commands)
+        self.assertIn('postgres', workflow['jobs']['quality']['services'])

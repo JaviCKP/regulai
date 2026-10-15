@@ -21,7 +21,9 @@ from .sandbox_pool import CleanPool, create_clean
 
 def runtime_prompt(tools=()):
     root = Path(__file__).with_name('runtime')
-    names = ['system.md', 'documents.md', 'design.md', 'skills/excel/SKILL.md']
+    names = ['system.md', 'documents.md', 'design.md']
+    if any(name in tools for name in ('create_mock_excel', 'build_excel', 'rename_excel')):
+        names += ['skills/excel/SKILL.md']
     if any(name in tools for name in ('build_document', 'edit_document', 'export_pdf')):
         names += ['skills/docx/SKILL.md', 'skills/pdf/SKILL.md']
     if any(name in tools for name in ('build_presentation', 'edit_presentation')):
@@ -42,6 +44,12 @@ class Lease:
                 self.sandbox.set_timeout(180)
             except Exception:
                 self.lost.set()
+                # Cancellation/revocation stops the active command, not merely
+                # the next tool. TTL remains the fallback for a transport loss.
+                try:
+                    self.sandbox.kill()
+                except Exception:
+                    pass
                 return
 
     def check(self):
@@ -60,18 +68,22 @@ class Lease:
 def run_job(internal, sandbox):
     with Lease(internal, sandbox) as lease:
         granted = internal.operation('run/bootstrap', {})
+        if granted['model_context']['operation'] == 'professional':
+            from .professional_worker import run_professional
+            return run_professional(internal, sandbox, lease, granted)
         if granted['model_context']['operation'] == 'export':
             return run_export(internal, sandbox, lease, granted)
-        data = base64.b64decode(granted['input']['base64'], validate=True)
-        if hashlib.sha256(data).hexdigest() != granted['input']['sha256']:
-            raise InternalOperationError('Input digest changed')
-        # This administrative grant is outside the model and graph state.
-        sandbox.files.write(granted['input']['path'], data, user='root')
+        if granted['input']:
+            data = base64.b64decode(granted['input']['base64'], validate=True)
+            if hashlib.sha256(data).hexdigest() != granted['input']['sha256']:
+                raise InternalOperationError('Input digest changed')
+            # This administrative grant is outside the model and graph state.
+            sandbox.files.write(granted['input']['path'], data, user='root')
         if granted['base']:
             sandbox.files.write('/workspace/input/base.' + granted.get('base_format', 'xlsx'), base64.b64decode(granted['base']), user='root')
         if granted.get('base_docx'):
             sandbox.files.write('/workspace/input/document.docx', base64.b64decode(granted['base_docx']), user='root')
-        sandbox.commands.run('chmod 0444 /workspace/input/* && chmod 0555 /workspace/input && '
+        sandbox.commands.run(('chmod 0444 /workspace/input/* && ' if granted['input'] else '') + 'chmod 0555 /workspace/input && '
             'mount --bind /workspace/input /workspace/input && mount -o remount,bind,ro /workspace/input',
             user='root', timeout=10)
         backend = E2BSandbox(sandbox=sandbox, workdir='/workspace/work', timeout=90)
@@ -102,9 +114,18 @@ def run_job(internal, sandbox):
                     final_dir = work + '/final'
                     presenting = name in ('build_presentation', 'edit_presentation')
                     extension = 'pptx' if presenting else 'docx'
-                    program = 'python -I /skills/' + ('presentation_program.py ' if presenting else 'document_program.py ')
-                    common = ' --output ' + final_dir
-                    if presenting:
+                    narrative = bool(fields.get('narrative'))
+                    program = 'python -I /skills/' + ('narrative_program.py ' if narrative else
+                        'presentation_program.py ' if presenting else 'document_program.py ')
+                    common = ' --output ' + final_dir + (' --extension ' + extension if narrative else '')
+                    if narrative and name == 'export_pdf':
+                        execute('compose', 'mkdir -p ' + final_dir + ' && cp /workspace/input/document.docx ' + final_dir + '/final.docx')
+                    elif narrative:
+                        editing = name in ('edit_document', 'edit_presentation')
+                        source = '/workspace/input/base.pptx' if presenting else '/workspace/input/document.docx'
+                        execute('compose', program + ('edit' if editing else 'build') + common +
+                            (' --source ' + shlex.quote(source) if editing else '') + ' --fields ' + work + '/fields.json')
+                    elif presenting:
                         source = '/workspace/input/base.pptx' if name == 'edit_presentation' else granted['input']['path']
                         execute('compose', program + ('edit' if name == 'edit_presentation' else 'build') + common +
                             ' --source ' + shlex.quote(source) + ' --template /skills/corporate.pptx --fields ' + work + '/fields.json')
@@ -130,7 +151,14 @@ def run_job(internal, sandbox):
                     from langchain_core.messages import ToolMessage
                     return ToolMessage(content=json.dumps({'reference': result['reference']}),
                         tool_call_id=call['id'], name=name, artifact={'raw_logs': logs})
-                source = '/workspace/input/base.xlsx' if name == 'rename_excel' else granted['input']['path']
+                if name == 'create_mock_excel':
+                    source_data = base64.b64decode(fields['source_base64'], validate=True)
+                    if hashlib.sha256(source_data).hexdigest() != fields['source_sha256']:
+                        raise InternalOperationError('Generated source digest changed')
+                    source = work + '/mock.csv'
+                    sandbox.files.write(source, source_data)
+                else:
+                    source = '/workspace/input/base.xlsx' if name == 'rename_excel' else granted['input']['path']
                 mode = 'rename' if name == 'rename_excel' else 'build'
                 final = work + '/final/candidate.xlsx'
                 target = final if mode == 'rename' else work + '/candidate.xlsx'
@@ -161,16 +189,23 @@ def run_job(internal, sandbox):
                     tool_call_id=call['id'], name=name, artifact={'raw_logs': logs})
 
         @tool
-        def build_presentation(input_reference: str, template: str, title: str, section: str, runtime: ToolRuntime):
-            """Build a three-slide editable PPTX, with new or corporate layout and authorized data."""
+        def build_presentation(input_reference: str, template: str, title: str, section: str, runtime: ToolRuntime,
+                               content: list[dict] | None = None, language: str | None = None):
+            """Build editable PPTX: narrative pages or an authorized tabular source."""
             return operate('build_presentation', {'input_reference': input_reference, 'template': template,
-                'title': title, 'section': section}, runtime)
+                'title': title, 'section': section, **({'content': content} if content is not None else {}),
+                **({'language': language} if language is not None else {})}, runtime)
 
         @tool
         def edit_presentation(logical_id: str, base_revision: str, slide: int, field: str, value: str, runtime: ToolRuntime):
-            """Change title or body on one slide (1-3), preserving every other part."""
+            """Change title or body on one authorized slide, preserving every other part."""
             return operate('edit_presentation', {'logical_id': logical_id, 'base_revision': base_revision,
                 'slide': slide, 'field': field, 'value': value}, runtime)
+
+        @tool
+        def create_mock_excel(title: str, rows: list[dict], runtime: ToolRuntime):
+            """Create a verified Excel from invented rows with item and integer amount_cents; no upload needed."""
+            return operate('create_mock_excel', {'title': title, 'rows': rows}, runtime)
 
         @tool
         def build_excel(input_reference: str, title: str, runtime: ToolRuntime):
@@ -183,14 +218,16 @@ def run_job(internal, sandbox):
             return operate('rename_excel', {'logical_id': logical_id, 'base_revision': base_revision, 'title': title}, runtime)
 
         @tool
-        def build_document(input_reference: str, format: str, title: str, section: str, runtime: ToolRuntime):
-            """Create DOCX or PDF from the corporate template and authorized local data."""
+        def build_document(input_reference: str, format: str, title: str, section: str, runtime: ToolRuntime,
+                           content: list[dict] | None = None, language: str | None = None):
+            """Create DOCX/PDF from structured narrative pages or authorized local data."""
             return operate('build_document', {'input_reference': input_reference, 'format': format,
-                'title': title, 'section': section}, runtime)
+                'title': title, 'section': section, **({'content': content} if content is not None else {}),
+                **({'language': language} if language is not None else {})}, runtime)
 
         @tool
         def edit_document(logical_id: str, base_revision: str, field: str, value: str, runtime: ToolRuntime):
-            """Edit only title or summary section, preserving the current document."""
+            """Edit title, section or page:N:block:N; preserve the current document."""
             return operate('edit_document', {'logical_id': logical_id, 'base_revision': base_revision,
                 'field': field, 'value': value}, runtime)
 
@@ -199,7 +236,19 @@ def run_job(internal, sandbox):
             """Convert the current verified document to PDF, preserving its content."""
             return operate('export_pdf', {'logical_id': logical_id, 'base_revision': base_revision}, runtime)
 
-        graph = build_agent(backend, internal, tools=[build_excel, rename_excel, build_document, edit_document, export_pdf, build_presentation, edit_presentation],
+        @tool
+        def research_sources(ids: list[str], runtime: ToolRuntime):
+            """Consult only IDs from the server's authorized primary-source catalog."""
+            from langchain_core.messages import ToolMessage
+            with tool_lock:
+                lease.check()
+                call = {'id': runtime.tool_call_id, 'name': 'research_sources', 'args': {'ids': ids}}
+                result = internal.operation('run/research', {'call': call})
+                lease.check()
+                return ToolMessage(content=json.dumps({'reference': result['reference']}),
+                    tool_call_id=runtime.tool_call_id, name='research_sources')
+
+        graph = build_agent(backend, internal, tools=[research_sources, create_mock_excel, build_excel, rename_excel, build_document, edit_document, export_pdf, build_presentation, edit_presentation],
             model_profile={'max_input_tokens': 200000, 'max_output_tokens': 8000},
             allowed_tools=granted['tools'], system_prompt=runtime_prompt(granted['tools']))
         result = graph.invoke({'messages': [HumanMessage(content=granted['message']),

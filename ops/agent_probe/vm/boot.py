@@ -22,14 +22,19 @@ def main():
     base = ROOT / "base.img"
     if not base.exists():
         print("Downloading pinned Ubuntu image", flush=True)
-        with urllib.request.urlopen(URL, timeout=60) as source, base.open("xb") as target:
+        partial = ROOT / "base.img.part"
+        with urllib.request.urlopen(URL, timeout=60) as source, partial.open("wb") as target:
             while chunk := source.read(1024 * 1024):
                 target.write(chunk)
+        with partial.open("rb") as source:
+            if hashlib.file_digest(source, "sha256").hexdigest() != SHA256:
+                raise RuntimeError("Ubuntu download checksum mismatch; restart to retry the partial download")
+        partial.replace(base)
     with base.open("rb") as source:
         if hashlib.file_digest(source, "sha256").hexdigest() != SHA256:
             raise RuntimeError("Ubuntu image checksum mismatch")
     if not (ROOT / "disk.qcow2").exists():
-        run("qemu-img", "create", "-f", "qcow2", "-F", "qcow2", "-b", str(base), "/vm/disk.qcow2", "48G")
+        run("qemu-img", "create", "-f", "qcow2", "-F", "qcow2", "-b", str(base), "/vm/disk.qcow2", os.environ.get('REGULAI_DISK_SIZE', '48G'))
         run("ssh-keygen", "-t", "ed25519", "-N", "", "-f", "/vm/id_ed25519", "-q")
         public_key = (ROOT / "id_ed25519.pub").read_text().strip()
         (ROOT / "user-data").write_text(

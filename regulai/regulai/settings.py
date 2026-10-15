@@ -158,7 +158,10 @@ LOGOUT_REDIRECT_URL = 'front:login'
 
 # Registration
 ALLOW_REGISTRATION = False  # Enable explicitly to allow public registration.
-REGULAY_AGENT_ENABLED = False  # Task 49 internal integration; no account/chat activation.
+REGULAY_AGENT_ENABLED = False  # Account grants are explicit; disabled by default.
+REGULAY_AGENT_WEB_ENABLED = False
+REGULAY_AGENT_PACKAGES_ENABLED = False
+REGULAY_AGENT_BROWSER_ENABLED = False
 REGULAY_AGENT_MCP_ENABLED = False  # Managed Drive grant required; assistant connections are unrelated.
 REGULAY_AGENT_MCP_WRITES_ENABLED = False  # Requires validated pilot and separate write grant.
 

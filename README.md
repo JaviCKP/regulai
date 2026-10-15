@@ -57,17 +57,20 @@ User input → YARA on original → Policy / consent → Required masking → Au
 
 **Multi-Tenant Architecture** — Independent data isolation per organization with separate rules, users, and configurations.
 
-## Quick Start
+## Quick Start: agente real
 
-Community's current local workflow, configuration and recovery are documented in [the startup guide](docs/plan-blackhat/arranque-y-demo.md). From this repository on Windows, with `uv` installed, create `.venv` only if it does not already exist:
+Sigue [INSTALL.md](INSTALL.md) para el instalador local reproducible. Requiere
+Docker Linux x86-64 con KVM y Python 3.11+. Copia el perfil privado de usuarios
+y APIs junto a este archivo como `regulai-private.json` y ejecuta:
 
 ```powershell
-rtk proxy uv venv --python 3.12.11 .venv
-rtk proxy uv pip sync --python .venv/Scripts/python.exe requirements.txt
-rtk proxy .venv/Scripts/python.exe regulai/manage.py run_demo --settings=regulai.demo_settings
+.\setup.cmd install
 ```
 
-Open [the isolated local demo](http://127.0.0.1:8001/login/): `community-demo` / `community-demo-only`. Provider responses and judges are simulated, clearly labelled, and isolated from normal startup. The server blocks outbound provider connections; browser icons may still use external assets. See [verified results and remaining checks](docs/plan-blackhat/estado-ejecucion.md).
+En Linux: `sh setup.sh install`. Cuando indique READY, entra en
+<http://127.0.0.1:8800/login/> con **admin / admin**. Para volver a arrancar:
+`python setup.py start`. Las claves no se publican en Git y no se cargan chats
+ni respuestas simuladas. El perfil privado se entrega por separado.
 
 <details>
 <summary><strong>Initial Configuration</strong></summary>
@@ -77,16 +80,12 @@ For normal local operation, follow the [startup and configuration guide](docs/pl
 </details>
 
 <details>
-<summary><strong>Environment Variables</strong></summary>
+<summary><strong>Configuración del instalador</strong></summary>
 
-Create a `.env` file in the project root:
-
-```env
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-OPENAI_API_KEY=sk-your-openai-key
-```
+El instalador genera su configuración privada dentro de la VM y cifra las
+conexiones importadas con una clave nueva. No requiere crear un `.env` ni editar
+`local_settings.py`. Consulta [INSTALL.md](INSTALL.md) para arrancar, detener y
+comprobar la instalación.
 
 </details>
 
