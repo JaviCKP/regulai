@@ -150,6 +150,41 @@ assert.equal(sequence.open, false);
 assert.equal($('ol', sequence).children.length, 2);
 """)
 
+    def test_long_call_sequence_is_built_only_when_opened(self):
+        self.agent(r"""
+const calls = Array.from({length: 60}, (_, index) => ({sequence: index + 1, status: 'completed', cost: '0', currency: 'USD',
+  purpose: index % 2 ? 'generation' : 'obfuscation', model_effective: index % 2 ? 'model-a' : null,
+  ...(index % 2 ? {protection: {reused: index, protected: 1}} : {})}));
+const output = document.createElement('div');
+regulayAgent.renderReceipt(output, {calls});
+const sequence = $('.rg-sequence', output);
+assert.equal(text($('summary', sequence)), 'Secuencia de llamadas · 60 llamadas');
+assert.equal($('.rg-calls', sequence), null);
+await click($('summary', sequence));
+assert.equal($('.rg-calls', sequence).children.length, 60);
+assert.match(text(sequence), /Protección del historial\n1 mensaje reutilizado · 1 protegido en esta llamada/);
+assert.match(text(sequence), /Protección del historial\n59 mensajes reutilizados · 1 protegido en esta llamada/);
+await click($('summary', sequence));
+await click($('summary', sequence));
+assert.equal($$('.rg-calls', sequence).length, 1);
+""")
+
+    def test_refresh_keeps_an_unchanged_receipt_and_the_sections_the_reader_opened(self):
+        self.agent(r"""
+const run = {...RUN, status: 'active'};
+const call = sequence => ({sequence, purpose: 'generation', status: 'completed', model_effective: 'model-a'});
+const {host, watcher} = await mount(run, snapshot(run, {result: {receipt: {...RECEIPT, calls: [call(1)]}}}));
+const tech = $('.rg-receipt', host), built = tech.children[0];
+await watcher.refresh();
+assert.equal(tech.children[0], built);
+await click($('summary', $('.rg-sequence', tech)));
+net.on('GET ' + run.status_url, () => net.json(snapshot(run, {result: {receipt: {...RECEIPT, calls: [call(1), call(2)]}}})));
+await watcher.refresh();
+assert.notEqual(tech.children[0], built);
+assert.equal($('.rg-sequence', tech).open, true);
+assert.equal($('.rg-calls', tech).children.length, 2);
+""")
+
     def test_primary_source_read_does_not_claim_an_inference_or_missing_model(self):
         self.agent(r"""
 const output = document.createElement('div');

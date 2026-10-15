@@ -174,8 +174,22 @@
     }
     node('p', 'La decisión de enrutamiento se muestra en cada llamada. Una autorización local no es una aprobación de Jev.', parent, 'rg-explain');
   }
+  // Long runs record hundreds of calls: build their rows when the reader opens the list.
+  const EAGER_CALLS = 40;
   function renderCalls(parent, calls) {
     if (!calls.length) { node('p', 'No hay llamadas registradas.', parent, 'rg-explain'); return; }
+    if (calls.length > EAGER_CALLS && parent.localName === 'details' && !parent.open) {
+      const build = () => {
+        if (!parent.open || parent.querySelector('.rg-calls')) return;
+        parent.removeEventListener('toggle', build);
+        callRows(parent, calls);
+      };
+      parent.addEventListener('toggle', build);
+      return;
+    }
+    callRows(parent, calls);
+  }
+  function callRows(parent, calls) {
     const area = node('ol', null, parent, 'rg-calls');
     calls.forEach((call, index) => {
       const noModel = call.purpose === 'research' ? 'Lectura sin modelo' : 'No disponible';
@@ -198,18 +212,29 @@
       detail(values, 'Coste', amount(call.cost, call.currency));
       detail(values, 'Origen del coste', ({provider_reported: 'Informado por el proveedor', tariff_estimate: 'Estimación con las tarifas configuradas',
         no_api_charge: labels.no_api_charge, configured_upper_bound_estimate: labels.configured_upper_bound_estimate, unknown: 'No disponible'})[call.cost_kind] || 'No disponible');
+      if (call.protection && typeof call.protection === 'object') {
+        const reused = Number(call.protection.reused) || 0, fresh = Number(call.protection.protected) || 0;
+        detail(values, 'Protección del historial', `${reused} ${reused === 1 ? 'mensaje reutilizado' : 'mensajes reutilizados'} · ` +
+          `${fresh} ${fresh === 1 ? 'protegido' : 'protegidos'} en esta llamada`);
+      }
       if (call.jev) renderJev(details(row, 'Consulta Jev de esta llamada'), call.jev);
     });
   }
-  function renderReceipt(parent, receipt = {}) {
+  function renderReceipt(parent, receipt = {}, opened = {}) {
     parent.replaceChildren();
     receipt = receipt && typeof receipt === 'object' ? receipt : {};
-    renderJev(details(parent, 'Consulta y decisión de Jev'), receipt.jev);
+    const jevArea = details(parent, 'Consulta y decisión de Jev', 'rg-disclosure rg-jev');
+    jevArea.open = Boolean(opened.jev);
+    renderJev(jevArea, receipt.jev);
     const calls = list(receipt.calls);
-    renderCalls(details(parent, `Secuencia de llamadas · ${calls.length} ${calls.length === 1 ? 'llamada' : 'llamadas'}`), calls);
+    const sequence = details(parent, `Secuencia de llamadas · ${calls.length} ${calls.length === 1 ? 'llamada' : 'llamadas'}`, 'rg-disclosure rg-sequence');
+    sequence.open = Boolean(opened.calls);
+    renderCalls(sequence, calls);
     return parent;
   }
   function oversight(parent, receipt = {}, data = {}) {
+    // A refresh during a live run must not close what the reader opened.
+    const opened = {jev: Boolean(parent.querySelector('.rg-jev')?.open), calls: Boolean(parent.querySelector('.rg-sequence')?.open)};
     parent.replaceChildren();
     const calls = list(receipt.calls), total = receipt.total || {};
     const models = [...new Set(calls.map(call => call.model_effective).filter(Boolean))], cost = amount(total.cost, total.currency);
@@ -221,7 +246,7 @@
       ['Coste', cost === 'No disponible' && present(total.known_cost) ? `${amount(total.known_cost, total.currency)} conocido${estimated} · total no disponible` : cost + (cost === 'No disponible' ? '' : estimated)],
     ].forEach(([name, value]) => detail(summary, name, value));
     if (data.infrastructure) node('p', 'El coste mostrado corresponde a APIs. El coste del sandbox y del tráfico no está disponible.', parent, 'rg-explain');
-    renderReceipt(parent.appendChild(document.createElement('div')), receipt);
+    renderReceipt(parent.appendChild(document.createElement('div')), receipt, opened);
     if (list(receipt.policy?.reason_codes).length) node('p', receipt.policy.reason_codes.join(' · '), details(parent, 'Decisión de la política local'), 'rg-explain');
   }
 
@@ -573,7 +598,13 @@
       this.extra.replaceChildren();
       this.showSources(list(data.sources));
       this.showOperations(list(data.operations));
-      oversight(this.tech, data.receipt || data.result?.receipt || {}, data);
+      // Every event refreshes the run; rebuild its receipt only when the server's copy changed.
+      const receipt = data.receipt || data.result?.receipt || {};
+      const receiptKey = JSON.stringify([receipt, Boolean(data.infrastructure)]);
+      if (receiptKey !== this.receiptKey || !this.tech.children.length) {
+        this.receiptKey = receiptKey;
+        oversight(this.tech, receipt, data);
+      }
       showExport(this, data.export, data.run);
       const visible = list(data.artifacts).length ? data.artifacts : (data.current_revision ? [data.current_revision] : []);
       const key = JSON.stringify([visible, data.export_enabled, live(data.run.status)]);

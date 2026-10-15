@@ -21,7 +21,7 @@ from front.models import (AgentArtifact, AgentEvent, AgentExecution, AgentInfere
                          Conversation, Message, Profile, Prompt, Response)
 from front.policy import digest
 from .excel_contract import MAX_BYTES, input_rows, sha256, valid_title, verify
-from .service import AgentDenied, _context, authenticate, begin_execution
+from .service import PROTECTED_HISTORY, AgentDenied, _context, authenticate, begin_execution
 from .request_contract import interpret, allowed_tools, check_delivery, verification_checks
 
 LIVE = ('queued', 'active', 'outcome_unknown')
@@ -81,6 +81,7 @@ def event(execution, kind, **data):
 def _terminal(execution, status):
     execution.status, execution.finished_at = status, timezone.now()
     execution.save(update_fields=['status', 'finished_at'])
+    PROTECTED_HISTORY.forget(execution.pk)
     Prompt.objects.filter(pk=execution.prompt_id).update(status=(
         'outcome_unknown' if status == 'interrupted' else status), updated_at=timezone.now())
     event(execution, status)

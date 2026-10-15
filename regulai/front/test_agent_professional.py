@@ -481,6 +481,18 @@ class ProfessionalTests(AgentFixture, TestCase):
         self.assertIn('política', snapshot['result']['error'])
         self.assertNotIn('fuente', snapshot['result']['error'].lower())
 
+    def test_finished_run_forgets_its_protected_history_and_status_sends_the_receipt_once(self):
+        from front.agents.service import PROTECTED_HISTORY
+        self.activate(self.queued())
+        self.assertEqual(infer(self.token, self.execution.attempt, self.request())['status'], 'completed')
+        owned = lambda: [key for key in PROTECTED_HISTORY.items if key[0] == str(self.execution.pk)]
+        self.assertTrue(owned())
+        jobs.fail(self.token, self.execution.attempt, {})
+        self.assertFalse(owned())
+        snapshot = self.client.get(f'/chat/agent/runs/{self.execution.pk}/').json()
+        self.assertTrue(snapshot['receipt']['calls'])
+        self.assertNotIn('receipt', snapshot['result'])
+
     def test_read_web_sources_are_not_reported_as_missing_after_another_failure(self):
         self.activate(self.queued('Investiga las causas de la desamortización y crea un Word de tres páginas'))
         row = AgentInput.objects.create(execution=self.execution, kind='web_source', path='web/synthetic', original='', digest='')

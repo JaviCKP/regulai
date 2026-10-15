@@ -148,9 +148,11 @@ def _snapshot(actor, run_id, cursor=None):
     except AgentDenied:
         pass
     result = request_result(run.prompt).data
+    # Not repeated inside result: a long run's receipt is large and this endpoint is polled on every event.
+    receipt = result.pop('receipt', {})
     from .web_tools import source_summary
     professional = run.job.get('kind') == 'professional'
-    return {'run': run_data(run), 'result': result, 'receipt': result.get('receipt', {}), 'export': display(run),
+    return {'run': run_data(run), 'result': result, 'receipt': receipt, 'export': display(run),
         'sources': source_summary(run) if professional else [],
         'operations': [{'name': row.name, 'status': row.status, 'created_at': row.created_at,
             'completed_at': row.completed_at, 'details_url': f'/chat/agent/runs/{run.pk}/operations/{row.pk}/'}

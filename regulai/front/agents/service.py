@@ -1,4 +1,5 @@
 """Trusted application side of the private agent protocol. No executor imports."""
+from collections import OrderedDict
 from dataclasses import asdict
 from copy import deepcopy
 from datetime import timedelta
@@ -9,6 +10,7 @@ import hmac
 import json
 import re
 import secrets
+import threading
 import time
 from types import SimpleNamespace
 import uuid
@@ -370,12 +372,74 @@ def _protect_message(execution, government, message, policy_texts):
     return ChatMessage(message.role, content, calls, message.tool_call_id, message.name)
 
 
+class ProtectedHistory:
+    """Protected messages reused across the inferences of one execution.
+
+    Every inference resends the whole conversation. Protecting each message again
+    cost two policy checks, a masking call and two receipt writes per message, so
+    a long run slowed down quadratically. Entries live in process memory only,
+    are bounded, and are keyed by the exact message plus everything that
+    authorized its protection: a policy, rule, mask, grant or attempt change
+    protects it again. The generation call still checks the whole payload.
+    """
+
+    def __init__(self, limit):
+        self.limit, self.size, self.items, self.lock = limit, 0, OrderedDict(), threading.Lock()
+
+    def get(self, key):
+        with self.lock:
+            value = self.items.get(key)
+            if value is not None:
+                self.items.move_to_end(key)
+            return value
+
+    def put(self, key, value):
+        with self.lock:
+            if key in self.items:
+                self.size -= len(self.items.pop(key))
+            if len(value) > self.limit:
+                return
+            self.items[key] = value
+            self.size += len(value)
+            while self.size > self.limit:
+                self.size -= len(self.items.popitem(last=False)[1])
+
+    def forget(self, execution_id):
+        with self.lock:
+            for key in [key for key in self.items if key[0] == str(execution_id)]:
+                self.size -= len(self.items.pop(key))
+
+
+PROTECTED_HISTORY = ProtectedHistory(32_000_000)
+
+
+def _protection_key(execution, context, government, message):
+    return (str(execution.pk), digest({'attempt': str(execution.attempt), 'authorization': context[-1],
+        'policy': government.decision.fingerprint,
+        'masks': {str(pk): value for pk, value in government.mask_identities.items()},
+        'message': message.model_dump()}))
+
+
+def _protected_message(execution, context, government, message, policy_texts, counts):
+    key = _protection_key(execution, context, government, message)
+    cached = PROTECTED_HISTORY.get(key)
+    if cached is not None:
+        counts['reused'] += 1
+        return ChatMessage(**json.loads(cached))  # A fresh copy: callers may rewrite content.
+    protected = _protect_message(execution, government, message, policy_texts)
+    PROTECTED_HISTORY.put(key, json.dumps(asdict(protected), ensure_ascii=False))
+    counts['protected'] += 1
+    return protected
+
+
 def _validate_tool_history(execution, request):
     from .general_tools import result_view
     issued = {}
     for inference in AgentInference.objects.filter(execution=execution, status='completed'):
         for call in inference.response.get('tool_calls', []):
             issued[call['id']] = call
+    # One query per inference, not one per tool message (unique per execution and call).
+    results = {row.call_id: row for row in AgentToolResult.objects.filter(execution=execution)}
     pending, seen = {}, set()
     for message in request.messages:
         if pending and message.role != 'tool':
@@ -386,7 +450,7 @@ def _validate_tool_history(execution, request):
             pending[call.id] = call.name
             seen.add(call.id)
         if message.role == 'tool':
-            result = AgentToolResult.objects.filter(execution=execution, call_id=message.tool_call_id).first()
+            result = results.get(message.tool_call_id)
             if (not result or pending.pop(message.tool_call_id, None) != message.name
                     or message.content != json.dumps(result_view(result), sort_keys=True, ensure_ascii=False)):
                 raise AgentDenied('unapproved_tool_result')
@@ -502,7 +566,9 @@ def infer(token, attempt, payload):
                     'Esta es la última llamada autorizada: responde con los entregables ya verificados y los límites reales. '
                     'No puedes ejecutar más herramientas ni afirmar que terminaste lo que falta.')))
         raw_messages = instructions + request.messages
-        messages = [_protect_message(execution, government, message, policy_texts) for message in raw_messages]
+        protection = {'reused': 0, 'protected': 0}
+        messages = [_protected_message(execution, context, government, message, policy_texts, protection)
+                    for message in raw_messages]
         _classify(execution, context, government, messages, policy_texts)
         schemas = [tool_schema(name) for name in effective_tools]
         # Bound all structured payload bytes, including IDs, args and tool schemas.
@@ -517,6 +583,7 @@ def infer(token, attempt, payload):
         call, started = government.start_call(request.purpose, f'engine:{engine.pk}', model.model_id,
             policy_texts + [('prompts', policy_payload)], selected.estimated_cost,
             selected.price_snapshot, model_pk=model.pk)
+        call['protection'] = protection
         execution.prompt.model_used = model.model_id
         execution.prompt.save(update_fields=['decision', 'model_used', 'updated_at'])
         connector = get_connector(engine.engine.connector_type, engine.api_key, engine.engine.base_url or None)

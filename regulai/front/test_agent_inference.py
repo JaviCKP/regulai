@@ -304,6 +304,105 @@ class AgentInferenceTests(AgentFixture, TestCase):
         self.assertEqual(self.infer(request)['status'], 'rejected')
         self.assertEqual(len(self.requests), 3)
 
+    def protection(self, call_id):
+        """Masking calls for one inference's request messages (its reply is always masked too)."""
+        self.prompt.refresh_from_db()
+        calls = [c for c in self.prompt.decision['calls'] if c.get('call_id') == call_id]
+        generation = next(c for c in calls if c['purpose'] == 'generation')
+        return sum(c['purpose'] == 'obfuscation' for c in calls) - 1, generation['protection']
+
+    def test_protected_history_is_reused_and_only_new_messages_are_masked(self):
+        history = [{'role': 'user', 'content': 'Contacto: ana@example.com, teléfono 612 345 678'},
+                   {'role': 'assistant', 'content': 'Entendido.'}]
+        first = self.request(messages=history)
+        self.assertEqual(self.infer(first)['status'], 'completed')
+        self.assertEqual(self.protection(first['call_id']), (2, {'reused': 0, 'protected': 2}))
+        second = self.request(messages=history + [{'role': 'user', 'content': 'Sigue con ana@example.com'}])
+        self.assertEqual(self.infer(second)['status'], 'completed')
+        self.assertEqual(self.protection(second['call_id']), (1, {'reused': 2, 'protected': 1}))
+        # The provider sees exactly the same protected history, never the original values.
+        self.assertEqual(self.requests[1]['messages'][:2], self.requests[0]['messages'][:2])
+        sent = json.dumps(self.requests, ensure_ascii=False)
+        self.assertNotIn('ana@example', sent)
+        self.assertNotIn('612 345 678', sent)
+
+    def test_changed_history_message_is_protected_again(self):
+        first = self.request(messages=[{'role': 'user', 'content': 'Contacto: ana@example.com'}])
+        self.assertEqual(self.infer(first)['status'], 'completed')
+        changed = self.request(messages=[{'role': 'user', 'content': 'Contacto: luis@example.com'}])
+        self.assertEqual(self.infer(changed)['status'], 'completed')
+        self.assertEqual(self.protection(changed['call_id']), (1, {'reused': 0, 'protected': 1}))
+        self.assertNotIn('luis@example', json.dumps(self.requests))
+
+    def test_new_content_is_still_checked_when_history_is_reused(self):
+        group = RulesGroup.objects.create(name='Agent YARA', company=self.company)
+        Rule.objects.create(name='Block explicit email', rules_group=group,
+            yara_rule='rule Synthetic { strings: $s = "blocked@example.invalid" condition: $s }')
+        AgentExecution.objects.filter(pk=self.execution.pk).delete()
+        self.execution, self.token = begin_execution(self.prompt, self.agent.pk)
+        history = [{'role': 'user', 'content': 'Resume el informe'}]
+        self.assertEqual(self.infer(self.request(messages=history))['status'], 'completed')
+        blocked = self.request(messages=history + [{'role': 'user', 'content': 'blocked@example.invalid'}])
+        self.assertEqual(self.infer(blocked)['status'], 'rejected')
+        self.assertEqual(len(self.requests), 1)
+
+    def test_policy_or_mask_change_during_a_step_stops_it_even_with_reused_history(self):
+        from front.agents import service
+        history = [{'role': 'user', 'content': 'Resume el informe'}]
+        self.assertEqual(self.infer(self.request(messages=history))['status'], 'completed')
+        group = RulesGroup.objects.create(name='Mid-step', company=self.company)
+        changes = {
+            'new rule': (lambda: Rule.objects.create(name='New rule', rules_group=group,
+                yara_rule='rule MidStep { strings: $s = "never-present-token" condition: $s }'),
+                lambda: Rule.objects.filter(rules_group=group).delete()),
+            'mask change': (lambda: ObfuscationConfig.objects.filter(pk=self.mask.pk).update(language='en'),
+                lambda: ObfuscationConfig.objects.filter(pk=self.mask.pk).update(language=self.mask.language)),
+        }
+        original = service._classify
+        for name, (change, undo) in changes.items():
+            # Every message comes from the cache: only the generation check can notice.
+            def classify(*args, change=change):
+                change()
+                return original(*args)
+            request = self.request(messages=history)
+            with self.subTest(change=name), patch('front.agents.service._classify', side_effect=classify):
+                result = self.infer(request)
+                self.assertEqual(result['status'], 'rejected')
+                self.assertIn(result['code'], ('agent_authorization_changed', 'authorization_changed', 'security_check_failed'))
+                self.prompt.refresh_from_db()
+                self.assertFalse([c for c in self.prompt.decision['calls']
+                                  if c.get('call_id') == request['call_id'] and c['purpose'] == 'obfuscation'])
+            undo()
+        self.assertEqual(len(self.requests), 1)
+
+    def test_protection_key_separates_runs_attempts_authorizations_and_content(self):
+        from types import SimpleNamespace
+        from front.agents.protocol import WireMessage
+        from front.agents.service import _protection_key
+        def key(pk='e1', attempt='a1', binding='b1', fingerprint='f1', mask='m1', content='x'):
+            return _protection_key(SimpleNamespace(pk=pk, attempt=attempt), ('context', binding),
+                SimpleNamespace(decision=SimpleNamespace(fingerprint=fingerprint), mask_identities={1: mask}),
+                WireMessage(role='user', content=content))
+        base = key()
+        self.assertEqual(base, key())
+        for change in ({'pk': 'e2'}, {'attempt': 'a2'}, {'binding': 'b2'}, {'fingerprint': 'f2'},
+                       {'mask': 'm2'}, {'content': 'y'}):
+            with self.subTest(change=change):
+                self.assertNotEqual(base, key(**change))
+
+    def test_protected_history_is_bounded_and_forgets_finished_runs(self):
+        from front.agents.service import ProtectedHistory
+        history = ProtectedHistory(10)
+        history.put(('e1', 'a'), '12345')
+        history.put(('e1', 'b'), '12345')
+        history.put(('e2', 'c'), '1234')
+        self.assertIsNone(history.get(('e1', 'a')))  # Least recently used goes first.
+        self.assertEqual((history.size, history.get(('e2', 'c'))), (9, '1234'))
+        history.put(('e2', 'big'), 'x' * 11)
+        self.assertIsNone(history.get(('e2', 'big')))
+        history.forget('e1')
+        self.assertEqual((list(history.items), history.size), ([('e2', 'c')], 4))
+
 
 @override_settings(REGULAY_AGENT_ENABLED=True)
 class AgentSDKHTTPTests(AgentFixture, LiveServerTestCase):

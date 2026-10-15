@@ -290,3 +290,49 @@ no tenía este rediseño: el chat real seguía con la interfaz anterior. Se apli
   - el texto enmascarado continúa, y como control el original se detiene;
   - una regla de bloqueo en una página pública sigue deteniendo.
   - La de enmascarado falla sin el cambio.
+
+### Lentitud de las ejecuciones largas (2026-10-15)
+
+- **Causa medida.** Cada inferencia reenvía la conversación entera, y se volvía a proteger mensaje
+  a mensaje: alias, comprobación previa y una llamada de enmascarado por máscara, más dos
+  escrituras del recibo completo. El coste crecía de forma cuadrática con los pasos. Simulación
+  local de 35 pasos como los del chat 3, con proveedor simulado:
+
+  | | Sin reutilizar | Reutilizando |
+  |---|---|---|
+  | Preparación total | 251,15 s | 21,05 s |
+  | Último paso | 14,96 s | 0,6 s |
+  | Llamadas de enmascarado | 1260 | 104 |
+  | Recibo | 1011 KB | 120 KB |
+
+  La hipótesis de memoria anotada arriba sigue abierta, pero el coste que crecía en cada paso era este.
+- **Arreglo.** `ProtectedHistory` (`agents/service.py`) reutiliza, dentro de una ejecución, los
+  mensajes ya protegidos.
+  - Clave: la ejecución y un resumen del intento, el vínculo de autorización, la huella de la
+    política, las máscaras y el mensaje exacto. Cualquier cambio de política, regla, máscara,
+    permiso o intento vuelve a protegerlo.
+  - Vive solo en la memoria del proceso, limitado a 32 MB, y se olvida al terminar la ejecución
+    (`jobs._terminal`).
+  - Se mantiene lo demás: la llamada de generación comprueba la carga completa en cada paso, los
+    mensajes nuevos se protegen uno a uno y la respuesta del modelo se protege siempre.
+  - Cada llamada del recibo indica cuántos mensajes se reutilizaron y cuántos se protegieron.
+  - `_validate_tool_history` carga los resultados de herramientas con una consulta por inferencia.
+- **Interfaz.**
+  - El estado de la ejecución ya no envía el recibo dos veces.
+  - El navegador solo lo reconstruye si cambia y no cierra las secciones que el lector abrió.
+  - Las listas de más de 40 llamadas se construyen al abrirlas. Recursos `overhaul-7`.
+- **Pruebas.** Nueve nuevas: seis en `test_agent_inference`, una en `test_agent_professional` y
+  dos en `test_agent_frontend`. Cada una falla si se rompe lo que comprueba (verificado mutando
+  el código).
+- **Verificación.** Suite por módulos como CI, con PostgreSQL 17 desechable para `test_agent*`:
+  65 módulos y 741 pruebas.
+  - `test_agent_professional` dio dos errores porque se lanzó otra prueba contra la misma base
+    de datos. Repetido solo: 41 de 41.
+  - `test_agent_presentations` falló 2 de unas 97 ejecuciones. Es anterior a este cambio y está
+    reproducido de forma determinista. El detector local `CARD` (Luhn, admite guiones) toma por
+    tarjeta cerca del 0,27 % de los UUID aleatorios. Al enmascarar la respuesta del modelo,
+    `be10ca83-6211-4869-9889-7535cb677985` queda como `be10ca[[R_CARD_…]]cb677985` y
+    `authorize_tool` rechaza la llamada (`unissued_tool_call` en la prueba). En producción
+    afectaría a un 0,3–0,5 % de las llamadas a herramientas con identificadores. Pendiente en
+    una tarea aparte.
+- **Sin desplegar.**
