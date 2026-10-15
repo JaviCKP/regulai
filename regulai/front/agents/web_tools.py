@@ -7,6 +7,7 @@ import time
 from urllib.parse import urlsplit
 
 import httpx
+import yara
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
@@ -144,6 +145,57 @@ def _excerpt(row, source, offset, length):
         'total_characters': len(text), 'next_offset': end if end < len(text) else None}
 
 
+# Consent rules ask the user before matching data reaches a provider. Text read from a
+# public page cannot be confirmed mid-task, so those matches are masked before the model
+# sees them. Blocking rules are left untouched and still stop the next inference.
+MASKED = '[dato personal omitido]'
+_IDENTIFIERS = {'reference', 'url', 'final_url', 'sha256'}  # Citations must keep matching sources.
+
+
+def _mask_public_text(actor, result):
+    from front.policy import active_rules
+    rules = [rule for rule in active_rules(actor) if rule.action == 'consent' and rule.applies_to in ('prompts', 'both')]
+    if not rules:
+        return result
+    masked = 0
+
+    def clean(text):
+        nonlocal masked
+        data = text.encode('utf-8')
+        spans = sorted((found.offset, found.offset + found.matched_length) for match in compiled.match(data=data, timeout=2)
+                       for string in match.strings for found in string.instances)
+        merged = []
+        for start, end in spans:
+            if merged and start <= merged[-1][1]:
+                merged[-1][1] = max(merged[-1][1], end)
+            else:
+                merged.append([start, end])
+        if not merged:
+            return text
+        masked += len(merged)
+        out, last = bytearray(), 0
+        for start, end in merged:
+            out += data[last:start] + MASKED.encode()
+            last = end
+        return (out + data[last:]).decode('utf-8', 'replace')
+
+    def walk(value, key=None):
+        if isinstance(value, str):
+            return value if key in _IDENTIFIERS else clean(value)
+        if isinstance(value, list):
+            return [walk(item, key) for item in value]
+        if isinstance(value, dict):
+            return {name: walk(item, name) for name, item in value.items()}
+        return value
+
+    try:
+        compiled = yara.compile(sources={f'rule_{rule.pk}': rule.yara_rule for rule in rules}, includes=False)
+        cleaned = walk(result)
+    except yara.Error:
+        return result  # Unmasked text still meets the gateway scan, which stops the inference.
+    return {**cleaned, 'masked_personal_data': masked} if masked else result
+
+
 def execute(token, attempt, payload):
     from .data_views import authorize_tool
     if not isinstance(payload, dict) or set(payload) != {'call'}:
@@ -240,6 +292,8 @@ def execute(token, attempt, payload):
                 duration_ms=round((time.monotonic() - started) * 1000))
     finally:
         _totals(run.prompt)
+    if call.name in ('web_open', 'web_find', 'web_search') and result.get('succeeded', True):
+        result = _mask_public_text(run.prompt.user, result)
     store_result(row, result)
     response = {'status': 'completed', **transfer}
     packed = json.dumps(response)

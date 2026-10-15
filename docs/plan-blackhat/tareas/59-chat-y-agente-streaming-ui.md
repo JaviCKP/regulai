@@ -1,7 +1,7 @@
 # 59. Chat y agente: respuesta progresiva y actividad legible
 
-Status: Aplicado en la rama `claude/aplicar-rediseno-chat`, publicado en `JaviCKP/RegulaiV.2` (`main`) y desplegado en la instalación local `regulai-v2-vm` con autorización del usuario (2026-10-15, incluidos el motivo de fallo real y la duración de las ejecuciones interrumpidas). Sin ensayo nuevo con el proveedor real.
-Blocked by: Nada para lo desplegado. Pendiente de decisión del usuario: qué regla de la empresa bloquea la investigación web, si mostrar los borradores verificados de ejecuciones interrumpidas y si acotar la memoria de WSL2. Los ensayos con proveedores reales necesitan autorización de gasto.
+Status: Aplicado en la rama `claude/aplicar-rediseno-chat`, publicado en `JaviCKP/RegulaiV.2` (`main`) y desplegado en la instalación local `regulai-v2-vm` con autorización del usuario (2026-10-15). Incluye el motivo de fallo real, la duración de las ejecuciones interrumpidas y el enmascarado de datos personales de páginas públicas. Sin ensayo nuevo con el proveedor real.
+Blocked by: Nada para lo desplegado. Pendiente de decisión del usuario: si mostrar los borradores verificados de ejecuciones interrumpidas, si acotar la memoria de WSL2 y si retirar la regla duplicada #8. Los ensayos con proveedores reales necesitan autorización de gasto.
 
 Numeración: se creó como «57» en el worktree del rediseño; se renumera a 59 porque la 57 del checkout principal es la activación real y la 58 el instalador.
 
@@ -266,3 +266,27 @@ no tenía este rediseño: el chat real seguía con la interfaz anterior. Se apli
   - Login y chat en el 8800, con la duración corregida.
   - 57 pruebas de interfaz en verde.
   - CI de `RegulaiV.2` en verde para `f706147`.
+
+### Datos personales en páginas públicas (2026-10-15)
+
+- **Causa del bloqueo de la desamortización.** Comprobado con autorización expresa del usuario
+  para leer esa conversación y las reglas. La regla #6 «Correo electrónico o DNI: pedir
+  consentimiento» (`consent`) coincidía con los correos de los autores de un PDF de Redalyc. La
+  petición inicial no tenía datos sensibles y se autorizó sin consentimiento; a mitad de tarea
+  el agente no puede pedirlo, y `governance.preflight` detuvo la inferencia
+  (`security_check_failed`). No fue un tiempo de escaneo: 0,01 s por comprobación. Las reglas
+  #4 y #8 son idénticas.
+- **Decisión del usuario: enmascarar y seguir.** `web_tools` aplica las reglas `consent` activas
+  (aplicables a `prompts` o `both`) al resultado de `web_open`, `web_find` y `web_search`
+  antes de guardarlo como vista del modelo.
+  - Cada coincidencia se sustituye por `[dato personal omitido]`, y el resultado indica
+    `masked_personal_data`.
+  - URL, referencia y hash se conservan para que las citas sigan cuadrando, y la fuente
+    original sigue cifrada en `web_source`.
+  - Las reglas `block` no se enmascaran y siguen deteniendo la inferencia.
+  - Si el escaneo falla, el texto sigue sin enmascarar y la pasarela lo detiene como antes.
+  - Fuera de alcance: los archivos descargados con `web_download` y procesados en el sandbox.
+- **Pruebas.** Dos nuevas en `test_agent_professional`:
+  - el texto enmascarado continúa, y como control el original se detiene;
+  - una regla de bloqueo en una página pública sigue deteniendo.
+  - La de enmascarado falla sin el cambio.

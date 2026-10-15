@@ -201,6 +201,63 @@ class ProfessionalTests(AgentFixture, TestCase):
         self.assertEqual(len(web_tools.consulted_sources(self.execution)), 1)
         self.assertTrue(all(r.url.host == '93.184.216.34' for r in requests if r.url.host != 'api.tavily.com'))
 
+    def public_rule(self, action, yara_rule):
+        # Created before the run, like an account's policy: part of the initial authorization.
+        group = RulesGroup.objects.create(name='Public data ' + action, company=self.company)
+        return Rule.objects.create(name='Rule ' + action, rules_group=group, action=action, yara_rule=yara_rule)
+
+    def test_public_page_personal_data_is_masked_and_the_task_continues(self):
+        self.public_rule('consent', r'rule PersonalData { strings: $email = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/ '
+                                    r'$dni = /\b[0-9]{8}[A-Z]\b/ nocase condition: any of them }')
+        page = ('<html><title>Desamortización</title><main><p>La desamortización de Mendizábal empezó en 1836.</p>'
+                '<p>Contacto: autora.ficticia@universidad.example.es, DNI 12345678Z.</p></main></html>').encode()
+        def http(request):
+            if request.url.host == 'api.tavily.com':
+                return httpx.Response(200, json={'results': [{'title': 'Artículo', 'url': 'https://historia.example/articulo',
+                    'content': 'Escribe a otra.persona@historia.example.org para el PDF.'}]})
+            return httpx.Response(200, headers={'content-type': 'text/html'}, content=page)
+        self.http_fixture(http)
+        self.activate(self.queued('Investiga las causas de la desamortización y crea un Word de tres páginas'))
+        call = self.issue('web_open', {'url': 'https://historia.example/articulo'})
+        web_tools.execute(self.token, self.execution.attempt, {'call': call})
+        view = self.finish(call)
+        self.assertIn('Mendizábal empezó en 1836', view['text'])
+        self.assertEqual(view['text'].count(web_tools.MASKED), 2)
+        self.assertEqual(view['masked_personal_data'], 2)
+        self.assertEqual(view['final_url'], 'https://historia.example/articulo')
+        find = self.issue('web_find', {'reference': view['reference'], 'term': 'Contacto'})
+        web_tools.execute(self.token, self.execution.attempt, {'call': find})
+        found = self.finish(find)
+        search = self.issue('web_search', {'query': 'desamortización'})
+        web_tools.execute(self.token, self.execution.attempt, {'call': search})
+        snippets = self.finish(search)
+        self.assertEqual(snippets['results'][0]['url'], 'https://historia.example/articulo')
+        for shown in (view, found, snippets):
+            self.assertNotRegex(json.dumps(shown, ensure_ascii=False), r'@|12345678Z')
+        # The masked text reaches the next inference without the consent stop.
+        result = infer(self.token, self.execution.attempt, self.request(messages=[
+            {'role': 'user', 'content': 'Fuente leída: ' + view['text'] + json.dumps(found, ensure_ascii=False)}]))
+        self.assertEqual(result['status'], 'completed', result)
+        # Control: the same rule stops the original text, so the masking is what lets it continue.
+        stopped = infer(self.token, self.execution.attempt, self.request(messages=[
+            {'role': 'user', 'content': 'Fuente leída: autora.ficticia@universidad.example.es'}]))
+        self.assertEqual((stopped['status'], stopped['code']), ('rejected', 'security_check_failed'))
+
+    def test_public_page_blocking_rule_is_not_masked_and_still_stops_the_task(self):
+        self.public_rule('block', 'rule Confidential { strings: $es = "CONFIDENCIAL:" nocase condition: $es }')
+        self.public_rule('consent', r'rule PersonalData { strings: $email = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/ condition: $email }')
+        self.http_fixture(lambda request: httpx.Response(200, headers={'content-type': 'text/html'},
+            content=b'<html><main><p>CONFIDENCIAL: informe interno publicado por error.</p></main></html>'))
+        self.activate(self.queued('Investiga el informe y crea un Word de una página'))
+        call = self.issue('web_open', {'url': 'https://filtrado.example/informe'})
+        web_tools.execute(self.token, self.execution.attempt, {'call': call})
+        view = self.finish(call)
+        self.assertIn('CONFIDENCIAL: informe interno', view['text'])
+        self.assertNotIn('masked_personal_data', view)
+        result = infer(self.token, self.execution.attempt, self.request(messages=[
+            {'role': 'user', 'content': 'Fuente leída: ' + view['text']}]))
+        self.assertEqual((result['status'], result['code']), ('rejected', 'security_check_failed'))
+
     def test_search_failures_are_not_opened_evidence_or_free_success(self):
         self.http_fixture(lambda request: httpx.Response(429))
         self.activate(self.queued())
