@@ -4,7 +4,7 @@
 {% block title %}{% if conversation %}{{ conversation_title }}{% else %}Chat{% endif %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/chat.css' %}?v=overhaul-5">
+<link rel="stylesheet" href="{% static 'css/chat.css' %}?v=overhaul-6">
 {% endblock %}
 
 {% block body_attributes %} class="rg-page"{% endblock %}
@@ -243,7 +243,7 @@
 
 {% block extra_js %}
 {{ agent_runs|json_script:"agent-runs" }}
-<script src="{% static 'js/chat-markdown.js' %}?v=overhaul-5"></script>
-<script src="{% static 'js/chat.js' %}?v=overhaul-5"></script>
-<script src="{% static 'js/agent-chat.js' %}?v=overhaul-5"></script>
+<script src="{% static 'js/chat-markdown.js' %}?v=overhaul-6"></script>
+<script src="{% static 'js/chat.js' %}?v=overhaul-6"></script>
+<script src="{% static 'js/agent-chat.js' %}?v=overhaul-6"></script>
 {% endblock %}

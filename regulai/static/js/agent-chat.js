@@ -423,12 +423,20 @@
           waiting === 'approval_pending' ? 'Pendiente de tu aprobación' : 'El agente está trabajando');
       }
     }
+    finishedAt() {
+      // An interruption is recorded when the abandoned lease is noticed, possibly
+      // hours later (a host restart): the work ended at the last recorded step.
+      if (this.run.status === 'interrupted') {
+        const last = [...this.events].reverse().find(event => event.kind !== 'interrupted');
+        if (time(last?.created_at) !== null) return time(last.created_at);
+      }
+      return time(this.run.finished_at) ?? time(this.events[this.events.length - 1]?.created_at);
+    }
     paintMeta() {
       const count = this.steps.length;
       const start = time(this.run.created_at) ?? time(this.events[0]?.created_at);
       // Running time uses the server clock (Date header), never a client guess.
-      const end = live(this.run.status) ? (this.skew === null ? null : Date.now() + this.skew) :
-        time(this.run.finished_at) ?? time(this.events[this.events.length - 1]?.created_at);
+      const end = live(this.run.status) ? (this.skew === null ? null : Date.now() + this.skew) : this.finishedAt();
       const parts = [];
       if (count) parts.push(`${count} ${count === 1 ? 'paso' : 'pasos'}`);
       const sources = list(this.data?.sources).filter(source => source.opened).length;
@@ -454,7 +462,7 @@
         node('span', STEP[step.kind] || label(step.kind), text, 'rg-step-label');
         if (step.count > 1) node('span', `×${step.count}`, text, 'rg-step-count');
         const next = steps[index + 1];
-        const spent = next ? time(next.start.created_at) - time(step.start.created_at) :
+        const spent = next ? time(next.kind === 'interrupted' ? step.end.created_at : next.start.created_at) - time(step.start.created_at) :
           (!live(this.run.status) ? (time(this.run.finished_at) ?? time(step.end.created_at)) - time(step.start.created_at) : NaN);
         node('span', duration(spent), item, 'rg-step-time');
         const tools = [...step.tools].map(name => TOOLS[name] || name);

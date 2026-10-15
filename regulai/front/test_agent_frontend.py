@@ -387,6 +387,26 @@ assert.equal(text($('.rg-activity-meta', second.host)), '2 pasos');
 assert.ok($$('.rg-step-time', second.host).every(node => node.textContent === ''));
 """)
 
+    def test_interrupted_run_time_ends_at_its_last_recorded_step(self):
+        self.agent(r"""
+const at = seconds => new Date(Date.parse('2026-10-14T21:54:53+00:00') + seconds * 1000).toISOString();
+// The interruption is recorded when the abandoned lease is noticed, here ten hours later.
+const run = runAt('run-i', {status: 'interrupted', professional: true, created_at: at(0), finished_at: at(36000)});
+const events = [
+  {id: 1, kind: 'queued', created_at: at(0), data: {text: 'Petición aceptada.'}},
+  {id: 2, kind: 'executing', created_at: at(20), data: {text: 'Trabajando con archivos.', tool: 'execute'}},
+  {id: 3, kind: 'reading', created_at: at(60), data: {text: 'Leyendo una fuente.', tool: 'web_open'}},
+  {id: 4, kind: 'reading', created_at: at(140), data: {text: 'Leyendo otra fuente.', tool: 'web_open'}},
+  {id: 5, kind: 'interrupted', created_at: at(36000), data: {text: 'Ejecución interrumpida.'}}];
+const {host} = await mount(run, snapshot(run, {events}));
+assert.equal(title(host), 'Interrumpido');
+assert.equal(text($('.rg-activity-meta', host)), '4 pasos · 2 min 20 s');
+const steps = $$('.rg-step', host);
+assert.equal(text($('.rg-step-time', steps[1])), '40 s');
+assert.equal(text($('.rg-step-time', steps[2])), '1 min 20 s');
+assert.doesNotMatch(text(host), /\d h /);
+""")
+
     def test_activity_is_open_while_working_and_respects_the_reader(self):
         self.agent(r"""
 const run = {...RUN, status: 'active'};
