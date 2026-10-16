@@ -456,6 +456,17 @@ class ProfessionalTests(AgentFixture, TestCase):
         infer(self.token, self.execution.attempt, self.request(tools=['web_search', 'web_open', 'web_find']))
         self.assertFalse(any('No hay buscador web configurado' in text for text in systems()))
 
+    def test_plain_request_is_told_to_answer_in_chat_without_research(self):
+        directions = lambda: [m['content'] for m in self.requests[-1]['messages'] if m['role'] == 'system']
+        self.activate(self.queued('Ejecuta una simulación de paseos aleatorios en 2D y 3D y dime qué pasa'))
+        infer(self.token, self.execution.attempt, self.request(tools=['execute', 'web_open']))
+        self.assertTrue(any('no pide ningún archivo' in text for text in directions()))
+        self.assertTrue(any('no pide fuentes' in text for text in directions()))
+        # A document with research keeps its file and its sources.
+        self.activate(self.queued('Investiga las causas de la desamortización y crea un doc de tres páginas'))
+        infer(self.token, self.execution.attempt, self.request(tools=['execute', 'web_open']))
+        self.assertFalse(any('no pide ningún archivo' in text or 'no pide fuentes' in text for text in directions()))
+
     def test_research_without_any_opened_source_explains_the_open_web_limit(self):
         self.activate(self.queued('Investiga las causas de la desamortización y crea un Word de tres páginas'))
         self.assertTrue(self.execution.job['request']['research_required'])

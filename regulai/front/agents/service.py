@@ -33,6 +33,11 @@ from front.routing import route, RoutingError
 from .aliases import alias_text, alias_value, preserve_aliases
 from .protocol import InferenceRequest, ToolCall, TOOL_PARAMETERS, tool_schema, validate_arguments
 
+# Words that ask for a file even when the request contract names no format ("crea un doc").
+FILE_REQUEST = re.compile(r'\b(docs?|documento\w*|informe\w*|reportes?|report|archivo\w*|ficheros?|files?|word|docx|pdf'
+                          r'|excel|xlsx|csv|pptx|powerpoint|presentacion\w*|diapositivas?|slides?|hoja de calculo'
+                          r'|descarga\w*|download\w*)\b')
+
 
 class AgentDenied(ValueError):
     """Only fixed codes may cross the internal boundary."""
@@ -553,6 +558,17 @@ def infer(token, attempt, payload):
                     'direcciones de referencia que conozcas con seguridad (por ejemplo, artículos de es.wikipedia.org, '
                     'enciclopedias, universidades u organismos oficiales) y usa web_find para localizar pasajes. '
                     'Si una dirección falla, prueba otra fuente fiable; no atribuyas contenido a páginas que no hayas abierto.')))
+            # Keep the agent on the shortest path: no file or research the user did not ask for.
+            from .request_contract import plain
+            asked = execution.job.get('request', {})
+            if not (asked.get('formats') or asked.get('pages') or FILE_REQUEST.search(plain(execution.prompt.content))):
+                instructions.append(WireMessage(role='system', content=(
+                    'La petición no pide ningún archivo: entrega el resultado en el chat, breve y claro. '
+                    'No generes informes ni documentos; añade un gráfico solo si aclara el resultado.')))
+            if not asked.get('research_required'):
+                instructions.append(WireMessage(role='system', content=(
+                    'La petición no pide fuentes: no navegues ni añadas fuentes; usa tu conocimiento y el cálculo. '
+                    'Consulta la web solo si te falta un dato imprescindible para cumplir la petición.')))
             remaining = budget['model_calls'] - AgentInference.objects.filter(execution=execution).count()
             if remaining <= 4:
                 instructions.append(WireMessage(role='system', content=(

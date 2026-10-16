@@ -335,4 +335,34 @@ no tenía este rediseño: el chat real seguía con la interfaz anterior. Se apli
     `authorize_tool` rechaza la llamada (`unissued_tool_call` en la prueba). En producción
     afectaría a un 0,3–0,5 % de las llamadas a herramientas con identificadores. Pendiente en
     una tarea aparte.
-- **Sin desplegar.**
+- **Desplegado** en `regulai-v2-vm` el 2026-10-16: solo la imagen web, el worker no cambia.
+
+### Agente directo, «sota, caballo y rey» (2026-10-16)
+
+- **Petición del usuario.** El chat 3 «tomaba decisiones malísimas»: tenía que ser más directo.
+- **Decisiones del chat 3** (lectura de sus inferencias). Se pidió ejecutar una simulación del
+  teorema de Pólya. El agente:
+  - abrió Wikipedia en dos idiomas y MathWorld sin que se pidieran fuentes;
+  - añadió un cálculo exacto por series que se volvió inestable y rehízo con enteros;
+  - ajustó parámetros con arneses de tiempo;
+  - generó un informe DOCX no pedido, con figuras y tres publicaciones;
+  - citó fuentes que no había abierto, y la comprobación final le hizo abrir otras seis.
+  - Lo directo era un script, una ejecución y la respuesta en el chat.
+- **Prompt del worker** (`runtime/professional.md`). Nuevo párrafo de trabajo directo:
+  - solo lo pedido y por el camino más simple;
+  - chat si no se pide un archivo;
+  - investigar solo si hace falta, sin citar nada no abierto;
+  - un script vectorizado de menos de 20 s, sin repeticiones para afinar;
+  - paquetes solo si falla una importación;
+  - entregar y terminar.
+  - La investigación pasa a ser condicional, y las fuentes solo se entregan si se investigó.
+- **Instrucciones del servidor** (`service.infer`), según la petición real:
+  - Sin formato, número de páginas ni palabras de archivo (doc, documento, informe, PDF…): «no
+    pide ningún archivo: entrega el resultado en el chat». El contrato no reconoce «doc», de
+    ahí la lista de palabras.
+  - Si `research_required` es falso: «no pide fuentes: no navegues…», salvo que falte un dato
+    imprescindible.
+  - Prueba nueva: la petición del chat 3 recibe ambas instrucciones; la de la desamortización
+    ninguna.
+- **No ensayado con el modelo real.** Su efecto en las decisiones de DeepSeek se comprobará
+  repitiendo la petición del chat 3.
