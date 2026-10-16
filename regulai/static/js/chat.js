@@ -298,18 +298,33 @@
   /* Scroll: follow new content only while the reader is at the end. */
   const scroller = byId('chatScroll');
   const jump = byId('jumpToEnd');
+  const unseen = new Set();
+  const jumpCount = jump?.appendChild(el('span', 'rg-jump-count'));
   let stuck = true;
+  function resetUnseen() {
+    unseen.clear();
+    if (jumpCount) { jumpCount.textContent = ''; jumpCount.hidden = true; }
+  }
+  resetUnseen();
   const atEnd = () => !scroller || scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 72;
   function toEnd(smooth = false) {
     if (!scroller) return;
     stuck = true;
+    resetUnseen();
     if (jump) jump.hidden = true;
     scroller.scrollTo({top: scroller.scrollHeight, behavior: smooth && !reducedMotion() ? 'smooth' : 'auto'});
   }
-  function follow() {
+  function follow(updateKey) {
     if (!scroller) return;
     if (stuck) scroller.scrollTop = scroller.scrollHeight;
-    else if (jump && scroller.scrollHeight > scroller.clientHeight + 72) jump.hidden = false;
+    else if (jump && scroller.scrollHeight > scroller.clientHeight + 72) {
+      jump.hidden = false;
+      if (typeof updateKey === 'string' && updateKey && !unseen.has(updateKey)) {
+        unseen.add(updateKey);
+        jumpCount.textContent = ` · ${unseen.size} ${unseen.size === 1 ? 'mensaje actualizado' : 'mensajes actualizados'}`;
+        jumpCount.hidden = false;
+      }
+    }
   }
 
   /* Markdown */
@@ -477,6 +492,7 @@
     live.body = null;
     live.line = null;
     if (data.agent && window.regulayAgent?.mount) {
+      window.regulaySkills?.accepted?.();
       const host = ai.appendChild(el('div', 'rg-agent'));
       host.dataset.agentRun = data.agent.id;
       live.turn.dataset.run = data.agent.id;
@@ -519,7 +535,7 @@
       announce(title);
     }
     actionsRow(ai, data, status === 'completed' && Boolean(data.assistant_message));
-    follow();
+    follow(live.requestId);
   }
 
   function consentNotice(live, data) {
@@ -606,7 +622,7 @@
     live.frame = 0;
     if (!live.body) return;
     renderMarkdown(live.body, live.text, {streaming: true, animate: true});
-    follow();
+    follow(live.requestId);
   }
   function handleEvent(live, event) {
     if (!event || typeof event.seq !== 'number' || event.seq <= live.seq) return false;
@@ -694,6 +710,8 @@
     form.append('request_id', command.requestId);
     form.append('auto_route', String(Boolean(command.autoRoute)));
     if (command.mode) form.append('mode', command.mode);
+    if (command.inferenceProfile) form.append('inference_profile', command.inferenceProfile);
+    if (command.skills) form.append('skills', JSON.stringify(command.skills));
     if (command.artifactId) form.append('artifact_id', command.artifactId);
     if (command.baseRevision) form.append('base_revision', command.baseRevision);
     if (command.documentReference) form.append('document_reference', command.documentReference);
@@ -744,7 +762,7 @@
     } finally {
       state.sending = false;
       if (busyOwner === 'request') setBusy(null);
-      follow();
+      follow(live.requestId);
     }
   }
 
@@ -843,7 +861,7 @@
     const professional = app.dataset.professional === 'true';
     if (input) input.placeholder = agent ? (professional ? 'Describe qué quieres investigar, calcular o crear…' :
       'Describe el documento: formato, idioma y extensión…') : 'Escribe un mensaje…';
-    if (fileInput) fileInput.accept = agent && !professional ? '.csv,.xlsx' : '.txt,.pdf,.docx,.pptx,.csv,.json,.py,.js,.md,.xlsx';
+    if (fileInput) fileInput.accept = agent && !professional ? '.csv,.xlsx' : '.txt,.pdf,.docx,.pptx,.csv,.json,.py,.js,.md,.xlsx' + (agent && professional ? ',.html,.htm,.css,.svg,.zip,.png,.jpg,.jpeg,.sh' : '');
     document.querySelectorAll('[data-for]').forEach(node => { node.hidden = node.dataset.for !== mode; });
     if (!agent && byId('drivePanel')) {
       byId('drivePanel').hidden = true;
@@ -859,7 +877,7 @@
   function settings() {
     return {conversationId: state.conversationId, autoRoute: byId('automaticRouting')?.checked || false,
       engineId: selectedOption('engineOptions', 'engineId'), modelId: selectedOption('modelOptions', 'modelId'),
-      ...(currentMode() === 'agent' ? {mode: 'agent'} : {})};
+      ...(currentMode() === 'agent' ? {mode: 'agent', inferenceProfile: byId('inferenceProfile')?.value || 'legacy'} : {})};
   }
   function buildCommand() {
     const prompt = input?.value.trim() || '';
@@ -867,6 +885,7 @@
     if (!prompt && !file) return null;
     const command = {requestId: requestUUID(), prompt, file, fileName: file?.name || null, ...settings()};
     if (command.mode === 'agent') Object.assign(command, window.regulayAgent?.capture(file) || {});
+    if (command.mode === 'agent' && window.regulaySkills) command.skills = window.regulaySkills.capture();
     return command;
   }
   function send() {
@@ -1115,10 +1134,12 @@
     byId('threadList')?.addEventListener('click', event => {
       if (event.target.closest('a') && !desktop()) setDrawer(false);
     });
-    jump?.addEventListener('click', () => toEnd(true));
+    // A smooth target becomes stale when lazy historical cards hydrate on the
+    // way down. Jump immediately, then normal follow keeps the latest end.
+    jump?.addEventListener('click', () => toEnd());
     scroller?.addEventListener('scroll', () => {
       stuck = atEnd();
-      if (stuck && jump) jump.hidden = true;
+      if (stuck && jump) { jump.hidden = true; resetUnseen(); }
       byId('chatMain')?.classList.toggle('is-scrolled', scroller.scrollTop > 4);
     }, {passive: true});
     if (window.ResizeObserver && container) new ResizeObserver(() => follow()).observe(container);

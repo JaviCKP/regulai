@@ -122,7 +122,7 @@ class EligibilityTests(SimpleTestCase):
         local, remote = SimpleNamespace(backend='local'), SimpleNamespace(backend='http')
         rule = SimpleNamespace(applies_to='both', yara_rule='rule a { strings: $s = "x" condition: $s }')
         plan = lambda **kw: delivery_plan(**{'document': None, 'semantic': False, 'masks': [local],
-                                             'engine': self.engine('openai'), 'rules': [rule], **kw})
+                                             'engine': self.engine('openai'), 'rules': [], **kw})
         self.assertEqual(plan(), ('streamed', None))
         self.assertEqual(plan(engine=self.engine('anthropic')), ('streamed', None))
         self.assertEqual(plan(engine=self.engine('openai_compatible', 'https://api.deepseek.com')), ('streamed', None))
@@ -134,6 +134,7 @@ class EligibilityTests(SimpleTestCase):
             self.assertEqual(plan(engine=engine), ('complete', 'provider_streaming_unverified'))
         strict = SimpleNamespace(applies_to='prompts', yara_rule='rule a { strings: $a = "x" $b = "y" condition: all of them }')
         self.assertEqual(plan(rules=[rule, strict]), ('complete', 'policy_needs_complete_text'))
+        self.assertEqual(plan(rules=[rule]), ('complete', 'policy_needs_complete_text'))
         files_only = SimpleNamespace(applies_to='files', yara_rule=strict.yara_rule)
         self.assertEqual(plan(rules=[files_only]), ('streamed', None))
         with override_settings(CHAT_STREAMING_ENABLED=False):
@@ -230,6 +231,8 @@ class StreamedChatTests(test_chat_flow.ChatFixture):
 
     def setUp(self):
         super().setUp()
+        # Text streaming is eligible only without an applicable YARA rule.
+        Rule.objects.filter(pk=self.rule.pk).update(applies_to='files')
         self.required_mask.backend, self.required_mask.api_url, self.required_mask.language = 'local', '', 'es'
         self.required_mask.save()
         self.http.side_effect = AssertionError('Unexpected external HTTP')
@@ -275,13 +278,14 @@ class StreamedChatTests(test_chat_flow.ChatFixture):
         self.assertIn('on_delta', self.provider.call_args.kwargs)
         self.assertEqual(Message.objects.filter(role='assistant').get().content, saved)
 
-    def test_output_rule_mid_stream_withdraws_text_and_saves_nothing(self):
+    def test_output_rule_requires_complete_text_and_saves_nothing(self):
+        Rule.objects.filter(pk=self.rule.pk).update(applies_to='both')
         self.answer = INTRO * 2 + 'El valor interno es SYNTHETIC_SECRET y no debe salir. ' + 'Más texto de cierre. ' * 6
         events = self.stream()
         kinds = [event['type'] for event in events]
-        self.assertIn('delta', kinds)
-        self.assertIn('retract', kinds)
-        self.assertLess(kinds.index('delta'), kinds.index('retract'))
+        self.assertNotIn('delta', kinds)
+        self.assertNotIn('retract', kinds)
+        self.assertEqual(events[2]['reason'], 'policy_needs_complete_text')
         self.assertNotIn('SYNTHETIC', deltas(events))
         final = events[-1]['result']
         self.assertEqual((final['status'], final['error_type']), ('validation_error', 'security_check_failed'))
@@ -289,9 +293,8 @@ class StreamedChatTests(test_chat_flow.ChatFixture):
         self.assertFalse(Message.objects.filter(role='assistant').exists())
         prompt = Prompt.objects.get()
         generation = [call for call in prompt.decision['calls'] if call['purpose'] == 'generation'][0]
-        self.assertEqual(generation['status'], 'stopped')
-        self.assertIsNone(generation['cost'])
-        self.assertEqual(prompt.decision['delivery']['withdrawn'], [{'attempt': 1, 'reason': 'security_check_failed'}])
+        self.assertEqual(generation['status'], 'completed')
+        self.assertNotIn('withdrawn', prompt.decision['delivery'])
 
     def test_incomplete_generation_is_withdrawn_and_explained(self):
         self.finish = 'length'
@@ -335,7 +338,7 @@ class StreamedChatTests(test_chat_flow.ChatFixture):
             ObfuscationConfig.objects.filter(pk=self.required_mask.pk).update(backend='local', api_url='')
             self.http.side_effect = AssertionError('Unexpected external HTTP')
         with self.subTest('rule needs complete text'):
-            Rule.objects.filter(pk=self.rule.pk).update(yara_rule=(
+            Rule.objects.filter(pk=self.rule.pk).update(applies_to='both', yara_rule=(
                 'rule SyntheticPair { strings: $a = "SYNTHETIC_A" $b = "SYNTHETIC_B" condition: all of them }'))
             events = self.stream()
             self.assertEqual([(e['mode'], e['reason']) for e in events if e['type'] == 'delivery'],
@@ -434,7 +437,7 @@ class LiveStreamingTests(TransactionTestCase):
                              'destinations': {'internal': [f'engine:{credential.pk}', f'obfuscation:{mask.pk}']}}
         company.save()
         group = RulesGroup.objects.create(name='Live security', company=company)
-        Rule.objects.create(name='Fake secret', rules_group=group,
+        Rule.objects.create(name='Fake secret', rules_group=group, applies_to='files',
                             yara_rule='rule SyntheticSecret { strings: $s = "SYNTHETIC_SECRET" condition: $s }')
         self.client.force_login(self.user)
         self.release, self.finished = threading.Event(), threading.Event()

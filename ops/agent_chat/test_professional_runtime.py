@@ -33,7 +33,7 @@ class LinuxTransport:
             (root / 'workspace' / name).mkdir(parents=True)
         (root / 'skills').mkdir()
         (root / 'tmp').mkdir()
-        for name in ('sandbox_runner.py', 'checkpoint_runner.py', 'browser_runner.py', 'artifact_render.py'):
+        for name in ('sandbox_runner.py', 'checkpoint_runner.py', 'browser_runner.py', 'artifact_render.py', 'workspace_mutation.py'):
             (root / 'skills' / name).write_bytes((REPO / 'regulai/front/agents' / name).read_bytes())
         (root / 'skills/runtime-versions.txt').write_text('Actual WSL test: Python 3.12.13, Node 24.21.0; dependency hashes in repository')
         (root / 'skills/browser_chromium.sh').write_bytes((REPO / 'ops/agent_chat/browser_chromium.sh').read_bytes())
@@ -232,7 +232,7 @@ print('isolated')'''
         result = self.execute('python new_program.py')
         self.assertEqual(result['exit_code'], 0, result)
         self.assertIn('54', result['stdout'])
-        evidence = REPO / 'evals/reports/task56-professional-20261014/artifacts'
+        evidence = REPO / 'output/p0-e1-e8-20261016/namespace/artifacts'
         evidence.mkdir(parents=True, exist_ok=True)
         for name in ('quantum-v1.docx', 'quantum-v2.docx', 'analysis-v1.xlsx', 'analysis-v2.xlsx',
                 'deck-v1.pptx', 'deck-v2.pptx', 'chart.png', 'analysis.json'):

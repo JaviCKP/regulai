@@ -2,6 +2,9 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 from django.test import SimpleTestCase
 from front.connectors import ChatMessage, get_connector
+import json
+import httpx
+from openai import OpenAI
 
 
 class ConnectorTests(SimpleTestCase):
@@ -99,3 +102,87 @@ class ConnectorTests(SimpleTestCase):
             payload = sdk.return_value.messages.create.call_args.kwargs
             self.assertNotIn('output_config', payload)
             self.assertEqual(payload['temperature'], 0.1)
+
+
+class ExplicitProfileHttpTests(SimpleTestCase):
+    """Exercise serialization by the installed SDK, without opening a socket."""
+
+    def request(self, dialect, mode, *, connector_type=None, tools=None, effort=None, usage=True, **overrides):
+        captured = []
+        connector_type = connector_type or {'deepseek': 'openai_compatible', 'openai': 'openai',
+            'vercel_gateway': 'vercel_gateway'}[dialect]
+        model = 'openai/synthetic-model' if connector_type == 'vercel_gateway' else 'synthetic-model'
+        options = {'dialect': dialect, 'model_id': model, 'thinking_mode': mode, 'effort': effort,
+            'max_output_tokens': 4096, 'profile_version': 1, 'selection_source': 'user_selected', **overrides}
+
+        def respond(request):
+            captured.append(json.loads(request.content))
+            return httpx.Response(200, json={'id': 'synthetic-id', 'object': 'chat.completion', 'created': 1,
+                'model': model, 'choices': [{'index': 0, 'finish_reason': 'stop', 'message': {
+                    'role': 'assistant', 'content': 'Visible answer', 'reasoning_content': 'private-thinking',
+                    'reasoning': 'private-thinking', 'reasoning_details': [{'signature': 'private-signature'}]}}],
+                **({'usage': {'prompt_tokens': 7, 'completion_tokens': 3, 'total_tokens': 10}} if usage else {})})
+
+        with patch('socket.socket.connect', side_effect=AssertionError('Unmocked network forbidden')):
+            connector = get_connector(connector_type, 'synthetic-key')
+            connector.client.close()
+            with httpx.Client(transport=httpx.MockTransport(respond)) as http:
+                connector.client = OpenAI(api_key='synthetic-key', base_url='https://synthetic.invalid/v1',
+                    max_retries=0, http_client=http)
+                result = connector.chat([ChatMessage('user', 'Question')], model=model,
+                    inference_options=options, reasoning=True, tools=tools)
+        return captured, result
+
+    def test_deepseek_explicit_off_and_bounded_on_survive_real_sdk_serialization(self):
+        for mode, effort in [('off', None), ('on', 'high')]:
+            with self.subTest(mode=mode):
+                requests, response = self.request('deepseek', mode, effort=effort)
+                self.assertEqual(len(requests), 1)
+                body = requests[0]
+                self.assertEqual(body, {'model': 'synthetic-model', 'messages': [{'role': 'user', 'content': 'Question'}],
+                    'max_tokens': 4096, 'thinking': {'type': 'disabled' if mode == 'off' else 'enabled'},
+                    **({'reasoning_effort': 'high'} if effort else {})})
+                self.assertEqual(response.content, 'Visible answer')
+                self.assertNotIn('private', repr(response))
+                self.assertEqual(response.inference_options['observed_thinking_mode'], 'unknown')
+
+    def test_openai_maps_none_and_high_without_deepseek_fields(self):
+        for mode, effort in [('off', 'none'), ('on', 'high')]:
+            with self.subTest(mode=mode):
+                requests, _ = self.request('openai', mode, effort=effort)
+                self.assertEqual(requests[0], {'model': 'synthetic-model',
+                    'messages': [{'role': 'user', 'content': 'Question'}],
+                    'max_completion_tokens': 4096, 'reasoning_effort': effort})
+
+    def test_gateway_merges_reasoning_with_pinned_upstream(self):
+        for mode, effort in [('off', None), ('on', 'high')]:
+            with self.subTest(mode=mode):
+                requests, response = self.request('vercel_gateway', mode, effort=effort)
+                expected = {'enabled': mode == 'on', 'exclude': True, **({'effort': effort} if effort else {})}
+                self.assertEqual(requests[0], {'model': 'openai/synthetic-model',
+                    'messages': [{'role': 'user', 'content': 'Question'}], 'max_tokens': 4096,
+                    'reasoning': expected, 'providerOptions': {'gateway': {'only': ['openai']}}})
+                self.assertEqual(response.inference_options['sent']['providerOptions'], {'gateway': {'only': ['openai']}})
+
+    def test_unavailable_reasoning_tool_continuity_or_dialect_never_opens_transport(self):
+        for dialect in ('deepseek', 'openai', 'vercel_gateway'):
+            with self.subTest(dialect=dialect), self.assertRaisesRegex(ValueError, 'reasoning_tool_continuity_unavailable'):
+                self.request(dialect, 'on', effort='high', tools=[{'type': 'function'}])
+        with self.assertRaisesRegex(ValueError, 'inference_dialect_mismatch'):
+            self.request('deepseek', 'off', connector_type='openai')
+
+    def test_missing_usage_stays_unknown(self):
+        _, response = self.request('deepseek', 'off', usage=False)
+        self.assertIsNone(response.input_tokens)
+        self.assertIsNone(response.output_tokens)
+
+    def test_gateway_legacy_does_not_accept_arbitrary_fallbacks(self):
+        with patch('openai.OpenAI') as sdk:
+            sdk.return_value.chat.completions.create.return_value = SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content='Hello'), finish_reason='stop')],
+                usage=None, model='openai/synthetic', id='synthetic-id')
+            get_connector('vercel_gateway', 'synthetic-key').chat([ChatMessage('user', 'Hello')],
+                'openai/synthetic', extra_body={'models': ['other/model'],
+                    'providerOptions': {'gateway': {'only': ['other']}}})
+            self.assertEqual(sdk.return_value.chat.completions.create.call_args.kwargs['extra_body'],
+                {'providerOptions': {'gateway': {'only': ['openai']}}})

@@ -256,7 +256,10 @@
 
   function render(root, source, {streaming = false, animate = false} = {}) {
     const next = blocks(source);
-    if (streaming && next.length) {
+    const tail = next[next.length - 1];
+    const openTail = streaming && Boolean(tail) && !(tail.type === 'code' && tail.closed)
+      && !(tail.type === 'paragraph' && /\n[ \t]*\n[ \t\n]*$/.test(String(source || '')));
+    if (openTail && next.length) {
       const last = next[next.length - 1];
       if (last.type === 'paragraph') {
         // A trailing "| a | b |" line may become a table header: wait for its divider.
@@ -275,7 +278,7 @@
     for (; index < next.length; index++) {
       const old = previous[index];
       const isLast = index === next.length - 1;
-      if (old && old.raw === next[index].raw && old.type === next[index].type && !(streaming && isLast) && !old.streaming) {
+      if (old && old.raw === next[index].raw && old.type === next[index].type && !(openTail && isLast) && !old.streaming) {
         kept.push(old);
         continue;
       }
@@ -283,11 +286,11 @@
     }
     for (let stale = index; stale < previous.length; stale++) previous[stale].node.remove();
     for (; index < next.length; index++) {
-      const node = blockNode(next[index], streaming);
+      const node = blockNode(next[index], openTail && index === next.length - 1);
       const isNew = index >= previous.length;
       if (animate && isNew) node.classList.add('rg-enter');
       root.appendChild(node);
-      kept.push({...next[index], node, streaming: streaming && index === next.length - 1});
+      kept.push({...next[index], node, streaming: openTail && index === next.length - 1});
     }
     root._rgBlocks = kept;
     return root;

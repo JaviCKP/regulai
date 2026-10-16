@@ -11,6 +11,7 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
 RUN python -m playwright install --with-deps chromium
 RUN useradd --uid 1000 --create-home user && mkdir -p /skills /workspace/input /workspace/work /workspace/output /conversation_history /large_tool_results && chown user:user /workspace/work /workspace/output /conversation_history /large_tool_results
 COPY --chmod=0444 regulai/front/agents/sandbox_runner.py regulai/front/agents/browser_runner.py regulai/front/agents/checkpoint_runner.py regulai/front/agents/artifact_render.py /skills/
+COPY --chmod=0444 regulai/front/agents/workspace_mutation.py /skills/workspace_mutation.py
 COPY --chmod=0555 ops/agent_chat/browser_chromium.sh /skills/browser_chromium.sh
 RUN python -c "from playwright.sync_api import sync_playwright; p=sync_playwright().start(); open('/skills/chromium-path','w').write(p.chromium.executable_path); p.stop()" && dpkg-query -W > /skills/runtime-versions.txt && python -m pip freeze >> /skills/runtime-versions.txt && node --version >> /skills/runtime-versions.txt
 COPY --chmod=0444 regulai/front/agents/spreadsheet_program.py /skills/spreadsheet_program.py

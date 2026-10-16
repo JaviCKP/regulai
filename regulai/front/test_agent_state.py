@@ -50,7 +50,9 @@ class AgentStateTests(AgentFixture, TransactionTestCase):
             self.assertTrue(entered.wait(10))
             second = pool.submit(run)
             try:
-                self.assertEqual(second.result(10)['status'], 'outcome_unknown')
+                replay = second.result(10)
+                self.assertEqual(replay['status'], 'outcome_unknown')
+                self.assertNotIn('_capacity', replay)
                 with self.assertRaises(AgentDenied):
                     self.infer()  # Another identified call cannot race the ledger.
             finally:

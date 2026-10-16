@@ -383,7 +383,8 @@ class AgentChatConcurrencyTests(ChatFixture, TransactionTestCase):
         stream = response.streaming_content.__aiter__()
         following = (await anext(stream)).decode()
         self.assertNotIn(f'id: {cursor}\n', following)
-        self.assertIn('Entorno limpio reservado', following)
+        self.assertIn('Ejecución iniciada', following)
+        self.assertNotIn('Entorno limpio reservado', following)
         await sync_to_async(jobs.cancel)(self.user, run.pk)
         terminal = ''
         for _ in range(5):

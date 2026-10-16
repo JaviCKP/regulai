@@ -52,17 +52,27 @@ class GovernedCalls:
         self.call_context = call_context or {}
         self.mask_call = None
 
+    def save_decision(self):
+        self.prompt.save(update_fields=['decision', 'updated_at'])
+
     def protect_texts(self, texts, policy_texts):
         mask_bounds = mask_cost_bounds(self.masks, self.cfg.masking.max_call_cost)
         def before_mask(mask, value):
             self.mask_call = self.start_call('obfuscation', f'obfuscation:{mask.pk}', None,
                 policy_texts + [('prompts', value)], mask_bounds[mask.pk], {}, transport=mask.backend)
-            return 10 if self.provider_managed and mask.backend == 'local' else self.remaining()
+            return self.mask_timeout(mask)
 
         def after_mask(mask):
             self.complete_call(*self.mask_call, None)
 
         return mask_texts(texts, self.masks, before_mask, after_mask)
+
+    def mask_timeout(self, mask):
+        return 10 if self.provider_managed and mask.backend == 'local' else self.remaining()
+
+    def current_history(self):
+        from .chat_service import authorized_history
+        return authorized_history(self.actor, self.prompt.conversation)
 
     def remaining(self):
         if self.provider_managed:
@@ -100,7 +110,7 @@ class GovernedCalls:
         if (not valid_masks(active_masks)
                 or {mask.pk: mask_identity(mask) for mask in active_masks} != self.mask_identities):
             raise PipelineStop('authorization_changed')
-        if digest([(m.role, m.content) for m in authorized_history(self.actor, self.prompt.conversation)]) != self.initial_history:
+        if digest([(m.role, m.content) for m in self.current_history()]) != self.initial_history:
             raise PipelineStop('authorization_changed')
         check = evaluate_policy(self.actor, texts, destinations=[destination], sensitivity=self.sensitivity)
         if (check.fingerprint != self.decision.fingerprint or check.status not in ('allow', 'consent_required')
@@ -139,13 +149,13 @@ class GovernedCalls:
         if transport == 'local':
             call.update(cost='0', cost_kind='configured_zero', cost_scope='api')
         self.prompt.decision['calls'].append(call)
-        self.prompt.save(update_fields=['decision', 'updated_at'])
+        self.save_decision()
         if self.prompt._call_observer is not None:
             try:
                 token = self.prompt._call_observer.before_call(deepcopy(call))
             except Exception:
                 call.update(status='not_started', cost='0', cost_kind='not_incurred', cost_exposure_bound='0')
-                self.prompt.save(update_fields=['decision', 'updated_at'])
+                self.save_decision()
                 raise PipelineStop('external_budget_unavailable') from None
             self.prompt._observer_tokens.append([call, token, False])
             try:
@@ -154,7 +164,7 @@ class GovernedCalls:
                 self.preflight(destination, texts, model_pk=model_pk)
             except PipelineStop:
                 call.update(status='not_started', cost='0', cost_kind='not_incurred', cost_exposure_bound='0')
-                self.prompt.save(update_fields=['decision', 'updated_at'])
+                self.save_decision()
                 raise
         self.prompt._call_started = time.monotonic()
         return call, self.prompt._call_started
@@ -177,12 +187,12 @@ class GovernedCalls:
                 call['cost_kind'] = 'provider_reported'
             if call['cost'] is not None and call['cost_bound'] is not None and Decimal(call['cost']) > Decimal(call['cost_bound']):
                 call['cost_exposure_bound'] = call['cost']
-                self.prompt.save(update_fields=['decision', 'updated_at'])
+                self.save_decision()
                 raise PipelineStop('budget_bound_exceeded')
         elif call['purpose'] == 'obfuscation' and call['cost_bound'] is not None and Decimal(call['cost_bound']) == 0:
             call['cost'] = '0'
             call['cost_kind'] = 'configured_zero'
-        self.prompt.save(update_fields=['decision', 'updated_at'])
+        self.save_decision()
         observe_completed_calls(self.prompt)
         self.remaining()
 

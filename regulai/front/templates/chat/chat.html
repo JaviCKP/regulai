@@ -4,7 +4,8 @@
 {% block title %}{% if conversation %}{{ conversation_title }}{% else %}Chat{% endif %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/chat.css' %}?v=overhaul-7">
+<link rel="stylesheet" href="{% static 'css/chat.css' %}?v=p1-skills-auto-1">
+<link rel="stylesheet" href="{% static 'css/artifacts.css' %}?v=p1-stream-1">
 {% endblock %}
 
 {% block body_attributes %} class="rg-page"{% endblock %}
@@ -192,6 +193,28 @@
       </div>
       {% endif %}
       <div class="rg-context" id="composerContext" hidden></div>
+      {% if skills_catalog_enabled and agent_available %}
+      <div class="rg-skill-composer" data-for="agent" data-skills-runtime="{{ skills_runtime_enabled|yesno:'true,false' }}"{% if not agent_mode and not agent_professional %} hidden{% endif %}>
+        <div id="skillChips" class="rg-skill-chips" aria-label="Skills para el próximo mensaje"></div>
+        <p id="skillSelectionStatus" class="rg-skill-help" role="status" aria-live="polite"></p>
+        <div class="rg-skill-picker" id="skillPicker" role="dialog" aria-labelledby="skillPickerTitle" hidden>
+          <header><h2 id="skillPickerTitle">Usar una skill</h2><button type="button" class="rg-btn" id="skillPickerClose" aria-label="Cerrar selector de skills">Cerrar</button></header>
+          <label for="skillPickerSearch" class="rg-sr">Buscar en tus skills</label><input id="skillPickerSearch" type="search" role="combobox" aria-expanded="true" aria-controls="skillOptions" aria-autocomplete="list" placeholder="Buscar una skill" autocomplete="off">
+          <div id="skillOptions" role="listbox" aria-label="Skills instaladas" aria-multiselectable="true"></div><p id="skillPickerStatus" role="status" aria-live="polite"></p><button type="button" class="rg-btn" id="skillPickerRetry" hidden>Volver a cargar</button>
+          <details class="rg-skill-preferences"><summary>Opciones de este chat</summary><label><input type="checkbox" id="skillAuto" aria-describedby="skillAutoHelp"{% if not conversation or conversation.auto_skills %} checked{% endif %}{% if not skills_runtime_enabled %} disabled{% endif %}> Selección automática</label><p id="skillAutoHelp" class="rg-skill-help">El agente puede cargar las instrucciones que necesite para tu tarea.</p></details>
+          {% if not skills_runtime_enabled %}<p id="skillRuntimeStatus" class="rg-meta">La ejecución de skills está desactivada. Puedes gestionar tus instalaciones en la biblioteca.</p>{% endif %}
+          <a id="skillExplore" href="{% url 'front:skills_library' %}" data-skill-explore>Gestionar skills</a>
+        </div>
+      </div>
+      {% endif %}
+      {% if inference_profiles|length > 1 %}
+      <label data-for="agent"{% if not agent_mode and not agent_professional %} hidden{% endif %}>
+        Modo de respuesta
+        <select id="inferenceProfile" name="inference_profile" aria-label="Modo de respuesta del agente">
+          {% for option in inference_profiles %}<option value="{{ option.value }}">{{ option.label }}</option>{% endfor %}
+        </select>
+      </label>
+      {% endif %}
       <div class="rg-box" id="composerBox">
         <div class="rg-files" id="filePreview" hidden></div>
         <label class="rg-sr" for="prompt">Mensaje</label>
@@ -201,8 +224,9 @@
           <button type="button" class="rg-icon-btn" id="attachButton" aria-label="Adjuntar archivo" title="Adjuntar archivo">
             <svg class="rg-i" aria-hidden="true"><use href="#i-clip"/></svg>
           </button>
+          {% if skills_catalog_enabled and agent_available %}<button type="button" class="rg-icon-btn rg-skill-shortcut" id="skillPickerButton" data-for="agent" aria-label="Usar una skill (/)" title="Usar una skill (/)" aria-expanded="false" aria-haspopup="dialog" aria-controls="skillPicker"{% if not agent_mode and not agent_professional %} hidden{% endif %}{% if not skills_runtime_enabled %} disabled aria-describedby="skillRuntimeStatus"{% endif %}>/</button>{% endif %}
           <input type="file" name="file" id="fileInput" class="rg-sr" tabindex="-1" aria-hidden="true"
-                 accept="{% if agent_mode and not agent_professional %}.csv,.xlsx{% else %}.txt,.pdf,.docx,.pptx,.csv,.json,.py,.js,.md,.xlsx{% endif %}">
+                 accept="{% if agent_mode and not agent_professional %}.csv,.xlsx{% elif agent_professional %}.txt,.pdf,.docx,.pptx,.csv,.json,.py,.js,.md,.xlsx,.html,.htm,.css,.svg,.zip,.png,.jpg,.jpeg,.sh{% else %}.txt,.pdf,.docx,.pptx,.csv,.json,.py,.js,.md,.xlsx{% endif %}">
           {% if agent_drive %}
           <button type="button" class="rg-icon-btn" id="driveButton" data-for="agent" aria-controls="drivePanel" aria-expanded="false"
                   aria-label="Usar un archivo de Google Drive" title="Usar un archivo de Google Drive"{% if not agent_mode %} hidden{% endif %}>
@@ -243,7 +267,9 @@
 
 {% block extra_js %}
 {{ agent_runs|json_script:"agent-runs" }}
-<script src="{% static 'js/chat-markdown.js' %}?v=overhaul-7"></script>
-<script src="{% static 'js/chat.js' %}?v=overhaul-7"></script>
-<script src="{% static 'js/agent-chat.js' %}?v=overhaul-7"></script>
+<script src="{% static 'js/chat-markdown.js' %}?v=p1-stream-1"></script>
+<script src="{% static 'js/chat.js' %}?v=p1-skills-2"></script>
+<script src="{% static 'js/artifact-viewer.js' %}?v=p1-stream-1"></script>
+<script src="{% static 'js/agent-chat.js' %}?v=p1-skills-auto-1"></script>
+{% if skills_catalog_enabled %}<script src="{% static 'js/skills.js' %}?v=p1-skills-auto-1"></script>{% endif %}
 {% endblock %}

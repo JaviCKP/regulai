@@ -232,6 +232,53 @@ assert.match(text(tech), /Coste\nNo disponible/);
 assert.match(text(tech), /Seguridad local\nPermitido\nJev\nNo consultado/);
 """)
 
+    def test_v2_file_card_uses_receipt_name_size_and_coverage_without_active_preview(self):
+        self.agent(r"""
+const id = 'aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb', base = '/chat/agent/artifacts/' + id + '/';
+const artifact = {id, logical_id: 'logical-a', revision: 2, format: 'html', status: 'verified', sha256: 'a'.repeat(64),
+  filename: 'Madrid "azul" <img onerror=alert(1)>.html', size_bytes: 13269,
+  preview: {title: 'Modelo', pages: [base + 'pages/1/']}, download_url: base + 'download/',
+  verification_checks: {coverage: {status: 'complete', scope: 'full_source_text_not_execution_safety'}}};
+const receipt = {version: 2, status: 'partial', artifacts: [{artifact_id: id, sha256: artifact.sha256}]};
+const {host} = await mount({...RUN, status: 'failed', professional: true}, snapshot({...RUN, status: 'failed', professional: true},
+  {delivery: receipt, artifacts: [artifact]}));
+assert.equal(title(host), 'Entrega parcial');
+const card = $('.rg-deliverable', host);
+assert.equal($('h3', card).textContent, artifact.filename);
+assert.match(text(card), /13[.\s]?269 bytes/);
+assert.match(text(card), /Revisión 2/);
+assert.match(text(card), /Cobertura completa/);
+assert.equal($$('img,iframe,object', card).length, 0);
+assert.equal(buttonNamed('Vista previa', card), undefined);
+assert.equal($('a[download]', card).getAttribute('download'), artifact.filename);
+const pending = runAt('pending-file', {status: 'active', professional: true});
+const waiting = await mount(pending, snapshot(pending, {delivery: {version: 2, status: 'pending', artifacts: []}, artifacts: [artifact]}));
+assert.equal(title(waiting.host), 'Archivo generado, pendiente de entrega');
+assert.equal($$('a[download]', waiting.host).length, 0);
+const noFiles = runAt('text-finished');
+const textResult = await mount(noFiles, snapshot(noFiles, {delivery: {version: 2, status: 'not_required', artifacts: []}}));
+assert.equal(title(textResult.host), 'Respuesta completada');
+""")
+
+    def test_sandbox_intervals_stop_before_provider_and_unmeasured_gaps_are_blank(self):
+        self.agent(r"""
+const run = runAt('timed', {status: 'active', professional: true});
+const at = seconds => new Date(Date.parse('2026-10-16T10:00:00Z') + seconds * 1000).toISOString();
+const {host} = await mount(run, snapshot(run, {events: [
+ {id: 1, kind: 'claimed', created_at: at(0), data: {}},
+ {id: 2, kind: 'sandbox_waiting', created_at: at(1), data: {}},
+ {id: 3, kind: 'sandbox_acquired', created_at: at(2), data: {duration_ms: 1200}},
+ {id: 4, kind: 'sandbox_prepared', created_at: at(3), data: {duration_ms: 2000}},
+ {id: 5, kind: 'provider_started', created_at: at(90), data: {}}
+]}));
+assert.equal(title(host), 'Generando la respuesta');
+assert.equal(text($('.rg-step[data-kind=claimed] .rg-step-label', host)), 'Ejecución iniciada');
+assert.equal(text($('.rg-step[data-kind=sandbox_waiting] .rg-step-time', host)), '');
+assert.equal(text($('.rg-step[data-kind=sandbox_acquired] .rg-step-time', host)), '1 s');
+assert.equal(text($('.rg-step[data-kind=sandbox_prepared] .rg-step-time', host)), '2 s');
+assert.doesNotMatch(text(host), /87 s|1 min 27 s|Entorno aislado reservado/);
+""")
+
     def test_visual_review_requires_all_pages_and_only_confirms_visual_checks(self):
         self.agent(r"""
 const base = '/chat/agent/artifacts/aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb/';
@@ -384,11 +431,11 @@ const run = runAt('run-p', {professional: true, created_at: '2026-10-14T10:00:00
   request: {formats: ['xlsx'], language: 'es', research_required: true}});
 const at = seconds => new Date(Date.parse('2026-10-14T10:00:00+00:00') + seconds * 1000).toISOString();
 const events = [
-  {id: 1, kind: 'queued', created_at: at(0), data: {text: 'Petición aceptada.'}},
-  {id: 2, kind: 'claimed', created_at: at(3), data: {text: 'Entorno limpio reservado.'}},
+  {id: 1, kind: 'queued', created_at: at(0), data: {text: 'Petición aceptada.', duration_ms: 3000}},
+  {id: 2, kind: 'claimed', created_at: at(3), data: {text: 'Ejecución iniciada.'}},
   {id: 3, kind: 'searching', created_at: at(5), data: {text: 'Buscando fuentes en la web pública.', tool: 'web_search'}},
-  {id: 4, kind: 'reading', created_at: at(20), data: {text: 'Leyendo una fuente.', tool: 'web_open'}},
-  {id: 5, kind: 'reading', created_at: at(40), data: {text: 'Leyendo otra fuente.', tool: 'web_find'}},
+  {id: 4, kind: 'reading', created_at: at(20), data: {text: 'Leyendo una fuente.', tool: 'web_open', duration_ms: 20000}},
+  {id: 5, kind: 'reading', created_at: at(40), data: {text: 'Leyendo otra fuente.', tool: 'web_find', duration_ms: 20000}},
   {id: 6, kind: 'executing', created_at: at(60), data: {text: 'Trabajando con archivos.', tool: 'execute'}},
   {id: 7, kind: 'completed', created_at: at(125), data: {text: 'Entregable disponible.'}}];
 const {host} = await mount(run, snapshot(run, {events,
@@ -437,8 +484,8 @@ const {host} = await mount(run, snapshot(run, {events}));
 assert.equal(title(host), 'Interrumpido');
 assert.equal(text($('.rg-activity-meta', host)), '4 pasos · 2 min 20 s');
 const steps = $$('.rg-step', host);
-assert.equal(text($('.rg-step-time', steps[1])), '40 s');
-assert.equal(text($('.rg-step-time', steps[2])), '1 min 20 s');
+assert.equal(text($('.rg-step-time', steps[1])), '');
+assert.equal(text($('.rg-step-time', steps[2])), '');
 assert.doesNotMatch(text(host), /\d h /);
 """)
 

@@ -26,12 +26,16 @@
     verification: 'Comprobación', not_used: 'Sin fallback de Regulay', used: 'Utilizado', unknown: 'No disponible',
     reviewed: 'Revisada por el modelo', web_search: 'Búsqueda web', web_read: 'Lectura web',
     web_browser_resource: 'Recurso del navegador', package_download: 'Descarga de dependencia',
-    configured_upper_bound_estimate: 'Estimación máxima configurada', started: 'Iniciada',
+    configured_upper_bound_estimate: 'Estimación máxima configurada', started: 'Iniciada', partial: 'Parcial',
   };
   const label = value => labels[value] || (present(value) ? String(value) : 'No disponible');
   // Short names for registered event kinds; the server sentence stays available on the step.
   const STEP = {
-    queued: 'En cola', claimed: 'Entorno aislado reservado', recovered: 'Recuperación solicitada',
+    queued: 'En cola', claimed: 'Ejecución iniciada', recovered: 'Recuperación solicitada',
+    sandbox_waiting: 'Esperando un entorno disponible', sandbox_preparing: 'Preparando el entorno',
+    sandbox_acquired: 'Entorno reservado', sandbox_prepared: 'Entorno preparado', provider_waiting: 'Esperando capacidad del proveedor',
+    provider_started: 'Generando la respuesta', provider_completed: 'Generación terminada',
+    generation: 'Generando la respuesta', capacity_waiting: 'Esperando capacidad disponible',
     input: 'Leyendo el archivo', calculate: 'Calculando con Python', recalculate: 'Recalculando fórmulas',
     rename: 'Renombrando la revisión', compose: 'Redactando el documento', render: 'Renderizando páginas',
     verify: 'Comprobando el archivo final', searching: 'Buscando fuentes', reading: 'Leyendo fuentes',
@@ -42,6 +46,10 @@
     export_completed: 'Exportación confirmada', export_uncertain: 'Exportación por confirmar',
     export_recovery: 'Recuperación de la exportación', completed: 'Finalizado', cancelled: 'Cancelado',
     interrupted: 'Interrumpido', failed: 'No completado',
+    'inference.started': 'Generando', 'inference.finished': 'Generación terminada',
+    'inference.delivery': 'Comprobando antes de mostrar', 'tool.started': 'Ejecutando herramienta',
+    'tool.finished': 'Herramienta terminada', 'skill.activated': 'Skill activada',
+    'artifact.available': 'Archivo disponible', 'run.finished': 'Ejecución terminada', interval: 'Tiempo registrado',
   };
   const TOOLS = {web_search: 'búsqueda web', web_open: 'abrir página', web_find: 'buscar en la página',
     web_download: 'descarga', web_browse: 'navegador', ls: 'listar archivos', read_file: 'leer archivo',
@@ -53,7 +61,9 @@
   const UNCERTAIN = new Set(['interrupted', 'export_uncertain']);
   const REFRESH = new Set(['claimed', 'input', 'calculate', 'compose', 'render', 'verify', 'recalculate', 'rename',
     'visual_pending', 'verified', 'draft', 'approval_pending', 'export_completed', 'export_uncertain', 'inference_completed',
-    'visual_reviewed', 'searching', 'reading', 'executing', 'installing', 'verifying']);
+    'visual_reviewed', 'searching', 'reading', 'executing', 'installing', 'verifying',
+    'sandbox_waiting', 'sandbox_preparing', 'sandbox_acquired', 'sandbox_prepared', 'provider_waiting', 'provider_started', 'provider_completed',
+    'tool.finished', 'artifact.available', 'run.finished']);
 
   function node(tag, value, parent, className = '') {
     const element = document.createElement(tag);
@@ -126,10 +136,10 @@
     const names = {integrity: 'Integridad del archivo', instructions: 'Formato e instrucciones',
       layout: 'Maquetación y paginación', sources: 'Fuentes y respaldo factual', security: 'Seguridad y políticas'};
     const area = node('ul', null, parent, 'rg-checks');
-    const counts = {passed: 0, failed: 0, reviewed: 0, not_performed: 0};
+    const counts = {passed: 0, failed: 0, reviewed: 0, partial: 0, not_performed: 0};
     Object.entries(names).forEach(([key, title]) => {
       const check = checks?.[key] || {};
-      const status = ['passed', 'failed', 'reviewed'].includes(check.status) ? check.status : 'not_performed';
+      const status = ['passed', 'failed', 'reviewed', 'partial'].includes(check.status) ? check.status : 'not_performed';
       counts[status]++;
       const item = node('li', null, area, 'rg-check');
       item.dataset.status = status;
@@ -145,6 +155,7 @@
     add(counts.passed, 'superada', 'superadas');
     add(counts.reviewed, 'revisada por el modelo', 'revisadas por el modelo');
     add(counts.failed, 'fallida', 'fallidas');
+    add(counts.partial, 'parcial', 'parciales');
     add(counts.not_performed, 'no realizada', 'no realizadas');
     return 'Comprobaciones técnicas · ' + parts.join(', ');
   }
@@ -251,6 +262,12 @@
   }
 
   /* ------------------------------------------------------------ steps */
+  function recordedDuration(event) {
+    if (Number.isFinite(event.data?.duration_ms) && event.data.duration_ms >= 0) return event.data.duration_ms;
+    const interval = event.data?.interval;
+    const start = time(interval?.started_at), end = time(interval?.completed_at);
+    return start !== null && end !== null && end >= start ? end - start : null;
+  }
   function groupSteps(events) {
     const steps = [];
     events.forEach(event => {
@@ -260,9 +277,12 @@
         last.end = event;
         if (event.data?.text) last.text = event.data.text;  // The latest sentence describes the step now.
         if (event.data?.tool) last.tools.add(event.data.tool);
+        const elapsed = recordedDuration(event);
+        last.duration = last.duration === null || elapsed === null ? null : last.duration + elapsed;
         return;
       }
       steps.push({kind: event.kind, count: 1, start: event, end: event, text: event.data?.text || '',
+        duration: recordedDuration(event),
         tools: new Set(event.data?.tool ? [event.data.tool] : [])});
     });
     return steps;
@@ -280,19 +300,29 @@
     const steps = watcher.steps;
     const last = steps[steps.length - 1];
     if (watcher.unavailable) return {text: 'Estado no disponible', tone: 'bad', icon: 'alert'};
+    const delivery = watcher.data?.delivery;
+    if (delivery?.status === 'partial') return {text: 'Entrega parcial', tone: 'warn', icon: 'alert'};
+    if (delivery?.status === 'failed') return {text: 'No se pudo entregar el archivo', tone: 'bad', icon: 'alert'};
+    if (status === 'completed' && delivery?.status === 'complete') return {text: 'Archivo disponible', tone: 'ok', icon: 'check'};
+    if (status === 'completed' && delivery?.status === 'not_required') return {text: 'Respuesta completada', tone: 'ok', icon: 'check'};
+    if (live(status) && delivery?.status === 'pending' && list(watcher.data?.artifacts).length)
+      return {text: 'Archivo generado, pendiente de entrega', tone: 'live', icon: null};
     if (status === 'completed') return {text: 'Listo', tone: 'ok', icon: 'check'};
     if (status === 'failed') return {text: 'No completado', tone: 'bad', icon: 'alert'};
     if (status === 'cancelled') return {text: 'Cancelado', tone: 'muted', icon: 'x'};
     if (status === 'interrupted') return {text: 'Interrumpido', tone: 'warn', icon: 'alert'};
     if (status === 'outcome_unknown') return {text: 'Resultado por confirmar', tone: 'warn', icon: 'clock'};
     if (!live(status)) return {text: label(status), tone: 'muted', icon: 'info'};
+    if (watcher.generating) return {text: watcher.generating.mode === 'complete' ?
+      'Generando · el texto se mostrará tras comprobarlo' : 'Generando', tone: 'live', icon: null};
     if (last && WAITING.has(last.kind)) return {text: STEP[last.kind], tone: 'warn', icon: last.kind === 'visual_pending' ? 'eye' : 'shield'};
     if (!watcher.loaded) return {text: 'Consultando el estado', tone: 'live', icon: null};
     return {text: last ? STEP[last.kind] || label(last.kind) : 'Preparando', tone: 'live', icon: null};
   }
   function brief(request) {
-    if (!request || typeof request !== 'object' || !list(request.formats).length) return '';
-    const operation = {create: 'Crear', transform: 'Transformar', edit: 'Editar'}[request.operation] || 'Crear';
+    if (!request || typeof request !== 'object') return '';
+    if (!list(request.formats).length) return request.delivery_required ? 'Petición interpretada: Entregar un archivo' : '';
+    const operation = {create: 'Crear', transform: 'Transformar', edit: 'Editar', download: 'Descargar'}[request.operation] || 'Crear';
     const parts = [`${operation} ${list(request.formats).map(value => String(value).toUpperCase()).join(' y ')}`];
     if (Number.isInteger(request.pages)) parts.push(`${request.pages} ${list(request.formats).includes('pptx') ? 'diapositivas' : 'páginas'}`);
     if (request.language) parts.push(request.language === 'en' ? 'en inglés' : 'en español');
@@ -364,6 +394,14 @@
       this.reviews = new Map();
       this.skew = null;
       this.failure = '';
+      this.segments = new Map();
+      this.dirtySegments = new Set();
+      this.renderFrame = null;
+      this.snapshotPending = false;
+      this.generating = null;
+      this.skillActivationKeys = new Set();
+      this.receiptTimer = null;
+      this.receiptPoll = 0;
       // A professional run's stored answer is rendered by the page; keep it inside the run.
       const next = host.nextElementSibling;
       this.answerNode = next?.classList?.contains('rg-md') ? next : null;
@@ -389,6 +427,12 @@
       this.brief = node('p', null, this.body, 'rg-brief');
       this.list = node('ol', null, this.body, 'rg-steps');
       this.extra = node('div', null, this.body);
+      this.publicActivity = node('div', null, this.body, 'rg-public-activity');
+      this.timings = node('p', null, this.body, 'rg-timing');
+      this.skillActivations = node('div', null, host, 'rg-skill-activations');
+      this.skillActivations.setAttribute('role', 'status');
+      this.skillActivations.setAttribute('aria-live', 'polite');
+      this.skillActivations.setAttribute('aria-label', 'Skills activadas');
       this.limits = node('ul', null, host, 'rg-limits');
       this.limits.hidden = true;
       // Empty until the first snapshot; visible, its tinted box flashes before any text.
@@ -421,8 +465,77 @@
     addEvent(event) {
       if (!event || typeof event.id !== 'number' || event.id <= this.cursor) return false;
       this.cursor = event.id;
+      if (event.kind === 'text.delta' || event.kind === 'text.snapshot') {
+        this.textEvent(event.data, event.kind === 'text.snapshot');
+        return false; // No activity/receipt/history rebuild on text batches.
+      }
+      if (event.kind === 'inference.started' || event.kind === 'inference.delivery') this.generating = event.data;
+      if (event.kind === 'inference.finished') {
+        this.generating = null;
+        const segment = this.segments.get(event.data?.message_id);
+        if (segment) {
+          segment.done = true;
+          segment.incomplete = Boolean(event.data.incomplete);
+          segment.tools = event.data.tool_count || 0;
+          if (segment.tools) this.publicActivity.appendChild(segment.host);
+          this.queueText(segment);
+        }
+      }
+      this.showSkillActivation(event);
       this.events.push(event);
       return true;
+    }
+    showSkillActivation(event) {
+      if (event?.kind !== 'skill.activated' || typeof event.id !== 'number') return;
+      const value = event.data || {};
+      const key = value.revision_id || value.installation_id || value.alias || value.name || event.id;
+      if (this.skillActivationKeys.has(key)) return;
+      this.skillActivationKeys.add(key);
+      node('span', `${value.display_name || value.name || value.alias || 'Skill'} · activada`,
+        this.skillActivations, 'rg-skill-activation');
+    }
+    textEvent(data, snapshot = false) {
+      if (snapshot && data?.snapshot_required) { this.recoverText(); return; }
+      if (!data || typeof data.message_id !== 'string' || typeof data.text !== 'string' || !Number.isSafeInteger(data.offset) || data.offset < 0) return;
+      let segment = this.segments.get(data.message_id);
+      if (!segment) {
+        const host = node('section', null, this.answerSlot, 'rg-stream-segment');
+        host.dataset.segment = data.message_id;
+        segment = {host, status: node('p', null, host, 'rg-stream-status'), body: node('div', null, host, 'rg-md'), text: '', offset: 0, done: false};
+        this.segments.set(data.message_id, segment);
+      }
+      const bytes = new TextEncoder().encode(data.text);
+      if (snapshot) {
+        segment.text = data.text; segment.offset = bytes.length;
+      } else if (data.offset < segment.offset && data.offset + bytes.length <= segment.offset) return;
+      else if (data.offset !== segment.offset) {
+        this.recoverText();
+        return;
+      } else { segment.text += data.text; segment.offset += bytes.length; }
+      this.queueText(segment);
+    }
+    recoverText() {
+      if (this.snapshotPending) return;
+      this.snapshotPending = true;
+      this.snapshot().catch(() => this.revoke()).finally(() => { this.snapshotPending = false; });
+    }
+    queueText(segment) {
+      segment.unread = segment.unread || !this.applyingInitialSnapshot;
+      this.dirtySegments.add(segment);
+      if (this.renderFrame !== null) return;
+      this.renderFrame = requestAnimationFrame(() => {
+        this.renderFrame = null;
+        const unread = [...this.dirtySegments].some(value => value.unread);
+        this.dirtySegments.forEach(value => {
+          value.unread = false;
+          value.status.textContent = value.incomplete ? 'Respuesta incompleta · texto autorizado recibido' : value.tools ? 'Nota pública del modelo' : '';
+          value.status.hidden = !value.status.textContent;
+          if (window.RegulayMarkdown) window.RegulayMarkdown.render(value.body, value.text, {streaming: !value.done});
+          else value.body.textContent = value.text;
+        });
+        this.dirtySegments.clear();
+        chat()?.follow(unread ? this.run.id : null);
+      });
     }
     paint() {
       const {run} = this;
@@ -438,6 +551,7 @@
       this.brief.textContent = brief(run.request);
       this.brief.hidden = !this.brief.textContent;
       this.paintSteps();
+      this.paintTimings();
       this.paintOpen();
       const running = live(run.status) && !this.unavailable;
       if (running && !this.ticker) this.ticker = window.setInterval(() => this.paintMeta(), 1000);
@@ -470,6 +584,18 @@
       if (spent) parts.push(spent);
       this.meta.textContent = parts.join(' · ');
     }
+    paintTimings() {
+      const totals = new Map();
+      this.events.filter(event => event.kind === 'interval').forEach(event => {
+        const elapsed = recordedDuration(event), scope = event.data?.category;
+        if (elapsed !== null && scope) totals.set(scope, (totals.get(scope) || 0) + elapsed);
+      });
+      const names = {queue: 'Cola', provider: 'Modelo', tool: 'Herramientas', protection: 'Controles',
+        preparation: 'Preparación', checkpoint: 'Checkpoint', network: 'Red'};
+      this.timings.textContent = [...totals].map(([scope, value]) => `${names[scope] || scope}: ${duration(value)}`).join(' · ');
+      this.timings.title = 'Duraciones registradas por ámbito. Los intervalos pueden solaparse; no se suman como tiempo total.';
+      this.timings.hidden = !totals.size;
+    }
     paintSteps() {
       const {steps} = this;
       const previous = this.list.children.length;
@@ -486,10 +612,7 @@
         const text = node('span', null, item);
         node('span', STEP[step.kind] || label(step.kind), text, 'rg-step-label');
         if (step.count > 1) node('span', `×${step.count}`, text, 'rg-step-count');
-        const next = steps[index + 1];
-        const spent = next ? time(next.kind === 'interrupted' ? step.end.created_at : next.start.created_at) - time(step.start.created_at) :
-          (!live(this.run.status) ? (time(this.run.finished_at) ?? time(step.end.created_at)) - time(step.start.created_at) : NaN);
-        node('span', duration(spent), item, 'rg-step-time');
+        node('span', duration(step.duration), item, 'rg-step-time');
         const tools = [...step.tools].map(name => TOOLS[name] || name);
         const last = index === steps.length - 1;
         // The failure message is shown once, below the activity.
@@ -516,6 +639,9 @@
     }
     showActions() {
       const {run} = this;
+      const key = JSON.stringify([run.status, run.resumable, this.unavailable, Boolean(this.data)]);
+      if (key === this.actionsKey) return;
+      this.actionsKey = key;
       this.actions.replaceChildren();
       if (live(run.status) && !this.unavailable) button('Detener', this.actions, () => this.cancel(), 'rg-link-btn', 'stop');
       if (run.resumable) button('Reanudar', this.actions, event => this.resume(event.currentTarget), 'rg-link-btn', 'play');
@@ -525,12 +651,21 @@
           const open = toggle.getAttribute('aria-expanded') !== 'true';
           toggle.setAttribute('aria-expanded', String(open));
           this.tech.hidden = !open;
+          if (open) this.pollReceipt();
         }, 'rg-link-btn');
         icon('chevron', toggle);
         toggle.setAttribute('aria-controls', this.tech.id);
         toggle.setAttribute('aria-expanded', String(!this.tech.hidden));
       }
       this.actions.hidden = !this.actions.children.length;
+    }
+    pollReceipt() {
+      window.clearTimeout(this.receiptTimer);
+      if (this.tech.hidden || live(this.run.status) || this.data?.receipt?.total?.complete !== false || this.receiptPoll >= 5) return;
+      this.receiptTimer = window.setTimeout(async () => {
+        this.receiptPoll++;
+        try { await this.snapshot(); this.pollReceipt(); } catch (_) { this.revoke(); }
+      }, Math.min(30000, 2000 * 2 ** this.receiptPoll));
     }
     showSources(sources) {
       if (!sources.length) return;
@@ -556,7 +691,7 @@
         const head = node('div', null, item, 'rg-op-head');
         node('span', `${TOOLS[operation.name] || label(operation.name)} · ${label(operation.status)}`, head);
         if (typeof operation.details_url !== 'string' || !/^\/chat\/agent\/runs\/[0-9a-f-]+\/operations\/\d+\/$/.test(operation.details_url)) return;
-        const control = button('Ver código y salida autorizada', head, async () => {
+        const control = button('Ver resultado y duración', head, async () => {
           control.disabled = true;
           try {
             const response = await fetch(operation.details_url, {headers: {Accept: 'application/json'}});
@@ -588,16 +723,33 @@
       return data.run;
     }
     apply(data) {
+      this.applyingInitialSnapshot = !this.loaded;
       this.loaded = true;
       this.unavailable = false;
       this.data = data;
       this.run = {...this.run, ...data.run};
-      list(data.events).forEach(event => this.addEvent(event));
+      list(data.text_segments).forEach(segment => this.textEvent({...segment, offset: 0}, true));
+      list(data.events).forEach(event => {
+        this.addEvent(event);
+        // An authorized snapshot restores badges cleared by revoke without
+        // replaying activity or moving the event cursor backwards.
+        this.showSkillActivation(event);
+      });
+      if (Number.isSafeInteger(data.high_watermark)) this.cursor = Math.max(this.cursor, data.high_watermark);
+      if (!live(this.run.status)) this.segments.forEach(segment => {
+        segment.done = true;
+        if (this.run.status !== 'completed') segment.incomplete = true;
+        this.queueText(segment);
+      });
       this.showFailure(data);
       this.showLimits(data.run);
-      this.extra.replaceChildren();
-      this.showSources(list(data.sources));
-      this.showOperations(list(data.operations));
+      const extraKey = JSON.stringify([data.sources, data.operations]);
+      if (this.extraKey !== extraKey) {
+        this.extraKey = extraKey;
+        this.extra.replaceChildren();
+        this.showSources(list(data.sources));
+        this.showOperations(list(data.operations));
+      }
       // Every event refreshes the run; rebuild its receipt only when the server's copy changed.
       const receipt = data.receipt || data.result?.receipt || {};
       const receiptKey = JSON.stringify([receipt, Boolean(data.infrastructure)]);
@@ -619,31 +771,39 @@
       this.paint();
       this.showActions();
       if (!live(data.run.status)) this.close();
-      chat()?.follow();
+      chat()?.follow(this.applyingInitialSnapshot ? null : this.run.id);
+      this.applyingInitialSnapshot = false;
     }
     answer(data) {
       // Professional runs answer in text as well; the stored message is shown once.
       const message = data.result?.assistant_message;
       if (!this.run.professional || live(this.run.status) || !message?.content) return;
-      if (this.answerSlot.querySelector('.rg-md')) return;
-      const body = node('div', null, this.answerSlot, 'rg-md');
-      if (window.RegulayMarkdown) window.RegulayMarkdown.render(body, message.content, {animate: true});
+      const candidates = [...this.segments.values()].filter(segment => !segment.tools);
+      const segment = candidates[candidates.length - 1];
+      const body = segment?.body || this.answerSlot.querySelector('.rg-md') || node('div', null, this.answerSlot, 'rg-md');
+      if (segment && this.answerNode && this.answerNode !== body) { this.answerNode.remove(); this.answerNode = null; }
+      if (segment) { segment.text = message.content; segment.done = true; segment.incomplete = false; this.queueText(segment); }
+      if (window.RegulayMarkdown) window.RegulayMarkdown.render(body, message.content);
       else body.textContent = message.content;
     }
     card(artifact, canExport) {
       const preview = artifact.preview || {}, format = String(artifact.format || '').toLowerCase();
-      const verified = artifact.status === 'verified';
+      const delivery = this.data?.delivery;
+      const receiptAllows = !delivery || ['complete', 'partial'].includes(delivery.status) && list(delivery.artifacts).some(
+        reference => (reference.artifact_id || reference.id) === artifact.id && reference.sha256 === artifact.sha256);
+      const verified = artifact.status === 'verified' && receiptAllows;
       const pageUrls = list(preview.pages), pages = pageUrls.filter(url => artifactUrl(url, 'pages/\\d+'));
       const document_ = ['docx', 'pdf', 'pptx'].includes(format);
       const unit = format === 'pptx' ? 'diapositivas' : 'páginas';
       const count = format === 'xlsx' ? (present(preview.sheet_count) ? `${preview.sheet_count} hojas` : 'Hojas: sin dato') :
         document_ ? `${preview.page_count ?? pageUrls.length} ${unit}` : 'Archivo';
-      const meta = `${format.toUpperCase() || 'ARCHIVO'} · ${count} · Revisión ${artifact.revision}`;
-      const title = preview.title || 'Entregable';
+      const size = Number.isSafeInteger(artifact.size_bytes) && artifact.size_bytes >= 0 ? ` · ${artifact.size_bytes.toLocaleString('es-ES')} bytes` : '';
+      const meta = `${format.toUpperCase() || 'ARCHIVO'} · ${count} · Revisión ${artifact.revision}${size}`;
+      const title = artifact.filename || preview.title || 'Entregable';
       const card = node('article', null, null, 'rg-deliverable');
       card.dataset.status = artifact.status || '';
       const head = node('div', null, card, 'rg-deliverable-head');
-      const canPreview = document_ ? pages.length > 0 && pages.length === pageUrls.length : format === 'xlsx' && (Array.isArray(preview.sheets) || list(preview.rows).length);
+      const canPreview = artifactUrl(artifact.preview_url, 'preview') || (document_ ? pages.length > 0 && pages.length === pageUrls.length : format === 'xlsx' && (Array.isArray(preview.sheets) || list(preview.rows).length));
       const open = trigger => this.preview(artifact, title, meta, trigger);
       if (verified && document_ && canPreview) {
         const thumb = node('button', null, head, 'rg-thumb');
@@ -676,7 +836,7 @@
           link.setAttribute('aria-label', `Descargar ${downloadFormat.toUpperCase()}`);
           link.title = `Descargar ${downloadFormat.toUpperCase()}`;
           link.href = download.url;
-          link.setAttribute('download', '');
+          link.setAttribute('download', artifact.filename || '');
         });
       }
       if (this.run.professional && verified && !live(this.run.status)) {
@@ -687,8 +847,13 @@
         }, 'rg-btn', 'pencil');
       }
       const foot = node('div', null, card, 'rg-deliverable-foot');
+      const coverage = artifact.coverage || artifact.verification_checks?.coverage;
+      const coverageText = {complete: 'Cobertura completa del texto inspeccionable', partial: 'Cobertura parcial',
+        legacy: 'Cobertura del lector histórico'}[coverage?.status] || 'Cobertura no disponible';
+      node('span', coverageText, foot, 'rg-chip');
       if (artifact.data_mode === 'mock' || preview.data_mode === 'mock') node('span', 'Datos ficticios solicitados expresamente', foot, 'rg-chip is-warn');
-      if (!verified) this.review(artifact, card, title, meta);
+      if (!verified && document_ && artifact.review_url) this.review(artifact, card, title, meta);
+      else if (!verified) node('p', 'Archivo pendiente de entrega verificada.', foot, 'rg-meta');
       const checks = details(foot, '');
       const counts = checkRows(checks, artifact.verification_checks);
       checks.querySelector('summary').textContent = checkSummary(counts);
@@ -767,6 +932,10 @@
       state.controls.forEach(control => { control.disabled = !state.valid || state.loaded.size !== state.total; });
     }
     preview(artifact, title, meta, trigger, focusIndex = 0) {
+      if (artifactUrl(artifact.preview_url, 'preview') && window.RegulayArtifactViewer) {
+        window.RegulayArtifactViewer.open(artifact, trigger, list(this.data?.artifacts));
+        return;
+      }
       const preview = artifact.preview || {};
       const verified = artifact.status === 'verified';
       openDialog(title, meta, (body, foot) => {
@@ -832,7 +1001,7 @@
       let pending = null;
       const refresh = () => {
         if (pending) return;
-        pending = window.setTimeout(() => { pending = null; this.snapshot().catch(() => this.revoke()); }, 150);
+        pending = window.setTimeout(() => { pending = null; this.snapshot().catch(() => this.revoke()); }, 16);
       };
       source.addEventListener('progress', message => {
         if (!current()) return;
@@ -882,6 +1051,17 @@
       this.limits.replaceChildren();
       this.limits.hidden = true;
       this.reviews.clear();
+      window.clearTimeout(this.receiptTimer);
+      if (this.renderFrame !== null) cancelAnimationFrame(this.renderFrame);
+      this.renderFrame = null;
+      this.dirtySegments.clear();
+      this.segments.clear();
+      this.answerSlot.replaceChildren();
+      this.answerNode = null;
+      this.publicActivity.replaceChildren();
+      this.skillActivations.replaceChildren();
+      this.skillActivationKeys.clear();
+      window.RegulayArtifactViewer?.close();
       if (this === latest) { chosenRevision = null; updateContext(); }
       this.note('El estado no está autorizado o no está disponible. Actualiza el estado para comprobar el acceso.');
       this.paint();

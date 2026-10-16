@@ -10,20 +10,14 @@ import xml.etree.ElementTree as ET
 
 from PIL import Image
 from pypdf import PdfReader
-from django.db.models import Max
 
 from front.models import AgentArtifact, AgentInput, AgentInference
-from .capabilities import limits
+from .capabilities import execution_limits
 from .excel_contract import sha256
 from .general_tools import operation, store_result
 from .service import AgentDenied
 
-MIMES = {'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'pdf': 'application/pdf', 'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg',
-    'csv': 'text/csv', 'json': 'application/json', 'txt': 'text/plain', 'md': 'text/markdown',
-    'py': 'text/plain', 'js': 'text/plain', 'sh': 'text/plain'}
+from .artifact_formats import MIMES, canonical, inspect_file, safe_filename
 UNSAFE_FORMULA = re.compile(r'(?i)\b(WEBSERVICE|RTD|DDE|CALL|REGISTER\.ID|EXEC|HYPERLINK)\s*\(|\|[^!]*!|\[[^]]+\].*!')
 
 
@@ -92,7 +86,36 @@ def pdf_info(raw):
     return {'pages': len(texts), 'text': '\n'.join(texts), 'blank_pages': [i + 1 for i, text in enumerate(texts) if not text.strip()]}
 
 
-def inspect_file(raw, kind):
+def _worksheet_extent(xml):
+    """Bound the actual cells even when a streaming writer omits dimension."""
+    from openpyxl.utils.cell import coordinate_to_tuple
+    root = ET.fromstring(xml)
+    data = root.find('{*}sheetData')
+    max_row = max_column = row_number = 0
+    for row in data if data is not None else ():
+        if row.tag.rsplit('}', 1)[-1] != 'row':
+            continue
+        row_number = int(row.get('r', row_number + 1))
+        if not 1 <= row_number <= 100000:
+            raise ValueError('workbook_cell_limit')
+        max_row = max(max_row, row_number)
+        column_number = 0
+        for cell in row:
+            if cell.tag.rsplit('}', 1)[-1] != 'c':
+                continue
+            if cell.get('r'):
+                cell_row, column_number = coordinate_to_tuple(cell.attrib['r'])
+            else:
+                cell_row, column_number = row_number, column_number + 1
+            if cell_row < 1 or column_number < 1:
+                raise ValueError('workbook_cell_limit')
+            max_row, max_column = max(max_row, cell_row), max(max_column, column_number)
+            if max_row * max_column > 100000:
+                raise ValueError('workbook_cell_limit')
+    return max(1, max_row), max(1, max_column)
+
+
+def _inspect_legacy_file(raw, kind):
     proof = {'format': kind, 'sha256': sha256(raw), 'bytes': len(raw)}
     text, preview = '', {}
     if kind in ('docx', 'xlsx', 'pptx'):
@@ -109,11 +132,20 @@ def inspect_file(raw, kind):
             book = load_workbook(io.BytesIO(raw), data_only=False, read_only=True, keep_links=False)
             sheets, texts, cells = [], [], 0
             try:
+                extents, total_cells = [], 0
                 for sheet in book:
-                    if sheet.max_row * sheet.max_column > 100000:
+                    # Inspect already validated XML before any row padding. Also
+                    # avoid trusting a stale/understated dimension to hide data.
+                    xml_row, xml_column = _worksheet_extent(parts[sheet._worksheet_path.lstrip('/')])
+                    max_row = max(xml_row, sheet.max_row or 1)
+                    max_column = max(xml_column, sheet.max_column or 1)
+                    total_cells += max_row * max_column
+                    if max_row * max_column > 100000 or total_cells > 200000:
                         raise ValueError('workbook_cell_limit')
+                    extents.append((sheet, max_row, max_column))
+                for sheet, max_row, max_column in extents:
                     rows = []
-                    for row in sheet.iter_rows():
+                    for row in sheet.iter_rows(max_row=max_row, max_col=max_column):
                         values = []
                         for cell in row:
                             value = cell.value
@@ -121,10 +153,12 @@ def inspect_file(raw, kind):
                                 raise ValueError('workbook_formula_error_or_external')
                             values.append(str(value) if value is not None else '')
                             cells += 1
+                            if cells > 200000:
+                                raise ValueError('workbook_cell_limit')
                         if len(rows) < 10:
                             rows.append(values[:20])
                         texts.append(' | '.join(values))
-                    sheets.append({'name': sheet.title, 'rows': sheet.max_row, 'columns': sheet.max_column, 'preview': rows})
+                    sheets.append({'name': sheet.title, 'rows': max_row, 'columns': max_column, 'preview': rows})
                 if cells > 200000:
                     raise ValueError('workbook_cell_limit')
                 preview.update(sheet_count=len(sheets), sheets=sheets)
@@ -175,20 +209,33 @@ def candidate(token, attempt, payload):
     row = operation(run, call)
     if call.name != 'publish_artifact':
         raise AgentDenied('candidate_denied')
+    from front.policy import digest
+    publication_digest = digest({'files': payload['files'], 'render': payload.get('render')})
+    if row.result:
+        previous_result = json.loads(row.result)
+        if previous_result.get('reference'):
+            if previous_result.get('publication_digest') != publication_digest:
+                raise AgentDenied('artifact_publication_conflict')
+            return {'status': 'completed', 'reference': previous_result['reference']}
     previous = AgentArtifact.objects.filter(execution=run, operation_id=uuid.uuid5(run.pk, call.id)).first()
     if previous:
+        if previous.verification.get('publication_digest') != publication_digest:
+            raise AgentDenied('artifact_publication_conflict')
         return {'status': 'completed', 'reference': str(previous.pk)}
-    args, budget = dict(call.args), limits(context[2])
+    args, budget = dict(call.args), execution_limits(run, context[2])
     if 'render' in payload:
         rendering = payload['render']
         if (set(rendering) != {'pdf_path', 'page_paths', 'source_sha256', 'engine', 'pages'}
                 or rendering['engine'] != 'libreoffice-poppler'):
             raise ValueError('Invalid trusted rendering')
         args.update(pdf_path=rendering['pdf_path'], page_paths=rendering['page_paths'])
-    expected = {args['file_path'], *args.get('page_paths', [])}
+    related_paths = args.get('related_paths', [])
+    if len(related_paths) > 31 or len(set(related_paths)) != len(related_paths):
+        raise ValueError('artifact_dependency_limit')
+    expected = {args['file_path'], *args.get('page_paths', []), *related_paths}
     if args.get('pdf_path'):
         expected.add(args['pdf_path'])
-    if set(payload['files']) != expected or len(expected) > budget['pdf_pages'] + 2:
+    if set(payload['files']) != expected or len(expected) > budget['pdf_pages'] + 33:
         raise ValueError('Artifact file set mismatch')
     decoded = {path: base64.b64decode(value, validate=True) for path, value in payload['files'].items()}
     if sum(len(value) for value in decoded.values()) > budget['file_bytes']:
@@ -196,8 +243,10 @@ def candidate(token, attempt, payload):
     raw = decoded[args['file_path']]
     if 'render' in payload and sha256(raw) != payload['render']['source_sha256']:
         raise ValueError('Rendered source digest mismatch')
-    kind = PurePosixPath(args['file_path']).suffix.lstrip('.').lower()
-    proof, text, preview = inspect_file(raw, kind)
+    kind = canonical(PurePosixPath(args['file_path']).suffix)
+    proof, text, preview = inspect_file(raw, kind, budget=budget)
+    if proof['coverage']['status'] != 'complete' and kind not in ('png', 'jpg'):
+        raise AgentDenied('artifact_policy_coverage_incomplete')
     sources = consulted_sources(run)
     if set(args.get('sources', [])) - set(sources):
         raise AgentDenied('artifact_source_not_opened')
@@ -257,21 +306,26 @@ def candidate(token, attempt, payload):
     with jobs.locked(token, attempt) as (run, _):
         if base:
             jobs._base(run.conversation, run.job['logical_id'], run.job['base'])
-        logical = base.logical_id if base else uuid.uuid5(run.pk, args['file_path'])
-        revision = (AgentArtifact.objects.filter(logical_id=logical).aggregate(n=Max('revision'))['n'] or 0) + 1
-        proof.update(contract='professional-v1', title=args['title'][:200], automated_passed=True,
+        from .file_continuity import publication_files, persist_revision, write_manifest
+        dependencies = publication_files(run, context, decoded, args['file_path'], related_paths)
+        proof.update(contract='professional-v2', purpose='deliverable', title=args['title'][:200], automated_passed=True,
+            publication_digest=publication_digest,
             call_id=call.id, source_ids=args.get('sources', []), preview=preview,
             data_origin='invented_sample_data' if args.get('synthetic') or run.job['request']['allow_mock'] else 'task_inputs_and_research',
             human_review_required=budget['human_review'],
             visual_automatic='reviewed' if proof.get('page_sha256') and all(key in reviewed for key in proof['page_sha256']) else 'not_performed',
             factual='not_performed')
-        artifact = AgentArtifact.objects.create(execution=run, logical_id=logical, revision=revision, base=base,
-            source_id=run.job['manifest'], operation_id=uuid.uuid5(run.pk, call.id),
-            content=base64.b64encode(raw).decode(), sha256=sha256(raw), format=kind,
-            render_bundle=json.dumps(render), verification=proof,
-            status='draft' if budget['human_review'] and proof.get('pages') else 'verified')
+        artifact = persist_revision(run, args['file_path'], raw, proof, base=base,
+            operation_id=uuid.uuid5(run.pk, call.id), purpose='deliverable',
+            status='draft' if budget['human_review'] and proof.get('pages') else 'verified', render=render)
+        write_manifest(run, [(artifact, args['file_path'], dependencies)] + [(item, path, []) for item, path in dependencies])
+        published = run.job.setdefault('published_artifacts', [])
+        if str(artifact.pk) not in published:
+            published.append(str(artifact.pk))
+            run.save(update_fields=['job'])
         jobs.event(run, 'visual_pending' if artifact.status == 'draft' else 'verified', reference=str(artifact.pk))
         result = {'status': 'approved', 'reference': str(artifact.pk), 'sha256': artifact.sha256,
+            'publication_digest': publication_digest,
             'revision': artifact.revision, 'format': kind, 'pages': proof.get('pages'),
             'preview_paths': args.get('page_paths', []),
             'checks': checks(artifact), 'human_review_required': artifact.status == 'draft'}
@@ -285,7 +339,7 @@ def record_visual_receipts(run):
     for inference in AgentInference.objects.filter(execution=run, status='completed'):
         for value in inference.response.get('image_sha256', []):
             seen[value] = str(inference.call_id)
-    for artifact in run.artifacts.filter(verification__contract='professional-v1'):
+    for artifact in run.artifacts.filter(verification__contract__in=('professional-v1', 'professional-v2')):
         hashes = artifact.verification.get('page_sha256', [])
         if not hashes:
             continue
@@ -297,7 +351,10 @@ def record_visual_receipts(run):
 def current_artifacts(run):
     """Keep revision history, but only deliver/review each file's latest bytes."""
     latest = {}
-    for artifact in run.artifacts.order_by('revision'):
+    from django.db.models import Q
+    for artifact in AgentArtifact.objects.filter(Q(execution=run) | Q(pk__in=run.job.get('published_artifacts', []))).order_by('revision'):
+        if artifact.verification.get('purpose', 'deliverable') != 'deliverable':
+            continue
         latest[artifact.logical_id] = artifact
     return list(latest.values())
 
@@ -311,7 +368,9 @@ def checks(artifact):
                 'Todas las imágenes exactas se enviaron al modelo visual; consulta su evaluación en la respuesta.' if proof.get('visual_automatic') == 'reviewed' else
                 'Sin revisión visual registrada. Las comprobaciones de estructura no garantizan la maquetación.'},
         'sources': {'status': 'not_performed', 'detail': 'Procedencia y lecturas registradas; respaldo de cada afirmación no verificado automáticamente.'},
-        'security': {'status': 'passed', 'detail': 'Permisos, política, estructura y contenido activo comprobados; no equivale a un antivirus.'}}
+        'security': {'status': 'passed' if proof.get('coverage', {}).get('status', 'complete') == 'complete' else 'partial',
+            'detail': 'Permisos, política y estructura comprobados con la cobertura indicada. No acredita OCR ni seguridad al ejecutar código.'},
+        'coverage': proof.get('coverage', {'status': 'legacy', 'scope': 'historical_reader'})}
 
 
 def artifact_data(artifact):
@@ -320,6 +379,7 @@ def artifact_data(artifact):
     proof = artifact.verification
     count = proof.get('pages', 0)
     result = {'id': str(artifact.pk), 'logical_id': str(artifact.logical_id), 'revision': artifact.revision,
+        'filename': artifact.filename or safe_filename('archivo', artifact.format), 'size_bytes': artifact.size_bytes if artifact.size_bytes is not None else len(_bytes(artifact)),
         'sha256': artifact.sha256, 'format': artifact.format, 'status': artifact.status,
         'verification_checks': checks(artifact), 'preview': {'title': proof.get('title', ''),
             **proof.get('preview', {}), 'page_count': count,

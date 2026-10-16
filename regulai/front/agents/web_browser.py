@@ -9,7 +9,7 @@ from django.db import transaction
 from django.utils import timezone
 from front.models import AgentInput, AgentOperation
 from front.policy import digest
-from .capabilities import limits
+from .capabilities import execution_limits, call_timeout
 from .general_tools import operation, store_result
 from .public_web import WebError, fetch, public_url
 from .service import AgentDenied, _government, _totals
@@ -29,7 +29,7 @@ def fetch_resource(token, attempt, payload):
         raise ValueError('Browser request limit')
     path = f'browser/{digest(call.id)}/{payload["request_id"]}'
     url = public_url(payload['url'])
-    budget = limits(context[2])
+    budget = execution_limits(run, context[2])
     with transaction.atomic():
         row = AgentOperation.objects.select_for_update().get(pk=row.pk)
         state = json.loads(row.result) if row.result else {'status': 'browser_pending', 'requests': [], 'bytes': 0}
@@ -57,7 +57,7 @@ def fetch_resource(token, attempt, payload):
         record, started = government.start_call('web_browser_resource', 'research:web', None,
             context[8] + [('prompts', url)], Decimal(0), {})
         record.update(cost='0', cost_kind='no_api_charge', cost_scope='public_http_only')
-        fetched = fetch(url, timeout=budget['web_seconds'], max_bytes=min(3000000, budget['web_bytes'] - state['bytes']), authorize=permitted)
+        fetched = fetch(url, timeout=call_timeout(run, context[2], budget['web_seconds']), max_bytes=min(3000000, budget['web_bytes'] - state['bytes']), authorize=permitted)
         response = {'status': 'completed', 'succeeded': True, 'body': base64.b64encode(fetched['raw']).decode(),
             'headers': fetched.get('browser_headers', {}),
             'media_type': fetched['media_type'], 'url': url, 'final_url': fetched['final_url']}
@@ -97,7 +97,7 @@ def submit(token, attempt, payload):
     response = {'url': call.args['url'], 'final_url': payload['url'], 'raw': raw,
         'media_type': 'text/html', 'updated_at': None, 'sha256': sha256(raw).hexdigest(), 'bytes': len(raw), 'redirects': []}
     # A rendered DOM is separate evidence from a static HTTP response.
-    source, value = _source(run, call.args['url'] + '#rendered', lambda _: response, limits(context[2]))
+    source, value = _source(run, call.args['url'] + '#rendered', lambda _: response, execution_limits(run, context[2]))
     if state.get('partial') or payload['limitations']:
         value['extraction'] = 'partial'
         value['warnings'].append('browser_partial_resources_or_navigation')

@@ -11,6 +11,9 @@
     <iconify-icon icon="solar:chat-round-dots-line-duotone" aria-hidden="true"></iconify-icon><span class="hide-menu">Chat</span>
   </a>
 </li>
+{% if skills_catalog_enabled %}
+<li class="sidebar-item"><a class="sidebar-link {% if name == 'skills_library' or name == 'skill_detail' or name == 'skill_installed_detail' %}active{% endif %}" href="{% url 'front:skills_library' %}" title="Skills"{% if name == 'skills_library' or name == 'skill_detail' or name == 'skill_installed_detail' %} aria-current="page"{% endif %}><iconify-icon icon="solar:book-bookmark-line-duotone" aria-hidden="true"></iconify-icon><span class="hide-menu">Skills</span></a></li>
+{% endif %}
 {% if user.is_superuser or user.is_staff %}
 <li class="nav-small-cap"><span class="hide-menu">Seguridad</span></li>
 <li class="sidebar-item">

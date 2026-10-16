@@ -12,31 +12,45 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'regulai'))
 from ops.agent_chat.test_professional_runtime import RealWorkspaceTests
 from front.agents.adapter import InternalClient
-from front.agents.professional_worker import run_professional
-from front.agents.worker import Lease
+from front.agents.sandbox_pool import CleanPool
+from front.agents.worker import WorkerResource, run_job
 
 config = json.loads(sys.stdin.read())
 fixture = RealWorkspaceTests()
-fixture.setUp()
-transport = fixture.transport
-original = transport.run
-def run(command, **kwargs):
-    if kwargs.get('user') == 'root':
-        # The fixture already gives each command a separate unshared namespace.
-        # MicroVM provisioning/tmpfs mount is an E2B control-plane prerequisite,
-        # intentionally outside what this local substitute claims to validate.
-        if not command.startswith(('mount -t tmpfs ', 'chmod -R a-w /workspace/input')):
-            raise AssertionError('Unexpected administrative command')
-        return SimpleNamespace(stdout='', stderr='', exit_code=0)
-    return original(command, **kwargs)
-transport.run = run
-transport.set_timeout = lambda *_: None
-transport.kill = lambda: None
+sandbox_allocations = 0
+def create_namespace():
+    global sandbox_allocations
+    sandbox_allocations += 1
+    if sandbox_allocations != 1:
+        raise AssertionError('The lazy worker allocated more than one namespace')
+    fixture.setUp()
+    transport = fixture.transport
+    original = transport.run
+    def run(command, **kwargs):
+        if kwargs.get('user') == 'root':
+            # Each generated command gets a separate unshared namespace. This
+            # substitute does not validate E2B creation or microVM tmpfs mounts.
+            if not command.startswith(('mount -t tmpfs ', 'chmod -R a-w /workspace/input')):
+                raise AssertionError('Unexpected administrative command')
+            return SimpleNamespace(stdout='', stderr='', exit_code=0)
+        return original(command, **kwargs)
+    def destroy():
+        if not fixture.doCleanups():
+            raise RuntimeError('Namespace fixture cleanup failed')
+    transport.run = run
+    transport.set_timeout = lambda *_: None
+    transport.kill = destroy
+    return transport
+
 internal = InternalClient(config['endpoint'], config['token'], config['attempt'])
+pool = CleanPool(create_namespace)
+resource = WorkerResource(internal, pool, config['endpoint'].rstrip('/') + '/',
+    config['worker_token'], config['worker_id'], config)
 try:
-    with Lease(internal, transport) as lease:
-        result = run_professional(internal, transport, lease, internal.operation('run/bootstrap', {}))
-    print(json.dumps(result))
+    result = run_job(internal, acquire=resource.acquire)
+    print(json.dumps({**result, 'sandbox_allocations': sandbox_allocations}))
 finally:
+    resource.close()
+    pool.close()
     internal.close()
     fixture.doCleanups()

@@ -1,5 +1,5 @@
 ---
-name: regulay-pptx
+name: pptx
 description: Crear y editar presentaciones narrativas o transformar datos locales autorizados.
 ---
 

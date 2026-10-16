@@ -1,4 +1,4 @@
-"""Executor-only one-slot pool of clean E2B environments. Used slots are killed."""
+"""Executor-only one-slot allocation on demand. Used slots are always killed."""
 import ipaddress
 from pathlib import Path
 import threading
@@ -47,84 +47,55 @@ def create_clean(config):
 
 
 class CleanPool:
+    """One demand-created slot; an uncertain destruction never frees capacity."""
     def __init__(self, factory):
         self.factory, self.ready, self.closed = factory, None, False
         self.leased = False
         self.lock = threading.Lock()
-        self.wake = threading.Event()
         self.metrics = []
-        self.thread = threading.Thread(target=self._prepare, daemon=True)
-        self.thread.start()
-
-    def _prepare(self):
-        while not self.closed:
-            with self.lock:
-                ready = self.ready
-                leased = self.leased
-            if leased:
-                self.wake.wait(1)
-                self.wake.clear()
-                continue
-            if ready:
-                try:
-                    ready.set_timeout(180)
-                except Exception:
-                    with self.lock:
-                        if self.ready is ready:
-                            self.ready = None
-                    try:
-                        ready.kill()
-                    except Exception:
-                        pass  # Backend TTL is the fallback after a network loss.
-                self.wake.wait(30)
-                self.wake.clear()
-                continue
-            try:
-                started = time.monotonic()
-                ready = self.factory()
-                with self.lock:
-                    if self.closed or self.ready is not None:
-                        ready.kill()
-                        if self.closed:
-                            return
-                        continue
-                    self.ready = ready
-                    self.metrics.append({'preparation_seconds': time.monotonic() - started,
-                                         'sandbox_id': ready.sandbox_id})
-            except Exception:
-                logging.getLogger(__name__).warning('Clean sandbox preparation unavailable; queued work remains unclaimed')
-                self.wake.wait(2)
-                self.wake.clear()
 
     def take(self):
         with self.lock:
-            ready, self.ready = self.ready, None
-            if ready:
-                self.leased = True
-        return ready
+            if self.closed or self.leased:
+                return None
+            self.leased = True
+        started = time.monotonic()
+        # The caller first reserves global server capacity. Do not retry an
+        # uncertain create: its server reservation remains occupied as well.
+        sandbox = self.factory()
+        with self.lock:
+            self.ready = sandbox
+            closed = self.closed
+            self.metrics.append({'preparation_seconds': time.monotonic() - started,
+                                 'sandbox_id': sandbox.sandbox_id})
+        if closed:
+            self.release(sandbox)
+            raise RuntimeError('Sandbox pool closed during acquisition')
+        return sandbox
 
     def release(self, sandbox):
         # Never return a used environment to the queue, even on error/cancel.
+        with self.lock:
+            if self.ready is not sandbox:
+                return False
         try:
             sandbox.kill()
-        finally:
-            with self.lock:
+        except Exception:
+            logging.getLogger(__name__).warning('Sandbox destruction uncertain; capacity remains occupied')
+            return False
+        with self.lock:
+            if self.ready is sandbox:
+                self.ready = None
                 self.leased = False
-            self.wake.set()
+        return True
 
     def return_unassigned(self, sandbox):
-        """Only for an idle claim: this clean slot has never received customer data."""
-        with self.lock:
-            if self.ready is not None or not self.leased:
-                raise RuntimeError('Invalid clean slot ownership')
-            self.ready, self.leased = sandbox, False
-        self.wake.set()
+        # Compatibility for v1 callers. There is deliberately no warm slot.
+        return self.release(sandbox)
 
     def close(self):
-        self.closed = True
-        self.wake.set()
-        self.thread.join(timeout=20)
         with self.lock:
-            ready, self.ready = self.ready, None
+            self.closed = True
+            ready = self.ready
         if ready:
-            ready.kill()
+            self.release(ready)

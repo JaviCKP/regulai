@@ -74,6 +74,14 @@ ERRORS = {
     'currency_mismatch': 'La tarifa del modelo no usa la moneda del presupuesto.',
     'agent_development_only': 'El modo agente solo está disponible para cuentas sintéticas autorizadas del laboratorio.',
     'agent_conversation_busy': 'Este chat ya tiene una ejecución en curso. Puedes seguir su actividad o cancelarla.',
+    'artifact_format_unsupported': 'Ese formato no tiene un lector autorizado. Elige un formato admitido.',
+    'artifact_reference_ambiguous': 'Hay varios archivos posibles. Indica el nombre o selecciona la revisión que quieres usar.',
+    'artifact_reference_missing': 'No hay un archivo autorizado que corresponda a esa referencia. Adjunta el archivo o indica una revisión disponible.',
+    'agent_queue_saturated': 'La cola está llena. Vuelve a intentarlo en unos segundos con la misma petición.',
+    'agent_provider_saturated': 'El destino ya tiene todas las plazas ocupadas. No se ha iniciado otra llamada.',
+    'history_authorization_changed': 'El contexto anterior ha cambiado o ya no está autorizado. Inicia una petición nueva.',
+    'inference_profile_not_allowed': 'Ese modo de respuesta no está habilitado para tu perfil de agente.',
+    'inference_capability_unavailable': 'El modelo configurado no admite esas opciones de inferencia.',
     'agent_professional_input_invalid': 'No se pudo leer el archivo o su estructura no es válida. Comprueba el formato y los límites del perfil; se conserva el original.',
     'agent_input_unreadable': 'El archivo no contiene texto legible por los lectores disponibles. Aporta una versión con texto o datos accesibles.',
     'agent_input_policy_coverage_incomplete': 'El archivo supera la cobertura del lector de políticas. Reduce su tamaño o separa el contenido antes de procesarlo.',
@@ -186,17 +194,24 @@ def finish(prompt, status, code=None):
     return request_result(prompt)
 
 
-def authorized_history(actor, conversation, *, window=True):
-    history = []
+def authorized_history(actor, conversation, *, window=True, provenance=False, professional=False):
+    history, pairs = [], []
     if not conversation:
-        return history
+        return {'pairs': [], 'omitted': 0} if provenance else history
+    from .access import authorized_conversations
+    if not authorized_conversations(actor).filter(pk=conversation.pk).exists():
+        return {'pairs': [], 'omitted': 0} if provenance else history
+    total = Prompt.objects.filter(conversation=conversation, user=actor,
+        company=actor.profile.company).exclude(status__in=['received', 'processing']).count()
     for previous in Prompt.objects.filter(user=actor, company=actor.profile.company,
             conversation=conversation, status='completed').select_related('user_message', 'response__assistant_message').order_by('created_at', 'pk'):
-        if not previous.user_message or not hasattr(previous, 'response') or previous.file_sha256:
+        textual = (professional and previous.decision.get('history_version') == 2
+                   and previous.decision.get('history_scope') == 'text_only')
+        if not previous.user_message or not hasattr(previous, 'response') or (previous.file_sha256 and not textual):
             continue  # Original attachments are not retained; reattach to ask about them.
         response = previous.response
         user_msg, assistant = previous.user_message, response.assistant_message
-        if not assistant or not previous.decision.get('history_eligible'):
+        if not assistant or not previous.decision.get('history_eligible') or user_msg.blocked or assistant.blocked:
             continue
         if (user_msg.conversation_id != conversation.pk or assistant.conversation_id != conversation.pk
                 or user_msg.role != 'user' or assistant.role != 'assistant'):
@@ -204,8 +219,10 @@ def authorized_history(actor, conversation, *, window=True):
         if previous.decision.get('history_digest') != digest([user_msg.content, assistant.content]):
             continue
         history.extend([ChatMessage('user', user_msg.content), ChatMessage('assistant', assistant.content)])
+        pairs.append({'prompt_id': previous.pk, 'user_id': user_msg.pk, 'assistant_id': assistant.pk,
+                      'digest': previous.decision['history_digest'], 'messages': history[-2:]})
     if not window:
-        return history
+        return {'pairs': pairs, 'omitted': max(0, total - len(pairs))} if provenance else history
     cfg = AIConfig.model_validate(actor.profile.company.ai_config)
     selected, size = [], 0
     for index in range(len(history) - 2, -1, -2):
@@ -215,6 +232,9 @@ def authorized_history(actor, conversation, *, window=True):
             break
         selected[0:0] = pair
         size += pair_size
+    if provenance:
+        count = len(selected) // 2
+        return {'pairs': pairs[-count:] if count else [], 'omitted': max(0, total - count)}
     return selected
 
 

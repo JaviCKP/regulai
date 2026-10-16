@@ -12,12 +12,11 @@ change its result:
   ``GovernedCalls.preflight`` on the whole buffer before every emission;
 * responses that need the complete text are delivered whole: semantic
   verification, document citations, structured (JSON) answers, remote masking,
-  providers without verified streaming usage, and rules whose condition is not
-  a plain disjunction of strings.
+  providers without verified streaming usage, and any applicable YARA rules.
 
-The final answer still goes through every existing check. If a check fails after
-text was shown, the text is withdrawn, never persisted, and the receipt records
-it. Partial text lives only in this process' memory.
+The final answer still goes through every existing check. Retraction cannot undo
+exposure: eligibility and prefix authorization, not withdrawal, protect privacy.
+The agent persists only authorized prefixes and marks interrupted text incomplete.
 """
 import asyncio
 import json
@@ -33,13 +32,15 @@ from django.db import connection
 from django.http import StreamingHttpResponse
 
 from .governance import PipelineStop
-from .local_masking import _matching_view, detect_spans, mask_local_texts
+from .local_masking import _matching_view, detect_spans, mask_local_texts, detector_metadata
 
 logger = logging.getLogger(__name__)
 
 HOLDBACK = 96           # normalized characters never shown before more text arrives
 EMIT_INTERVAL = 0.12    # seconds between emissions; each emission re-runs the checks
 EMIT_CHARS = 48         # ...or this much new text: a burst followed by silence is not held back
+# A detector change must re-run the full split corpus before incremental release.
+STREAM_DETECTOR_SHA256 = '418ad88bd3d462c2d6c103e5a48ce2e850beb49a9009279785d219b81ef7deb6'
 STREAMING_HOSTS = frozenset({'api.openai.com', 'api.anthropic.com', 'api.deepseek.com',
                              'generativelanguage.googleapis.com'})
 DEFAULT_HOSTS = {'openai': 'api.openai.com', 'anthropic': 'api.anthropic.com'}
@@ -92,9 +93,13 @@ def delivery_plan(*, document, semantic, masks, engine, rules):
         return 'complete', 'response_verification'
     if any(mask.backend != 'local' for mask in masks):
         return 'complete', 'remote_masking'
+    if detector_metadata()['patterns_sha256'] != STREAM_DETECTOR_SHA256:
+        return 'complete', 'detector_stability_unverified'
     if not streaming_host(engine):
         return 'complete', 'provider_streaming_unverified'
-    if any(rule.applies_to in ('prompts', 'both') and not _prefix_decidable(rule.yara_rule) for rule in rules):
+    # Even a plain string may match only at the very end and prohibit the entire
+    # answer. Parsing its condition does not prove earlier text may be disclosed.
+    if any(rule.applies_to in ('prompts', 'both') for rule in rules):
         return 'complete', 'policy_needs_complete_text'
     return 'streamed', None
 
@@ -158,10 +163,12 @@ def safe_cut(text, view=None):
 class StreamGuard:
     """Feeds provider text in and emits only checked, masked, stable text."""
 
-    def __init__(self, events, government, masks, policy_texts, *, response_bytes=None, attempt=1, prompt=None):
+    def __init__(self, events, government, masks, policy_texts, *, response_bytes=None, attempt=1, prompt=None,
+                 protector=None, authorize=None, strict_interval=False):
         self.events, self.government, self.masks = events, government, masks
         self.policy_texts, self.response_bytes, self.attempt = policy_texts, response_bytes, attempt
         self.prompt = prompt
+        self.protector, self.authorize, self.strict_interval = protector, authorize, strict_interval
         self.text, self.emitted, self.cut, self.last = '', '', 0, 0.0
         self.matching, self.offsets, self.size = '', [], 0
         self.structured = None
@@ -200,7 +207,7 @@ class StreamGuard:
             raise PipelineStop('evaluation_input_too_large')
         now = time.monotonic()
         # Nothing runs while the provider is silent, so a burst is checked in steps.
-        if now - self.last >= EMIT_INTERVAL or len(self.text) - self.checked >= EMIT_CHARS:
+        if now - self.last >= EMIT_INTERVAL or (not self.strict_interval and len(self.text) - self.checked >= EMIT_CHARS):
             self.last, self.checked = now, len(self.text)
             self.advance()
 
@@ -217,6 +224,8 @@ class StreamGuard:
         if cut <= self.cut:
             return
         # Same output authorization as the final answer, on everything received.
+        if self.authorize is not None:
+            self.authorize(self.text)
         for mask in self.masks:
             self.government.preflight(f'obfuscation:{mask.pk}', self.policy_texts + [('prompts', self.text)])
         masked = self.mask(self.text[:cut])
@@ -229,6 +238,8 @@ class StreamGuard:
             self.events.emit('delta', text=delta, attempt=self.attempt)
 
     def mask(self, value):
+        if self.protector is not None:
+            return self.protector(value)
         current = [value]
         for config in self.masks:
             remaining = self.government.remaining()

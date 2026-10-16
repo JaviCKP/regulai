@@ -15,7 +15,7 @@ from django.utils import timezone
 from front.models import AgentInput
 from front.policy import digest
 from front.governance import PipelineStop
-from .capabilities import limits, search_configuration
+from .capabilities import execution_limits, call_timeout, search_configuration
 from .general_tools import operation, store_result
 from .public_web import ReadableHTML, WebError, fetch, public_url
 from .service import AgentDenied, _government, _totals, authenticate
@@ -211,7 +211,7 @@ def execute(token, attempt, payload):
     pending = json.dumps({'status': 'started'})
     receipt = AgentInput.objects.create(execution=run, kind='web_receipt', path='web-call/' + digest(call.id),
         original=pending, digest=digest(pending))
-    budget = limits(context[2])
+    budget = execution_limits(run, context[2])
     government = _government(run, context, token, attempt, str(run.active_call))
     government.destinations = [*government.destinations, *(['research:web'] if 'research:web' in context[10].allowed_destinations else [])]
     record, started = None, None
@@ -225,7 +225,7 @@ def execute(token, attempt, payload):
         government.preflight('research:web', context[8] + [('prompts', value)])
 
     def get(url):
-        return fetch(url, max_bytes=budget['web_bytes'], timeout=budget['web_seconds'], authorize=permitted)
+        return fetch(url, max_bytes=budget['web_bytes'], timeout=call_timeout(run, context[2], budget['web_seconds']), authorize=permitted)
 
     try:
         if call.name == 'web_find':
@@ -265,7 +265,7 @@ def execute(token, attempt, payload):
             if call.name == 'web_search':
                 result = {'status': 'approved', 'trust': 'untrusted_search_snippets', **search(value, configuration,
                     max_results=call.args.get('max_results', 5), language=call.args.get('language'),
-                    time_range=call.args.get('time_range'), timeout=budget['web_seconds'])}
+                    time_range=call.args.get('time_range'), timeout=call_timeout(run, context[2], budget['web_seconds']))}
             elif call.name == 'web_open':
                 source_row, source = _source(run, public_url(value), get, budget)
                 result = _excerpt(source_row, source, call.args.get('offset', 0), call.args.get('limit', 12000))

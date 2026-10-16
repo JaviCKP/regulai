@@ -34,8 +34,11 @@ EVENT_TEXT = {
     'executing': 'Trabajando con archivos y código en el entorno aislado.',
     'installing': 'Preparando dependencias verificadas para instalación sin red.',
     'verifying': 'Comprobando el resultado y registrando el alcance de la revisión.',
-    'queued': 'Petición aceptada. Esperando un entorno limpio disponible.',
-    'claimed': 'Entorno limpio reservado en exclusiva. Preparando el archivo.',
+    'queued': 'Petición aceptada. Esperando capacidad de ejecución.',
+    'claimed': 'Ejecución iniciada. El entorno se adquiere cuando hace falta.',
+    'sandbox_waiting': 'Esperando capacidad para preparar el entorno aislado.',
+    'sandbox_acquired': 'Entorno aislado adquirido. Preparando los archivos autorizados.',
+    'sandbox_prepared': 'Entorno preparado. Archivos e aislamiento comprobados.',
     'input': 'Leyendo la estructura del archivo autorizado.',
     'calculate': 'Python está calculando y preparando las fórmulas del Excel.',
     'rename': 'Actualizando el título de la revisión actual.',
@@ -47,7 +50,7 @@ EVENT_TEXT = {
     'visual_reviewed': 'Revisión visual registrada para estos bytes y estas páginas.',
     'draft': 'La comprobación ha fallado. Se conserva el borrador para reparación local.',
     'verified': 'El archivo ha superado las comprobaciones técnicas aplicables.',
-    'completed': 'Entregable disponible. Consulta el alcance de cada comprobación.',
+    'completed': 'Respuesta completada. Los archivos disponibles figuran en el recibo de entrega.',
     'cancelled': 'Ejecución cancelada. No se iniciarán nuevos pasos.',
     'interrupted': 'Ejecución interrumpida. No se repetirán automáticamente operaciones de resultado incierto.',
     'failed': 'No se pudo completar un archivo verificado. Los borradores se conservan.',
@@ -74,17 +77,39 @@ def available(actor):
 
 
 def event(execution, kind, **data):
-    return AgentEvent.objects.create(execution=execution, kind=kind,
-        data={'text': EVENT_TEXT[kind], **data})
+    from .event_store import append_event
+    return append_event(execution, kind, text=EVENT_TEXT.get(kind, ''), **data)
 
 
 def _terminal(execution, status):
+    if status != 'completed' and execution.job.get('kind') == 'professional' and execution.job.get('version') == 2:
+        from .delivery import partial
+        reason = execution.prompt.decision.get('error_type') or ('cancelled_by_user' if status == 'cancelled' else
+            'deadline_exceeded' if execution.expires_at <= timezone.now() else 'delivery_incomplete')
+        partial(execution, reason)
     execution.status, execution.finished_at = status, timezone.now()
     execution.save(update_fields=['status', 'finished_at'])
     PROTECTED_HISTORY.forget(execution.pk)
     Prompt.objects.filter(pk=execution.prompt_id).update(status=(
         'outcome_unknown' if status == 'interrupted' else status), updated_at=timezone.now())
     event(execution, status)
+    from .event_store import append_event
+    total = execution.prompt.decision.get('total', {})
+    append_event(execution, 'run.finished', event_key='terminal:' + str(execution.attempt),
+        status=status, financial_pending=not total.get('complete', True),
+        known_cost=total.get('known_cost'), unknown_cost=total.get('unknown_cost'),
+        close_cursor=execution.events.order_by('-pk').values_list('pk', flat=True).first() or 0)
+
+
+def stop_budget(token, attempt, reason):
+    """Stop before another effect; the terminal response is built only locally."""
+    with locked(token, attempt) as (run, _):
+        if run.active_call:
+            raise AgentDenied('execution_busy_or_uncertain')
+        run.prompt.decision['error_type'] = reason
+        run.prompt.save(update_fields=['decision'])
+        _terminal(run, 'interrupted')
+    return {'status': 'interrupted', 'code': reason, 'delivery': run.prompt.decision.get('delivery', {})}
 
 
 def reap():
@@ -119,8 +144,9 @@ def _bytes(artifact):
 
 
 def latest(conversation, logical_id):
-    return AgentArtifact.objects.filter(execution__conversation=conversation, logical_id=logical_id,
-        status='verified', execution__status='completed').order_by('-revision').first()
+    from .file_continuity import delivered
+    return next((item for item in AgentArtifact.objects.filter(execution__conversation=conversation, logical_id=logical_id,
+        status='verified').select_related('execution__prompt').order_by('-revision') if delivered(item)), None)
 
 
 def _base(conversation, logical_id, base_id):
@@ -140,7 +166,21 @@ def enqueue(actor, command, conversation, text, request_id):
     try:
         profile_id = development_profile(actor)
         from front.models import AgentModelProfile
-        professional = AgentModelProfile.objects.get(pk=profile_id).professional
+        agent_profile = AgentModelProfile.objects.get(pk=profile_id)
+        professional = agent_profile.professional
+        from .skills import normalized_selection, freeze_selection
+        previous_job = AgentExecution.objects.filter(prompt__user=actor,
+            prompt__request_id=request_id).values_list('job', flat=True).first()
+        previous_skills = (previous_job or {}).get('skills')
+        default_auto = conversation.auto_skills if conversation else True
+        if command.get('skills') is None and previous_skills is not None:
+            default_auto = previous_skills['auto']
+        selection = normalized_selection(command.get('skills'), default_auto=default_auto)
+        # Replays retain their original catalogue across rollout, updates and preference changes.
+        # The ordinary receipt check below still compares a changed explicit selection and
+        # authorized_run revalidates the permissions of the already accepted execution.
+        command = {**command, '_skill_selection': selection,
+            '_skill_snapshot': previous_skills if previous_job is not None else freeze_selection(actor, agent_profile, selection)}
         if professional and not command.get('export_name'):
             from .professional import enqueue as professional_enqueue
             return professional_enqueue(actor, command, conversation, text, request_id, profile_id)
@@ -162,12 +202,15 @@ def enqueue(actor, command, conversation, text, request_id):
                               command.get('document_reference')]
         if command.get('export_name'):
             identity.append(command['export_name'])
+        if command.get('skills') is not None or (command.get('_skill_snapshot') or {}).get('catalog'):
+            identity.append(selection)
         fingerprint = digest(identity)
         accepted_fingerprints = {fingerprint}
-        if not command.get('document_reference') and not command.get('export_name'):
+        if not command.get('document_reference') and not command.get('export_name') and command.get('skills') is None and not (command.get('_skill_snapshot') or {}).get('catalog'):
             accepted_fingerprints.add(digest(identity[:-1]))  # Pre-53 HTTP receipts remain replayable.
         reap()
-        with transaction.atomic():
+        from .capacity import admission_lock, admit_queue
+        with admission_lock():
             previous = Prompt.objects.filter(user=actor, request_id=request_id).first()
             if previous:
                 if (previous.company_id != actor.profile.company_id
@@ -177,6 +220,7 @@ def enqueue(actor, command, conversation, text, request_id):
                 run = AgentExecution.objects.get(prompt=previous)
                 authorized_run(actor, run.pk)
                 return accepted(run)
+            admit_queue(actor.profile.company_id)
             if conversation:
                 conversation = Conversation.objects.select_for_update().get(pk=conversation.pk)
                 if AgentExecution.objects.filter(conversation=conversation, status__in=LIVE).exists():
@@ -236,27 +280,44 @@ def enqueue(actor, command, conversation, text, request_id):
                 raise AgentDenied('aggregate_group_too_small')
             run.authorization_digest = context[-1]
             run.status = 'queued'
-            run.expires_at = timezone.now() + timedelta(seconds=MAX_RUN_SECONDS)
+            run.expires_at = timezone.now() + timedelta(seconds=300)
             run.job = {'source': str(asset.pk) if asset else None, 'logical_id': str(base.logical_id if base else uuid.uuid4()),
                 'base': str(base.pk) if base else None, 'kind': 'rename' if base else 'build' if asset else
                     'mock' if requested['formats'] == ['xlsx'] and requested['allow_mock'] else 'create',
                 'request': requested}
+            if command.get('_skill_snapshot') is not None:
+                run.job['skills'] = command['_skill_snapshot']
+            conversation.auto_skills = selection['auto']
+            conversation.save(update_fields=['auto_skills'])
             if command.get('export_name'):
                 if not base or 'save_revision' not in context[2].tools:
                     raise AgentDenied('export_base_required')
                 run.job.update(kind='export', export_name=command['export_name'])
             run.save()
+            run.authorization_digest = _context(prompt, profile_id)[-1]
+            run.save(update_fields=['authorization_digest'])
             prompt.status = 'received'
             prompt.save(update_fields=['status'])
             event(run, 'queued')
             return accepted(run)
     except AgentDenied as error:
+        from .capacity import CapacityDenied
+        if isinstance(error, CapacityDenied):
+            result = error_result(error.code, 429)
+            result.data['retry_after'] = error.retry_after
+            return result
         if error.code == 'agent_source_required' or error.code.startswith('agent_research_'):
             return error_result(error.code, 422)
         return error_result(error.code, 409 if 'stale' in error.code else 403)
     except ValueError as error:
+        from .skill_bundles import SkillError
+        if isinstance(error, SkillError):
+            return error_result(error.code, 409)
+        from front.routing import RoutingError
+        if isinstance(error, RoutingError):
+            return error_result(error.code, 422)
         code = str(error)
-        if code in ('agent_multiple_formats_unsupported', 'agent_page_limit', 'agent_language_unsupported'):
+        if code in ('agent_multiple_formats_unsupported', 'agent_page_limit', 'agent_language_unsupported', 'artifact_format_unsupported'):
             return error_result(code, 422)
         return error_result('agent_professional_input_invalid' if professional else 'agent_input_invalid')
     except (TypeError, KeyError, UnicodeError, zipfile.BadZipFile, ET.ParseError, OSError):
@@ -277,6 +338,9 @@ def accepted(run):
 def run_data(run):
     from .checkpoints import resumable
     return {'id': str(run.pk), 'request_id': str(run.prompt.request_id),
+        'skills': {**{key: (run.job.get('skills') or {}).get(key) for key in ('selected', 'auto')},
+            'selected_aliases': [entry['alias'] for entry in (run.job.get('skills') or {}).get('catalog', [])
+                if entry['installation_id'] in (run.job.get('skills') or {}).get('selected', [])]},
         'professional': run.job.get('kind') == 'professional', 'resumable': resumable(run),
         'resume_url': f'/chat/agent/runs/{run.pk}/resume/',
         'status': run.status, 'request': run.job.get('request', {}),
@@ -300,18 +364,23 @@ def worker_authorized(token):
 
 def claim(token, payload):
     worker_authorized(token)
-    if set(payload) != {'worker_id', 'claim_id'}:
+    if set(payload) not in ({'worker_id', 'claim_id'}, {'worker_id', 'claim_id', 'worker_protocol'}) or payload.get('worker_protocol', 1) not in (1, 2):
         raise ValueError('Invalid claim')
     worker, claim_id = uuid.UUID(payload['worker_id']), uuid.UUID(payload['claim_id'])
     reap()
-    with transaction.atomic():
+    from .capacity import admission_lock, claim_available, queue_expired
+    with admission_lock():
+        for expired in queue_expired().select_for_update():
+            _terminal(expired, 'interrupted')
         run = AgentExecution.objects.select_for_update().filter(claim_id=claim_id).first()
         if run:
             if run.worker_id != worker or run.status != 'active' or run.expires_at <= timezone.now():
                 raise AgentDenied('claim_no_longer_valid')
         else:
-            run = AgentExecution.objects.select_for_update(skip_locked=True).filter(
-                status='queued', conversation__isnull=False).order_by('created_at').first()
+            run = next((candidate for candidate in AgentExecution.objects.select_for_update(skip_locked=True).filter(
+                status='queued', conversation__isnull=False).select_related('prompt').order_by('created_at')
+                if (candidate.job.get('version', 1) < 2 or payload.get('worker_protocol', 1) == 2)
+                and claim_available(candidate.prompt.company_id)), None)
             if not run:
                 return {'status': 'idle'}
             try:
@@ -326,7 +395,9 @@ def claim(token, payload):
             run.started_at = run.started_at or timezone.now()
             run.expires_at = timezone.now() + timedelta(seconds=LEASE_SECONDS)
             run.status = 'active'
-            event(run, 'claimed')
+            run.job['worker_protocol'] = payload.get('worker_protocol', 1)
+            event(run, 'claimed', interval={'category': 'queue', 'started_at': run.created_at.isoformat(),
+                'completed_at': timezone.now().isoformat()}, duration_ms=max(0, round((timezone.now() - run.created_at).total_seconds() * 1000)))
         # Replaying the same claim after a lost HTTP response yields the same
         # credential; it cannot extend the lease or reclaim an old attempt.
         credential = hmac.new(token.encode(), f'{run.pk}:{run.attempt}:{claim_id}'.encode(), hashlib.sha256).hexdigest()
@@ -367,6 +438,8 @@ def bootstrap(token, attempt, payload):
     if payload:
         raise ValueError('Invalid bootstrap')
     with locked(token, attempt) as (run, context):
+        from .skill_context import bootstrap as skill_bootstrap
+        skill_data = skill_bootstrap(run)
         if run.job.get('kind') == 'professional':
             from .professional import bootstrap as professional_bootstrap
             return professional_bootstrap(run, context)
@@ -376,7 +449,8 @@ def bootstrap(token, attempt, payload):
                 'model_context': {'operation': 'mock', 'request': run.job.get('request', {}), 'data_origin': 'invented_sample_data',
                     'min_rows': context[2].min_group_size, 'max_rows': 1000,
                     'columns': ['item', 'amount_cents']},
-                'message': alias_text(run, run.prompt.content), 'tools': ['create_mock_excel']}
+                'message': alias_text(run, run.prompt.content), 'execution': str(run.pk), 'skills': skill_data,
+                'tools': ['create_mock_excel'] + (['read_file'] if 'read_file' in context[2].tools and skill_data else [])}
         asset = AgentInput.objects.get(pk=run.job['source'], execution=run) if run.job.get('source') else None
         rows = input_rows(_decode(asset), asset.kind) if asset and asset.kind in ('csv', 'xlsx') else []
         # Originals travel only through this private executor operation, never
@@ -408,6 +482,7 @@ def bootstrap(token, attempt, payload):
             'sha256': asset.digest, 'kind': asset.kind} if asset else None,
             'base': base64.b64encode(_bytes(base)).decode() if base else None,
             'base_format': base.format if base else None, 'base_docx': companion,
+            'execution': str(run.pk), 'skills': skill_data,
             'model_context': model_context, 'message': alias_text(run, run.prompt.content),
             'tools': allowed_tools(run.job.get('request') or interpret(run.prompt.content, uploaded=bool(asset), base_format=base.format if base else None),
                 context[2].tools, base=bool(base), source=bool(asset), narrative=bool(base and base.verification.get('narrative')))}
@@ -520,6 +595,22 @@ def local_fields(token, attempt, payload):
 
 
 def complete(token, attempt, payload):
+    # Completion may have committed before the worker received its response.
+    # A terminal replay reads the same receipt; it never recreates a message.
+    previous = AgentExecution.objects.filter(token_digest=sha256(token.encode()), attempt=attempt,
+        status__in=['completed', 'failed', 'interrupted']).select_related('prompt__user', 'conversation').first()
+    if previous and previous.job.get('kind') == 'professional':
+        authorized_run(previous.prompt.user, previous.pk)
+        recorded = previous.job.get('completion_attempt', {})
+        if previous.status != 'completed':
+            if set(payload) == {'final_call_id'} and payload['final_call_id'] == recorded.get('call_id'):
+                return recorded['result']
+            raise AgentDenied('final_inference_required')
+        last = AgentInference.objects.filter(execution=previous, status='completed').order_by('-id').first()
+        if set(payload) != {'final_call_id'} or not last or str(last.call_id) != payload['final_call_id']:
+            raise AgentDenied('final_inference_required')
+        return {'status': 'completed', 'completed': True,
+                'delivery': previous.prompt.decision.get('delivery', {})}
     run, _ = authenticate(token, attempt)
     if run.job.get('kind') == 'professional':
         from .professional import complete as professional_complete
@@ -600,9 +691,14 @@ def cancel(actor, run_id):
 
 
 def artifact_data(artifact):
-    if artifact.verification.get('contract') == 'professional-v1':
+    if artifact.verification.get('contract') in ('professional-v1', 'professional-v2'):
         from .professional_artifacts import artifact_data as professional_data
-        return professional_data(artifact)
+        from .artifact_preview import TEXT_FORMATS
+        value = professional_data(artifact)
+        if (getattr(settings, 'REGULAY_ARTIFACT_PREVIEW', False) and artifact.status == 'verified'
+                and artifact.format in TEXT_FORMATS):
+            value['preview_url'] = f'/chat/agent/artifacts/{artifact.pk}/preview/'
+        return value
     if artifact.format != 'xlsx':
         from .document_jobs import artifact_data as document_data
         return document_data(artifact)

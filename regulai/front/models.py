@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from .encrypted_fields import EncryptedCharField
 from .agents.records import (AgentAccessGrant, AgentOperation, AgentArtifact, AgentEvent, AgentExecution, AgentInference, AgentInput, AgentModelProfile,
-                            AgentToolResult, ConversationAlias, AgentDocumentConnection, AgentDocumentReference, AgentExport)
+                            AgentToolResult, ConversationAlias, AgentDocumentConnection, AgentDocumentReference, AgentExport,
+                            AgentSkillInstallation, AgentSkillRevision, AgentSkillInstallOperation)
 from .policy import validate_ai_config, validate_yara
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
@@ -158,6 +159,7 @@ class Conversation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversations")
     title = models.CharField(max_length=255, blank=True)
     mode = models.CharField(max_length=12, default='chat', choices=[('chat', 'Chat'), ('agent', 'Agent')])
+    auto_skills = models.BooleanField(default=True, db_default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

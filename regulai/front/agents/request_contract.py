@@ -12,8 +12,16 @@ def interpret(text, *, uploaded=False, base_format=None, general=False):
     patterns = {'docx': r'\b(word|docx)\b', 'pdf': r'\bpdf\b',
                 'xlsx': r'\b(excel|xlsx|spreadsheet|hoja de calculo)\b',
                 'pptx': r'\b(pptx|powerpoint|presentacion|presentation|diapositivas|slides)\b'}
-    output_text = re.sub(r'\b(?:no|sin|not|without)\s+(?:(?:un|una|an?|el|la)\s+)?(?:archivo\s+)?'
-        r'(?:word|docx|pdf|excel|xlsx|powerpoint|pptx)\b', '', value)
+    if general:
+        from .artifact_formats import FORMATS
+        patterns = {name: r'\b(?:' + '|'.join(re.escape(alias) for alias in spec[2]) + r')\b'
+                    for name, spec in FORMATS.items()}
+    # Negation uses the same aliases as positive format detection. A separate
+    # list omitted JavaScript/JS and made forbidden output a required delivery.
+    format_object = (r'(?:(?:un|una|an?|el|la)\s+)?(?:archivo\s+)?(?:'
+        + '|'.join(patterns.values()) + r'|\b(?:archivo|file)\b)')
+    output_text = re.sub(r'\b(?:no|sin|not|without)\s+' + format_object
+        + r'(?:\s*(?:,|\bni\b|\bnor\b|\bor\b|\bo\b)\s*' + format_object + r')*', '', value)
     formats = [name for name, pattern in patterns.items() if re.search(pattern, output_text)]
     target = re.search(r'\b(?:convierte|convert|transforma|exporta|export)\b.*\b(?:a|to)\s+(.+)$', output_text)
     if target:
@@ -40,12 +48,64 @@ def interpret(text, *, uploaded=False, base_format=None, general=False):
         raise ValueError('agent_language_unsupported')
     language = 'en' if re.search(r'\b(ingles|english)\b', value) else 'es' if re.search(r'\b(espanol|castellano|spanish)\b', value) else (
         'en' if re.search(r'\b(create|write|report|about|please)\b', value) and not re.search(r'\b(crea|informe|sobre)\b', value) else 'es')
-    return {'operation': 'edit' if base_format and base_format in formats else 'transform' if uploaded or base_format else 'create',
+    result = {'operation': 'edit' if base_format and base_format in formats else 'transform' if uploaded or base_format else 'create',
             'base_format': base_format,
             'formats': formats, 'pages': pages, 'language': language,
             'language_explicit': bool(re.search(r'\b(ingles|english|espanol|castellano|spanish)\b', value)),
             'allow_mock': explicit_mock,
             'research_required': bool(re.search(r'\b(actualizad\w*|actuales|actualidad|latest|current|investiga\w*|fuentes|references|citad\w*)\b', value))}
+    if general:
+        no_delivery = bool(re.search(
+            r'\b(?:sin|without)\s+(?:crear|generar|producir|creating|generating)\s+'
+            r'(?:(?:ningun(?:o|a)?|any|new|nuevos?)\s+)?(?:archivos?|ficheros?|files?|documentos?)\b|'
+            r'\bno\s+(?:crees|generes|produzcas)\s+(?:(?:ningun(?:o|a)?|nuevos?)\s+)?'
+            r'(?:archivos?|ficheros?|documentos?)\b', value))
+        download = bool(re.search(r'\b(?:descarga\w*|download|damelo|damela|entregamelo|pasamelo|adjuntalo|enlace de descarga)\b', value))
+        edit = bool(re.search(r'\b(?:edita\w*|modifica\w*|cambia\w*|change|edit|actualiza\w*|recolorea\w*)\b', value))
+        create = bool(re.search(r'\b(?:crea\w*|genera\w*|haz(?:me)?|produce\w*|escribe\w*|write|create|generate|make|exporta\w*|export|convierte|convert|prepara\w*|quiero|necesito)\b', value))
+        file_object = bool(formats and (not base_format or any(re.search(p, output_text) for p in patterns.values())) or
+            re.search(r'\b(?:archivo|fichero|file|doc|documento|document|landing|web|descargable)\b', output_text))
+        # Updating figures or a conversational answer does not select an artifact.
+        # A visual edit or an explicit file/revision still carries that intent.
+        edit_object = bool(file_object or base_format or re.search(
+            r'\b(?:color|fondo|tipografia|titulo|boton|imagen|estilo|layout|background|font|'
+            r'editalo|editala|modificalo|modificala|recolorealo|recoloreala)\b', value))
+        # An explanation or code discussion does not require a downloadable file.
+        explanation = bool(re.search(r'\b(?:explica\w*|que es|que significa|como funciona|explain|what is|describe)\b', value))
+        operation = ('chat' if no_delivery else 'download' if download else
+            'edit' if edit and edit_object and not explanation else
+            'create' if create and file_object and not explanation else 'chat')
+        required = operation != 'chat'
+        if not required:
+            result['formats'] = []
+        elif operation == 'download' and not base_format:
+            result['formats'] = []
+        unknown = re.findall(r'(?<!\w)\w+\.([a-z0-9]{2,8})\b', output_text)
+        from .artifact_formats import canonical
+        if required and any(canonical(extension) not in patterns for extension in unknown):
+            raise ValueError('artifact_format_unsupported')
+        if required and re.search(r'\b(?:exe|dll|rar|7z|mp4|mp3|wav|avi|mov|odt|ods|epub)\b', output_text):
+            raise ValueError('artifact_format_unsupported')
+        result.update(version=2, delivery_required=required, operation=operation, references=[],
+            requirements={'minimum_files': 1 if required else 0, 'formats': result['formats'], 'pages': result['pages']},
+            ambiguities=['artifact_reference_required'] if operation in ('download', 'edit') and not base_format and not uploaded else [])
+    return result
+
+
+def delivery_problems(request, artifacts):
+    """Compare persisted requirements to verified server references, never prose."""
+    from .artifact_formats import canonical
+    artifacts = [item for item in artifacts if item.status == 'verified' and item.verification.get('purpose', 'deliverable') == 'deliverable']
+    available = {canonical(item.format) for item in artifacts}
+    if any(item.format == 'docx' and item.verification.get('pdf_sha256') for item in artifacts):
+        available.add('pdf')
+    problems = ['missing_format:' + value for value in sorted(set(request.get('formats', [])) - available)]
+    if request.get('delivery_required') and not artifacts:
+        problems.append('delivery_artifact_required')
+    if request.get('pages') is not None and any(item.verification.get('pages') != request['pages']
+            for item in artifacts if item.format in ('docx', 'pdf', 'pptx')):
+        problems.append('page_count_mismatch')
+    return problems
 
 
 def allowed_tools(request, configured, *, base=False, source=False, narrative=False):
@@ -61,6 +121,7 @@ def allowed_tools(request, configured, *, base=False, source=False, narrative=Fa
             {'build_excel'} if source else {'create_mock_excel'} if request['allow_mock'] else set())
     if formats != {'xlsx'}:
         allowed.add('research_sources')
+    allowed.add('read_file')  # Only if already configured; server restricts documental reads to skills.
     return [name for name in configured if name in allowed]
 
 

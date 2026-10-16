@@ -1,3 +1,90 @@
+/* P1 skill library shares the chat tokens and native controls. */
+.rg-skills-page { overflow: auto !important; }
+.rg-skills-nav { display:flex; align-items:center; gap:24px; padding:20px 32px; border-bottom:1px solid var(--rg-border); }
+.rg-skills-nav a { color:var(--rg-text-2); text-decoration:none; min-height:44px; display:inline-flex; align-items:center; }
+.rg-skills-nav a:first-child { font-size:22px; font-weight:650; margin-right:20px; color:var(--rg-accent); }
+.rg-skills-nav [aria-current] { color:var(--rg-accent); border-bottom:2px solid var(--rg-accent); }
+.rg-skills-main { max-width:1184px; margin:0 auto; padding:40px 32px 64px; }
+.rg-skills-heading { display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:32px; }
+.rg-skills-heading h1 { font-size:32px; line-height:1.2; font-weight:600; margin:0 0 12px; color:var(--rg-text); }
+.rg-skills-heading p { color:var(--rg-text-2); margin:0 0 8px; max-width:46rem; font-size:16px; line-height:1.55; }
+.rg-skills-filters { display:flex; align-items:end; gap:16px; margin-bottom:24px; }
+.rg-skills-filters label,.rg-skill-dialog label { display:flex; flex-direction:column; gap:8px; color:var(--rg-text-2); font-size:13px; }
+.rg-skills-filters input,.rg-skills-filters select,.rg-skill-dialog input,.rg-skill-dialog select,.rg-skill-picker input:not([type=checkbox]) { border:1px solid var(--rg-border-strong); border-radius:8px; padding:10px 12px; min-height:44px; background:var(--rg-bg); color:var(--rg-text); font:inherit; width:100%; }
+.rg-skill-search { flex:1; }
+.rg-skills-tabs { display:flex; gap:24px; border-bottom:1px solid var(--rg-border); margin-bottom:24px; }
+.rg-skills-tabs button { background:none; color:var(--rg-muted); border:0; border-bottom:2px solid transparent; padding:12px 0; min-height:44px; font:inherit; cursor:pointer; }
+.rg-skills-tabs [aria-selected=true] { border-color:var(--rg-accent); color:var(--rg-accent); font-weight:600; }
+.rg-skills-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.rg-skill-card { padding:24px; border:0; border-radius:12px; display:flex; align-items:flex-start; flex-direction:column; gap:12px; background:var(--rg-surface); min-width:0; }
+.rg-skill-card h2 { font-size:19px; font-weight:600; line-height:1.35; margin:0; overflow-wrap:anywhere; }
+.rg-skill-card p { margin:0; color:var(--rg-text-2); line-height:1.5; }
+.rg-skill-card-summary { flex:1; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; overflow-wrap:anywhere; }
+.rg-skill-card small { color:var(--rg-subtle); }
+.rg-skill-badge { border-radius:6px; font-size:12px; padding:4px 8px; background:var(--rg-surface-2); color:var(--rg-text-2); }
+.rg-skill-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.rg-skill-management { margin-top:12px; gap:8px; }
+.rg-skill-management:empty { display:none; }
+.rg-skill-actions details { max-width:100%; }
+.rg-skill-actions summary { cursor:pointer; padding:10px 0; }
+.rg-skill-actions details .rg-skill-actions { margin:8px 0; }
+.rg-skills-page .rg-btn { min-height:44px; text-decoration:none; justify-content:center; }
+.rg-skills-page .rg-btn.rg-primary { background:var(--rg-accent); color:#fff !important; border-color:var(--rg-accent); }
+.rg-skills-empty { text-align:center; background:var(--rg-surface); border:1px dashed var(--rg-border-strong); border-radius:12px; padding:48px 24px; }
+.rg-skill-detail { max-width:900px; }
+.rg-skill-detail .rg-skills-heading { margin-bottom:20px; }
+.rg-skill-detail .rg-skill-summary { font-size:18px; }
+.rg-skill-detail .rg-skill-byline { font-size:14px; color:var(--rg-muted); }
+.rg-skill-revision-notice { padding:16px; background:var(--rg-warning-soft); border-radius:8px; }
+.rg-skill-back { display:inline-block; margin-bottom:32px; color:var(--rg-accent); }
+.rg-skill-detail section { margin:32px 0; }
+.rg-skill-detail h2 { font-size:20px; margin-bottom:16px; color:var(--rg-text); }
+.rg-skill-detail li { margin:8px 0; }
+.rg-skill-detail details { border-top:1px solid var(--rg-border); padding:20px 0; }
+.rg-skill-detail summary { cursor:pointer; font-weight:600; min-height:44px; align-content:center; }
+.rg-skill-detail pre { white-space:pre-wrap; overflow-wrap:anywhere; font:13px/1.6 var(--rg-mono); background:var(--rg-surface); padding:16px; border-radius:8px; }
+.rg-skill-detail details p,.rg-skill-hash { overflow-wrap:anywhere; }
+.rg-skill-files { list-style:none; padding:0; }
+.rg-skill-files li { display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--rg-border); padding:8px 0; overflow-wrap:anywhere; }
+.rg-skill-files small { flex-shrink:0; color:var(--rg-muted); }
+.rg-skill-dialog { margin:auto; width:min(620px,calc(100vw - 32px)); max-height:90dvh; overflow:auto; padding:28px; border:1px solid var(--rg-border-strong); border-radius:12px; color:var(--rg-text); background:var(--rg-bg); box-shadow:var(--rg-shadow-lg); }
+.rg-skill-dialog::backdrop { background:rgba(16,24,40,.45); }
+.rg-skill-dialog header { display:flex; align-items:start; justify-content:space-between; gap:16px; }
+.rg-skill-dialog h2 { font-size:24px; }
+.rg-skill-dialog label { margin:20px 0; }
+.rg-skill-dialog footer { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; margin-top:24px; }
+.rg-skill-review { background:var(--rg-surface); border:1px solid var(--rg-border); padding:16px; border-radius:8px; overflow-wrap:anywhere; }
+.rg-skill-composer { position:relative; margin:0; }
+.rg-skill-chips { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:0 0 8px; }
+.rg-skill-chips:empty { display:none; }
+.rg-box-bar .rg-skill-shortcut { width:44px; height:44px; font-size:18px; font-weight:500; }
+.rg-skill-preferences { margin:8px 0; font-size:13px; color:var(--rg-muted); }
+.rg-skill-preferences summary { cursor:pointer; min-height:44px; align-content:center; }
+.rg-skill-preferences label { display:flex; gap:8px; align-items:center; cursor:pointer; min-height:44px; }
+.rg-skill-preferences input[type=checkbox] { width:16px; height:16px; flex:0 0 16px; }
+.rg-skill-help { margin:6px 0 0; color:var(--rg-muted); font-size:12.5px; line-height:1.45; }
+.rg-skill-help:empty { display:none; }
+.rg-skill-activations { display:flex; flex-wrap:wrap; gap:6px 12px; }
+.rg-skill-activations:empty { display:none; }
+.rg-skill-activation { color:var(--rg-muted); font-size:12.5px; line-height:1.5; overflow-wrap:anywhere; }
+.rg-skill-chip { border:1px solid var(--rg-border-strong); border-radius:20px; background:var(--rg-accent-soft); color:var(--rg-accent-strong); padding:6px 12px; min-height:44px; max-width:100%; overflow-wrap:anywhere; text-align:left; font:inherit; font-size:13px; cursor:pointer; }
+.rg-skill-picker { position:absolute; z-index:40; left:0; bottom:calc(100% + 8px); width:min(420px,100%); max-height:min(480px,65dvh); overflow:auto; padding:16px; background:var(--rg-bg); border:1px solid var(--rg-border-strong); border-radius:12px; box-shadow:var(--rg-shadow-lg); }
+.rg-skill-picker header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+.rg-skill-picker h2 { margin:0; font-size:16px; line-height:1.35; }
+.rg-skill-picker header .rg-btn { min-height:44px; }
+.rg-skill-picker [role=listbox] { max-height:220px; overflow:auto; margin:8px 0; }
+.rg-skill-picker p { margin:8px 0; font-size:13px; line-height:1.4; }
+.rg-skill-picker>a { display:inline-flex; align-items:center; min-height:44px; font-size:14px; }
+.rg-skill-picker [role=option] { padding:12px 8px; min-height:44px; border-radius:6px; cursor:pointer; }
+.rg-skill-option strong { display:block; font-size:14px; font-weight:600; overflow-wrap:anywhere; }
+.rg-skill-option span { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:12px; line-height:1.5; margin-top:3px; }
+.rg-skill-picker [role=option].is-active,.rg-skill-picker [aria-selected=true] { background:var(--rg-accent-soft); color:var(--rg-accent-strong); }
+.rg-skill-picker [aria-disabled=true] { color:var(--rg-subtle); cursor:default; }
+.rg-skills-page :focus-visible,.rg-skill-composer :focus-visible { outline:2px solid var(--rg-accent); outline-offset:3px; }
+#skillStatus:not(:empty),#skillImportStatus:not(:empty) { padding:12px 0; color:var(--rg-text-2); }
+@media(max-width:1000px) { .rg-skills-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .rg-skills-main { padding:24px 16px 40px; } .rg-skills-nav { padding:12px 16px; gap:20px; } .rg-skills-nav a:first-child { margin-right:auto; } .rg-skills-heading { align-items:start; flex-direction:column; gap:12px; margin-bottom:24px; } .rg-skills-heading h1 { font-size:28px; } .rg-skills-grid { grid-template-columns:1fr; gap:16px; } .rg-skills-filters { flex-wrap:wrap; gap:12px; } .rg-skill-search { flex-basis:100%; } .rg-skills-filters label:not(.rg-skill-search) { flex:1; min-width:0; } .rg-skill-card { padding:20px; } .rg-skill-dialog { padding:20px; } .rg-skill-detail .rg-skill-summary { font-size:16px; } .rg-skill-picker { position:fixed; left:12px; right:12px; bottom:12px; width:auto; max-height:75dvh; } }
+
 /* regulAI chat and agent workspace.
  * One token set, native CSS only. Motion explains state changes (new block,
  * active step, drawer) and is removed under prefers-reduced-motion. */
@@ -496,6 +583,9 @@
 
 /* ------------------------------------------------------------ composer */
 .rg-composer { width: 100%; max-width: calc(var(--rg-read) + 48px); margin: 0 auto; padding: 0 24px 16px; }
+.rg-composer #inferenceProfile {
+  color: var(--rg-text); background: var(--rg-bg); border: 1px solid var(--rg-border-strong);
+}
 .rg-mode {
   display: inline-flex; gap: 2px; margin: 0 0 10px; padding: 3px; border-radius: 11px; background: var(--rg-surface-2);
 }

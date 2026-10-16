@@ -15,7 +15,7 @@ from front.policy import digest
 from .general_tools import operation, store_result
 from .public_web import WebError, fetch
 from .service import AgentDenied, _government, _totals
-from .capabilities import limits
+from .capabilities import execution_limits, call_timeout
 
 
 def specifications(ecosystem, values):
@@ -106,7 +106,7 @@ def execute(token, attempt, payload):
         raise AgentDenied('packages_disabled')
     if run.job.get('network_sealed'):
         raise AgentDenied('private_computation_network_sealed')
-    budget = limits(context[2])
+    budget = execution_limits(run, context[2])
     path = 'packages/' + digest(call.id)
     prior = AgentInput.objects.filter(execution=run, path=path).first()
     if prior:
@@ -134,7 +134,7 @@ def execute(token, attempt, payload):
         record.update(cost='0', cost_kind='no_api_charge', cost_scope='public_registry_http_only')
         try:
             result = fetch(url, max_bytes=min(2000000 if metadata else budget['file_bytes'], budget['file_bytes'] - used),
-                timeout=budget['web_seconds'], authorize=authorized)
+                timeout=call_timeout(run, context[2], budget['web_seconds']), authorize=authorized)
             government.complete_call(record, started, None)
         except Exception:
             record.update(status='failed', completed_at=timezone.now().isoformat(),

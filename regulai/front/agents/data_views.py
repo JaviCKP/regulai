@@ -18,10 +18,14 @@ def authorize_tool(token, attempt, payload):
     execution, context = authenticate(token, attempt)
     if call.name not in context[2].tools:
         raise AgentDenied('tool_not_allowed')
+    if call.name == 'install_packages' and (execution.job.get('skills') or {}).get('catalog'):
+        raise AgentDenied('skill_package_install_not_authorized')
     validate_arguments(call)
     if context[2].professional:
-        from .capabilities import limits
-        budget = limits(context[2])
+        from .capabilities import execution_limits, remaining_seconds
+        budget = execution_limits(execution, context[2])
+        if remaining_seconds(execution, context[2]) <= 0:
+            raise AgentDenied('execution_deadline')
         if call.name == 'execute' and not 1 <= call.args.get('timeout', budget['command_seconds']) <= budget['command_seconds']:
             raise AgentDenied('command_timeout_limit')
         if len(json.dumps(call.args, ensure_ascii=False).encode()) > 250000:
@@ -129,10 +133,17 @@ def authorize_tool(token, attempt, payload):
     for key in ('input_path', 'file_path', 'path'):
         if key not in call.args:
             continue
+        if call.args[key] == '/skills' or call.args[key].startswith('/skills/'):
+            from .skill_context import authorize_path
+            authorize_path(execution, call)
+            continue
+        if (call.name == 'read_file' and not context[2].professional
+                and execution.prompt.conversation and execution.prompt.conversation.mode == 'agent'):
+            raise AgentDenied('tool_path_denied')
         path = PurePosixPath(call.args[key])
         if not path.is_absolute() or '..' in path.parts or not (str(path) + '/').startswith('/workspace/') or '\\' in call.args[key]:
             raise AgentDenied('tool_path_denied')
-        if call.name in ('write_file', 'edit_file', 'web_download') and not str(path).startswith(('/workspace/work/', '/workspace/output/')):
+        if call.name in ('write_file', 'edit_file', 'replace_file', 'web_download') and not str(path).startswith(('/workspace/work/', '/workspace/output/')):
             raise AgentDenied('tool_path_denied')
     return execution, context, call
 
@@ -203,6 +214,10 @@ def _csv_view(execution, agent, call, raw):
 def tool_result(token, attempt, payload):
     request = ToolResultRequest.model_validate(payload)
     execution, context, call = authorize_tool(token, attempt, request.call.model_dump())
+    path = call.args.get('file_path', call.args.get('path', ''))
+    if path == '/skills' or path.startswith('/skills/'):
+        from .skill_context import finish_tool
+        return finish_tool(execution, context, call, request)
     fingerprint = digest(request.model_dump())
     previous = AgentToolResult.objects.filter(execution=execution, call_id=call.id).first()
     if previous:

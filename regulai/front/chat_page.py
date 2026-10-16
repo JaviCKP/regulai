@@ -111,6 +111,9 @@ def conversation_groups(conversations, now=None):
 def notice(prompt):
     """Outcome a person can act on; None when the answer speaks for itself."""
     from .chat_service import request_result
+    if prompt is not None and prompt.status == 'completed' and prompt.decision.get('history_selection', {}).get('omitted'):
+        return {'kind': 'context', 'title': 'Contexto anterior limitado',
+                'text': 'Algunos mensajes anteriores no están en el contexto autorizado. Puedes reenviar el fragmento necesario.'}
     if prompt is None or prompt.status in ('completed', 'legacy'):
         return None
     data = request_result(prompt).data

@@ -6,6 +6,7 @@ from django.db import transaction
 from front.models import AgentAccessGrant, AgentModelProfile, Profile
 from front.agents.capabilities import GENERAL, limits, search_configuration
 from front.agents.service import AgentDenied
+from front.agents.inference_options import configuration, resolve_inference
 
 
 class Command(BaseCommand):
@@ -34,9 +35,17 @@ class Command(BaseCommand):
             if options['limits_file']:
                 profile.limits = json.loads(options['limits_file'].read_text(encoding='utf-8'))
             budget = limits(profile)
+            inference = configuration(profile)
             enabled = not options['disable']
+            if enabled and set(inference.profiles) - {'legacy'}:
+                from front.policy import AIConfig
+                cfg = AIConfig.model_validate(account.company.ai_config)
+                for selection in inference.profiles:
+                    resolve_inference(profile, profile.model, cfg, selection)
             summary = {'apply': options['apply'], 'user_id': account.user_id, 'company_id': profile.company_id,
                 'profile_id': profile.pk, 'enabled': enabled, 'tools': sorted(GENERAL), 'limits': budget,
+                'inference_profiles': inference.profiles, 'inference': inference.model_dump(),
+                'work_profiles': profile.limits.get('work_profiles', False),
                 'search_configured': bool(profile.search_config), 'requires_global_flags_and_destination_policy': True}
             if options['apply']:
                 with transaction.atomic():

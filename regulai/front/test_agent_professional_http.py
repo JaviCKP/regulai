@@ -33,10 +33,12 @@ class ProfessionalHTTPTests(AgentFixture, LiveServerTestCase):
             'prompt': 'Investiga y crea un informe de consultoría en español de cinco páginas sobre computación cuántica y ciberseguridad en Word y PDF. Incluye además un Excel y un gráfico del dataset público de la prueba; etiqueta sus datos como controlados.'})
         self.assertEqual(response.status_code, 202, response.content)
         run = AgentExecution.objects.get(pk=response.json()['agent']['id'])
-        claim = jobs.claim('task56-loopback-worker-credential-for-tests-only', {'worker_id': str(uuid.uuid4()), 'claim_id': str(uuid.uuid4())})
+        worker_id = str(uuid.uuid4())
+        claim = jobs.claim('task56-loopback-worker-credential-for-tests-only', {'worker_id': worker_id,
+            'claim_id': str(uuid.uuid4()), 'worker_protocol': 2})
         self.assertEqual(claim['execution'], str(run.pk))
         self.assertEqual(jobs.claim('task56-loopback-worker-credential-for-tests-only',
-            {'worker_id': str(uuid.uuid4()), 'claim_id': str(uuid.uuid4())})['status'], 'idle')
+            {'worker_id': str(uuid.uuid4()), 'claim_id': str(uuid.uuid4()), 'worker_protocol': 2})['status'], 'idle')
         program = (root / 'ops/agent_chat/professional_fixture.py').read_text(encoding='utf-8')
         calls = [
             ('web_search', {'query': 'quantum security primary guidance dataset'}),
@@ -63,15 +65,21 @@ class ProfessionalHTTPTests(AgentFixture, LiveServerTestCase):
                 patch('front.agents.web_tools.search', side_effect=lambda *args, **kwargs: search(*args, **kwargs, transport=httpx.MockTransport(web))):
             python = root / 'ops/agent_probe/.venv/Scripts/python.exe'
             result = subprocess.run(['rtk', 'proxy', str(python), str(root / 'ops/agent_chat/verify_professional_http.py')],
-                input=json.dumps({'endpoint': self.live_server_url + '/internal/agents/', 'token': claim['token'], 'attempt': claim['attempt']}),
+                input=json.dumps({'endpoint': self.live_server_url + '/internal/agents/', 'token': claim['token'],
+                    'attempt': claim['attempt'], 'execution': claim['execution'], 'worker_id': worker_id,
+                    'worker_token': 'task56-loopback-worker-credential-for-tests-only'}),
                 text=True, encoding='utf-8', capture_output=True, timeout=240, cwd=root)
         from front.models import AgentInference
         diagnostic = [{'status': item.status, 'code': item.response.get('code')} for item in AgentInference.objects.filter(execution=run)]
         self.assertEqual(result.returncode, 0, result.stderr[-1500:] + json.dumps(diagnostic))
         run.refresh_from_db()
         self.assertEqual(run.status, 'completed')
-        self.assertEqual(run.artifacts.count(), 3)
-        doc = run.artifacts.get(format='docx')
+        worker_result = json.loads(result.stdout.strip().splitlines()[-1])
+        self.assertEqual(worker_result['sandbox_allocations'], 1)
+        delivered = run.artifacts.filter(status='verified', verification__purpose='deliverable')
+        self.assertEqual(delivered.count(), 3)
+        doc = delivered.get(format='docx')
+        self.assertEqual(run.job['sandbox_reservation']['state'], 'released')
         self.assertEqual(doc.verification['pages'], 5)
         for suffix in ('download/', 'download/?format=pdf', 'pages/5/'):
             downloaded = self.client.get('/chat/agent/artifacts/' + str(doc.pk) + '/' + suffix)
@@ -82,9 +90,11 @@ class ProfessionalHTTPTests(AgentFixture, LiveServerTestCase):
         self.assertEqual(len({row.call_id for row in run.agentinference_set.all()}), len(calls) + 1)
         state = self.client.get('/chat/agent/runs/' + str(run.pk) + '/').json()
         self.assertTrue(state['sources'][0]['opened'])
-        evidence = root / 'evals/reports/task56-professional-20261014'
+        evidence = root / 'output/p0-e1-e8-20261016/namespace'
+        evidence.mkdir(parents=True, exist_ok=True)
         (evidence / 'http-sdk-namespace.json').write_text(json.dumps({'status': run.status, 'http_entry': '/chat/send/',
             'provider': 'HTTP MockTransport; no live model or paid search', 'sandbox': 'actual Linux namespace; E2B transport substitute',
+            'worker_protocol': 2, 'sandbox_allocations': worker_result['sandbox_allocations'],
             'inferences': len(self.requests), 'operations': run.operations.count(), 'formats': ['docx', 'pdf', 'xlsx', 'png'],
             'pages': 5, 'sources': len(state['sources']), 'docx_sha256': doc.sha256,
             'pdf_sha256': doc.verification['pdf_sha256']}, indent=2))

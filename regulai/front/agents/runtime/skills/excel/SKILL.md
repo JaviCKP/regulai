@@ -1,8 +1,13 @@
+---
+name: excel
+description: Crear hojas XLSX verificadas desde item y amount_cents y editar su título conservando filas y fórmulas.
+---
+
 # Excel del laboratorio Regulay
 
 Instrucciones originales de Regulay. No son un prompt de Claude/Cowork ni una copia
 de las cuatro alternativas documentales investigadas. Las bibliotecas conservan
-sus licencias en la imagen. Consulta ../../NOTICE.md.
+sus licencias en la imagen. Consulta NOTICE.md y LICENSE.txt.
 
 Solo se admiten entradas sintéticas CSV UTF-8 o XLSX de una hoja de valores, con
 columnas item y amount_cents, importes enteros en céntimos, de 3 a 1000 filas (el

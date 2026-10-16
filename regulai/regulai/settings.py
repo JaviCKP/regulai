@@ -158,7 +158,14 @@ LOGOUT_REDIRECT_URL = 'front:login'
 
 # Registration
 ALLOW_REGISTRATION = False  # Enable explicitly to allow public registration.
-REGULAY_AGENT_ENABLED = False  # Account grants are explicit; disabled by default.
+REGULAY_AGENT_ENABLED = True  # Existing account grants remain mandatory.
+# Enabled after P1 acceptance; account grants and runtime requirements still apply.
+REGULAY_SKILLS_CATALOG = True
+REGULAY_SKILLS_RUNTIME = True
+REGULAY_AGENT_TEXT_STREAM = True
+REGULAY_ARTIFACT_PREVIEW = True
+# Capabilities must come from a verified isolated runtime, never from a package.
+REGULAY_SKILL_RUNTIME_CAPABILITIES = {}
 REGULAY_AGENT_WEB_ENABLED = False
 REGULAY_AGENT_PACKAGES_ENABLED = False
 REGULAY_AGENT_BROWSER_ENABLED = False

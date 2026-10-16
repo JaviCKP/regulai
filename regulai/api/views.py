@@ -343,11 +343,12 @@ def chat_send_message(request):
     from front.chat_service import send_chat_message
     command = {key: request.data.get(key) for key in (
         'content', 'conversation_id', 'engine_id', 'model_id', 'request_id', 'consent_token', 'action',
-        'mode', 'artifact_id', 'base_revision', 'document_reference', 'export_name')}
+        'mode', 'artifact_id', 'base_revision', 'document_reference', 'export_name', 'inference_profile', 'skills')}
     command['content'] = command['content'] or ''
     command['file'] = request.FILES.get('file')
     result = send_chat_message(request.user, command)
-    return Response(result.data, status=result.http_status)
+    return Response(result.data, status=result.http_status,
+        headers={'Retry-After': '5'} if result.http_status == 429 else None)
 
 
 @api_view(['GET'])

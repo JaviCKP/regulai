@@ -143,11 +143,92 @@ class AgentEvent(models.Model):
     execution = models.ForeignKey(AgentExecution, on_delete=models.CASCADE, related_name='events')
     kind = models.CharField(max_length=32)
     data = models.JSONField(default=dict)
+    event_key = models.CharField(max_length=200, null=True, blank=True)
+    public_text = EncryptedTextField(default='', blank=True, null=True)
+    attempt_id = models.UUIDField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'front'
         ordering = ['id']
+        constraints = [models.UniqueConstraint(fields=['execution', 'event_key'],
+            condition=models.Q(event_key__isnull=False), name='agent_event_once')]
+
+
+class AgentSkillInstallation(models.Model):
+    """Account-owned pointer. Revocation changes authorization, update does not."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey('front.Company', on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    source_identity = models.CharField(max_length=512)
+    alias = models.CharField(max_length=64)
+    enabled = models.BooleanField(default=False)
+    current_revision = models.ForeignKey('AgentSkillRevision', null=True, on_delete=models.RESTRICT, related_name='+')
+    previous_revision = models.ForeignKey('AgentSkillRevision', null=True, on_delete=models.RESTRICT, related_name='+')
+    authorization_version = models.PositiveIntegerField(default=1)
+    tombstoned_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'front'
+        constraints = [
+            models.UniqueConstraint(fields=['company', 'owner', 'source_identity'], name='agent_skill_source'),
+            models.UniqueConstraint(fields=['company', 'owner', 'alias'],
+                condition=models.Q(tombstoned_at__isnull=True), name='agent_skill_alias')]
+
+
+class AgentSkillRevision(models.Model):
+    """Immutable private package, including every resource and its attribution."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    installation = models.ForeignKey(AgentSkillInstallation, on_delete=models.CASCADE, related_name='revisions')
+    origin = models.CharField(max_length=2048)
+    resolved_commit = models.CharField(max_length=64, blank=True)
+    folder_sha256 = models.CharField(max_length=64)
+    upstream_sha256 = models.CharField(max_length=64, blank=True)
+    manifest = models.JSONField(default=list)
+    metadata = models.JSONField(default=dict)
+    license = models.TextField()
+    attribution = models.TextField(blank=True)
+    compatibility = models.JSONField(default=dict)
+    bundle = EncryptedTextField()
+    adaptation_version = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'front'
+        constraints = [models.UniqueConstraint(fields=['installation', 'folder_sha256', 'adaptation_version'],
+            name='agent_skill_revision')]
+
+    def save(self, *args, **kwargs):
+        if not self._state.adding:
+            raise ValueError('skill_revision_immutable')
+        return super().save(*args, **kwargs)
+
+
+class AgentSkillInstallOperation(models.Model):
+    """Durable intent and fenced promotion; no Prompt or provider is involved."""
+    id = models.UUIDField(primary_key=True, editable=False)
+    company = models.ForeignKey('front.Company', on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    action = models.CharField(max_length=16)
+    payload_digest = models.CharField(max_length=64)
+    authorization_digest = models.CharField(max_length=64)
+    state = models.CharField(max_length=16, default='validating')
+    phase = models.CharField(max_length=32, default='validating')
+    claim = models.UUIDField(default=uuid.uuid4)
+    version = models.PositiveIntegerField(default=1)
+    lease_expires_at = models.DateTimeField()
+    result_revision = models.ForeignKey(AgentSkillRevision, null=True, on_delete=models.RESTRICT)
+    error_code = models.CharField(max_length=80, blank=True)
+    bytes_received = models.PositiveBigIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'front'
+        constraints = [models.CheckConstraint(condition=models.Q(state__in=[
+            'downloading', 'validating', 'installed', 'failed']), name='agent_skill_install_state')]
 
 
 class AgentArtifact(models.Model):
@@ -163,6 +244,8 @@ class AgentArtifact(models.Model):
     content = EncryptedTextField()
     sha256 = models.CharField(max_length=64)
     format = models.CharField(max_length=8, default='xlsx')
+    filename = EncryptedTextField(default='', blank=True)
+    size_bytes = models.PositiveBigIntegerField(null=True)
     # Private document, rendered PDF and PNGs. Never model/tool-result content.
     render_bundle = EncryptedTextField(default='')
     verification = models.JSONField(default=dict)

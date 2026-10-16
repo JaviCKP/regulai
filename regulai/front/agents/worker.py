@@ -1,8 +1,11 @@
 """Separate pinned-SDK executor. No Django, database, aliases or provider keys."""
 import argparse
+import asyncio
 import base64
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 import hashlib
 import json
+import os
 from pathlib import Path
 import shlex
 import signal
@@ -19,37 +22,84 @@ from .adapter import InternalClient, InternalOperationError, build_agent
 from .sandbox_pool import CleanPool, create_clean
 
 
-def runtime_prompt(tools=()):
+def runtime_prompt(tools=(), *, skills=False):
     root = Path(__file__).with_name('runtime')
     names = ['system.md', 'documents.md', 'design.md']
-    if any(name in tools for name in ('create_mock_excel', 'build_excel', 'rename_excel')):
+    if not skills and any(name in tools for name in ('create_mock_excel', 'build_excel', 'rename_excel')):
         names += ['skills/excel/SKILL.md']
-    if any(name in tools for name in ('build_document', 'edit_document', 'export_pdf')):
+    if not skills and any(name in tools for name in ('build_document', 'edit_document', 'export_pdf')):
         names += ['skills/docx/SKILL.md', 'skills/pdf/SKILL.md']
-    if any(name in tools for name in ('build_presentation', 'edit_presentation')):
+    if not skills and any(name in tools for name in ('build_presentation', 'edit_presentation')):
         names += ['skills/pptx/SKILL.md']
     return '\n\n'.join((root / name).read_text(encoding='utf-8') for name in names)
 
 
+class DocumentBackend(E2BSandbox):
+    """No implicit SDK allocation; only the authorized document preparation attaches a VM."""
+    def execute(self, command, *, timeout=None):
+        if self._sandbox is None:
+            raise InternalOperationError('Document runtime requires an authorized tool')
+        return super().execute(command, timeout=timeout)
+
+    def upload_files(self, files):
+        if self._sandbox is None:
+            raise InternalOperationError('Document runtime requires an authorized tool')
+        return super().upload_files(files)
+
+    def download_files(self, paths):
+        if self._sandbox is None:
+            raise InternalOperationError('Document runtime requires an authorized tool')
+        return super().download_files(paths)
+
+    async def aexecute(self, command, *, timeout=None):
+        return await asyncio.to_thread(self.execute, command, timeout=timeout)
+
+    async def aupload_files(self, files):
+        return await asyncio.to_thread(self.upload_files, files)
+
+    async def adownload_files(self, paths):
+        return await asyncio.to_thread(self.download_files, paths)
+
+
 class Lease:
-    def __init__(self, internal, sandbox):
+    def __init__(self, internal, sandbox=None):
         self.internal, self.sandbox = internal, sandbox
         self.stop, self.lost = threading.Event(), threading.Event()
+        self.lock = threading.Lock()
+        self.on_renew, self.on_cancel, self.on_prepared = None, None, None
         self.thread = threading.Thread(target=self._renew, daemon=True)
+
+    def attach(self, sandbox, *, on_renew=None, on_cancel=None, on_prepared=None):
+        with self.lock:
+            self.check()
+            if self.sandbox is not None and self.sandbox is not sandbox:
+                raise InternalOperationError('Execution already has a sandbox')
+            self.sandbox = sandbox
+            self.on_renew = on_renew or self.on_renew
+            self.on_cancel = on_cancel or self.on_cancel
+            self.on_prepared = on_prepared or self.on_prepared
+
+    def cancel(self):
+        self.lost.set()
+        self.stop.set()
+        if self.on_cancel:
+            self.on_cancel()
+        elif self.sandbox is not None:
+            try:
+                self.sandbox.kill()
+            except Exception:
+                pass  # No destruction claim: the server retains occupancy.
 
     def _renew(self):
         while not self.stop.wait(15):
             try:
                 self.internal.operation('run/renew', {})
-                self.sandbox.set_timeout(180)
+                if self.sandbox is not None:
+                    self.sandbox.set_timeout(180)
+                    if self.on_renew:
+                        self.on_renew()
             except Exception:
-                self.lost.set()
-                # Cancellation/revocation stops the active command, not merely
-                # the next tool. TTL remains the fallback for a transport loss.
-                try:
-                    self.sandbox.kill()
-                except Exception:
-                    pass
+                self.cancel()
                 return
 
     def check(self):
@@ -62,31 +112,65 @@ class Lease:
 
     def __exit__(self, *args):
         self.stop.set()
-        self.thread.join(timeout=20)
+        self.thread.join(timeout=1)
 
 
-def run_job(internal, sandbox):
+def run_job(internal, sandbox=None, *, acquire=None, started=None):
     with Lease(internal, sandbox) as lease:
+        if started:
+            started(lease)
         granted = internal.operation('run/bootstrap', {})
+        internal.configure(granted)
         if granted['model_context']['operation'] == 'professional':
             from .professional_worker import run_professional
-            return run_professional(internal, sandbox, lease, granted)
+            return run_professional(internal, sandbox, lease, granted, acquire=acquire)
         if granted['model_context']['operation'] == 'export':
+            if sandbox is None:
+                if acquire is None:
+                    raise InternalOperationError('Sandbox acquisition unavailable')
+                sandbox = acquire(lease)
+                lease.attach(sandbox)
             return run_export(internal, sandbox, lease, granted)
-        if granted['input']:
-            data = base64.b64decode(granted['input']['base64'], validate=True)
-            if hashlib.sha256(data).hexdigest() != granted['input']['sha256']:
-                raise InternalOperationError('Input digest changed')
-            # This administrative grant is outside the model and graph state.
-            sandbox.files.write(granted['input']['path'], data, user='root')
-        if granted['base']:
-            sandbox.files.write('/workspace/input/base.' + granted.get('base_format', 'xlsx'), base64.b64decode(granted['base']), user='root')
-        if granted.get('base_docx'):
-            sandbox.files.write('/workspace/input/document.docx', base64.b64decode(granted['base_docx']), user='root')
-        sandbox.commands.run(('chmod 0444 /workspace/input/* && ' if granted['input'] else '') + 'chmod 0555 /workspace/input && '
-            'mount --bind /workspace/input /workspace/input && mount -o remount,bind,ro /workspace/input',
-            user='root', timeout=10)
-        backend = E2BSandbox(sandbox=sandbox, workdir='/workspace/work', timeout=90)
+        backend = DocumentBackend(sandbox=None, workdir='/workspace/work', timeout=90)
+        prepared, preparation_failed = False, False
+        preparation_lock = threading.Lock()
+
+        def ensure_document_runtime(call, grant):
+            nonlocal sandbox, prepared, preparation_failed
+            if call['name'] not in {'create_mock_excel', 'build_excel', 'rename_excel', 'build_document',
+                    'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation', 'save_revision'}:
+                return
+            with preparation_lock:
+                lease.check()
+                if prepared:
+                    return
+                if preparation_failed:
+                    raise InternalOperationError('Document preparation outcome uncertain')
+                try:
+                    if sandbox is None:
+                        if acquire is None:
+                            raise InternalOperationError('Sandbox acquisition unavailable')
+                        sandbox = acquire(lease)
+                        lease.attach(sandbox)
+                    if granted['input']:
+                        data = base64.b64decode(granted['input']['base64'], validate=True)
+                        if hashlib.sha256(data).hexdigest() != granted['input']['sha256']:
+                            raise InternalOperationError('Input digest changed')
+                        sandbox.files.write(granted['input']['path'], data, user='root')
+                    if granted['base']:
+                        sandbox.files.write('/workspace/input/base.' + granted.get('base_format', 'xlsx'), base64.b64decode(granted['base']), user='root')
+                    if granted.get('base_docx'):
+                        sandbox.files.write('/workspace/input/document.docx', base64.b64decode(granted['base_docx']), user='root')
+                    sandbox.commands.run(('chmod 0444 /workspace/input/* && ' if granted['input'] else '') + 'chmod 0555 /workspace/input && '
+                        'mount --bind /workspace/input /workspace/input && mount -o remount,bind,ro /workspace/input',
+                        user='root', timeout=10)
+                    lease.check()
+                    internal.operation('run/renew', {})
+                    backend._sandbox = sandbox
+                    prepared = True
+                except BaseException:
+                    preparation_failed = True
+                    raise
         tool_lock = threading.Lock()
 
         def operate(name, args, runtime):
@@ -249,10 +333,11 @@ def run_job(internal, sandbox):
                     tool_call_id=runtime.tool_call_id, name='research_sources')
 
         graph = build_agent(backend, internal, tools=[research_sources, create_mock_excel, build_excel, rename_excel, build_document, edit_document, export_pdf, build_presentation, edit_presentation],
-            model_profile={'max_input_tokens': 200000, 'max_output_tokens': 8000},
-            allowed_tools=granted['tools'], system_prompt=runtime_prompt(granted['tools']))
+            model_profile=granted.get('model_profile'),
+            allowed_tools=granted['tools'], system_prompt=runtime_prompt(granted['tools'], skills=bool(granted.get('skills'))),
+            prepare_tool=ensure_document_runtime)
         result = graph.invoke({'messages': [HumanMessage(content=granted['message']),
-            HumanMessage(content='Referencias autorizadas del servidor: ' + json.dumps(granted['model_context']))]},
+            HumanMessage(content=json.dumps(granted['model_context']), additional_kwargs={'regulay_context': 'bootstrap'})]},
             config={'recursion_limit': 12})
         lease.check()
         while internal.operation('run/review-status', {})['pending']:
@@ -285,7 +370,7 @@ def run_export(internal, sandbox, lease, granted):
         graph = build_agent(E2BSandbox(sandbox=sandbox, workdir='/workspace/work'), internal,
             tools=[save_revision], allowed_tools=['save_revision'], checkpointer=checkpointer,
             interrupt_on={'save_revision': {'allowed_decisions': ['approve', 'reject']}},
-            model_profile={'max_input_tokens': 200000, 'max_output_tokens': 8000},
+            model_profile=granted.get('model_profile'),
             system_prompt='Use save_revision exactly once with the authorized references. Never change content or destination.')
         config = {'configurable': {'thread_id': granted['execution']}, 'recursion_limit': 8}
         snapshot = graph.get_state(config)
@@ -337,80 +422,188 @@ def prune_checkpoints(client, endpoint, token):
             saver.delete_thread(thread_id)
 
 
-def run(config, *, once=False):
+class WorkerResource:
+    """Per-execution resource identity; cleanup uses only the worker credential."""
+    def __init__(self, internal, pool, endpoint, worker_token, worker_id, claimed):
+        self.internal, self.pool, self.endpoint = internal, pool, endpoint
+        self.worker_token, self.worker_id, self.claimed = worker_token, worker_id, claimed
+        self.reservation_id = str(uuid.uuid4())
+        self.sandbox, self.lease = None, None
+        self.destroyed = False
+        self.lock = threading.RLock()
+
+    def acquire(self, lease):
+        self.lease = lease
+        while True:
+            lease.check()
+            reservation = self.internal.operation('run/sandbox', {
+                'action': 'reserve', 'reservation_id': self.reservation_id})
+            if reservation.get('available'):
+                break
+            lease.stop.wait(0.5)
+        with self.lock:
+            lease.check()
+            if self.sandbox is None:
+                started_at = time.monotonic()
+                self.sandbox = self.pool.take()
+                if self.sandbox is None:
+                    raise InternalOperationError('Reserved sandbox unavailable locally')
+                # Attach cancellation before reporting the resource, so a lost
+                # response still causes destruction of the exact created VM.
+                lease.attach(self.sandbox, on_renew=self.renew, on_cancel=self.close, on_prepared=self.prepared)
+                self.internal.operation('run/sandbox', {'action': 'attach',
+                    'reservation_id': self.reservation_id, 'sandbox_id': self.sandbox.sandbox_id,
+                    'ttl_seconds': 180, 'duration_ms': round((time.monotonic() - started_at) * 1000)})
+            lease.check()
+            return self.sandbox
+
+    def renew(self):
+        self.internal.operation('run/sandbox', {'action': 'renew',
+            'reservation_id': self.reservation_id, 'sandbox_id': self.sandbox.sandbox_id,
+            'ttl_seconds': 180})
+
+    def prepared(self, duration_ms):
+        self.internal.operation('run/sandbox', {'action': 'prepared',
+            'reservation_id': self.reservation_id, 'sandbox_id': self.sandbox.sandbox_id,
+            'duration_ms': duration_ms})
+
+    def close(self):
+        with self.lock:
+            if self.sandbox is None:
+                return
+            if not self.destroyed:
+                self.destroyed = self.pool.release(self.sandbox)
+            if not self.destroyed:
+                return
+            payload = {key: self.claimed[key] for key in ('execution', 'attempt')}
+            payload.update(worker_id=self.worker_id, reservation_id=self.reservation_id,
+                sandbox_id=self.sandbox.sandbox_id, destroyed=True)
+            # A separate client avoids reuse of an execution token revoked while
+            # a tool ran. A missing cleanup response leaves occupancy conservative.
+            try:
+                with httpx.Client(follow_redirects=False, trust_env=False, timeout=10) as client:
+                    response = client.post(self.endpoint + 'sandbox-cleanup/', json=payload,
+                        headers={'Authorization': 'Bearer ' + self.worker_token})
+                    response.raise_for_status()
+            except Exception:
+                pass  # The durable reservation remains until confirmed cleanup.
+
+
+def run(config, *, once=False, stop_event=None):
     worker_id = str(uuid.uuid4())
     token = Path(config['worker_token_file']).read_text().strip()
     endpoint = config['internal_endpoint'].rstrip('/') + '/'
+    concurrency = int(config.get('concurrency', 2))
+    if not 1 <= concurrency <= 2:
+        raise ValueError('Worker concurrency must be 1 or 2')
+    stop_event = stop_event or threading.Event()
     pool = CleanPool(lambda: create_clean(config))
+    executor = ThreadPoolExecutor(max_workers=concurrency, thread_name_prefix='regulay-job')
+    futures, controls = set(), {}
+    control_lock = threading.Lock()
+
+    def execute(claimed):
+        internal = InternalClient(endpoint, claimed['token'], claimed['attempt'])
+        resource = WorkerResource(internal, pool, endpoint, token, worker_id, claimed)
+        def started(lease):
+            with control_lock:
+                controls[claimed['execution']] = lease
+            if stop_event.is_set():
+                lease.cancel()
+                lease.check()
+        started_at = time.monotonic()
+        try:
+            result = run_job(internal, acquire=resource.acquire, started=started)
+            print(json.dumps({'execution': claimed['execution'],
+                'sandbox_id': resource.sandbox.sandbox_id if resource.sandbox else None,
+                'seconds': time.monotonic() - started_at, 'status': result['status']}), flush=True)
+            return {**result, 'pool': list(pool.metrics)}
+        except Exception as error:
+            # Exception text/tracebacks may contain private tool data or tokens.
+            # Correlate a failure without copying that content into worker logs.
+            print(json.dumps({'execution': claimed['execution'], 'status': 'failed',
+                'error_type': type(error).__name__, 'seconds': time.monotonic() - started_at,
+                'sandbox_id': resource.sandbox.sandbox_id if resource.sandbox else None}), flush=True)
+            try:
+                internal.operation('run/fail', {})
+            except Exception:
+                pass  # Expiry/revocation/cancellation retains server authority.
+            raise InternalOperationError('Execution interrupted; inspect authorized run state') from None
+        finally:
+            resource.close()
+            with control_lock:
+                controls.pop(claimed['execution'], None)
+            internal.close()
+
     try:
         with httpx.Client(follow_redirects=False, trust_env=False, timeout=15) as client:
-            while True:
-                # Claim only after a clean environment is ready; queued requests
-                # already explain capacity waiting, with no fake progress.
-                sandbox = pool.take()
-                if sandbox is None:
-                    time.sleep(0.5)
-                    continue
-                internal = None
-                try:
-                    prune_checkpoints(client, endpoint, token)
-                    claim_id = str(uuid.uuid4())
-                    response = None
-                    for retry in range(2):
-                        try:
-                            response = client.post(endpoint + 'claim/', json={
-                                'worker_id': worker_id, 'claim_id': claim_id}, headers={'Authorization': 'Bearer ' + token})
-                            break
-                        except httpx.TransportError:
-                            if retry:
-                                raise InternalOperationError('Claim transport uncertain') from None
-                    response.raise_for_status()
-                    claimed = response.json()
-                    if claimed['status'] == 'idle':
-                        # This slot was never used or assigned to a conversation.
-                        pool.return_unassigned(sandbox)
-                        sandbox = None
+            prune_checkpoints(client, endpoint, token)
+            while not stop_event.is_set():
+                done = {future for future in futures if future.done()}
+                futures -= done
+                for future in done:
+                    try:
+                        result = future.result()
                         if once:
-                            return {'status': 'idle'}
-                        time.sleep(1)
-                        continue
-                    internal = InternalClient(endpoint, claimed['token'], claimed['attempt'])
-                    started = time.monotonic()
-                    run_job(internal, sandbox)
-                    print(json.dumps({'execution': claimed['execution'], 'sandbox_id': sandbox.sandbox_id,
-                        'seconds': time.monotonic() - started, 'pool': pool.metrics,
-                        'status': 'completed'}), flush=True)
-                    if once:
-                        return {'status': 'completed', 'pool': pool.metrics}
-                except Exception:
-                    if internal:
-                        try:
-                            internal.operation('run/fail', {})
-                        except Exception:
-                            pass  # Expiry/revocation/cancellation retains authority on server.
-                    if once:
-                        raise InternalOperationError('Execution interrupted; inspect authorized run state') from None
-                finally:
-                    if internal:
-                        internal.close()
-                    if sandbox:
-                        pool.release(sandbox)
+                            return result
+                    except Exception:
+                        if once:
+                            raise
+                if len(futures) >= (1 if once else concurrency):
+                    wait(futures, timeout=0.25, return_when=FIRST_COMPLETED)
+                    continue
+                # Claims do not depend on a VM and only consume a free task slot.
+                claim_id = str(uuid.uuid4())
+                for retry in range(2):
+                    try:
+                        response = client.post(endpoint + 'claim/', json={
+                            'worker_id': worker_id, 'claim_id': claim_id, 'worker_protocol': 2},
+                            headers={'Authorization': 'Bearer ' + token})
+                        break
+                    except httpx.TransportError:
+                        if retry:
+                            raise InternalOperationError('Claim transport uncertain') from None
+                response.raise_for_status()
+                claimed = response.json()
+                if claimed['status'] == 'idle':
+                    if once and not futures:
+                        return {'status': 'idle'}
+                    stop_event.wait(0.5)
+                    continue
+                futures.add(executor.submit(execute, claimed))
     finally:
-        pool.close()
+        stop_event.set()
+        with control_lock:
+            leases = list(controls.values())
+        # Cleanup transport may itself stall. Never block the signal-handling
+        # dispatcher on it; the supervisor also enforces the 35 second bound.
+        for lease in leases:
+            lease.lost.set()
+            threading.Thread(target=lease.cancel, daemon=True).start()
+        executor.shutdown(wait=False, cancel_futures=True)
+        if futures:
+            wait(futures, timeout=min(30, max(0, float(config.get('shutdown_grace_seconds', 30)))))
+        threading.Thread(target=pool.close, daemon=True).start()
 
 
 def main():
-    def stop(*_):
-        raise KeyboardInterrupt
-    signal.signal(signal.SIGTERM, stop)
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', required=True, type=Path)
     parser.add_argument('--once', action='store_true')
     args = parser.parse_args()
-    try:
-        print(json.dumps(run(json.loads(args.config.read_text()), once=args.once)))
-    except KeyboardInterrupt:
-        pass  # run's finally destroys the exclusive sandbox and the warm slot.
+    stop_event = threading.Event()
+    def stop(*_):
+        if stop_event.is_set():
+            return
+        stop_event.set()
+        # ThreadPoolExecutor threads block Python interpreter exit even after
+        # shutdown(wait=False). Force termination at the documented upper bound.
+        timer = threading.Timer(34, lambda: os._exit(143))
+        timer.daemon = True
+        timer.start()
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+    print(json.dumps(run(json.loads(args.config.read_text()), once=args.once, stop_event=stop_event)))
 
 
 if __name__ == '__main__':

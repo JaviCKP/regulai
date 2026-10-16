@@ -1,6 +1,8 @@
 from django.urls import path
 from .ai_connections import ai_connections
 from .agents import views as agent_views
+from .agents import skill_views
+from .agents import artifact_preview
 from .chat_ui import request_receipt, request_evidence, request_stream, request_cancel
 from .policy_simulator import policy_simulator, policy_simulator_activate
 from .views import (
@@ -24,6 +26,17 @@ from .views import (
 app_name = 'front'
 
 urlpatterns = [
+    path('chat/agent/artifacts/<uuid:artifact_id>/preview/', artifact_preview.preview, name='agent_artifact_preview'),
+    path('skills/', skill_views.library, name='skills_library'),
+    path('skills/conversations/<int:conversation_id>/preference/', skill_views.preference, name='skill_preference'),
+    path('skills/catalog/<slug:candidate>/', skill_views.detail, name='skill_detail'),
+    path('skills/import/inspect/', skill_views.inspect_package, name='skill_inspect'),
+    path('skills/installations/', skill_views.installations, name='skill_install'),
+    path('skills/installations/<uuid:installation_id>/', skill_views.installed_detail, name='skill_installed_detail'),
+    path('skills/operations/<uuid:operation_id>/', skill_views.operation, name='skill_operation'),
+    path('skills/installations/<uuid:installation_id>/update/', skill_views.installations, name='skill_update'),
+    path('skills/installations/<uuid:installation_id>/<str:action>/', skill_views.mutate, name='skill_mutate'),
+    path('internal/agents/sandbox-cleanup/', agent_views.worker_sandbox_cleanup, name='agent_sandbox_cleanup'),
     path('chat/agent/exports/<uuid:export_id>/decision/', agent_views.export_decision, name='agent_export_decision'),
     path('chat/agent/runs/<uuid:run_id>/recover-export/', agent_views.export_recovery, name='agent_export_recovery'),
     path('chat/agent/documents/search/', agent_views.document_search, name='agent_document_search'),

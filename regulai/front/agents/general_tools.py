@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from front.models import AgentExecution, AgentOperation, AgentToolResult
 from front.policy import digest
-from .capabilities import FILES, WEB, GENERAL, limits
+from .capabilities import FILES, WEB, GENERAL, execution_limits, remaining_seconds
 from .service import AgentDenied, authenticate
 
 
@@ -22,7 +22,7 @@ def claim_id(run, call):
 def begin(run, context, call):
     if not context[2].professional:
         return {'status': 'authorized'}
-    budget = limits(context[2])
+    budget = execution_limits(run, context[2])
     with transaction.atomic():
         previous = AgentOperation.objects.filter(execution=run, call_id=call.id).first()
         if previous:
@@ -35,6 +35,8 @@ def begin(run, context, call):
             raise AgentDenied('tool_outcome_uncertain')
         if AgentOperation.objects.filter(execution=run).count() >= budget['tool_calls']:
             raise AgentDenied('agent_tool_budget_exhausted')
+        if remaining_seconds(run, context[2]) <= 0:
+            raise AgentDenied('execution_deadline')
         if not AgentExecution.objects.filter(pk=run.pk, status='active', attempt=run.attempt,
                 active_call__isnull=True).update(active_call=claim_id(run, call)):
             raise AgentDenied('execution_busy_or_uncertain')
@@ -77,9 +79,67 @@ def _text(raw):
     return json.dumps(raw, ensure_ascii=False, allow_nan=False)
 
 
+def _command_output(text):
+    """Unwrap only the runner's explicit output shape; arbitrary JSON stays data."""
+    try:
+        value = json.loads(text)
+    except (ValueError, TypeError):
+        return None
+    if (not isinstance(value, dict) or type(value.get('exit_code')) is not int
+            or not isinstance(value.get('stdout'), str) or not isinstance(value.get('stderr'), str)
+            or type(value.get('truncated')) is not bool):
+        return None
+    return value
+
+
+def _output_text(raw):
+    text = _text(raw)
+    command = _command_output(text)
+    if command is not None:
+        return command['stdout'] + ('\n' if command['stdout'] and command['stderr'] else '') + command['stderr']
+    return text
+
+
+def _projection(call, request, maximum):
+    text = _text(request.raw)
+    limit = min(maximum, 2048)
+    def preview(value):
+        return value.encode('utf-8')[:limit].decode('utf-8', errors='ignore')
+    if call.name == 'execute':
+        command = _command_output(text)
+        if command is None:
+            return {'status': 'approved', 'succeeded': False, 'code': 'invalid_command_result',
+                'summary': 'El ejecutor no devolvió un resultado de comando válido.', 'output_ref': call.id}
+        output = _output_text(request.raw)
+        summary = preview(output)
+        succeeded = command['exit_code'] == 0 and not request.failed and not command.get('timed_out', False)
+        return {'status': 'approved', 'trust': 'untrusted_tool_data', 'succeeded': succeeded,
+            'exit_code': command['exit_code'], 'code': 'command_completed' if succeeded else 'command_failed',
+            'summary': summary, 'output_ref': call.id, 'total_characters': len(output),
+            'truncated': command['truncated'] or len(output) > len(summary),
+            'next_offset': len(summary) if len(output) > len(summary) else None}
+    if call.name in ('write_file', 'edit_file', 'replace_file'):
+        try:
+            value = json.loads(text.removeprefix('Error: '))
+        except (ValueError, TypeError):
+            value = None
+        if isinstance(value, dict) and type(value.get('succeeded')) is bool:
+            return {'status': 'approved', 'trust': 'untrusted_tool_data', 'output_ref': call.id,
+                **{key: value[key] for key in ('succeeded', 'code', 'sha256', 'bytes', 'occurrences') if key in value},
+                **({'summary': preview(str(value['summary']))} if 'summary' in value else {})}
+        if request.failed or text.startswith('Error:'):
+            return {'status': 'approved', 'succeeded': False, 'code': 'file_operation_failed',
+                'summary': preview(text), 'output_ref': call.id}
+    summary = preview(text)
+    return {'status': 'approved', 'trust': 'untrusted_tool_data', 'failed': request.failed,
+        'succeeded': not request.failed, 'output': summary, 'offset': 0,
+        'total_characters': len(text), 'truncated': len(text) > len(summary),
+        'next_offset': len(summary) if len(text) > len(summary) else None, 'call_id': call.id, 'output_ref': call.id}
+
+
 def finish(run, context, call, request):
     row = operation(run, call)
-    maximum = limits(context[2])['output_chars']
+    maximum = execution_limits(run, context[2])['output_chars']
     if row.result:
         result = json.loads(row.result)  # Trusted web/artifact operation receipt.
         if call.name == 'web_download' and request.failed:
@@ -87,11 +147,7 @@ def finish(run, context, call, request):
         if result.get('status') == 'browser_pending':
             result = {'status': 'approved', 'succeeded': False, 'code': 'browser_render_incomplete'}
     else:
-        text = _text(request.raw)
-        result = {'status': 'approved', 'trust': 'untrusted_tool_data', 'failed': request.failed,
-            'output': text[:maximum], 'offset': 0, 'total_characters': len(text),
-            'truncated': len(text) > maximum, 'next_offset': maximum if len(text) > maximum else None,
-            'call_id': call.id}
+        result = _projection(call, request, maximum)
     # Contents remain encrypted until the mandatory inference gateway applies
     # policy/masking for its current destination. General traces contain metadata.
     fingerprint = digest(request.model_dump())
@@ -106,6 +162,12 @@ def finish(run, context, call, request):
             protected_view=json.dumps(result, ensure_ascii=False), raw=json.dumps(request.raw, ensure_ascii=False))
         row.status, row.completed_at = 'completed', timezone.now()
         row.save(update_fields=['status', 'completed_at'])
+        from .event_store import append_event
+        append_event(run, 'interval', event_key='tool:' + str(run.attempt) + ':' + call.id, **{'category': 'tool',
+            'attempt': str(run.attempt), 'call_id': call.id, 'started_at': row.created_at.isoformat(),
+            'completed_at': row.completed_at.isoformat(),
+            'duration_ms': max(0, round((row.completed_at - row.created_at).total_seconds() * 1000)),
+            'scope': 'authorization_to_recorded_result_including_resource_wait'})
         AgentExecution.objects.filter(pk=run.pk, attempt=run.attempt, active_call=claim_id(run, call)).update(active_call=None)
     return result
 
@@ -119,8 +181,8 @@ def read_output(token, attempt, payload):
     previous = AgentToolResult.objects.filter(execution=run, call_id=call.args['call_id']).first()
     if previous is None:
         raise AgentDenied('output_not_found')
-    text = _text(json.loads(previous.raw))
-    start, length = call.args.get('offset', 0), limits(context[2])['output_chars']
+    text = _output_text(json.loads(previous.raw))
+    start, length = call.args.get('offset', 0), execution_limits(run, context[2])['output_chars']
     result = {'status': 'approved', 'trust': 'untrusted_tool_data', 'output': text[start:start + length],
         'offset': start, 'total_characters': len(text), 'truncated': start + length < len(text),
         'next_offset': start + length if start + length < len(text) else None}

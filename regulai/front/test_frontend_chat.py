@@ -39,6 +39,24 @@ class ChatPageScriptTests(OfflineBrowser, ChatFixture):
     def chat(self, checks, path='/chat/', **options):
         return self.browse(TURN + checks, self.client.get(path), **options)
 
+    def test_reading_above_counts_updated_messages_once_and_returning_clears_count(self):
+        self.chat(r'''
+const scroller=$('#chatScroll'),jump=$('#jumpToEnd');
+scroller.scrollHeight=5000;scroller.clientHeight=500;scroller.scrollTop=400;
+scroller.dispatchEvent(new Event('scroll'));
+regulayChat.follow('request-one');regulayChat.follow('request-one');regulayChat.follow();
+assert.equal(scroller.scrollTop,400);
+assert.equal(jump.hidden,false);
+assert.match(text(jump),/1 mensaje actualizado/);
+regulayChat.follow('request-two');
+assert.match(text(jump),/2 mensajes actualizados/);
+await click(jump);
+assert.equal(jump.hidden,true);
+assert.equal(text($('.rg-jump-count',jump)),'');
+regulayChat.follow('request-three');
+assert.equal(text($('.rg-jump-count',jump)),'');
+''')
+
     def test_historical_receipt_explains_judge_rejection_without_candidate_text(self):
         self.chat(r"""
 const output = document.createElement('div');

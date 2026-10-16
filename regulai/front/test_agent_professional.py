@@ -421,8 +421,13 @@ class ProfessionalTests(AgentFixture, TestCase):
         self.activate(self.queued())
         for _ in range(4):
             self.assertEqual(infer(self.token, self.execution.attempt, self.request(tools=[]))['status'], 'completed')
-        with self.assertRaises(AgentDenied):
-            infer(self.token, self.execution.attempt, self.request(tools=[]))
+        stopped = infer(self.token, self.execution.attempt, self.request(tools=[]))
+        self.assertEqual(stopped['status'], 'interrupted')
+        self.execution.refresh_from_db()
+        self.execution.prompt.refresh_from_db()
+        self.assertEqual(self.execution.status, 'interrupted')
+        self.assertEqual(self.execution.prompt.decision['error_type'], 'budget_exhausted')
+        self.assertTrue(self.execution.prompt.response.evidence['partial'])
         self.assertEqual(len(self.requests), 4)
 
     def test_last_budgeted_call_reserves_a_text_delivery_and_replay_is_free(self):

@@ -7,6 +7,19 @@ def unresolved_alerts_count(request):
     user = request.user
     permissions = {'is_platform_operator': is_platform_operator(user),
         'can_manage_company_policy': can_manage_company_policy(user)}
+    from django.conf import settings
+    skills_access = False
+    if getattr(settings, 'REGULAY_SKILLS_CATALOG', False) and user.is_authenticated:
+        from front.agents.capabilities import profile_for
+        from front.agents.service import AgentDenied
+        try:
+            profile_for(user)
+        except (AgentDenied, Profile.DoesNotExist):
+            pass
+        else:
+            skills_access = True
+    permissions['skills_catalog_enabled'] = skills_access
+    permissions['skills_runtime_enabled'] = bool(skills_access and getattr(settings, 'REGULAY_SKILLS_RUNTIME', False))
     if user.is_authenticated and user.is_active and (user.is_staff or user.is_superuser):
         company_id = Profile.objects.filter(user=user).values_list('company_id', flat=True).first()
         alerts = Alert.objects.filter(resolved=False, company_id=company_id) if company_id else Alert.objects.none()

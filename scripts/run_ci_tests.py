@@ -18,6 +18,6 @@ for app in ('front', 'api'):
         print(f'Checking {app}.{module.stem} ({settings})', flush=True)
         result = subprocess.run([sys.executable, str(root / 'regulai/manage.py'), 'test',
             f'{app}.{module.stem}', '--settings=' + settings, '--noinput',
-            '--exclude-tag=namespace_integration'], cwd=root)
+            '--exclude-tag=namespace_integration', '--exclude-tag=capacity_benchmark'], cwd=root)
         if result.returncode:
             raise SystemExit(result.returncode)

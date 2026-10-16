@@ -1234,7 +1234,10 @@ def chat_view(request, conversation_id=None):
         result = send_chat_message(request.user, _web_command(request, conversation_id))
         if result.data['status'] == 'completed':
             return redirect('front:chat_conversation', conversation_id=result.data['conversation_id'])
-        return JsonResponse(result.data, status=result.http_status)
+        response = JsonResponse(result.data, status=result.http_status)
+        if result.http_status == 429:
+            response['Retry-After'] = '5'
+        return response
     user = request.user
     actor_company(user)
     profile = user.profile
@@ -1295,6 +1298,12 @@ def chat_view(request, conversation_id=None):
     from .chat_page import conversation_groups, display_title, turns
     agent_available = available(user)
     agent_professional = agent_available and AgentModelProfile.objects.filter(pk=development_profile(user), professional=True).exists()
+    inference_profiles = []
+    if agent_professional:
+        from .agents.inference_options import configuration
+        configured = configuration(AgentModelProfile.objects.get(pk=development_profile(user))).profiles
+        labels = {'legacy': 'Configuración actual', 'quick': 'Rápido', 'reasoned': 'Razonado (herramientas en modo rápido)'}
+        inference_profiles = [{'value': key, 'label': labels[key]} for key in configured]
     agent_mode = bool(conversation and conversation.mode == 'agent')
     runs = {}
     if agent_mode:
@@ -1312,6 +1321,7 @@ def chat_view(request, conversation_id=None):
         "agent_runs": {str(item['id']): item for item in runs.values()},
         "agent_available": agent_available,
         "agent_professional": agent_professional,
+        "inference_profiles": inference_profiles,
         "agent_mode": agent_mode,
         "agent_drive": agent_drive,
         "available_engines": available_engines,
@@ -1510,7 +1520,10 @@ def chat_send_message(request, conversation_id=None):
         from .chat_streaming import stream_send
         return stream_send(request, _web_command(request, conversation_id))
     result = send_chat_message(request.user, _web_command(request, conversation_id))
-    return JsonResponse(result.data, status=result.http_status)
+    response = JsonResponse(result.data, status=result.http_status)
+    if result.http_status == 429:
+        response['Retry-After'] = '5'
+    return response
 
 
 def _web_command(request, conversation_id):
@@ -1525,6 +1538,8 @@ def _web_command(request, conversation_id):
         'consent_token': request.POST.get('consent_token'),
         'action': request.POST.get('action'),
         'mode': request.POST.get('mode'),
+        'inference_profile': request.POST.get('inference_profile'),
+        'skills': request.POST.get('skills'),
         'artifact_id': request.POST.get('artifact_id'),
         'base_revision': request.POST.get('base_revision'),
         'document_reference': request.POST.get('document_reference'),

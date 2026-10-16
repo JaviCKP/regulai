@@ -4,9 +4,10 @@ import asyncio
 import json
 from pathlib import PurePosixPath
 import shlex
+import threading
 import uuid
 
-from deepagents.backends.protocol import ExecuteResponse, FileDownloadResponse, FileUploadResponse, EditResult
+from deepagents.backends.protocol import ExecuteResponse, FileDownloadResponse, FileUploadResponse, EditResult, WriteResult, ReadResult
 from langchain_e2b import E2BSandbox
 
 
@@ -20,12 +21,44 @@ def valid_path(path, *, write=False):
 
 
 class WorkspaceSandbox(E2BSandbox):
-    def __init__(self, *, sandbox, limits, lease):
+    def __init__(self, *, sandbox=None, limits, lease, prepare=None):
         super().__init__(sandbox=sandbox, workdir='/workspace/work', timeout=limits['command_seconds'])
         self.limits, self.lease = limits, lease
+        self.prepared = sandbox is not None
+        self._prepare, self._preparing, self._prepare_failed = prepare, None, False
+        self._prepare_lock = threading.RLock()
+
+    @property
+    def id(self):
+        return self._sandbox.sandbox_id if self._sandbox is not None else 'unallocated-workspace'
+
+    def prepare_authorized(self):
+        """Only ResultGate calls this, after the application's tool grant."""
+        with self._prepare_lock:
+            self.lease.check()
+            if self.prepared:
+                return
+            if self._prepare_failed or self._prepare is None:
+                raise ValueError('Workspace preparation unavailable')
+            self._preparing = threading.get_ident()
+            try:
+                self._prepare(self)
+                self.lease.check()
+                self.prepared = True
+            except BaseException:
+                # An uncertain allocation/setup must never silently allocate anew.
+                self._prepare_failed = True
+                raise
+            finally:
+                self._preparing = None
+
+    def _require_workspace(self):
+        self.lease.check()
+        if self._sandbox is None or not (self.prepared or self._preparing == threading.get_ident()):
+            raise ValueError('Workspace requires an authorized tool')
 
     def execute(self, command, *, timeout=None):
-        self.lease.check()
+        self._require_workspace()
         if not isinstance(command, str) or len(command.encode()) > 200000:
             raise ValueError('Command size limit')
         seconds = min(timeout or self.limits['command_seconds'], self.limits['command_seconds'])
@@ -66,6 +99,7 @@ finally: os.close(fd)
         return result['stdout']
 
     def _file(self, path, content=None):
+        self._require_workspace()
         path = valid_path(path, write=content is not None)
         # Chunks stay below command/output bounds, including base64 expansion.
         chunk_size = min(65536, self.limits['output_bytes'] // 3)
@@ -120,6 +154,7 @@ finally: os.close(fd)
     # BaseSandbox parses execute.output as command stdout; unwrap only for its
     # file helpers, leaving the execute tool's full diagnostics intact.
     def _helper(self, name, *args, **kwargs):
+        self._require_workspace()
         def execute(command, *, timeout=None):
             result = self.execute(command, timeout=timeout)
             value = json.loads(result.output)
@@ -132,9 +167,15 @@ finally: os.close(fd)
 
     def read(self, file_path, offset=0, limit=2000):
         valid_path(file_path)
-        # A no-follow preflight also prevents symlink escapes in SDK helper code.
-        self._file(file_path)
-        return self._helper('read', file_path, offset, min(limit, 1000))
+        if type(offset) is not int or type(limit) is not int or offset < 0 or limit < 1:
+            return ReadResult(error='Invalid read range')
+        # The no-follow transfer is already a complete read; do not fetch twice.
+        raw = self._file(file_path)
+        try:
+            content = ''.join(raw.decode('utf-8').splitlines(keepends=True)[offset:offset + min(limit, 1000)])
+        except UnicodeError:
+            return ReadResult(file_data={'content': base64.b64encode(raw).decode(), 'encoding': 'base64'})
+        return ReadResult(file_data={'content': content, 'encoding': 'utf-8'})
 
     def ls(self, path):
         return self._helper('ls', valid_path(path))
@@ -146,26 +187,64 @@ finally: os.close(fd)
         return self._helper('grep', pattern, valid_path(path or '/workspace'), glob)
 
     def write(self, file_path, content):
-        return self._helper('write', valid_path(file_path, write=True), content)
-
-    def edit(self, file_path, old_string, new_string, replace_all=False):
         try:
-            valid_path(file_path, write=True)
-            content = self._file(file_path).decode('utf-8')
-            if not old_string:
-                return EditResult(error='The text to replace must not be empty.')
-            count = content.count(old_string)
-            if not count:
-                return EditResult(error='The exact text was not found in ' + file_path)
-            if count > 1 and not replace_all:
-                return EditResult(error='The text occurs more than once; provide more context or replace_all.')
-            self._file(file_path, content.replace(old_string, new_string).encode('utf-8'))
-            return EditResult(path=file_path, occurrences=count)
+            value = self._mutate('create', file_path, content=base64.b64encode(content.encode()).decode())
+            return WriteResult(path=file_path) if value['succeeded'] else WriteResult(error=json.dumps(value, ensure_ascii=False))
+        except (ValueError, OSError) as error:
+            # Summarization's optional offload accepts this failure. It must not
+            # allocate a VM or write outside the authorized workspace.
+            return WriteResult(error=str(error))
+
+    def _mutate(self, action, file_path, **values):
+        self._require_workspace()
+        valid_path(file_path, write=True)
+        request = '/workspace/work/.mutation-' + uuid.uuid4().hex + '.json'
+        try:
+            raw = json.dumps({'action': action, 'path': file_path, 'limit': self.limits['file_bytes'], **values},
+                ensure_ascii=False, allow_nan=False).encode()
+            if len(raw) > 500000:
+                raise ValueError('Mutation request size limit')
+            self._file(request, raw)
+            response = self.execute('python -I /skills/workspace_mutation.py --request ' + shlex.quote(request))
+            result = json.loads(response.output)
+            if response.exit_code or result['truncated']:
+                raise ValueError('Workspace mutation unavailable')
+            value = json.loads(result['stdout'])
+            if type(value.get('succeeded')) is not bool:
+                raise ValueError('Workspace mutation result invalid')
+            return value
+        finally:
+            try:
+                self._part(request, 'os.unlink(p[-1],dir_fd=fd)', 'os.O_RDONLY')
+            except (OSError, ValueError):
+                pass
+
+    def replace(self, file_path, expected_sha256, content):
+        if not isinstance(expected_sha256, str) or len(expected_sha256) != 64 or any(c not in '0123456789abcdef' for c in expected_sha256):
+            return {'succeeded': False, 'code': 'invalid_expected_sha256'}
+        return self._mutate('replace', file_path, expected_sha256=expected_sha256,
+            content=base64.b64encode(content.encode()).decode())
+
+    def edit(self, file_path, old_string, new_string, replace_all=False, expected_sha256=None):
+        try:
+            value = self._mutate('edit', file_path, old_string=old_string, new_string=new_string,
+                replace_all=replace_all, expected_sha256=expected_sha256)
+            return (EditResult(path=file_path, occurrences=value['occurrences']) if value['succeeded']
+                else EditResult(error=json.dumps(value, ensure_ascii=False)))
         except (ValueError, OSError, UnicodeError) as error:
             return EditResult(error=str(error))
 
     # BaseSandbox's async file helpers parse stdout directly. Route them through
     # the same validated synchronous helpers, including no-follow transfers.
+    async def aexecute(self, command, *, timeout=None):
+        return await asyncio.to_thread(self.execute, command, timeout=timeout)
+
+    async def aupload_files(self, files):
+        return await asyncio.to_thread(self.upload_files, files)
+
+    async def adownload_files(self, paths):
+        return await asyncio.to_thread(self.download_files, paths)
+
     async def als(self, path):
         return await asyncio.to_thread(self.ls, path)
 
@@ -175,8 +254,8 @@ finally: os.close(fd)
     async def awrite(self, file_path, content):
         return await asyncio.to_thread(self.write, file_path, content)
 
-    async def aedit(self, file_path, old_string, new_string, replace_all=False):
-        return await asyncio.to_thread(self.edit, file_path, old_string, new_string, replace_all)
+    async def aedit(self, file_path, old_string, new_string, replace_all=False, expected_sha256=None):
+        return await asyncio.to_thread(self.edit, file_path, old_string, new_string, replace_all, expected_sha256)
 
     async def aglob(self, pattern, path=None):
         return await asyncio.to_thread(self.glob, pattern, path)
