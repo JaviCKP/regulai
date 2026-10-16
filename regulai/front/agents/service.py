@@ -437,6 +437,14 @@ def _protected_message(execution, context, government, message, policy_texts, co
     return protected
 
 
+def _within_command_limit(tool, budget):
+    """The sandbox caps commands at the profile limit; issue that value rather than a call the tool gate refuses."""
+    timeout = tool.args.get('timeout') if tool.name == 'execute' else None
+    if not isinstance(timeout, int) or isinstance(timeout, bool) or 1 <= timeout <= budget['command_seconds']:
+        return tool
+    return ToolCall(id=tool.id, name=tool.name, args={**tool.args, 'timeout': max(1, min(timeout, budget['command_seconds']))})
+
+
 def _validate_tool_history(execution, request):
     from .general_tools import result_view
     issued = {}
@@ -559,6 +567,9 @@ def infer(token, attempt, payload):
                     'enciclopedias, universidades u organismos oficiales) y usa web_find para localizar pasajes. '
                     'Si una dirección falla, prueba otra fuente fiable; no atribuyas contenido a páginas que no hayas abierto.')))
             # Keep the agent on the shortest path: no file or research the user did not ask for.
+            instructions.append(WireMessage(role='system', content=(
+                f'Cada comando puede durar como máximo {budget["command_seconds"]} segundos: diseña el código '
+                'para que termine mucho antes.')))
             from .request_contract import plain
             asked = execution.job.get('request', {})
             if not (asked.get('formats') or asked.get('pages') or FILE_REQUEST.search(plain(execution.prompt.content))):
@@ -615,6 +626,9 @@ def infer(token, attempt, payload):
             raise AgentDenied('invalid_provider_tool_calls')
         from .protocol import WireMessage
         reply = WireMessage(role='assistant', content=response.content or '', tool_calls=response.tool_calls)
+        if agent.professional:
+            reply = WireMessage(role='assistant', content=reply.content,
+                                tool_calls=[_within_command_limit(tool, budget) for tool in reply.tool_calls])
         ids = set()
         prior_ids = {c['id'] for r in AgentInference.objects.filter(execution=execution, status='completed')
                      for c in r.response.get('tool_calls', [])}

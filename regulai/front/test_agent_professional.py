@@ -456,6 +456,19 @@ class ProfessionalTests(AgentFixture, TestCase):
         infer(self.token, self.execution.attempt, self.request(tools=['web_search', 'web_open', 'web_find']))
         self.assertFalse(any('No hay buscador web configurado' in text for text in systems()))
 
+    def test_command_timeout_above_the_limit_is_capped_instead_of_ending_the_run(self):
+        self.activate(self.queued('Ejecuta una simulación de paseos aleatorios en 2D y 3D y dime qué pasa'))
+        limit = self.execution.job['limits']['command_seconds']
+        self.reply_calls = [{'id': 'tool-' + uuid.uuid4().hex, 'name': 'execute',
+                             'args': {'command': 'cd /workspace/work && time python rw_sim.py', 'timeout': limit + 60}}]
+        result = infer(self.token, self.execution.attempt, self.request(tools=['execute']))
+        self.assertEqual(result['status'], 'completed', result)
+        call = result['tool_calls'][0]
+        self.assertEqual(call['args'], {'command': 'cd /workspace/work && time python rw_sim.py', 'timeout': limit})
+        run, context, checked = authorize_tool(self.token, self.execution.attempt, call)  # No command_timeout_limit.
+        self.assertEqual(general_tools.begin(run, context, checked)['status'], 'authorized')
+        self.assertTrue(any(f'{limit} segundos' in m['content'] for m in self.requests[-1]['messages'] if m['role'] == 'system'))
+
     def test_plain_request_is_told_to_answer_in_chat_without_research(self):
         directions = lambda: [m['content'] for m in self.requests[-1]['messages'] if m['role'] == 'system']
         self.activate(self.queued('Ejecuta una simulación de paseos aleatorios en 2D y 3D y dime qué pasa'))
