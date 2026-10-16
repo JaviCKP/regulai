@@ -66,3 +66,11 @@ El navegador JavaScript del agente sigue desactivado; sí hay lectura web
 gobernada. El modelo configurado no tiene visión. `admin/admin` se expone solo
 por túnel loopback, nunca como despliegue público. Los paquetes del host se
 descargan de los repositorios del sistema: reproducibilidad funcional, no binaria.
+
+## Enlace público temporal
+
+Para una demo, el contenedor web puede aceptar un único origen https exacto con
+`REGULAI_PUBLIC_ORIGIN=https://nombre.trycloudflare.com` (`ops/setup/server.py`);
+sin la variable sigue siendo solo loopback y no se admiten comodines. Antes de
+compartir el enlace se cambia la contraseña de `admin`. Cerrar `cloudflared`
+corta el acceso; para volver a loopback se recrea el contenedor sin la variable.

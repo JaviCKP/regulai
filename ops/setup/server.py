@@ -17,6 +17,12 @@ settings.SECRET_KEY_FALLBACKS = []
 settings.ENCRYPTION_KEY_FALLBACKS = []
 settings.DEBUG = False
 settings.ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.30.58.1']
+# Loopback only by default. A temporary public tunnel is opt-in per container and must
+# name its exact https origin, e.g. REGULAI_PUBLIC_ORIGIN=https://name.trycloudflare.com.
+from regulai.public_origin import tunnel_settings
+public_hosts, public_origins = tunnel_settings(os.environ.get('REGULAI_PUBLIC_ORIGIN', ''))
+settings.ALLOWED_HOSTS += public_hosts
+settings.CSRF_TRUSTED_ORIGINS = public_origins
 settings.SESSION_COOKIE_NAME = 'regulai_v2_session'
 settings.CSRF_COOKIE_NAME = 'regulai_v2_csrf'
 settings.PLATFORM_ADMIN_USER_IDS = (config['admin_id'],)

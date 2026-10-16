@@ -148,3 +148,14 @@ class RuntimeConfigTests(SimpleTestCase):
             self.assertIn(gate, commands)
         self.assertIn('mktemp -d', commands)
         self.assertIn('postgres', workflow['jobs']['quality']['services'])
+
+    def test_public_tunnel_trusts_only_one_named_https_origin(self):
+        from regulai.public_origin import tunnel_settings
+        self.assertEqual(tunnel_settings(''), ([], []))
+        self.assertEqual(tunnel_settings('https://demo-name.trycloudflare.com'),
+                         (['demo-name.trycloudflare.com'], ['https://demo-name.trycloudflare.com']))
+        for origin in ('http://demo.trycloudflare.com', 'https://*.trycloudflare.com', 'https://*',
+                       'https://demo.trycloudflare.com:8443', 'https://user@demo.trycloudflare.com',
+                       'https://demo.trycloudflare.com/admin', 'https://localhost'):
+            with self.subTest(origin=origin), self.assertRaises(ValueError):
+                tunnel_settings(origin)
