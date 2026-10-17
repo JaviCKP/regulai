@@ -315,12 +315,16 @@ export function Composer() {
         <SkillPicker
           skills={skills}
           open={picker.open}
-          onOpenChange={(open) => setPicker((current) => ({ open, fromSlash: open ? current.fromSlash : false }))}
+          onClose={(returnFocus) => {
+            const target = picker.fromSlash ? textarea.current : skillButton.current
+            setPicker({ open: false, fromSlash: false })
+            if (returnFocus) window.requestAnimationFrame(() => target?.focus())
+          }}
           onChosen={() => {
             if (picker.fromSlash && draft.current === "/") setText("")
+            window.requestAnimationFrame(() => textarea.current?.focus())
           }}
           anchor={surface}
-          finalFocus={picker.fromSlash ? textarea : skillButton}
         />
       )}
       {empty && agent && boot.composer.suggestions.length > 0 && (

@@ -13,13 +13,14 @@ import { displayName, summary, type SkillsApi } from "./use-skills"
  * of an empty message or the button. A searchable listbox (arrows, Enter,
  * Escape) inside a popover anchored to the composer. */
 
-export function SkillPicker({ skills, open, onOpenChange, onChosen, anchor, finalFocus }: {
+/** Closing by Escape or the close button returns focus to where the picker came from;
+ * choosing returns it to the message; a click elsewhere leaves focus where it lands. */
+export function SkillPicker({ skills, open, onClose, onChosen, anchor }: {
   skills: SkillsApi
   open: boolean
-  onOpenChange: (open: boolean) => void
+  onClose: (returnFocus: boolean) => void
   onChosen: () => void
   anchor: RefObject<HTMLElement | null>
-  finalFocus: RefObject<HTMLElement | null>
 }) {
   const session = useSession()
   const [query, setQuery] = useState("")
@@ -51,8 +52,8 @@ export function SkillPicker({ skills, open, onOpenChange, onChosen, anchor, fina
       return
     }
     setStatus("")
+    onClose(false)
     onChosen()
-    onOpenChange(false)
   }
 
   const statusText = status || (skills.loading ? "Cargando tus skills…" : skills.error ? skills.error : skills.loaded
@@ -61,19 +62,21 @@ export function SkillPicker({ skills, open, onOpenChange, onChosen, anchor, fina
     : "")
 
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
+    <Popover open={open} onOpenChange={(next, details) => {
+      if (!next) onClose(details.reason === "escape-key" || details.reason === "close-press")
+    }}>
       <PopoverContent
         anchor={anchor}
         side="top"
         align="start"
         sideOffset={8}
         initialFocus={search}
-        finalFocus={finalFocus}
+        finalFocus={false}
         className="w-[min(26rem,calc(100vw-1.5rem))] gap-2 p-2"
       >
         <div className="flex items-center gap-2 px-1.5 pt-1">
           <PopoverTitle className="flex-1 text-[0.8125rem] font-semibold">Skills para el próximo mensaje</PopoverTitle>
-          <Button variant="ghost" size="icon-sm" className="text-muted-foreground" aria-label="Cerrar selector de skills" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" size="icon-sm" className="text-muted-foreground" aria-label="Cerrar selector de skills" onClick={() => onClose(true)}>
             <XIcon />
           </Button>
         </div>

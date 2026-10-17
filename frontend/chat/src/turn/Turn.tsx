@@ -25,7 +25,7 @@ export const Turn = memo(function Turn({ turn }: { turn: TurnModel }) {
     ? agentConversation ? "Entrada privada conservada para las revisiones" : "El original no se conserva: vuelve a adjuntarlo para preguntar de nuevo"
     : undefined
   return (
-    <article className="flex flex-col gap-4" data-request-id={turn.requestId ?? undefined} data-run={turn.runId ?? undefined}>
+    <article className="flex flex-col gap-4" data-turn="" data-request-id={turn.requestId ?? undefined} data-run={turn.runId ?? undefined}>
       {turn.user && (
         <UserMessage content={turn.user.content} fresh={turn.fresh}>
           {turn.user.file && <SentAttachment name={turn.user.file.name} size={turn.user.file.size} phase={phase} note={note} />}

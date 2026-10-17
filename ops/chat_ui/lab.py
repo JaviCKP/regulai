@@ -1,7 +1,9 @@
 """Disposable chat UI laboratory (task 81). Synthetic data only; no paid calls.
 
-* PostgreSQL: the owned container regulai-chat-ui-db-20261017 (127.0.0.1:55478,
-  tmpfs, label regulai.chat_ui=20261017) and a database created and dropped here.
+* PostgreSQL: a throwaway server on 127.0.0.1:55478 that declares itself with
+  `-c regulai.chat_ui=20261017` (a tmpfs container, or a cluster made with initdb in
+  a RAM directory). The marker is read from the server before any database is
+  created or dropped here; any other server is refused.
 * Web chat: the real pipeline (local masking, local classification/verification)
   and the official OpenAI SDK, whose HTTP client is an httpx.MockTransport that
   streams fixture answers. Nothing leaves the machine.
@@ -20,7 +22,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import subprocess
 import sys
 import tempfile
 import threading
@@ -30,16 +31,18 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 DATABASE = 'test_regulai_chat_ui'
 PORT = '55478'
-CONTAINER = 'regulai-chat-ui-db-20261017'
+MARKER = '20261017'
 STATE = Path(tempfile.gettempdir()) / 'regulai-chat-redesign' / 'lab'
 USERNAME = 'chat-ui'
 
 
 def owner_check():
-    row = json.loads(subprocess.check_output(['docker', 'inspect', CONTAINER]))[0]
-    assert row['State']['Running'], 'lab_database_not_running'
-    assert row['Config']['Labels'].get('regulai.chat_ui') == '20261017', 'lab_database_not_owned'
-    assert row['HostConfig']['PortBindings']['5432/tcp'] == [{'HostIp': '127.0.0.1', 'HostPort': PORT}]
+    """Only a server started with `-c regulai.chat_ui=20261017` is the lab's."""
+    import psycopg
+    with psycopg.connect(host='127.0.0.1', port=PORT, dbname='postgres', user='task58',
+                         password='synthetic-ci-only', connect_timeout=3) as connection:
+        marker = connection.execute("SELECT current_setting('regulai.chat_ui', true)").fetchone()[0]
+    assert marker == MARKER, 'lab_database_not_owned'
 
 
 def configure(*, database=True, frontend=None):
@@ -53,6 +56,9 @@ def configure(*, database=True, frontend=None):
     settings.REGULAY_SKILLS_CATALOG = settings.REGULAY_SKILLS_RUNTIME = True
     settings.REGULAY_AGENT_TEXT_STREAM = settings.REGULAY_ARTIFACT_PREVIEW = True
     settings.REGULAY_SKILL_RUNTIME_CAPABILITIES = {'node': '24.21.0'}  # Labelled fixture, not a runtime check.
+    # The simulated provider host is treated as stream-capable in the lab only, so
+    # progressive delivery can be observed; real hosts keep their own allowlist.
+    settings.CHAT_STREAMING_EXTRA_HOSTS = ('provider.invalid',)
     settings.SESSION_COOKIE_NAME = 'chat_ui_lab_session'
     settings.CSRF_COOKIE_NAME = 'chat_ui_lab_csrf'
     if frontend:
@@ -212,7 +218,7 @@ def prepare(fresh=False):
         Conversation.objects.create(user=user, mode='chat', title='Conversación de ejemplo')
     agent = Conversation.objects.create(user=user, mode='agent', title='Landing de Madrid')
     STATE.mkdir(parents=True, exist_ok=True)
-    report = {'database': DATABASE, 'container': CONTAINER, 'fixture': True, 'provider': 'httpx.MockTransport',
+    report = {'database': DATABASE, 'server': f'regulai.chat_ui={MARKER}', 'fixture': True, 'provider': 'httpx.MockTransport',
         'user': USERNAME, 'chat': chat.pk, 'agent': agent.pk, 'installations': installations,
         'history_status': [item.get('status') for item in history]}
     (STATE / 'lab.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
