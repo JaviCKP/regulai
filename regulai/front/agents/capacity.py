@@ -13,6 +13,7 @@ from django.utils import timezone
 from front.models import AgentExecution, AgentInference
 from front.policy import digest
 from .service import AgentDenied
+from .queue_wakeup import notify
 
 
 class CapacityDenied(AgentDenied):
@@ -130,6 +131,8 @@ def finish_provider(record, *, transport_finished):
         # crashes. Never make a failed effect appear completed here.
         stored.response = {**stored.response, '_capacity': value}
         stored.save(update_fields=['response'])
+        if transport_finished:
+            notify()
 
 
 def validate_reconciliation(actor, reason, evidence_reference, kind):
@@ -154,6 +157,7 @@ def reconcile_provider(record_id, actor, reason, evidence_reference):
             'reason': reason, 'evidence_reference': evidence_reference, 'recorded_at': timezone.now().isoformat()}}
         row.response = {**row.response, '_capacity': value}
         row.save(update_fields=['response'])
+        notify()
         return value
 
 
@@ -252,6 +256,7 @@ def sandbox_cleanup(payload):
             value = {**value, 'state': 'released', 'destroyed_at': timezone.now().isoformat()}
             current.job = {**current.job, 'sandbox_reservation': value}
             current.save(update_fields=['job'])
+            notify()
         return {'status': 'completed', 'reservation_id': value['reservation_id']}
 
 
@@ -269,4 +274,5 @@ def reconcile_sandbox(execution_id, actor, reason, evidence_reference):
             'reason': reason, 'evidence_reference': evidence_reference, 'recorded_at': timezone.now().isoformat()}}
         run.job = {**run.job, 'sandbox_reservation': value}
         run.save(update_fields=['job'])
+        notify()
         return value

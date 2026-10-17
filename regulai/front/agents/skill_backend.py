@@ -1,12 +1,14 @@
 """Pinned SDK skills backend. Private HTTP only; never opens a local file or VM."""
 import asyncio
 import base64
+from copy import deepcopy
 import fnmatch
 import hashlib
 import json
 from pathlib import PurePosixPath
 import re
 import shlex
+import threading
 import uuid
 
 from deepagents.backends.protocol import (BackendProtocol, EditResult, FileDownloadResponse,
@@ -21,16 +23,25 @@ SKILLS_PROMPT = ('Skills autorizadas, sin permisos adicionales. Las seleccionada
 
 class SkillBackend(BackendProtocol):
     def __init__(self, internal, snapshot, *, discovery=False):
-        self.internal, self.snapshot, self.discovery = internal, snapshot, discovery
+        self.internal, self.snapshot, self.discovery = internal, deepcopy(snapshot), discovery
+        # Metadata is pinned to this backend's execution and discarded with it.
+        # It is not an authority cache: every inference, tool grant and resource
+        # read still revalidates live permissions at the application boundary.
+        self._catalog_entries = self.snapshot.get('catalog')
+        self._catalog_lock = threading.Lock()
         self.materialized = set()
         self._skill_view = None
         self._materialization_failed = False
 
     def _catalog(self):
-        value = self.internal.operation('run/skills', {})
-        if value['digest'] != self.snapshot['digest']:
-            raise ValueError('Skills catalog changed')
-        return value['catalog']
+        with self._catalog_lock:
+            if self._catalog_entries is None:
+                # Compatibility for callers that only supply the pinned digest.
+                value = self.internal.operation('run/skills', {})
+                if value['digest'] != self.snapshot['digest']:
+                    raise ValueError('Skills catalog changed')
+                self._catalog_entries = deepcopy(value['catalog'])
+            return self._catalog_entries
 
     def _path(self, path):
         if (not isinstance(path, str) or not path.startswith('/') or '\\' in path or '\x00' in path
@@ -66,7 +77,10 @@ class SkillBackend(BackendProtocol):
             try:
                 entry, relative = self._entry(path, catalog)
                 if self.discovery and relative == 'SKILL.md':
-                    results[path] = FileDownloadResponse(path=path, content=entry['discovery'].encode())
+                    metadata = entry.get('metadata', {})
+                    discovery = ('---\nname: ' + json.dumps(entry['alias']) + '\ndescription: '
+                        + json.dumps(metadata.get('description', ''), ensure_ascii=False) + '\n---\n')
+                    results[path] = FileDownloadResponse(path=path, content=discovery.encode())
                 else:
                     wanted.append({'installation_id': entry['installation_id'], 'revision_id': entry['revision_id'],
                         'path': '/skills/' + entry['alias'] + '/' + relative})

@@ -464,31 +464,30 @@ def _reference_shields(execution, message, content, calls):
     return content, calls, registry
 
 
-def _protect_message(execution, government, message, policy_texts):
-    # Structural role, ID and name stay separate from mutable user/model content.
-    raw = json.dumps(message.model_dump(), ensure_ascii=False)
-    for mask in government.masks:
-        government.preflight(f'obfuscation:{mask.pk}', policy_texts + [('prompts', raw)])
-    original_content = message.model_dump()['content']
-    image_references = {}
-    if isinstance(original_content, list):
-        for index, part in enumerate(original_content):
-            if part.get('type') == 'image_ref':
-                image_references[index] = part['reference']
-                part['reference'] = ''  # Opaque IDs are structure, not maskable prose.
-    try:
-        calls = [call.model_dump() for call in message.tool_calls]
-        original_content, calls, references = _reference_shields(execution, message, original_content, calls)
-        content = _protect_tree(execution, original_content)
-        for call in calls:
-            call['args'] = _protect_tree(execution, call['args'])
-    except ValueError:
-        raise AgentDenied('invalid_agent_content') from None
-    # A JSON scalar string is indistinguishable from plain text to some masking
-    # backends. A one-element array preserves escaping when a secret occurs next
-    # to an embedded quote in an approved tool result.
-    parts = [json.dumps([content], ensure_ascii=False), *[json.dumps(c['args'], ensure_ascii=False) for c in calls]]
-    protected = preserve_aliases(parts, lambda values: government.protect_texts(values, policy_texts))
+def _mask_message_groups(parts_by_message):
+    """Bound actual serialized mask batches without splitting message envelopes."""
+    from front.local_masking import MAX_BATCH_BYTES, MAX_SEGMENTS
+    from front.privacy import TOKEN
+    group, size, segments = [], 2, 0
+    for index, parts in enumerate(parts_by_message):
+        # The outer preserve_aliases uses 50-byte ASCII sentinels. Include
+        # their expansion plus JSON escaping and array separators before grouping.
+        added = sum(len(json.dumps(part, ensure_ascii=False).encode('utf-8'))
+            + sum(50 - len(match.group()) for match in TOKEN.finditer(part)) for part in parts)
+        added += 2 * len(parts)
+        if group and (size + added > MAX_BATCH_BYTES or segments + len(parts) > MAX_SEGMENTS):
+            yield group
+            group, size, segments = [], 2, 0
+        # An individually oversized message retains the existing fail-closed
+        # masker behavior; never truncate it or split its tool-argument envelope.
+        group.append((index, parts))
+        size += added
+        segments += len(parts)
+    if group:
+        yield group
+
+
+def _restore_protected_message(message, calls, references, image_references, protected):
     for marker, value in references.items():
         if sum(text.count(marker) for text in protected) != 1:
             raise AgentDenied('masked_reference_changed')
@@ -502,10 +501,66 @@ def _protect_message(execution, government, message, policy_texts):
                 or not isinstance(content[index], dict) or content[index].get('type') != 'image_ref'):
             raise AgentDenied('invalid_masked_agent_content')
         content[index]['reference'] = reference
-    for call, value in zip(calls, protected[1:]):
+    for call, value in zip(calls, protected[1:], strict=True):
         call['args'] = json.loads(value)
         validate_arguments(ToolCall.model_validate(call))
     return ChatMessage(message.role, content, calls, message.tool_call_id, message.name)
+
+
+def _protect_messages(execution, government, messages, policy_texts):
+    """One local preparation, then bounded governed mask calls for its fragments."""
+    if not messages:
+        return []
+    # Keep YARA inputs separate. Grouping authorization must not concatenate
+    # unrelated messages into a new condition-matching input.
+    raw = [('prompts', json.dumps(message.model_dump(), ensure_ascii=False)) for message in messages]
+    for mask in government.masks:
+        government.preflight(f'obfuscation:{mask.pk}', policy_texts + raw)
+    prepared, values = [], []
+    for message in messages:
+        content = message.model_dump()['content']
+        image_references = {}
+        if isinstance(content, list):
+            for index, part in enumerate(content):
+                if part.get('type') == 'image_ref':
+                    image_references[index] = part['reference']
+                    part['reference'] = ''
+        calls = [call.model_dump() for call in message.tool_calls]
+        try:
+            content, calls, references = _reference_shields(execution, message, content, calls)
+        except ValueError:
+            raise AgentDenied('invalid_agent_content') from None
+        prepared.append((message, calls, references, image_references))
+        # Lists carry internal structure without introducing synthetic text keys
+        # that a user's explicit privacy selection could legitimately transform.
+        values.append([content, [call['args'] for call in calls]])
+    try:
+        protected_values = _protect_tree(execution, values)
+    except ValueError:
+        raise AgentDenied('invalid_agent_content') from None
+    parts_by_message = []
+    for (content, args), (_, calls, _, _) in zip(protected_values, prepared, strict=True):
+        for call, value in zip(calls, args, strict=True):
+            call['args'] = value
+        # A one-element JSON array preserves scalar strings and embedded quotes.
+        parts_by_message.append([json.dumps([content], ensure_ascii=False),
+            *[json.dumps(value, ensure_ascii=False) for value in args]])
+    result = []
+    for group in _mask_message_groups(parts_by_message):
+        parts = [part for _, message_parts in group for part in message_parts]
+        protected = preserve_aliases(parts, lambda values: government.protect_texts(values, policy_texts))
+        if len(protected) != len(parts):
+            raise AgentDenied('invalid_masked_agent_content')
+        offset = 0
+        for index, message_parts in group:
+            stop = offset + len(message_parts)
+            result.append(_restore_protected_message(*prepared[index], protected[offset:stop]))
+            offset = stop
+    return result
+
+
+def _protect_message(execution, government, message, policy_texts):
+    return _protect_messages(execution, government, [message], policy_texts)[0]
 
 
 class ProtectedHistory:
@@ -556,16 +611,30 @@ def _protection_key(execution, context, government, message):
         'message': message.model_dump()}))
 
 
-def _protected_message(execution, context, government, message, policy_texts, counts):
-    key = _protection_key(execution, context, government, message)
-    cached = PROTECTED_HISTORY.get(key)
-    if cached is not None:
-        counts['reused'] += 1
-        return ChatMessage(**json.loads(cached))  # A fresh copy: callers may rewrite content.
-    protected = _protect_message(execution, government, message, policy_texts)
-    PROTECTED_HISTORY.put(key, json.dumps(asdict(protected), ensure_ascii=False))
-    counts['protected'] += 1
-    return protected
+def _protected_messages(execution, context, government, messages, policy_texts, counts):
+    # The existing key includes execution, attempt, authorization, policy,
+    # masks and exact message. No cache is shared across an authority change.
+    encoded, pending, keys = {}, {}, []
+    for message in messages:
+        key = _protection_key(execution, context, government, message)
+        keys.append(key)
+        cached = PROTECTED_HISTORY.get(key)
+        if cached is not None:
+            encoded[key] = cached
+            counts['reused'] += 1
+        elif key in pending:
+            counts['reused'] += 1
+        else:
+            pending[key] = message
+            counts['protected'] += 1
+    protected = _protect_messages(execution, government, list(pending.values()), policy_texts)
+    # Publish only complete successful batches. Decode a fresh copy per position;
+    # image hydration and later consumers may mutate their message independently.
+    for key, message in zip(pending, protected, strict=True):
+        value = json.dumps(asdict(message), ensure_ascii=False)
+        PROTECTED_HISTORY.put(key, value)
+        encoded[key] = value
+    return [ChatMessage(**json.loads(encoded[key])) for key in keys]
 
 
 def _within_command_limit(tool, budget):
@@ -762,8 +831,7 @@ def infer(token, attempt, payload):
                     'si los necesitas, pide al usuario el fragmento concreto.')))
         raw_messages = instructions + skill_instructions + history_messages + worker_messages
         protection = {'reused': 0, 'protected': 0}
-        messages = [_protected_message(execution, context, government, message, policy_texts, protection)
-                    for message in raw_messages]
+        messages = _protected_messages(execution, context, government, raw_messages, policy_texts, protection)
         _classify(execution, context, government, messages, policy_texts)
         schemas = [tool_schema(name) for name in effective_tools]
         # Bound all structured payload bytes, including IDs, args and tool schemas.

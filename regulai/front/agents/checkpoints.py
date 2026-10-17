@@ -161,8 +161,9 @@ def save(token, attempt, payload):
         if required(run.prompt):
             if raw is not None:
                 raise AgentDenied('privacy_binary_channel_blocked')
-            payload = {**payload, 'messages': protect_tree(ProtectionContext.from_prompt(run.prompt), payload['messages']),
-                       'wire_messages': protect_tree(ProtectionContext.from_prompt(run.prompt), payload['wire_messages'])}
+            protected = protect_tree(ProtectionContext.from_prompt(run.prompt),
+                [payload['messages'], payload['wire_messages']])
+            payload = {**payload, 'messages': protected[0], 'wire_messages': protected[1]}
         if run.job.get('kind') != 'professional' or run.active_call:
             raise AgentDenied('checkpoint_requires_idle_boundary')
         _validate_tool_history(run, request)
@@ -205,8 +206,9 @@ def load(run):
     if required(run.prompt):
         if value.get('archive') is not None:
             raise AgentDenied('privacy_binary_channel_blocked')
-        value = {**value, 'messages': protect_tree(ProtectionContext.from_prompt(run.prompt), value['messages']),
-                 'wire_messages': protect_tree(ProtectionContext.from_prompt(run.prompt), value['wire_messages'])}
+        protected = protect_tree(ProtectionContext.from_prompt(run.prompt),
+            [value['messages'], value['wire_messages']])
+        value = {**value, 'messages': protected[0], 'wire_messages': protected[1]}
     # JSON normalizes watermark tuples to lists.
     if digest(value['watermark']) != digest(watermark(run)) or run.active_call:
         raise AgentDenied('checkpoint_has_later_or_uncertain_operations')

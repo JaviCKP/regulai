@@ -78,7 +78,11 @@ def available(actor):
 
 def event(execution, kind, **data):
     from .event_store import append_event
-    return append_event(execution, kind, text=EVENT_TEXT.get(kind, ''), **data)
+    recorded = append_event(execution, kind, text=EVENT_TEXT.get(kind, ''), **data)
+    if kind in {'queued', 'recovered', 'export_recovery', 'completed', 'cancelled', 'interrupted', 'failed'}:
+        from .queue_wakeup import notify
+        notify()
+    return recorded
 
 
 def _terminal(execution, status):
@@ -369,6 +373,43 @@ def worker_authorized(token):
 
 def claim(token, payload):
     worker_authorized(token)
+    if not isinstance(payload, dict):
+        raise ValueError('Invalid claim')
+    wait_seconds = payload.get('wait_seconds', 0)
+    if type(wait_seconds) is not int or not 0 <= wait_seconds <= 5:
+        raise ValueError('Invalid claim wait')
+    request = {key: value for key, value in payload.items() if key != 'wait_seconds'}
+    # Validate before allocating a listener or waiting. Legacy workers retain
+    # their immediate response and exact request/response contract.
+    if set(request) not in ({'worker_id', 'claim_id'}, {'worker_id', 'claim_id', 'worker_protocol'}) or request.get('worker_protocol', 1) not in (1, 2):
+        raise ValueError('Invalid claim')
+    uuid.UUID(request['worker_id'])
+    uuid.UUID(request['claim_id'])
+    if not wait_seconds:
+        return _claim(token, request)
+    import time
+    from .queue_wakeup import listen
+    deadline = time.monotonic() + wait_seconds
+    with listen() as wake:
+        while True:
+            result = _claim(token, request)
+            if result['status'] != 'idle':
+                return result
+            remaining = deadline - time.monotonic()
+            if wake is None:
+                return {**result, 'retry_after_ms': 500}
+            if remaining <= 0:
+                return {**result, 'retry_after_ms': 0}
+            # No admission lock/transaction survives _claim. Even a lost wakeup
+            # gets one authoritative recheck at the bounded timeout.
+            try:
+                wake(remaining)
+            except connection.Database.Error:
+                return {**result, 'retry_after_ms': 500}
+
+
+def _claim(token, payload):
+    worker_authorized(token)
     if set(payload) not in ({'worker_id', 'claim_id'}, {'worker_id', 'claim_id', 'worker_protocol'}) or payload.get('worker_protocol', 1) not in (1, 2):
         raise ValueError('Invalid claim')
     worker, claim_id = uuid.UUID(payload['worker_id']), uuid.UUID(payload['claim_id'])
@@ -457,11 +498,11 @@ def _bootstrap(token, attempt, payload):
         from front.privacy import required
         if required(run.prompt) and (run.job.get('source') or run.job.get('base')):
             raise AgentDenied('privacy_binary_channel_blocked')
-        from .skill_context import bootstrap as skill_bootstrap
-        skill_data = skill_bootstrap(run)
         if run.job.get('kind') == 'professional':
             from .professional import bootstrap as professional_bootstrap
             return professional_bootstrap(run, context)
+        from .skill_context import bootstrap as skill_bootstrap
+        skill_data = skill_bootstrap(run)
         from .aliases import alias_text, alias_value
         from front.privacy import protected_user_message
         if run.job['kind'] == 'mock':

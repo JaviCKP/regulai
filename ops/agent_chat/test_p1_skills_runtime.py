@@ -84,6 +84,7 @@ class SkillsRuntimeTests(unittest.TestCase):
         self.assertNotIn('UNIQUE_BODY', json.dumps(messages))
         self.assertFalse(any(name == 'run/skill-resource' for name, _ in boundary.events))
         self.assertEqual(len(boundary.inferences), 1)
+        self.assertFalse(any(name == 'run/skills' for name, _ in boundary.events))
 
     def test_professional_and_documental_automatic_read_use_no_vm(self):
         for documental in (False, True):
@@ -109,6 +110,59 @@ class SkillsRuntimeTests(unittest.TestCase):
         self.assertIsNotNone(backend.download_files(['/unknown/SKILL.md'])[0].error)
         self.assertEqual(len(backend.glob('*.md').matches), 1)
         self.assertEqual(len(backend.grep('UNIQUE_BODY').matches), 1)
+
+    def test_discovery_reuses_bootstrap_metadata_without_catalog_http(self):
+        boundary = SkillsBoundary()
+        del boundary.entry["discovery"]
+        import httpx
+        internal = InternalClient("http://internal.test/internal", "synthetic", uuid.uuid4(),
+            transport=httpx.MockTransport(boundary.respond))
+        self.addCleanup(internal.close)
+        backend = SkillBackend(internal, boundary.snapshot, discovery=True)
+        boundary.entry["metadata"]["description"] = "Changed after construction"
+        self.assertEqual(len(backend.ls("/").entries), 1)
+        content = backend.read("/design/SKILL.md").file_data["content"]
+        self.assertIn("Design HTML", content)
+        self.assertNotIn("Changed after construction", content)
+        self.assertEqual(len(backend.glob("*.md").matches), 1)
+        self.assertEqual(boundary.events, [])
+
+    def test_legacy_catalog_is_fetched_once_and_digest_mismatch_is_denied(self):
+        boundary = SkillsBoundary()
+        import httpx
+        internal = InternalClient("http://internal.test/internal", "synthetic", uuid.uuid4(),
+            transport=httpx.MockTransport(boundary.respond))
+        self.addCleanup(internal.close)
+        backend = SkillBackend(internal, {"digest": boundary.snapshot["digest"]}, discovery=True)
+        backend.ls("/")
+        backend.glob("*.md")
+        backend.read("/design/SKILL.md")
+        self.assertEqual([name for name, _ in boundary.events], ["run/skills"])
+        changed = SkillBackend(internal, {"digest": "different"}, discovery=True)
+        with self.assertRaisesRegex(ValueError, "Skills catalog changed"):
+            changed.ls("/")
+
+
+    def test_two_executions_keep_separate_bootstrap_catalogs(self):
+        first, second = SkillsBoundary(), SkillsBoundary()
+        first.entry["metadata"]["description"] = "Only first execution metadata"
+        second.entry["alias"] = "second-design"
+        second.entry["metadata"]["description"] = "Only second execution metadata"
+        second.snapshot["digest"] = "c" * 64
+        for boundary in (first, second):
+            self.assertEqual(self.invoke(boundary)["status"], "completed")
+            self.assertFalse(any(name == "run/skills" for name, _ in boundary.events))
+        first_messages = json.dumps(first.inferences[0]["messages"])
+        second_messages = json.dumps(second.inferences[0]["messages"])
+        self.assertIn("Only first execution metadata", first_messages)
+        self.assertNotIn("Only second execution metadata", first_messages)
+        self.assertNotIn("second-design", first_messages)
+        self.assertIn("Only second execution metadata", second_messages)
+        self.assertNotIn("Only first execution metadata", second_messages)
+        first_section = next(m["skill_catalog"] for m in first.inferences[0]["messages"] if m.get("skill_catalog"))
+        second_section = next(m["skill_catalog"] for m in second.inferences[0]["messages"] if m.get("skill_catalog"))
+        self.assertEqual(first_section["digest"], first.snapshot["digest"])
+        self.assertEqual(second_section["digest"], second.snapshot["digest"])
 
 
 if __name__ == '__main__':

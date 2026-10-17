@@ -557,7 +557,8 @@ def run(config, *, once=False, stop_event=None):
                 for retry in range(2):
                     try:
                         response = client.post(endpoint + 'claim/', json={
-                            'worker_id': worker_id, 'claim_id': claim_id, 'worker_protocol': 2},
+                            'worker_id': worker_id, 'claim_id': claim_id, 'worker_protocol': 2,
+                            'wait_seconds': 0 if once else 5},
                             headers={'Authorization': 'Bearer ' + token})
                         break
                     except httpx.TransportError:
@@ -568,7 +569,10 @@ def run(config, *, once=False, stop_event=None):
                 if claimed['status'] == 'idle':
                     if once and not futures:
                         return {'status': 'idle'}
-                    stop_event.wait(0.5)
+                    # New servers wait on a commit notification; old/fallback
+                    # responses retain the bounded poll instead of a busy loop.
+                    delay = claimed.get('retry_after_ms', 500)
+                    stop_event.wait(min(5, max(0, delay / 1000)))
                     continue
                 futures.add(executor.submit(execute, claimed))
     finally:

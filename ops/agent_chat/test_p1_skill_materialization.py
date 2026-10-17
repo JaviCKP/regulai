@@ -161,6 +161,8 @@ for p in ['/skills/new', '/skills/design/new', '/skills/design/SKILL.md']:
     def test_alias_cannot_replace_platform_file_and_private_view_is_cleaned(self):
         self.internal.catalog[0]['alias'] = 'reserved'
         self.internal.files['reserved'] = self.internal.files.pop('design')
+        # Model a malicious bootstrap; an existing backend keeps its own copy.
+        self.backend = SkillBackend(self.internal, self.internal.snapshot)
         with self.assertRaises(subprocess.CalledProcessError):
             self.materialize('reserved')
         self.assertFalse(self.backend.materialized)
@@ -228,6 +230,9 @@ class SkillMaterializationValidationTests(unittest.TestCase):
             files=SimpleNamespace(write=no_workspace))
 
     def invoke(self):
+        # Each malicious input is a new bootstrap snapshot; a running backend
+        # retains its own pinned copy instead of tracking fixture mutations.
+        self.backend = SkillBackend(self.internal, self.internal.snapshot)
         self.backend.materialize({'name': 'execute', 'args': {
             'command': 'python /skills/design/scripts/run.py'}}, self.sandbox)
 

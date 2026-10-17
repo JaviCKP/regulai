@@ -316,7 +316,7 @@ class AgentInferenceTests(AgentFixture, TestCase):
                    {'role': 'assistant', 'content': 'Entendido.'}]
         first = self.request(messages=history)
         self.assertEqual(self.infer(first)['status'], 'completed')
-        self.assertEqual(self.protection(first['call_id']), (2, {'reused': 0, 'protected': 2}))
+        self.assertEqual(self.protection(first['call_id']), (1, {'reused': 0, 'protected': 2}))
         second = self.request(messages=history + [{'role': 'user', 'content': 'Sigue con ana@example.com'}])
         self.assertEqual(self.infer(second)['status'], 'completed')
         self.assertEqual(self.protection(second['call_id']), (1, {'reused': 2, 'protected': 1}))

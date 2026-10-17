@@ -139,3 +139,86 @@ class SkillsAuthorityTests(AgentFixture, TestCase):
         reference['revisions'][0]['revision_id'] = str(uuid.uuid4())
         with self.assertRaisesRegex(AgentDenied, 'checkpoint_skills_changed'):
             skill_context.validate_checkpoint_reference(self.execution, reference)
+
+    def test_catalog_validation_has_bounded_queries_and_preserves_revision_order(self):
+        for index in range(7):
+            installation = AgentSkillInstallation.objects.create(company=self.company, owner=self.user,
+                source_identity=f"fixture:latency-{index}", alias=f"latency-{index}", enabled=True)
+            revision = AgentSkillRevision.objects.create(installation=installation, origin="fixture:latency",
+                folder_sha256=self.revision.folder_sha256, manifest=self.revision.manifest,
+                metadata=self.revision.metadata, license=self.revision.license,
+                compatibility=self.revision.compatibility, bundle=self.revision.bundle)
+            installation.current_revision = revision
+            installation.save()
+        self.select(False)
+        self.execution.profile = self.agent
+        expected = [entry["revision_id"] for entry in self.execution.job["skills"]["catalog"]]
+        with self.assertNumQueries(1):
+            found = skill_context._entries(self.execution)
+        self.assertEqual([str(revision.pk) for _, revision in found], expected)
+        self.installation.authorization_version += 1
+        self.installation.save()
+        with self.assertRaisesRegex(AgentDenied, "skill_authorization_changed"):
+            skill_context._entries(self.execution)
+
+    def test_checkpoint_skill_identity_does_not_prepare_catalog_text(self):
+        self.execution.profile = self.agent
+        with self.assertNumQueries(1):
+            reference = skill_context.checkpoint_reference(self.execution)
+        self.assertEqual(reference, {"version": 1, "digest": self.execution.job["skills"]["digest"],
+            "revisions": [{"revision_id": str(self.revision.pk), "folder_sha256": self.revision.folder_sha256}]})
+
+    def test_catalog_rejects_revision_from_another_installation_or_owner(self):
+        original = self.execution.job["skills"]["catalog"][0]["installation_id"]
+        self.execution.job["skills"]["catalog"][0]["installation_id"] = str(uuid.uuid4())
+        with self.assertRaisesRegex(AgentDenied, "skill_authorization_changed"):
+            skill_context._entries(self.execution)
+        self.execution.job["skills"]["catalog"][0]["installation_id"] = original
+        from django.contrib.auth.models import User
+        other = User.objects.create_user("other-skill-owner")
+        self.installation.owner = other
+        self.installation.save()
+        with self.assertRaisesRegex(AgentDenied, "skill_authorization_changed"):
+            skill_context._entries(self.execution)
+
+    def test_protected_checkpoint_preserves_both_message_views_and_revocation(self):
+        self._protected_checkpoint(['Ana Fixture'])
+
+    def test_checkpoint_selected_wrapper_keys_cannot_retain_unprotected_message_views(self):
+        self._protected_checkpoint(['Ana Fixture', 'messages', 'wire_messages'])
+
+    def _protected_checkpoint(self, selected_literals):
+        from front.agents import checkpoints
+        from front.local_masking import detector_metadata
+        from front.models import PrivacyRevision
+        revision = PrivacyRevision.objects.create(company=self.company, author=self.user,
+            configuration=json.dumps({"categories": {"EMAIL": "reversible"},
+                "literals": [{"text": text, "category": "PERSON"} for text in selected_literals]}),
+            fingerprint="checkpoint-fixture", detector_version=digest(detector_metadata()))
+        self.company.ai_config["privacy"] = {"version": 1, "revision_id": revision.pk}
+        self.company.save()
+        self.execution.job.update(kind="professional")
+        self.execution.save()
+        self.execution.authorization_digest = _context(self.prompt, self.agent.pk)[-1]
+        self.execution.save()
+        content = "Hola Ana Fixture, ana@example.invalid"
+        payload = {"version": 2, "messages": [{"type": "human", "data": {"content": content}}],
+            "wire_messages": [{"role": "user", "content": content}], "archive": None,
+            "runtime_sha256": "a" * 64, "workspace_runtime_sha256": None, "summarization": None,
+            "skills": skill_context.checkpoint_reference(self.execution)}
+        self.assertEqual(checkpoints.save(self.token, self.execution.attempt, payload), {"status": "completed"})
+        self.execution.refresh_from_db()
+        stored = json.loads(AgentInput.objects.get(pk=self.execution.job['checkpoint']).original)
+        self.assertNotIn('ana@example.invalid', json.dumps(stored))
+        self.assertNotIn('Ana Fixture', json.dumps(stored))
+        self.assertIn('messages', stored)
+        self.assertIn('wire_messages', stored)
+        restored = checkpoints.load(self.execution)
+        self.assertEqual(restored["messages"][0]["data"]["content"], restored["wire_messages"][0]["content"])
+        self.assertIn("[[R_EMAIL_", restored["wire_messages"][0]["content"])
+        self.assertNotIn("ana@example.invalid", json.dumps(restored))
+        self.assertNotIn("Ana Fixture", json.dumps(restored))
+        self.installation.enabled = False
+        self.installation.save()
+        with self.assertRaisesRegex(AgentDenied, "skill_authorization_changed"):
+            checkpoints.load(self.execution)

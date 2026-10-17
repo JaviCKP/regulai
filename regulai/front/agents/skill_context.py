@@ -26,20 +26,27 @@ def _entries(run):
     snapshot = run.job.get('skills') or {}
     if not snapshot:
         return []
-    from front.models import AgentSkillInstallation, AgentSkillRevision
+    from front.models import AgentSkillRevision
     entries = snapshot.get('catalog', [])
     if snapshot.get('version') != 1 or len(entries) > 32:
         _deny('skill_snapshot_invalid')
+    # One live join per operation, never a permission cache. The run keeps its
+    # pinned revision while revocation, ownership and dependency checks remain fresh.
+    revisions = {str(revision.pk): revision for revision in AgentSkillRevision.objects.filter(
+        pk__in=[entry['revision_id'] for entry in entries],
+        installation__company_id=run.prompt.company_id, installation__owner_id=run.prompt.user_id,
+        installation__enabled=True, installation__tombstoned_at__isnull=True
+    ).select_related('installation').defer('bundle')} if entries else {}
     found, aliases = [], set()
     for entry in entries:
-        installation = AgentSkillInstallation.objects.filter(pk=entry['installation_id'],
-            company_id=run.prompt.company_id, owner_id=run.prompt.user_id, enabled=True,
-            tombstoned_at__isnull=True, authorization_version=entry['authorization_version']).first()
-        if not installation:
+        revision = revisions.get(entry['revision_id'])
+        if not revision:
             _deny()
-        revision = AgentSkillRevision.objects.filter(pk=entry['revision_id'], installation=installation,
-            folder_sha256=entry['folder_sha256']).defer('bundle').first()
-        if not revision or entry['alias'] in aliases or installation.alias != entry['alias']:
+        installation = revision.installation
+        if (str(installation.pk) != entry['installation_id']
+                or installation.authorization_version != entry['authorization_version']
+                or revision.folder_sha256 != entry['folder_sha256']
+                or entry['alias'] in aliases or installation.alias != entry['alias']):
             _deny()
         from .skills import availability
         if not availability(run.profile, revision.compatibility)['available']:
@@ -397,10 +404,13 @@ def inference_messages(run, request):
 
 
 def checkpoint_reference(run):
-    snapshot = bootstrap(run)
+    # Recovery needs identities, not discovery text or a new privacy catalog.
+    # Revalidate every referenced installation even when the checkpoint is cached.
+    entries = _entries(run)
+    snapshot = run.job.get('skills')
     return {'version': 1, 'digest': snapshot['digest'], 'revisions': [
         {'revision_id': entry['revision_id'], 'folder_sha256': entry['folder_sha256']}
-        for entry in snapshot['catalog']]} if snapshot else None
+        for entry, _ in entries]} if snapshot else None
 
 
 def validate_checkpoint_reference(run, value):
