@@ -1,0 +1,40 @@
+{
+  "fixture": true,
+  "network": "httpx.MockTransport",
+  "capture": [
+    {
+      "url": "https://provider.invalid/v1/chat/completions",
+      "headers": {
+        "host": "provider.invalid",
+        "accept-encoding": "gzip, deflate",
+        "connection": "keep-alive",
+        "accept": "application/json",
+        "content-type": "application/json",
+        "user-agent": "OpenAI/Python 1.102.0",
+        "x-stainless-lang": "python",
+        "x-stainless-package-version": "1.102.0",
+        "x-stainless-os": "Windows",
+        "x-stainless-arch": "other:amd64",
+        "x-stainless-runtime": "CPython",
+        "x-stainless-runtime-version": "3.12.11",
+        "authorization": "Bearer synthetic-only",
+        "x-stainless-async": "false",
+        "x-stainless-retry-count": "0",
+        "x-stainless-read-timeout": "30",
+        "content-length": "198"
+      },
+      "body": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Nombre: [[R_PERSON_6d18db403fa8859a06f4ad1960a384fe]]; [[R_EMAIL_9b3570a083a7a429ca2cad3dbd161ae6]]"
+          }
+        ],
+        "model": "synthetic",
+        "max_tokens": 1000,
+        "temperature": 0.6
+      }
+    }
+  ],
+  "canonical_response": "Nombre: [[R_PERSON_6d18db403fa8859a06f4ad1960a384fe]]; [[R_EMAIL_9b3570a083a7a429ca2cad3dbd161ae6]]"
+}
