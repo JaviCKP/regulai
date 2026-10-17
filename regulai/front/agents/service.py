@@ -322,7 +322,7 @@ def _classify(execution, context, government, messages, policy_texts):
     bound = (Decimal(cfg.jev.max_call_cost) if cfg.jev.max_call_cost is not None
         and cfg.jev.input_price is not None and cfg.jev.output_price is not None else None)
     call, started = government.start_call('classification', 'jev', cfg.jev.model,
-        policy_texts + [('prompts', serialized)], bound, prices)
+        policy_texts + [('prompts', serialized)], bound, prices, outbound_texts=[serialized])
     receipt.update(consulted=True, consulted_at=call['started_at'])
     call['jev'] = receipt
     _save_decision(execution.prompt)
@@ -780,12 +780,15 @@ def infer(token, attempt, payload):
             max_output_tokens=options['max_output_tokens'] if options else (None if cfg.limits.provider_managed else cfg.routing.max_output_tokens),
             provider_managed=False if options else cfg.limits.provider_managed)
         _images(execution, messages, agent, model, cfg)
+        from front.privacy import required
+        if required(execution.prompt) and any(isinstance(m.content, list) for m in messages):
+            raise AgentDenied('privacy_binary_channel_blocked')
         policy_payload = json.dumps([asdict(m) for m in messages], ensure_ascii=False)
         from .capacity import reserve_provider
         reserve_provider(record, engine)
         call, started = government.start_call(request.purpose, f'engine:{engine.pk}', model.model_id,
             policy_texts + [('prompts', policy_payload)], selected.estimated_cost,
-            selected.price_snapshot, model_pk=model.pk)
+            selected.price_snapshot, model_pk=model.pk, outbound_texts=[policy_payload, json.dumps(schemas)])
         call['protection'] = protection
         execution.prompt.model_used = model.model_id
         _save_decision(execution.prompt, update_fields=['decision', 'model_used', 'updated_at'])

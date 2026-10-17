@@ -16,6 +16,9 @@ from .service import AgentDenied, authenticate
 def authorize_tool(token, attempt, payload):
     call = ToolCall.model_validate(payload)
     execution, context = authenticate(token, attempt)
+    from front.privacy import required
+    if required(execution.prompt) and call.name in ('web_download', 'web_browser', 'inspect_image'):
+        raise AgentDenied('privacy_binary_channel_blocked')
     if call.name not in context[2].tools:
         raise AgentDenied('tool_not_allowed')
     if call.name == 'install_packages' and (execution.job.get('skills') or {}).get('catalog'):

@@ -56,8 +56,17 @@ class GovernedCalls:
         self.prompt.save(update_fields=['decision', 'updated_at'])
 
     def protect_texts(self, texts, policy_texts):
+        from .privacy import protect_batch, required
+        from .agents.aliases import preserve_aliases
+        try:
+            protected = protect_batch(self.prompt, texts)
+        except ValueError:
+            raise PipelineStop('privacy_protection_failed') from None
         mask_bounds = mask_cost_bounds(self.masks, self.cfg.masking.max_call_cost)
         def before_mask(mask, value):
+            from .privacy import outbound
+            outbound(self.prompt, 'mask:' + str(mask.pk) + ':' + str(len(self.prompt.decision['calls'])),
+                     [value], metadata=[mask.api_url, mask.detect, mask.language])
             self.mask_call = self.start_call('obfuscation', f'obfuscation:{mask.pk}', None,
                 policy_texts + [('prompts', value)], mask_bounds[mask.pk], {}, transport=mask.backend)
             return self.mask_timeout(mask)
@@ -65,7 +74,8 @@ class GovernedCalls:
         def after_mask(mask):
             self.complete_call(*self.mask_call, None)
 
-        return mask_texts(texts, self.masks, before_mask, after_mask)
+        return (preserve_aliases(protected, lambda values: mask_texts(values, self.masks, before_mask, after_mask))
+                if required(self.prompt) else mask_texts(texts, self.masks, before_mask, after_mask))
 
     def mask_timeout(self, mask):
         return 10 if self.provider_managed and mask.backend == 'local' else self.remaining()
@@ -99,6 +109,12 @@ class GovernedCalls:
     def preflight(self, destination, texts, *, model_pk=None):
         from .chat_service import authorized_history
         self.remaining()
+        from .privacy import required, prepare_turn, ProtectionContext
+        if required(self.prompt):
+            try:
+                prepare_turn(ProtectionContext.from_prompt(self.prompt))
+            except ValueError:
+                raise PipelineStop('privacy_authorization_changed') from None
         if self.authorize is not None:
             self.authorize()
         fresh = Profile.objects.select_related('company', 'department', 'user').get(user=self.actor)
@@ -139,9 +155,20 @@ class GovernedCalls:
                 raise PipelineStop('authorization_changed')
         return fresh
 
-    def start_call(self, purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None, transport='http'):
+    def start_call(self, purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None, transport='http', outbound_texts=None):
         self.preflight(destination, texts, model_pk=model_pk)
         self.ensure_budget(cost_bound, reserve)
+        if outbound_texts is not None:
+            from .privacy import outbound
+            metadata = [model or '']
+            if destination.startswith('engine:') and (int(destination.split(':')[1]), model_pk) in self.rows:
+                engine = self.rows[(int(destination.split(':')[1]), model_pk)][0]
+                metadata += [engine.api_key, engine.engine.base_url or '']
+            try:
+                outbound(self.prompt, str(self.call_context.get('call_id') or '') + ':' + str(len(self.prompt.decision['calls'])),
+                    outbound_texts, metadata=metadata)
+            except ValueError:
+                raise PipelineStop('privacy_protection_failed') from None
         call = {'purpose': purpose, 'provider': destination, 'model': model, 'status': 'started',
                 'cost': None, 'cost_bound': str(cost_bound) if cost_bound is not None else None,
                 'price_snapshot': prices, 'currency': 'USD', 'cost_kind': 'unknown', 'transport': transport}

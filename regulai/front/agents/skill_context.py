@@ -61,9 +61,11 @@ def bootstrap(run):
     snapshot = run.job.get('skills') or {}
     if not snapshot:
         return None
-    return {'version': 1, 'digest': snapshot['digest'], 'selected': snapshot.get('selected', []),
+    result = {'version': 1, 'digest': snapshot['digest'], 'selected': snapshot.get('selected', []),
         'auto': snapshot.get('auto', True), 'catalog': [dict(entry, manifest=revision.manifest)
             for entry, revision in entries]}
+    from front.privacy import required, protect_tree, ProtectionContext
+    return protect_tree(ProtectionContext.from_prompt(run.prompt), result) if required(run.prompt) else result
 
 
 def _path(path):
@@ -132,6 +134,9 @@ def catalog(token, attempt, payload):
 def resource(token, attempt, payload):
     from .service import authenticate
     run, _ = authenticate(token, attempt)
+    from front.privacy import required
+    if required(run.prompt):
+        _deny('privacy_binary_channel_blocked')
     requests = payload.get('files')
     if set(payload) != {'files'} or not isinstance(requests, list) or not 1 <= len(requests) <= 512:
         raise ValueError('Invalid skills resource request')
@@ -210,6 +215,9 @@ def confirm_inference(run):
 def tool_view(run, call, failed=False):
     """Canonical file views; raw executor data is intentionally not an input."""
     authorize_path(run, call)
+    from front.privacy import required, protect_tree, ProtectionContext
+    def safe(value):
+        return protect_tree(ProtectionContext.from_prompt(run.prompt), value) if required(run.prompt) else value
     if call.name != 'read_file':
         entries = _entries(run)
         prefix = call.args.get('path', '/skills').rstrip('/') + '/'
@@ -234,7 +242,7 @@ def tool_view(run, call, failed=False):
                 matches.append({'path': path, 'bytes': item['bytes']})
             else:
                 try:
-                    content = _bytes(revision, item['path']).decode('utf-8')
+                    content = safe(_bytes(revision, item['path']).decode('utf-8'))
                 except UnicodeError:
                     continue
                 for index, line in enumerate(content.splitlines(), 1):
@@ -252,7 +260,7 @@ def tool_view(run, call, failed=False):
     except UnicodeError:
         return {'status': 'withheld', 'code': 'skill_binary_resource', 'bytes': len(raw),
             'sha256': hashlib.sha256(raw).hexdigest()}
-    lines = text.splitlines(keepends=True)
+    lines = safe(text).splitlines(keepends=True)
     start, limit = call.args.get('offset', 0), call.args.get('limit', 2000)
     complete = start == 0 and limit >= len(lines)
     view = {'status': 'approved', 'trust': 'untrusted_skill_data', 'revision_id': str(revision.pk),
@@ -281,6 +289,9 @@ def finish_tool(run, context, call, request):
         return result_view(previous)
     with transaction.atomic():
         view = tool_view(run, call, request.failed)
+        from front.privacy import required, protect_tree, ProtectionContext
+        if required(run.prompt):
+            view = protect_tree(ProtectionContext.from_prompt(run.prompt), view)
         if context[2].professional:
             store_result(operation(run, call), view)
             return finish(run, context, call, request)

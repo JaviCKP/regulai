@@ -168,12 +168,16 @@ def bootstrap(run, context):
     from .checkpoints import load
     from .file_continuity import restore_references
     from .skill_context import bootstrap as skill_bootstrap
+    from front.privacy import required
+    workspace_inputs = restore_references(run, context)
+    if required(run.prompt) and (workspace_inputs or asset or base):
+        raise AgentDenied('privacy_binary_channel_blocked')
     return {'status': 'authorized', 'execution': str(run.pk), 'worker_protocol': run.job.get('worker_protocol', 1),
         'skills': skill_bootstrap(run),
         'history': run.job.get('history', {}), 'model_profile': run.job.get('history', {}).get('model_profile'),
         'effective_options': run.job.get('effective_options', {}),
         'sandbox_tools': sorted(set(tools) - {'web_search', 'web_open', 'web_find', 'read_output', 'write_todos'}),
-        'workspace_inputs': restore_references(run, context),
+        'workspace_inputs': workspace_inputs,
         'input': {'path': asset.path, 'base64': asset.original,
             'sha256': asset.digest} if asset else None, 'base': None, 'base_format': base.format if base else None,
         'message': alias_text(run, run.prompt.content), 'tools': tools, 'limits': run.job['limits'],

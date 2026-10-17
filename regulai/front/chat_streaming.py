@@ -221,6 +221,10 @@ class StreamGuard:
         if self.structured:
             return
         cut = safe_cut(self.text, (self.matching, self.offsets))
+        from .privacy import required, stream_cut
+        privacy_prompt = self.prompt or getattr(self.government, 'prompt', None)
+        if privacy_prompt is not None and required(privacy_prompt):
+            cut = stream_cut(privacy_prompt, self.text, cut)
         if cut <= self.cut:
             return
         # Same output authorization as the final answer, on everything received.
@@ -240,6 +244,12 @@ class StreamGuard:
     def mask(self, value):
         if self.protector is not None:
             return self.protector(value)
+        from .privacy import transient_response, required
+        if self.prompt is not None and required(self.prompt):
+            try:
+                return transient_response(self.prompt, value)
+            except ValueError:
+                raise PipelineStop('privacy_protection_failed') from None
         current = [value]
         for config in self.masks:
             remaining = self.government.remaining()

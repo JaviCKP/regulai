@@ -435,9 +435,22 @@ def renew(token, attempt, payload):
 
 
 def bootstrap(token, attempt, payload):
+    result = _bootstrap(token, attempt, payload)
+    run, _ = authenticate(token, attempt)
+    from front.privacy import ProtectionContext, protect_tree, required, outbound
+    if required(run.prompt):
+        result = protect_tree(ProtectionContext.from_prompt(run.prompt), result)
+        outbound(run.prompt, 'worker:bootstrap', [json.dumps(result, ensure_ascii=False)])
+    return result
+
+
+def _bootstrap(token, attempt, payload):
     if payload:
         raise ValueError('Invalid bootstrap')
     with locked(token, attempt) as (run, context):
+        from front.privacy import required
+        if required(run.prompt) and (run.job.get('source') or run.job.get('base')):
+            raise AgentDenied('privacy_binary_channel_blocked')
         from .skill_context import bootstrap as skill_bootstrap
         skill_data = skill_bootstrap(run)
         if run.job.get('kind') == 'professional':
@@ -561,6 +574,9 @@ def local_fields(token, attempt, payload):
     from .data_views import authorize_tool
     from .aliases import resolve_for_operation, TOKEN as TOKEN_RE
     run, _, call = authorize_tool(token, attempt, payload)
+    from front.privacy import required
+    if required(run.prompt):
+        raise AgentDenied('privacy_original_worker_blocked')
     if call.name == 'create_mock_excel':
         from .excel_contract import mock_source, mock_title
         raw = mock_source(call.args['rows'])

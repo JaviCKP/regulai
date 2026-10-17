@@ -98,6 +98,9 @@ class AgentStream:
             self.policy_texts + [('prompts', text)], model_pk=self.model.pk)
 
     def protect(self, text):
+        from front.privacy import required, transient_response
+        if required(self.execution.prompt):
+            return transient_response(self.execution.prompt, text)
         aliased = alias_text(self.execution, text)
         def local(values):
             for config in self.government.masks:

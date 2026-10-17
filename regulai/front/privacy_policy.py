@@ -46,7 +46,9 @@ _DECLARATION = re.compile(r'\s*(\$[A-Za-z_][A-Za-z_0-9]*)\s*=\s*'
 
 def compatible_strings(source):
     """Conservative allowlist: no binary/wide/transforms/modules/includes."""
-    if len(source.encode()) > 32000 or re.search(r'\b(?:import|include)\b', source):
+    if (len(source.encode()) > 32000 or re.search(r'\b(?:import|include)\b', source)
+            or len(re.findall(r'\brule\s+[A-Za-z_][A-Za-z_0-9]*\b', source)) != 1
+            or source.count('strings:') != 1 or source.count('condition:') != 1):
         raise ValueError('privacy_yara_unsupported')
     try:
         strings = source.split('strings:', 1)[1].split('condition:', 1)[0].strip()

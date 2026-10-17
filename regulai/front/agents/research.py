@@ -302,7 +302,8 @@ def execute(token, attempt, payload):
                     view['sources'].append(source)
                     continue
                 record, started = government.start_call('research', destination, None,
-                    policy_texts + [('prompts', entries[key]['url'])], Decimal(0), {})
+                    policy_texts + [('prompts', entries[key]['url'])], Decimal(0), {},
+                    outbound_texts=[entries[key]['url']])
                 record.update(cost='0', cost_kind='no_api_charge', cost_scope='api')
                 run.prompt.save(update_fields=['decision', 'updated_at'])
                 try:
@@ -317,7 +318,7 @@ def execute(token, attempt, payload):
                     government.preflight(destination, policy_texts + [('files', source['text'])])
                     if digest(catalog()) != binding or not getattr(settings, 'REGULAY_AGENT_RESEARCH_ENABLED', False):
                         raise AgentDenied('research_authorization_changed')
-                    excerpt = alias_text(run, source['text'][:MAX_EXCERPT])
+                    excerpt = alias_text(run, source['text'])[:MAX_EXCERPT]
                     view['sources'].append({'id': key, **entries[key], 'retrieved_at': timezone.now().isoformat(),
                         'sha256': source['sha256'], 'excerpt': excerpt, 'media_type': source['media_type'],
                         'bytes': source['bytes'], 'extracted_characters': len(source['text']),

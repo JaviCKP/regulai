@@ -17,6 +17,10 @@ from .web_tools import _source, _excerpt
 
 
 def fetch_resource(token, attempt, payload):
+    from .service import authenticate
+    from front.privacy import required
+    if required(authenticate(token, attempt)[0].prompt):
+        raise AgentDenied('privacy_binary_channel_blocked')
     from .data_views import authorize_tool
     if set(payload) != {'call', 'url', 'request_id'}:
         raise ValueError('Invalid browser fetch')

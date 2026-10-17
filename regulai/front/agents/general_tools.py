@@ -140,6 +140,10 @@ def _projection(call, request, maximum):
 def finish(run, context, call, request):
     row = operation(run, call)
     maximum = execution_limits(run, context[2])['output_chars']
+    from front.privacy import ProtectionContext, protect_tree, required
+    safe_raw = request.raw
+    if required(run.prompt):
+        safe_raw = protect_tree(ProtectionContext.from_prompt(run.prompt), safe_raw)
     if row.result:
         result = json.loads(row.result)  # Trusted web/artifact operation receipt.
         if call.name == 'web_download' and request.failed:
@@ -147,7 +151,9 @@ def finish(run, context, call, request):
         if result.get('status') == 'browser_pending':
             result = {'status': 'approved', 'succeeded': False, 'code': 'browser_render_incomplete'}
     else:
-        result = _projection(call, request, maximum)
+        result = _projection(call, request.model_copy(update={'raw': safe_raw}), maximum)
+    if required(run.prompt):
+        result = protect_tree(ProtectionContext.from_prompt(run.prompt), result)
     # Contents remain encrypted until the mandatory inference gateway applies
     # policy/masking for its current destination. General traces contain metadata.
     fingerprint = digest(request.model_dump())
@@ -159,7 +165,7 @@ def finish(run, context, call, request):
             return result_view(previous)
         AgentToolResult.objects.create(execution=run, call_id=call.id, request_digest=fingerprint,
             view={'status': result.get('status', 'approved'), 'call_id': call.id, 'protected': True},
-            protected_view=json.dumps(result, ensure_ascii=False), raw=json.dumps(request.raw, ensure_ascii=False))
+            protected_view=json.dumps(result, ensure_ascii=False), raw=json.dumps(safe_raw, ensure_ascii=False))
         row.status, row.completed_at = 'completed', timezone.now()
         row.save(update_fields=['status', 'completed_at'])
         from .event_store import append_event
@@ -182,9 +188,15 @@ def read_output(token, attempt, payload):
     if previous is None:
         raise AgentDenied('output_not_found')
     text = _output_text(json.loads(previous.raw))
+    from front.privacy import ProtectionContext, protect_tree, required
+    if required(run.prompt):
+        text = protect_tree(ProtectionContext.from_prompt(run.prompt), text)
     start, length = call.args.get('offset', 0), execution_limits(run, context[2])['output_chars']
     result = {'status': 'approved', 'trust': 'untrusted_tool_data', 'output': text[start:start + length],
         'offset': start, 'total_characters': len(text), 'truncated': start + length < len(text),
         'next_offset': start + length if start + length < len(text) else None}
+    from front.privacy import ProtectionContext, protect_tree, required
+    if required(run.prompt):
+        result = protect_tree(ProtectionContext.from_prompt(run.prompt), result)
     store_result(row, result)
     return {'status': 'completed'}

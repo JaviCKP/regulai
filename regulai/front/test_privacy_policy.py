@@ -41,6 +41,7 @@ class DetectorTests(SimpleTestCase):
 
     def test_yara_wide_binary_truncation_split_character_timeout_and_revision(self):
         for source in ('rule x { condition: true }',
+            'rule first { strings: $x="Ana" condition: false } rule second { strings: $x={41 42} condition:$x }',
             'rule x { strings: $a = "foo" wide condition: $a }',
             'rule x { strings: $a = { 41 42 } condition: $a }'):
             with self.assertRaises(ValueError):
@@ -98,6 +99,52 @@ class ProtectedMessageTests(RegistryFixture, TestCase):
         with connection.cursor() as cursor:
             cursor.execute('SELECT variants FROM front_privacymessage WHERE id = %s', [row.pk])
             self.assertNotIn('ana@example.invalid', cursor.fetchone()[0])
+
+    def test_structured_fields_obey_effective_treatment(self):
+        from front.privacy import protect_tree
+        from front.models import ConversationAlias
+        protected = protect_tree(self.context, {'email': 'ana@example.invalid', 'full_name': 'Nombre no seleccionado'})
+        self.assertTrue(protected['email'].startswith('[[R_EMAIL_'))
+        self.assertEqual(protected['full_name'], '[[REGULAI_PERSON]]')
+        self.assertEqual(ConversationAlias.objects.count(), 1)
+        self.assertEqual(PrivacyOccurrence.objects.filter(alias__isnull=False).count(), 1)
+
+    def test_positions_disambiguate_preexisting_same_token(self):
+        token = protect_message(self.context, 'ana@example.invalid', source_key='first')
+        result = protect_message(self.context, token + ' luego ana@example.INVALID', source_key='second')
+        message = PrivacyMessage.objects.get(source_key='second')
+        offset = len((token + ' luego ').encode())
+        self.assertEqual(message.occurrences.get().start, offset)
+        self.assertEqual(json.loads(message.variants), {str(offset): 'ana@example.INVALID'})
+        self.assertEqual(result, token + ' luego ' + token)
+
+    def test_final_gate_detects_metadata_without_previous_occurrence(self):
+        from front.privacy import outbound
+        prompt = Prompt.objects.get(pk=self.context.prompt_id)
+        with self.assertRaisesMessage(ValueError, 'privacy_original_at_boundary'):
+            outbound(prompt, 'metadata', ['hola'], metadata=['https://provider.invalid/ana@example.invalid/v1'])
+        with self.assertRaisesMessage(ValueError, 'privacy_original_at_boundary'):
+            outbound(prompt, 'remask', ['Ana Fixture'])
+
+    def test_repeated_literal_prefix_is_never_partially_published(self):
+        from front.privacy import stream_cut
+        revision = PrivacyRevision.objects.get(pk=self.company.ai_config['privacy']['revision_id'])
+        PrivacyRevision.objects.filter(pk=revision.pk).update(configuration=json.dumps({
+            'literals': [{'text': 'aba aba z', 'category': 'FIELD'}]}))
+        prompt = Prompt.objects.get(pk=self.context.prompt_id)
+        text = 'ordinary aba aba z' + 'x' * 96
+        self.assertEqual(stream_cut(prompt, text, len('ordinary aba aba ')), len('ordinary '))
+
+    def test_page_after_protection_cannot_split_original(self):
+        from front.privacy import protect_tree
+        from front.agents.general_tools import _projection
+        raw = 'x' * 2042 + 'Ana Fixture'
+        safe = protect_tree(self.context, raw)
+        view = _projection(SimpleNamespace(name='read_file', id='fixture'),
+            SimpleNamespace(raw=safe, failed=False), 4096)
+        combined = view['output'] + safe[view['next_offset']:]
+        self.assertEqual(combined, safe)
+        self.assertNotIn('Ana Fixture', combined)
 
 
 class PolicyReviewTests(RegistryFixture, TestCase):

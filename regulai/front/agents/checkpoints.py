@@ -157,6 +157,12 @@ def save(token, attempt, payload):
         raise ValueError('Legacy checkpoint archive required')
     raw = base64.b64decode(payload['archive'], validate=True) if payload['archive'] is not None else None
     with jobs.locked(token, attempt) as (run, _):
+        from front.privacy import required, ProtectionContext, protect_tree
+        if required(run.prompt):
+            if raw is not None:
+                raise AgentDenied('privacy_binary_channel_blocked')
+            payload = {**payload, 'messages': protect_tree(ProtectionContext.from_prompt(run.prompt), payload['messages']),
+                       'wire_messages': protect_tree(ProtectionContext.from_prompt(run.prompt), payload['wire_messages'])}
         if run.job.get('kind') != 'professional' or run.active_call:
             raise AgentDenied('checkpoint_requires_idle_boundary')
         _validate_tool_history(run, request)
@@ -195,6 +201,12 @@ def load(run):
     if not row or not hmac.compare_digest(digest(row.original), row.digest):
         raise AgentDenied('checkpoint_unavailable')
     value = json.loads(row.original)
+    from front.privacy import required, ProtectionContext, protect_tree
+    if required(run.prompt):
+        if value.get('archive') is not None:
+            raise AgentDenied('privacy_binary_channel_blocked')
+        value = {**value, 'messages': protect_tree(ProtectionContext.from_prompt(run.prompt), value['messages']),
+                 'wire_messages': protect_tree(ProtectionContext.from_prompt(run.prompt), value['wire_messages'])}
     # JSON normalizes watermark tuples to lists.
     if digest(value['watermark']) != digest(watermark(run)) or run.active_call:
         raise AgentDenied('checkpoint_has_later_or_uncertain_operations')

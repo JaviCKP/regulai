@@ -26,6 +26,9 @@ def source_document(artifact):
 
 
 def local_fields(run, call):
+    from front.privacy import required
+    if required(run.prompt):
+        raise AgentDenied('privacy_original_worker_blocked')
     from .aliases import resolve_for_operation, TOKEN
     def resolve(value):
         aliases = [m.group(0) for m in TOKEN.finditer(value)]

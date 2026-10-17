@@ -43,6 +43,9 @@ class ChatResult:
 
 
 ERRORS = {
+    'privacy_protection_failed': 'No se pudo aplicar la protección de datos. No se enviará contenido sin proteger.',
+    'privacy_authorization_changed': 'La política de privacidad o el acceso ha cambiado. Inicia una nueva petición.',
+    'privacy_binary_channel_blocked': 'Este canal de archivos no tiene saneamiento verificado. La protección de datos impide enviarlo.',
     'security_check_failed': 'No se pudo completar la comprobación de seguridad. La ficha de decisión indica si hubo llamadas o quedó un resultado incierto.',
     'policy_configuration_invalid': 'Falta una política de salida válida. El administrador de la cuenta debe abrir Settings > Conexiones IA para completar la configuración o revisar su política.',
     'masking_required': 'La empresa debe activar un enmascarador autorizado para datos personales y secretos.',
@@ -265,6 +268,8 @@ def send_chat_message(actor, command, *, call_observer=None, events=None):
         if not conversation:
             return error_result('conversation_not_found', 404)
     mode = command.get('mode')
+    if profile.company.ai_config.get('privacy') and command.get('file'):
+        return error_result('privacy_binary_channel_blocked', 403)
     if mode not in (None, '', 'chat', 'agent'):
         return error_result('input_invalid')
     if conversation and mode and mode != conversation.mode:
@@ -538,7 +543,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if not provider_managed and len(serialized.encode('utf-8')) > jev.MAX_STATE_BYTES:
             raise PipelineStop('evaluation_input_too_large')
         call, started = start_call(purpose, 'jev', cfg.jev.model,
-            policy_texts + [('prompts', serialized)], jev_bound, jev_prices, reserve)
+            policy_texts + [('prompts', serialized)], jev_bound, jev_prices, reserve, outbound_texts=[serialized])
         timeout = None
         if not provider_managed:
             seconds = min(120, remaining())
@@ -721,7 +726,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                                         attempt=attempt, prompt=prompt)
             call, started = start_call('generation', f'engine:{engine.pk}', model.model_id,
                 policy_texts + [('prompts', m.content) for m in messages], selection.estimated_cost,
-                selection.price_snapshot, verify_reserve, model_pk=model.pk)
+                selection.price_snapshot, verify_reserve, model_pk=model.pk, outbound_texts=[m.content for m in messages])
             connector = get_connector(engine.engine.connector_type, engine.api_key, engine.engine.base_url or None)
             try:
                 try:

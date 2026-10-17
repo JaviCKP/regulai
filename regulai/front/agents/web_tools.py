@@ -69,7 +69,7 @@ def _save(row, value):
     row.save(update_fields=['original', 'digest'])
 
 
-def _extract(response, budget):
+def _extract(response, budget, protect=lambda value: value):
     raw, media = response['raw'], response['media_type']
     title, links, published = '', [], None
     if media == 'application/pdf' or raw.startswith(b'%PDF-'):
@@ -78,7 +78,7 @@ def _extract(response, budget):
         fragments = document.fragments[:budget['pdf_pages']]
         if not fragments:
             raise WebError('web_pdf_unreadable_ocr_unavailable')
-        parts = [{'location': f['locator'], 'text': f['text']} for f in fragments]
+        parts = [{'location': f['locator'], 'text': protect(f['text'])} for f in fragments]
         coverage = 'complete' if document.status == 'complete' and len(fragments) == document.units_total else 'partial'
         return {'title': title, 'links': links, 'publication_date': None, 'parts': parts,
             'extraction': coverage, 'warnings': [*document.warnings,
@@ -91,14 +91,14 @@ def _extract(response, budget):
     if media in ('text/html', 'application/xhtml+xml') or text.lstrip().lower().startswith(('<!doctype html', '<html')):
         parser = ReadableHTML(response['final_url'])
         parser.feed(text)
-        text, title, links, published = parser.text(), parser.title[:300], list(dict.fromkeys(parser.links))[:40], parser.publication_date
+        text, title, links, published = parser.text(), protect(parser.title)[:300], list(dict.fromkeys(parser.links))[:40], parser.publication_date
         if any(term in text[:2000].lower() for term in ('verify you are human', 'captcha', 'access denied')):
             raise WebError('web_access_restricted')
     elif not (media.startswith('text/') or media in ('application/json', 'application/xml', '')):
         raise WebError('web_media_requires_download')
     if not text.strip():
         raise WebError('web_empty_page_try_browser')
-    lines = text.splitlines()
+    lines = protect(text).splitlines()
     parts, used = [], 0
     for number, line in enumerate(lines, 1):
         if used + len(line) > 200000:
@@ -116,9 +116,12 @@ def _source(run, url, get, budget):
     if row:
         return row, _read(row)
     response = get(url)
-    extracted = _extract(response, budget)
+    from front.privacy import required, protect_tree, ProtectionContext
+    protect = lambda value: protect_tree(ProtectionContext.from_prompt(run.prompt), value) if required(run.prompt) else value
+    extracted = _extract(response, budget, protect)
     data = {k: v for k, v in response.items() if k != 'raw'}
     data.update(extracted, retrieved_at=timezone.now().isoformat(), event_date=None, read_ranges=[])
+    data = protect(data)
     # Retain consulted bytes encrypted alongside the extraction and its hash.
     content = base64.b64encode(response['raw']).decode()
     AgentInput.objects.create(execution=run, kind='web_bytes', path='bytes/' + digest(url),

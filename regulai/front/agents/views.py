@@ -17,8 +17,9 @@ def _operation(request, handler):
     attempt = request.headers.get('X-Regulay-Attempt', '')
     try:
         from .jobs import complete
+        operation_run = None
         if handler is not complete:
-            authenticate(token, attempt, allow_uncertain=handler is infer)
+            operation_run, _ = authenticate(token, attempt, allow_uncertain=handler is infer)
         # The large private candidate is authenticated before its bounded read.
         # Other operations retain Django's usual body-size limit.
         if request.path.endswith(('/run/candidate/', '/run/publish/', '/run/image/', '/run/checkpoint/')):
@@ -29,6 +30,14 @@ def _operation(request, handler):
         else:
             payload = json.loads(request.body)
         result = handler(token, attempt, payload)
+        # Every executor response is a protected view. Individual handlers must
+        # still protect complete values before slicing and block binary routes.
+        from front.privacy import required, ProtectionContext, protect_tree, outbound, keyed_digest
+        if operation_run is not None and required(operation_run.prompt):
+            run = operation_run
+            result = protect_tree(ProtectionContext.from_prompt(run.prompt), result)
+            packed = json.dumps(result, ensure_ascii=False)
+            outbound(run.prompt, 'worker:' + keyed_digest(packed), [packed])
         response = JsonResponse(result, status=200)
     except AgentDenied as error:
         if error.code in ('agent_tool_budget_exhausted', 'agent_model_budget_exhausted', 'execution_deadline', 'deadline_exceeded'):

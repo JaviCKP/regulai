@@ -264,6 +264,10 @@ def call(private, operation, arguments):
 
 
 def search(actor, query):
+    from front.access import actor_company
+    if actor_company(actor).ai_config.get('privacy'):
+        # This legacy picker has no conversation scope for a private dictionary.
+        raise AgentDenied('privacy_unscoped_search_blocked')
     connection, private, binding = account(actor)
     value = call(private, 'search', {'query': query})
     if account(actor)[2] != binding:
