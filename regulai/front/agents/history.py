@@ -7,6 +7,7 @@ from front.models import AgentExecution
 from front.routing import route, RoutingError
 from .protocol import tool_schema
 
+_UNREAD_EXECUTION = object()
 
 def _identity(pair):
     return {key: pair[key] for key in ('prompt_id', 'user_id', 'assistant_id', 'digest')}
@@ -49,12 +50,20 @@ def select(actor, conversation, text, context, *, max_output_tokens=None):
                               'max_output_tokens': output}}
 
 
-def for_prompt(actor, prompt):
+def for_prompt(actor, prompt, *, execution=_UNREAD_EXECUTION):
     from .service import AgentDenied
-    run = AgentExecution.objects.filter(prompt=prompt).only('job').first()
+    # An explicitly supplied row belongs to the caller's current authorization
+    # operation; the default remains a fresh read for every other caller.
+    run = (AgentExecution.objects.filter(prompt=prompt).only('job').first()
+           if execution is _UNREAD_EXECUTION else execution)
     snapshot = run.job.get('history') if run else None
     if snapshot is None:
         return authorized_history(actor, prompt.conversation, professional=bool(run and run.job.get('kind') == 'professional'))
+    # No historical content can leave for an explicitly empty selection.
+    # Callers still authorize the actor/conversation at the current boundary;
+    # the fresh execution and its snapshot remain part of the context binding.
+    if snapshot['pairs'] == []:
+        return []
     available = authorized_history(actor, prompt.conversation, window=False, provenance=True, professional=True)
     by_id = {p['prompt_id']: p for p in available['pairs']}
     messages = []

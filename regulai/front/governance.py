@@ -1,5 +1,6 @@
 """Shared, current authorization and durable call accounting; no routing policy."""
 from copy import deepcopy
+from dataclasses import dataclass
 from decimal import Decimal
 import math
 import time
@@ -31,6 +32,15 @@ def destination_identity(engine, model):
     return digest([engine.engine.connector_type, engine.engine.base_url, digest(engine.api_key),
         model.model_id, model.context_window, model.max_tokens, model.supports_json, model.supports_vision, getattr(model, 'reasoning', False),
         str(model.input_price), str(model.output_price), model.currency, str(model.price_date)])
+
+
+@dataclass(frozen=True)
+class BoundaryAuthorization:
+    """Fresh rows from this preflight's authorization, never a retained cache."""
+    profile: object
+    masks: list
+    history: list
+    rows: dict
 
 
 class GovernedCalls:
@@ -106,6 +116,11 @@ class GovernedCalls:
             if spent + cost + reserve > self.budget:
                 raise PipelineStop('budget_exhausted')
 
+    def fresh_authorization(self):
+        if self.authorize is not None:
+            self.authorize()
+        return None
+
     def preflight(self, destination, texts, *, model_pk=None):
         from .chat_service import authorized_history
         self.remaining()
@@ -115,18 +130,20 @@ class GovernedCalls:
                 prepare_turn(ProtectionContext.from_prompt(self.prompt))
             except ValueError:
                 raise PipelineStop('privacy_authorization_changed') from None
-        if self.authorize is not None:
-            self.authorize()
-        fresh = Profile.objects.select_related('company', 'department', 'user').get(user=self.actor)
+        authority = self.fresh_authorization()
+        fresh = (authority.profile if authority is not None else
+            Profile.objects.select_related('company', 'department', 'user').get(user=self.actor))
         if (not fresh.user.is_active or fresh.company_id != self.initial_company_id or fresh.department_id != self.initial_department_id
                 or digest([fresh.company.system_prompt, fresh.department.system_prompt if fresh.department else None]) != self.initial_context):
             raise PipelineStop('authorization_changed')
         self.actor.profile = fresh
-        active_masks = list(ObfuscationConfig.objects.filter(company_id=self.initial_company_id, active=True))
+        active_masks = (authority.masks if authority is not None else
+            list(ObfuscationConfig.objects.filter(company_id=self.initial_company_id, active=True)))
         if (not valid_masks(active_masks)
                 or {mask.pk: mask_identity(mask) for mask in active_masks} != self.mask_identities):
             raise PipelineStop('authorization_changed')
-        if digest([(m.role, m.content) for m in self.current_history()]) != self.initial_history:
+        history = authority.history if authority is not None else self.current_history()
+        if digest([(m.role, m.content) for m in history]) != self.initial_history:
             raise PipelineStop('authorization_changed')
         check = evaluate_policy(self.actor, texts, destinations=[destination], sensitivity=self.sensitivity)
         if (check.fingerprint != self.decision.fingerprint or check.status not in ('allow', 'consent_required')
@@ -141,16 +158,20 @@ class GovernedCalls:
             if expected is None:
                 raise PipelineStop('authorization_changed')
             original_engine = expected[0]
-            fresh_engine = CompanyEngine.objects.filter(pk=linked_id, company_id=self.initial_company_id,
-                active=True).select_related('engine').first()
-            fresh_model = EngineModel.objects.filter(pk=model_pk, engine_id=original_engine.engine_id,
-                active=True).first()
+            if authority is not None:
+                fresh_engine, fresh_model = authority.rows.get((linked_id, model_pk), (None, None))
+            else:
+                fresh_engine = CompanyEngine.objects.filter(pk=linked_id, company_id=self.initial_company_id,
+                    active=True).select_related('engine').first()
+                fresh_model = EngineModel.objects.filter(pk=model_pk, engine_id=original_engine.engine_id,
+                    active=True).first()
             if (not fresh_engine or not fresh_model or fresh_engine.engine_id != original_engine.engine_id
                     or destination_identity(fresh_engine, fresh_model) != self.identities[(linked_id, model_pk)]):
                 raise PipelineStop('authorization_changed')
         if destination.startswith('obfuscation:'):
             mask_id = int(destination.split(':', 1)[1])
-            mask = ObfuscationConfig.objects.filter(pk=mask_id, company_id=self.initial_company_id, active=True).first()
+            mask = (next((item for item in active_masks if item.pk == mask_id), None) if authority is not None else
+                ObfuscationConfig.objects.filter(pk=mask_id, company_id=self.initial_company_id, active=True).first())
             if not mask or mask_identity(mask) != self.mask_identities[mask_id]:
                 raise PipelineStop('authorization_changed')
         return fresh

@@ -134,6 +134,18 @@ def profile_for(actor, *, allow_disabled=False):
     account = Profile.objects.get(user=actor)
     grant = AgentAccessGrant.objects.select_related('profile').filter(
         user=actor, company_id=account.company_id).first()
+    return _profile_for_account(actor, account, grant, allow_disabled=allow_disabled)
+
+
+def _profile_for_account(actor, account, grant, *, allow_disabled=False):
+    """Resolve rows freshly loaded by this operation, without another read."""
+    from django.conf import settings
+    from .service import AgentDenied
+    if not actor.is_active or (not allow_disabled and not getattr(settings, 'REGULAY_AGENT_ENABLED', False)):
+        raise AgentDenied('agent_disabled')
+    if account.user_id != actor.pk or (grant is not None and (
+            grant.user_id != actor.pk or grant.company_id != account.company_id)):
+        raise AgentDenied('agent_access_denied')
     if grant is not None:
         if not grant.enabled or not grant.profile.enabled or grant.profile.company_id != account.company_id:
             raise AgentDenied('agent_access_denied')

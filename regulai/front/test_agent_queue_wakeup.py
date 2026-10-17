@@ -169,6 +169,41 @@ class AgentQueueWakeupTests(ChatFixture, TransactionTestCase):
         self.assertEqual(run.events.filter(kind='claimed').count(), 0)
         self.assertFalse(self.requests)
 
+    @override_settings(REGULAY_AGENT_CAPACITY={'active_global': 1})
+    def test_saturated_queue_wakes_after_capacity_commit_and_replays_once(self):
+        occupied = self.queued()
+        first = jobs.claim(self.worker_token, self.payload(wait=0))
+        self.assertEqual(first['execution'], str(occupied.pk))
+        waiting = self.queued()
+        ready = Event()
+        original = queue_wakeup.listen
+
+        @contextmanager
+        def listening():
+            with original() as wake:
+                def wait(seconds):
+                    ready.set()
+                    return wake(seconds)
+                yield wait
+
+        request = self.payload()
+        with patch.object(queue_wakeup, 'listen', side_effect=listening):
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                pending = executor.submit(self.claim_in_thread, request)
+                self.assertTrue(ready.wait(5))
+                self.assertFalse(pending.done())
+                self.assertFalse(waiting.events.filter(kind='claimed').exists())
+                with transaction.atomic():
+                    occupied.refresh_from_db()
+                    jobs._terminal(occupied, 'completed')
+                    self.assertFalse(pending.done())
+                result = pending.result(timeout=3)
+        self.assertEqual(result['execution'], str(waiting.pk))
+        self.assertEqual(jobs.claim(self.worker_token, {**request, 'wait_seconds': 0}), result)
+        self.assertEqual(waiting.events.filter(kind='claimed').count(), 1)
+        self.assertEqual(AgentExecution.objects.filter(status='active').count(), 1)
+        self.assertFalse(self.requests)
+
 
 class QueueASGIIsolationTests(SimpleTestCase):
     def test_two_waiting_http_claims_do_not_block_parallel_inference(self):

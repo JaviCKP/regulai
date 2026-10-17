@@ -22,6 +22,14 @@ class RegistryFixture:
 
 
 class RegistryTests(RegistryFixture, TestCase):
+    def test_authorization_uses_fresh_company_once_and_rejects_mixed_tenant_history(self):
+        with self.assertNumQueries(1):
+            self.assertEqual(authorize(self.context).pk, self.profile.pk)
+        other = Company.objects.create(name='Foreign prompt provenance')
+        Prompt.objects.create(user=self.user, company=other, conversation=self.conversation)
+        with self.assertRaisesMessage(ValueError, 'privacy_access_revoked'):
+            authorize(self.context)
+
     def test_revision_is_off_by_default_pinned_and_revoked(self):
         prompt = Prompt.objects.create(user=self.user, company=self.company, conversation=self.conversation)
         context = ProtectionContext.from_prompt(prompt)

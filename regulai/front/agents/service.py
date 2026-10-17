@@ -19,15 +19,15 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
-from front.access import authorized_conversations
+from front.access import _conversations_for_company
 from front.chat_service import authorized_history, _candidate, _safe_jev_error_code
 from front import jev
 from front.classification import decide
 from front.connectors import ChatMessage, get_connector
-from front.governance import GovernedCalls, PipelineStop, destination_identity
+from front.governance import BoundaryAuthorization, GovernedCalls, PipelineStop, destination_identity
 from front.masking import mask_cost_bounds, mask_identity, valid_masks
-from front.models import (AgentExecution, AgentInference, AgentInput, AgentModelProfile,
-    AgentToolResult, CompanyEngine, EngineModel, ObfuscationConfig, Profile, Prompt)
+from front.models import (AgentAccessGrant, AgentExecution, AgentInference, AgentInput, AgentModelProfile,
+    AgentToolResult, ObfuscationConfig, Profile, Prompt)
 from front.policy import AIConfig, digest, evaluate_policy
 from front.routing import route, RoutingError
 from .aliases import alias_text, alias_value, preserve_aliases
@@ -40,21 +40,28 @@ class AgentDenied(ValueError):
         super().__init__(code)
 
 
-def _context(prompt, profile_id, *, allow_disabled=False):
+def _context(prompt, profile_id, *, allow_disabled=False, execution=None):
     if not allow_disabled and not getattr(settings, 'REGULAY_AGENT_ENABLED', False):
         raise AgentDenied('agent_disabled')
     actor = prompt.user
     profile = Profile.objects.select_related('company', 'department', 'user').get(user=actor)
     actor.profile = profile
+    agent = None
     if prompt.conversation and prompt.conversation.mode == 'agent':
-        from .jobs import development_profile
-        if development_profile(actor, allow_disabled=allow_disabled) != profile_id:
+        from .capabilities import _profile_for_account
+        grant = AgentAccessGrant.objects.filter(user=actor, company_id=profile.company_id).select_related(
+            'profile__connection__engine', 'profile__model').first()
+        if _profile_for_account(actor, profile, grant, allow_disabled=allow_disabled) != profile_id:
             raise AgentDenied('agent_profile_unavailable')
+        agent = grant.profile if grant else None
     if (not profile.user.is_active or profile.company_id != prompt.company_id
-            or not authorized_conversations(actor).filter(pk=prompt.conversation_id).exists()):
+            or not _conversations_for_company(actor, profile.company_id).filter(pk=prompt.conversation_id).exists()):
         raise AgentDenied()
-    agent = AgentModelProfile.objects.filter(pk=profile_id, company_id=prompt.company_id, enabled=True).first()
-    if not agent or not isinstance(agent.tools, list) or any(t not in TOOL_PARAMETERS for t in agent.tools):
+    if agent is None:
+        agent = AgentModelProfile.objects.filter(pk=profile_id, company_id=prompt.company_id, enabled=True).select_related(
+            'connection__engine', 'model').first()
+    if (not agent or not agent.enabled or agent.company_id != prompt.company_id
+            or not isinstance(agent.tools, list) or any(t not in TOOL_PARAMETERS for t in agent.tools)):
         raise AgentDenied('agent_profile_unavailable')
     if not agent.professional and prompt.conversation and prompt.conversation.mode == 'agent' and (
             not agent.tools or set(agent.tools) - {'create_mock_excel', 'build_excel', 'rename_excel', 'build_document', 'edit_document', 'export_pdf', 'build_presentation', 'edit_presentation', 'save_revision', 'research_sources', 'read_file'}):
@@ -65,11 +72,9 @@ def _context(prompt, profile_id, *, allow_disabled=False):
     resource_limits = limits(agent)
     if not 2 <= agent.min_group_size <= 1000:
         raise AgentDenied('agent_profile_unavailable')
-    engine = CompanyEngine.objects.filter(pk=agent.connection_id, company_id=prompt.company_id,
-        active=True).select_related('engine').first()
-    model = EngineModel.objects.filter(pk=agent.model_id, active=True,
-        engine_id=engine.engine_id if engine else None).first()
-    if (not engine or not engine.api_key or not model
+    engine, model = agent.connection, agent.model
+    if (not engine or not engine.active or engine.company_id != prompt.company_id or not engine.api_key
+            or not model or not model.active or model.engine_id != engine.engine_id
             or engine.engine.connector_type not in ('openai', 'openai_compatible', 'vercel_gateway')):
         raise AgentDenied('agent_profile_unavailable')
     cfg = AIConfig.model_validate(profile.company.ai_config)
@@ -107,7 +112,12 @@ def _context(prompt, profile_id, *, allow_disabled=False):
             texts.append(('files', raw.decode('utf-8') if asset.kind == 'narrative'
                 else json.dumps(input_rows(raw, asset.kind), ensure_ascii=False)))
     from .history import for_prompt
-    history = for_prompt(actor, prompt)
+    # The execution is read once in this authorization operation. authenticate
+    # supplies its fresh row; callers without one still read current state here.
+    run = execution if execution is not None else AgentExecution.objects.filter(prompt=prompt).first()
+    if run and (run.prompt_id != prompt.pk or run.profile_id != profile_id):
+        raise AgentDenied()
+    history = for_prompt(actor, prompt, execution=run)
     texts += [('prompts', m.content) for m in history]
     decision = evaluate_policy(actor, texts, destinations=destinations)
     if decision.status != 'allow':
@@ -117,7 +127,8 @@ def _context(prompt, profile_id, *, allow_disabled=False):
         [(m.pk, mask_identity(m)) for m in masks], agent.pk, agent.compaction, agent.vision,
         agent.tools, agent.min_group_size, agent.professional, resource_limits, agent.limits, digest(agent.search_config),
         grant_binding(actor, agent.pk), digest(profile.company.jev_api_key)])
-    run = AgentExecution.objects.filter(prompt=prompt).select_related('prompt').first()
+    if run:
+        run.prompt, run.profile = prompt, agent
     if run and run.job.get('skills'):
         from .skill_context import binding as skill_binding
         binding = digest([binding, skill_binding(run)])
@@ -129,6 +140,12 @@ def _context(prompt, profile_id, *, allow_disabled=False):
 
 def begin_execution(prompt, profile_id, *, lifetime=timedelta(minutes=15)):
     """Trusted orchestration seam for task 50; no public start endpoint in 49."""
+    execution, token, _ = _begin_execution_with_context(prompt, profile_id, lifetime=lifetime)
+    return execution, token
+
+
+def _begin_execution_with_context(prompt, profile_id, *, lifetime=timedelta(minutes=15)):
+    """Return admission's initial context for local preparation before revalidation."""
     if prompt.status != 'processing' or hasattr(prompt, 'response'):
         raise AgentDenied('invalid_execution_prompt')
     context = _context(prompt, profile_id)
@@ -140,18 +157,18 @@ def begin_execution(prompt, profile_id, *, lifetime=timedelta(minutes=15)):
     execution = AgentExecution.objects.create(prompt=prompt, profile_id=profile_id,
         token_digest=hashlib.sha256(token.encode()).hexdigest(), authorization_digest=context[-1],
         expires_at=timezone.now() + lifetime)
-    return execution, token
+    return execution, token, context
 
 
 def authenticate(token, attempt, *, allow_uncertain=False):
     if not isinstance(token, str) or len(token) > 128:
         raise AgentDenied('invalid_execution_credential')
-    execution = AgentExecution.objects.select_related('prompt__user', 'prompt__conversation', 'profile').filter(
+    execution = AgentExecution.objects.select_related('prompt__user', 'prompt__conversation').filter(
         token_digest=hashlib.sha256(token.encode()).hexdigest()).first()
     if (execution is None or str(execution.attempt) != str(attempt) or execution.expires_at <= timezone.now()
             or execution.status not in (('active', 'outcome_unknown') if allow_uncertain else ('active',))):
         raise AgentDenied('invalid_execution_credential')
-    context = _context(execution.prompt, execution.profile_id)
+    context = _context(execution.prompt, execution.profile_id, execution=execution)
     if not hmac.compare_digest(execution.authorization_digest, context[-1]):
         raise AgentDenied()
     return execution, context
@@ -218,6 +235,16 @@ class AgentGovernedCalls(GovernedCalls):
 
     def save_decision(self):
         _save_decision(self.prompt)
+
+    def fresh_authorization(self):
+        if self.authorize is None:
+            return super().fresh_authorization()
+        execution, context = self.authorize()
+        # Only the authenticate performed by this preflight may supply these
+        # rows. Never retain them across masking, external I/O or another exit.
+        history = context[9] if execution.job.get('kind') == 'professional' else self.current_history()
+        return BoundaryAuthorization(profile=context[1], masks=context[6], history=history,
+            rows={(context[4].pk, context[5].pk): (context[4], context[5])})
 
     def current_history(self):
         if getattr(self, 'execution', None) and self.execution.job.get('kind') == 'professional':

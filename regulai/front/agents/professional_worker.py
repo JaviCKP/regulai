@@ -1,10 +1,13 @@
 """General Deep Agents tools. This module never imports Django or credentials."""
 import base64
+from collections import OrderedDict
 import hashlib
 import importlib.metadata
+from inspect import signature
 import json
 from pathlib import Path
 import shlex
+import threading
 import time
 import uuid
 
@@ -15,6 +18,31 @@ from langchain.agents.middleware import AgentMiddleware
 from .adapter import InternalOperationError, build_agent, _wire
 from .workspace_backend import WorkspaceSandbox
 from .runtime_contract import canonical_digest
+
+_TOOL_SCHEMAS = OrderedDict()
+_TOOL_SCHEMA_LOCK = threading.Lock()
+_TOOL_SCHEMA_LIMIT = 11
+
+
+def _runtime_tool(function):
+    """Reuse only static argument types, never a function or execution context.
+
+    Scope: this worker process; at most the 11 custom tool schemas. Code identity,
+    signature and documentation invalidate entries on changed definitions; module
+    reload/process replacement clears them. Permission filtering precedes lookup.
+    Revocation still crosses the current server gate for every tool operation.
+    """
+    key = (function.__name__, function.__code__, signature(function), function.__doc__)
+    with _TOOL_SCHEMA_LOCK:
+        schema = _TOOL_SCHEMAS.get(key)
+        if schema is None:
+            wrapped = tool(function)
+            _TOOL_SCHEMAS[key] = wrapped.args_schema
+            if len(_TOOL_SCHEMAS) > _TOOL_SCHEMA_LIMIT:
+                _TOOL_SCHEMAS.popitem(last=False)
+            return wrapped
+        _TOOL_SCHEMAS.move_to_end(key)
+    return tool(function, args_schema=schema)
 
 
 def runtime_identity():
@@ -124,28 +152,23 @@ def run_professional(internal, sandbox, lease, granted, *, acquire=None):
                 raise InternalOperationError('Downloaded file could not be stored')
         return recorded(runtime, name)
 
-    @tool
     def web_search(query: str, runtime: ToolRuntime, max_results: int = 5, language: str = '', time_range: str = ''):
         """Search public web, then open sources to read evidence."""
         return web(runtime, 'web_search', {'query': query, 'max_results': max_results,
             **({'language': language} if language else {}), **({'time_range': time_range} if time_range else {})})
 
-    @tool
     def web_open(url: str, runtime: ToolRuntime, offset: int = 0, limit: int = 12000):
         """Read public HTML, text or PDF with stable references and explicit coverage."""
         return web(runtime, 'web_open', {'url': url, 'offset': offset, 'limit': limit})
 
-    @tool
     def web_find(reference: str, term: str, runtime: ToolRuntime):
         """Find literal text in opened source evidence."""
         return web(runtime, 'web_find', {'reference': reference, 'term': term})
 
-    @tool
     def web_download(url: str, file_path: str, runtime: ToolRuntime):
         """Download a public file through the broker into this workspace."""
         return web(runtime, 'web_download', {'url': url, 'file_path': file_path})
 
-    @tool
     def web_browse(url: str, runtime: ToolRuntime):
         """Read a JavaScript page using an isolated browser without private files."""
         from .browser_worker import browse
@@ -153,13 +176,11 @@ def run_professional(internal, sandbox, lease, granted, *, acquire=None):
         browse(internal, sandbox, lease, selected, budget)
         return recorded(runtime, 'web_browse')
 
-    @tool
     def read_output(call_id: str, runtime: ToolRuntime, offset: int = 0):
         """Read more of an earlier command's protected output."""
         internal.operation('run/output', {'call': call(runtime, 'read_output', {'call_id': call_id, 'offset': offset})})
         return recorded(runtime, 'read_output')
 
-    @tool
     def install_packages(ecosystem: str, packages: list[str], runtime: ToolRuntime):
         """Install pinned packages offline into this job's Python/Node environment."""
         result = internal.operation('run/packages', {'call': call(runtime, 'install_packages', {'ecosystem': ecosystem, 'packages': packages})})
@@ -197,7 +218,6 @@ def run_professional(internal, sandbox, lease, granted, *, acquire=None):
             result[path] = base64.b64encode(downloaded.content).decode()
         return result
 
-    @tool
     def publish_artifact(file_path: str, title: str, runtime: ToolRuntime, pdf_path: str = '',
                          page_paths: list[str] | None = None, sources: list[str] | None = None,
                          base_revision: str = '', synthetic: bool = False, related_paths: list[str] | None = None):
@@ -221,19 +241,16 @@ def run_professional(internal, sandbox, lease, granted, *, acquire=None):
             **({'render': rendering} if rendering else {})})
         return recorded(runtime, 'publish_artifact')
 
-    @tool
     def inspect_image(file_path: str, question: str, runtime: ToolRuntime):
         """Send actual authorized pixels through the vision gateway for review."""
         internal.operation('run/image', {'call': call(runtime, 'inspect_image', {'file_path': file_path, 'question': question}),
             'base64': files([file_path])[file_path]})
         return recorded(runtime, 'inspect_image')
 
-    @tool
     def replace_file(file_path: str, expected_sha256: str, content: str):
         """Replace a file atomically only when its SHA-256 still matches."""
         return json.dumps(backend.replace(file_path, expected_sha256, content), ensure_ascii=False)
 
-    @tool
     def edit_file(file_path: str, old_string: str, new_string: str, replace_all: bool = False,
                   expected_sha256: str | None = None):
         """Edit exact text, optionally requiring the expected file SHA-256."""
@@ -247,7 +264,9 @@ def run_professional(internal, sandbox, lease, granted, *, acquire=None):
 
     tools = [web_search, web_open, web_find, web_download, web_browse, install_packages,
         publish_artifact, inspect_image, read_output, replace_file, edit_file]
-    tools = [t for t in tools if t.name in granted['tools']]
+    # Schema inference is expensive; excluded tools have no runtime role. Keep
+    # each permitted function bound to this execution before wrapping it.
+    tools = [_runtime_tool(function) for function in tools if function.__name__ in granted['tools']]
     recovered_event = None
     class SafeBoundary(AgentMiddleware):
         def before_model(self, state, runtime):

@@ -18,7 +18,7 @@ from front.policy import digest
 from .capabilities import GENERAL, limits
 from .excel_contract import sha256
 from .request_contract import interpret
-from .service import AgentDenied, _context, begin_execution
+from .service import AgentDenied, _context, _begin_execution_with_context
 
 
 def inspect_input(raw, kind):
@@ -85,8 +85,9 @@ def enqueue(actor, command, conversation, text, request_id, profile_id):
             user_message=message, content=text, request_id=request_id, status='processing',
             file_name=message.file_name, file_size=message.file_size, file_sha256=sha256(raw) if raw else None,
             decision={'schema_version': 1, 'input_digest': fingerprint, 'calls': []})
-        run, _ = begin_execution(prompt, profile_id)
-        context = _context(prompt, profile_id)
+        # Only receipt/empty-execution writes separate this context from its
+        # creation. Revalidate below after preparing history, inputs and job.
+        run, _, context = _begin_execution_with_context(prompt, profile_id)
         from .inference_options import resolve_inference
         from .capabilities import resolve_work
         inference = resolve_inference(profile, context[5], context[3], selection)

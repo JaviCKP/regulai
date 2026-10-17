@@ -59,8 +59,12 @@ def company_audit_scope(company):
 
 
 def authorized_conversations(actor):
-    company = actor_company(actor)
-    foreign = Prompt.objects.filter(company__isnull=False, conversation__isnull=False).exclude(company=company)
+    return _conversations_for_company(actor, actor_company(actor).pk)
+
+
+def _conversations_for_company(actor, company_id):
+    """Use only with a company read in this same authorization operation."""
+    foreign = Prompt.objects.filter(company__isnull=False, conversation__isnull=False).exclude(company_id=company_id)
     # Legacy rows have no reliable tenant provenance; retain owner access only.
     return Conversation.objects.filter(user=actor).exclude(pk__in=foreign.values('conversation_id'))
 

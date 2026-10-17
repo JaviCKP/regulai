@@ -76,10 +76,13 @@ def keyed_digest(value, *, key=None):
 
 def authorize(context):
     """Owner and current tenant, never an administrator override or stale actor."""
-    from .access import authorized_conversations
+    from .access import _conversations_for_company
+    from django.db.models import Exists
+    conversation = _conversations_for_company(context.user_id, context.company_id).filter(
+        pk=context.conversation_id)
     profile = Profile.objects.select_related('user', 'company').filter(user_id=context.user_id,
-        company_id=context.company_id, user__is_active=True).first()
-    if not profile or not authorized_conversations(profile.user).filter(pk=context.conversation_id).exists():
+        company_id=context.company_id, user__is_active=True).filter(Exists(conversation)).first()
+    if not profile:
         raise ValueError('privacy_access_revoked')
     return profile
 
