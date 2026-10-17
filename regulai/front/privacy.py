@@ -116,6 +116,9 @@ def prepare_turn(context):
             defaults={'revision': revision, 'fingerprint': fingerprint})
         if not created and (turn.revision_id != revision.pk or turn.fingerprint != fingerprint):
             raise ValueError('privacy_policy_changed')
+        # The revision was just authorized and is immutable; avoid refetching
+        # the same row through the existing turn's lazy foreign key.
+        turn.revision = revision
         return turn
 
 
@@ -176,143 +179,276 @@ def resolve_spans(spans):
     return merged
 
 
-def alias_text(context, text):
-    """Compatibility policy for existing agent callers; all explicit categories."""
-    if context.prompt_id:
-        from .models import Prompt
-        prompt = Prompt.objects.get(pk=context.prompt_id)
-        if required(prompt):
-            return protect_batch(prompt, [text], prefix='agent')[0]
-    if not isinstance(text, str) or len(text.encode('utf-8')) > MAX_BYTES:
-        raise ValueError('privacy_input_invalid')
-    references = list(TOKEN.finditer(text))
-    tokens = {m.group() for m in references}
-    known = set(ConversationAlias.objects.filter(**context.scope(), token__in=tokens).values_list('token', flat=True))
-    if tokens != known:
-        raise ValueError('privacy_reference_unavailable')
-    spans = [(a, b, kind, kind != 'SECRET', 'local') for a, b, kind in detect_spans(text)
-             if not any(a >= m.start() and b <= m.end() for m in references)]
-    if len(spans) > MAX_MATCHES:
-        raise ValueError('privacy_too_many_matches')
-    for start, end, category, reversible, _ in reversed(resolve_spans(spans)):
-        replacement = alias_value(context, category, text[start:end]) if reversible else f'[[REGULAI_{category}]]'
-        text = text[:start] + replacement + text[end:]
-    return text
+def _alias_batch(context, values, *, locked=False):
+    """Resolve distinct sensitive values with one scoped lookup and one insert.
+
+    The cache is local to this synchronous transaction. Conversation locking and
+    the existing unique constraint serialize competing writers and key rotation.
+    """
+    values = list(dict.fromkeys(values))
+    if not values:
+        return {}
+    keys = _keys()
+    normalized, results, token_values = {}, {}, {}
+    for kind, original in values:
+        if not isinstance(original, str) or len(original.encode('utf-8')) > MAX_BYTES:
+            raise ValueError('privacy_input_invalid')
+        if _PLACEHOLDER.fullmatch(original):
+            results[kind, original] = (original, None)
+        elif kind == 'SECRET' or any(category == 'SECRET' for _, _, category in detect_spans(original)):
+            results[kind, original] = ('[[REGULAI_SECRET]]', None)
+        elif TOKEN.fullmatch(original):
+            token_values[kind, original] = original
+        else:
+            normalized[kind, original] = normalize(kind, original)
+    if not locked and (normalized or token_values):
+        if not Conversation.objects.select_for_update().filter(
+                pk=context.conversation_id, user_id=context.user_id).exists():
+            raise ValueError('privacy_scope_unavailable')
+    if token_values:
+        by_token = {row.token: row for row in ConversationAlias.objects.filter(
+            **context.scope(), token__in=set(token_values.values()))}
+        for (kind, original), token in token_values.items():
+            row = by_token.get(token)
+            if row is None or row.kind != kind:
+                raise ValueError('privacy_reference_unavailable')
+            results[kind, original] = (token, row)
+    lookups = {}
+    for kind, value in dict.fromkeys((kind, value) for (kind, _), value in normalized.items()):
+        for version, key in sorted(keys.items()):
+            scope = f'{context.company_id}:{context.user_id}:{context.conversation_id}:{kind}:{version}:'
+            lookups[kind, value, version] = keyed_digest(scope + value, key=key)
+    rows = {(row.kind, row.version, row.lookup_digest): row for row in
+            ConversationAlias.objects.filter(**context.scope(), lookup_digest__in=list(lookups.values()))}
+    resolved, created = {}, []
+    for (kind, original), value in normalized.items():
+        identity = kind, value
+        if identity not in resolved:
+            row = next((rows.get((kind, version, lookups[kind, value, version]))
+                        for version in sorted(keys)
+                        if (kind, version, lookups[kind, value, version]) in rows), None)
+            if row is not None:
+                if not row.original:
+                    raise ValueError('privacy_original_unavailable')
+            else:
+                version = max(keys)
+                row = ConversationAlias(**context.scope(), kind=kind, version=version,
+                    lookup_digest=lookups[kind, value, version],
+                    token=f'[[R_{kind}_{secrets.token_hex(16)}]]', original=original)
+                created.append(row)
+            resolved[identity] = row
+        row = resolved[identity]
+        results[kind, original] = (row.token, row)
+    if created:
+        ConversationAlias.objects.bulk_create(created)
+    return results
 
 
-def protect_tree(context, value):
-    from .local_masking import _SECRET_KEY
-    if isinstance(value, str):
-        return alias_text(context, value)
-    if isinstance(value, list):
-        return [protect_tree(context, item) for item in value]
-    if isinstance(value, dict):
-        fields = {'nombre': 'PERSON', 'full_name': 'PERSON', 'titular': 'PERSON',
-                  'email': 'EMAIL', 'correo': 'EMAIL', 'telefono': 'PHONE', 'dni': 'ID', 'iban': 'ACCOUNT'}
-        def field(key, item):
-            if key in STRUCTURAL_IDS and isinstance(item, str) and OPAQUE_ID.fullmatch(item) and context.prompt_id:
-                from .privacy_policy import detect_ranges, revision_config
-                turn = prepare_turn(context)
-                if turn:
-                    config, rules = revision_config(context, turn.revision)
-                    if detect_ranges(item, config, rules, patterns=False):
-                        raise ValueError('privacy_selected_protocol_identifier')
-                    return item
-            if _SECRET_KEY.fullmatch(key):
-                return '[[REGULAI_SECRET]]'
-            if key.lower() not in fields or not isinstance(item, str):
-                return protect_tree(context, item)
-            from .models import Prompt
-            category = fields[key.lower()]
-            if context.prompt_id and required(Prompt.objects.get(pk=context.prompt_id)):
-                return protect_message(context, item, source_key=f'field:{category}:{keyed_digest(item)}',
-                                       field_category=category)
-            return alias_value(context, category, item)
-        return {alias_text(context, key): field(key, item) for key, item in value.items()}
-    return value
+def _mask_batches(texts):
+    """Apply local D2 in bounded groups, preserving every fragment boundary."""
+    from .agents.aliases import preserve_aliases
+    from .local_masking import MAX_BATCH_BYTES, MAX_SEGMENTS, mask_local_texts
+    result, group, size = [], [], 0
+    for text in texts:
+        # preserve_aliases shields each token with a fixed 50-byte sentinel.
+        # Budget its transformed size, including every repeated reference.
+        text_size = len(text.encode('utf-8')) + sum(
+            50 - len(match.group()) for match in TOKEN.finditer(text))
+        if group and (size + text_size > MAX_BATCH_BYTES or len(group) == MAX_SEGMENTS):
+            result.extend(preserve_aliases(group, mask_local_texts))
+            group, size = [], 0
+        group.append(text)
+        size += text_size
+    if group:
+        result.extend(preserve_aliases(group, mask_local_texts))
+    return result
 
 
-def protect_message(context, text, *, source_key, field_category=None):
-    """Persist canonical text + occurrences atomically, before any caller sends.
+def _protect_many(context, entries, *, persist, structural=()):
+    """One local operation; no authorization or policy cache survives its return.
 
-    Idempotency keys identify message revisions, not transport chunks. Changed
-    input under the same key is an error; callers cannot silently overwrite it.
+    Entries retain their historical content-addressed source keys. Reads, alias
+    resolution and durable writes are grouped, while detectors still receive
+    each complete fragment so YARA conditions cannot match across fragments.
+    No provider/network work is performed inside this transaction.
     """
     from .models import PrivacyMessage, PrivacyOccurrence
     from .privacy_policy import detect_ranges, revision_config
-    if not isinstance(source_key, str) or not 1 <= len(source_key) <= 160:
-        raise ValueError('privacy_source_invalid')
-    if not isinstance(text, str) or len(text.encode()) > MAX_BYTES:
-        raise ValueError('privacy_input_invalid')
+    unique = {}
+    for source_key, text, category in entries:
+        if not isinstance(source_key, str) or not 1 <= len(source_key) <= 160:
+            raise ValueError('privacy_source_invalid')
+        if not isinstance(text, str) or len(text.encode()) > MAX_BYTES:
+            raise ValueError('privacy_input_invalid')
+        entry = (text, category)
+        if source_key in unique and unique[source_key] != entry:
+            raise ValueError('privacy_idempotency_conflict')
+        unique[source_key] = entry
     with transaction.atomic():
-        turn = prepare_turn(context)
-        if turn is None:
-            return text
-        input_digest = keyed_digest(text)
-        previous = PrivacyMessage.objects.filter(turn=turn, source_key=source_key).first()
-        if previous:
-            if previous.input_digest != input_digest:
-                raise ValueError('privacy_idempotency_conflict')
-            return previous.protected
-        config, rules = revision_config(context, turn.revision)
-        tokens = set(TOKEN.findall(text))
-        known = set(ConversationAlias.objects.filter(**context.scope(), token__in=tokens).values_list('token', flat=True))
+        turn = prepare_turn(context) if persist else None
+        if persist and turn is None:
+            return {key: text for key, (text, _) in unique.items()}
+        config, rules = revision_config(context, turn.revision) if turn else (None, ())
+        if turn:
+            for value in structural:
+                if detect_ranges(value, config, rules, patterns=False):
+                    raise ValueError('privacy_selected_protocol_identifier')
+        previous = {row.source_key: row for row in PrivacyMessage.objects.filter(
+            turn=turn, source_key__in=list(unique))} if turn else {}
+        output, pending = {}, {}
+        for key, (text, category) in unique.items():
+            row = previous.get(key)
+            if row:
+                if row.input_digest != keyed_digest(text):
+                    raise ValueError('privacy_idempotency_conflict')
+                output[key] = row.protected
+            else:
+                pending[key] = (text, category)
+        tokens = {token for text, _ in pending.values() for token in TOKEN.findall(text)}
+        known = set(ConversationAlias.objects.filter(**context.scope(), token__in=tokens)
+                    .values_list('token', flat=True)) if tokens else set()
         if tokens != known:
             raise ValueError('privacy_reference_unavailable')
-        ranges = detect_ranges(text, config, rules)
-        if field_category and text and not TOKEN.fullmatch(text):
-            ranges = resolve_spans([*ranges, (0, len(text), field_category,
-                config.categories.get(field_category) == 'reversible', 'field')])
-        replacements, variants = [], {}
-        for start, end, category, reversible, detector in ranges:
-            original = text[start:end]
-            replacement = alias_value(context, category, original) if reversible else f'[[REGULAI_{category if category != "FIELD" else "SECRET"}]]'
-            row = ConversationAlias.objects.filter(**context.scope(), token=replacement).first() if TOKEN.fullmatch(replacement) else None
-            replacements.append((start, end, category, detector, replacement, row))
-        # Unique, letter-only local markers retain occurrence identity through
-        # D2 (including JSON reformatting). Searching by the final token would
-        # confuse a new occurrence with a reference already present in input.
-        markers = []
-        for _ in replacements:
-            while True:
-                marker = 'PRIVACY' + ''.join(chr(65 + int(c, 16)) for c in secrets.token_hex(24))
-                if marker not in text and marker not in markers:
-                    markers.append(marker)
-                    break
-        protected = text
-        for (start, end, _, _, _, _), marker in reversed(list(zip(replacements, markers))):
-            protected = protected[:start] + marker + protected[end:]
-        # D2 still covers unselected categories. It runs locally first so even a
-        # configured HTTP masker cannot receive the selected originals.
-        from .agents.aliases import preserve_aliases
-        from .local_masking import mask_local_texts
-        protected = preserve_aliases([protected], mask_local_texts)[0]
-        located = []
-        for item, marker in zip(replacements, markers):
-            if protected.count(marker) != 1:
-                raise ValueError('privacy_protected_reference_changed')
-            located.append((protected.index(marker), marker, item))
-        occurrences, shift = [], 0
-        for position, marker, item in sorted(located):
-            start, end, category, detector, replacement, row = item
-            position += shift
-            byte_start = len(protected[:position].encode('utf-8'))
-            protected = protected[:position] + replacement + protected[position + len(marker):]
-            shift += len(replacement) - len(marker)
-            finish = byte_start + len(replacement.encode('utf-8'))
-            occurrences.append((row, byte_start, finish, category, detector))
-            if row and row.original != text[start:end]:
-                variants[str(byte_start)] = text[start:end]
-        message = PrivacyMessage.objects.create(turn=turn, source_key=source_key,
-            input_digest=input_digest, protected=protected)
-        for row, byte_start, finish, category, detector in occurrences:
-            PrivacyOccurrence.objects.create(message=message, alias=row, start=byte_start, end=finish,
-                category=category, detector=detector)
-        if variants:
-            message.variants = json.dumps(variants, ensure_ascii=False)
-            message.save(update_fields=['variants'])
-        return protected
+        spans, values = {}, []
+        for key, (text, category) in pending.items():
+            if turn:
+                ranges = detect_ranges(text, config, rules)
+                if category and text and not TOKEN.fullmatch(text):
+                    ranges = resolve_spans([*ranges, (0, len(text), category,
+                        config.categories.get(category) == 'reversible', 'field')])
+            elif category:
+                # Legacy explicit fields alias the whole value, including empty
+                # values; preserve that existing contract.
+                ranges = [(0, len(text), category, True, 'field')]
+            else:
+                references = [match.span() for match in TOKEN.finditer(text)]
+                ranges = [(a, b, kind, kind != 'SECRET', 'local')
+                    for a, b, kind in detect_spans(text)
+                    if not any(a >= left and b <= right for left, right in references)]
+                if len(ranges) > MAX_MATCHES:
+                    raise ValueError('privacy_too_many_matches')
+                ranges = resolve_spans(ranges)
+            spans[key] = ranges
+            # Legacy replacement visited the text from right to left. Retain
+            # which spelling becomes canonical for equivalent values.
+            alias_ranges = ranges if turn else reversed(ranges)
+            values.extend((kind, text[start:end]) for start, end, kind, recover, _ in alias_ranges if recover)
+        aliases = _alias_batch(context, values, locked=bool(turn))
+        prepared = []
+        for key, (text, _) in pending.items():
+            replacements, markers = [], []
+            for start, end, category, reversible, detector in spans[key]:
+                replacement, row = (aliases[category, text[start:end]] if reversible else
+                    (f'[[REGULAI_{category if category != "FIELD" else "SECRET"}]]', None))
+                replacements.append((start, end, category, detector, replacement, row))
+                while True:
+                    marker = 'PRIVACY' + ''.join(chr(65 + int(c, 16)) for c in secrets.token_hex(24))
+                    if marker not in text and marker not in markers:
+                        markers.append(marker)
+                        break
+            protected = text
+            for (start, end, _, _, _, _), marker in reversed(list(zip(replacements, markers))):
+                protected = protected[:start] + marker + protected[end:]
+            prepared.append((key, text, protected, replacements, markers))
+        masked = _mask_batches([item[2] for item in prepared]) if turn else [item[2] for item in prepared]
+        messages, occurrences = [], []
+        for (key, text, _, replacements, markers), protected in zip(prepared, masked):
+            located = []
+            for item, marker in zip(replacements, markers):
+                if protected.count(marker) != 1:
+                    raise ValueError('privacy_protected_reference_changed')
+                located.append((protected.index(marker), marker, item))
+            positions, variants, shift = [], {}, 0
+            for position, marker, item in sorted(located):
+                start, end, category, detector, replacement, row = item
+                position += shift
+                byte_start = len(protected[:position].encode('utf-8'))
+                protected = protected[:position] + replacement + protected[position + len(marker):]
+                shift += len(replacement) - len(marker)
+                finish = byte_start + len(replacement.encode('utf-8'))
+                positions.append((row, byte_start, finish, category, detector))
+                if row and row.original != text[start:end]:
+                    variants[str(byte_start)] = text[start:end]
+            output[key] = protected
+            if turn:
+                message = PrivacyMessage(turn=turn, source_key=key, input_digest=keyed_digest(text),
+                    protected=protected, variants=json.dumps(variants, ensure_ascii=False))
+                messages.append(message)
+                occurrences.extend(PrivacyOccurrence(message=message, alias=row, start=start, end=end,
+                    category=category, detector=detector) for row, start, end, category, detector in positions)
+        if messages:
+            PrivacyMessage.objects.bulk_create(messages)
+        if occurrences:
+            PrivacyOccurrence.objects.bulk_create(occurrences)
+        return output
 
+
+def alias_text(context, text):
+    """Compatibility policy for existing agent callers; all explicit categories."""
+    active = bool(context.prompt_id and required(context))
+    key = f'agent:0:{keyed_digest(text)}' if isinstance(text, str) else 'agent:invalid'
+    return _protect_many(context, [(key, text, None)], persist=active)[key]
+
+
+def protect_tree(context, value):
+    """Protect arbitrary keys and text with one operation-scoped policy snapshot."""
+    from .local_masking import _SECRET_KEY
+    fields = {'nombre': 'PERSON', 'full_name': 'PERSON', 'titular': 'PERSON',
+              'email': 'EMAIL', 'correo': 'EMAIL', 'telefono': 'PHONE', 'dni': 'ID', 'iban': 'ACCOUNT'}
+    active = bool(context.prompt_id and required(context))
+    entries, structural = [], []
+
+    def entry(text, category=None):
+        key = (f'field:{category}:{keyed_digest(text)}' if category else
+               f'agent:0:{keyed_digest(text)}')
+        entries.append((key, text, category))
+        return key
+
+    def collect(item):
+        if isinstance(item, str):
+            entry(item)
+        elif isinstance(item, list):
+            for child in item:
+                collect(child)
+        elif isinstance(item, dict):
+            for key, child in item.items():
+                entry(key)
+                if key in STRUCTURAL_IDS and isinstance(child, str) and OPAQUE_ID.fullmatch(child) and active:
+                    structural.append(child)
+                elif _SECRET_KEY.fullmatch(key):
+                    continue
+                elif key.lower() in fields and isinstance(child, str):
+                    entry(child, fields[key.lower()])
+                else:
+                    collect(child)
+    collect(value)
+    protected = _protect_many(context, entries, persist=active, structural=structural)
+
+    def rebuild(item):
+        if isinstance(item, str):
+            return protected[f'agent:0:{keyed_digest(item)}']
+        if isinstance(item, list):
+            return [rebuild(child) for child in item]
+        if isinstance(item, dict):
+            result = {}
+            for key, child in item.items():
+                if key in STRUCTURAL_IDS and isinstance(child, str) and OPAQUE_ID.fullmatch(child) and active:
+                    safe = child
+                elif _SECRET_KEY.fullmatch(key):
+                    safe = '[[REGULAI_SECRET]]'
+                elif key.lower() in fields and isinstance(child, str):
+                    safe = protected[f'field:{fields[key.lower()]}:{keyed_digest(child)}']
+                else:
+                    safe = rebuild(child)
+                result[protected[f'agent:0:{keyed_digest(key)}']] = safe
+            return result
+        return item
+    return rebuild(value)
+
+
+def protect_message(context, text, *, source_key, field_category=None):
+    """Persist canonical text + occurrences atomically before any caller sends."""
+    return _protect_many(context, [(source_key, text, field_category)], persist=True)[source_key]
 
 def required(prompt):
     from .models import Company
@@ -325,8 +461,10 @@ def protect_batch(prompt, texts, *, prefix='content'):
     if not required(prompt):
         return texts
     context = ProtectionContext.from_prompt(prompt)
-    return [protect_message(context, text, source_key=f'{prefix}:{index}:{keyed_digest(text)}')
-            for index, text in enumerate(texts)]
+    entries = [(f'{prefix}:{index}:{keyed_digest(text)}', text, None)
+               for index, text in enumerate(texts)]
+    protected = _protect_many(context, entries, persist=True)
+    return [protected[key] for key, _, _ in entries]
 
 
 def block_unsupported(prompt):
