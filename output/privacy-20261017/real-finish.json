@@ -1,0 +1,89 @@
+{
+  "services": {
+    "regulai-v2-web": {
+      "running": true,
+      "restarts": 0
+    },
+    "regulai-v2-worker": {
+      "running": true,
+      "restarts": 0
+    },
+    "regulai-v2-postgres": {
+      "running": true,
+      "restarts": 0
+    }
+  },
+  "metadata": {
+    "migrations": [
+      "0042_agent_artifact_metadata",
+      "0043_p1_skills_and_events",
+      "0044_privacy_records",
+      "0045_privacy_call_identity"
+    ],
+    "live": {},
+    "active_calls": 0,
+    "pending_inferences": 0,
+    "historical_terminal_markers_preserved": {
+      "interrupted": 1
+    },
+    "provider_occupied": 0,
+    "sandbox_occupied": 0,
+    "database": {
+      "engine": "django.db.backends.postgresql",
+      "host": "127.0.0.1",
+      "port": "55452",
+      "basename": "regulai"
+    },
+    "flags": {
+      "REGULAY_AGENT_ENABLED": true,
+      "REGULAY_SKILLS_CATALOG": true,
+      "REGULAY_SKILLS_RUNTIME": true,
+      "REGULAY_AGENT_TEXT_STREAM": true,
+      "REGULAY_ARTIFACT_PREVIEW": true,
+      "REGULAY_SKILL_RUNTIME_CAPABILITIES": {
+        "node": "24.21.0"
+      }
+    }
+  },
+  "unchanged_tables": [
+    "auth_group",
+    "auth_group_permissions",
+    "auth_permission",
+    "auth_user",
+    "auth_user_groups",
+    "auth_user_user_permissions",
+    "authtoken_token",
+    "django_admin_log",
+    "django_content_type",
+    "django_session",
+    "front_agentaccessgrant",
+    "front_agentartifact",
+    "front_agentdocumentconnection",
+    "front_agentdocumentreference",
+    "front_agentevent",
+    "front_agentexecution",
+    "front_agentexport",
+    "front_agentinference",
+    "front_agentinput",
+    "front_agentoperation",
+    "front_agentskillinstallation",
+    "front_agentskillinstalloperation",
+    "front_agentskillrevision",
+    "front_agenttoolresult",
+    "front_alert",
+    "front_companyengine",
+    "front_conversationalias",
+    "front_department",
+    "front_engine",
+    "front_enginemodel",
+    "front_message",
+    "front_obfuscationconfig",
+    "front_profile",
+    "front_prompt",
+    "front_response",
+    "front_role"
+  ],
+  "private_configuration_unchanged": true,
+  "clone_removed": true,
+  "provider_generation_calls": 0
+}

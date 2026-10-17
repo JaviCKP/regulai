@@ -1,6 +1,8 @@
 # 89 — E7 — Migración, regresión y entrega
 
 Status: completada en laboratorio local; activación e integración excluidas.
+
+Seguimiento posterior autorizado: [90 — cuenta local y demo](90-demo-privacidad-cuenta-local.md).
 Blocked by: [88](88-privacidad-interfaz.md).
 
 Especificación: [protección reversible](../plan-tokenizacion-reversible-20261017.md), entrega E7 y criterios de la sección 11.

@@ -2,6 +2,10 @@
 
 La función se entrega desactivada. Aplicar las migraciones no activa empresas, no reprocesa históricos ni concede permisos. Véase la [especificación](plan-tokenizacion-reversible-20261017.md) y la [evidencia de entrega](entrega-privacidad-20261017.md).
 
+Activación local posterior solicitada por el usuario: la cuenta «Pruebas de Javi»
+queda preparada en [la tarea 90](tareas/90-demo-privacidad-cuenta-local.md).
+[Guía para probarla](demo-privacidad-local.md). Los límites de cobertura de esta guía se mantienen.
+
 ## Activación y cambios
 
 1. Desplegar una versión que incluya las migraciones 0044 y 0045, el lector de proyección y su build React. Primero comprobarlo en una copia aislada.

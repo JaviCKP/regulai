@@ -1,0 +1,64 @@
+{
+  "phase": "prepared",
+  "image": "regulai-v2-web:privacy-20261017-a1",
+  "image_id": "sha256:39599fadcc74d9819c29e2a31cc00366f04cec2694e5a1a68842941019077385",
+  "backup": {
+    "file": "before-prepare.dump",
+    "bytes": 30819391,
+    "sha256": "97986331a4ad795f8e1476f9b4203b743bcb45820673a6e42a9f970b5c1676c7"
+  },
+  "clone": "regulai_p1_privacy_20261017_a1",
+  "migration": {
+    "applied": []
+  },
+  "configuration": {
+    "company": "Pruebas de Javi",
+    "user": "admin",
+    "rules": [
+      {
+        "id": 9,
+        "name": "Claves privadas",
+        "action": "block"
+      },
+      {
+        "id": 10,
+        "name": "Credenciales de acceso",
+        "action": "block"
+      },
+      {
+        "id": 11,
+        "name": "Documentaci\u00f3n interna",
+        "action": "block"
+      },
+      {
+        "id": 12,
+        "name": "Datos de personal",
+        "action": "consent"
+      }
+    ],
+    "privacy_revision": 1,
+    "agent": "Asistente de trabajo",
+    "model": "DeepSeek Flash",
+    "chats": [
+      {
+        "id": 7,
+        "title": "Contacto de ejemplo",
+        "mode": "chat"
+      },
+      {
+        "id": 8,
+        "title": "Plan de trabajo",
+        "mode": "agent"
+      }
+    ]
+  },
+  "validation": {
+    "react": true,
+    "asset": "/static/chat-app/assets/main-BfZaF43Y.js",
+    "privacy_matches": 5,
+    "agent_profile": 1,
+    "configured_connections": 1
+  },
+  "existing_data_preserved": true,
+  "provider_generation_calls": 0
+}
