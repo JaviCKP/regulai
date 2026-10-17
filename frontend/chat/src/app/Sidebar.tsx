@@ -98,8 +98,9 @@ export function Sidebar({ onHide, onNavigate }: { onHide?: () => void; onNavigat
                         current && "bg-surface-3 font-medium text-foreground",
                       )}
                     >
-                      {item.mode === "agent" && <SparklesIcon className="size-3.5 shrink-0 text-subtle-foreground" aria-label="Agente" role="img" />}
+                      {/* Every title starts at the same edge; the agent mark follows it. */}
                       <span className="truncate">{item.title}</span>
+                      {item.mode === "agent" && <SparklesIcon className="size-3.5 shrink-0 text-subtle-foreground" aria-label="Agente" role="img" />}
                     </a>
                     <a
                       href={remove(item.id)}

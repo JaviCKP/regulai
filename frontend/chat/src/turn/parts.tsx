@@ -110,7 +110,8 @@ export function CopyButton({ text, label = "Copiar respuesta" }: { text: () => s
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button variant="ghost" size="icon" className="size-8 text-muted-foreground pointer-coarse:size-11" aria-label={done ? "Copiado" : label} onClick={copy} />
+          // It opens a row pulled left by -ml-2: on touch the wider target keeps its glyph on the text edge.
+          <Button variant="ghost" size="icon" className="size-8 text-muted-foreground pointer-coarse:size-11 pointer-coarse:justify-start pointer-coarse:pl-2" aria-label={done ? "Copiado" : label} onClick={copy} />
         }
       >
         <span className="relative size-4">

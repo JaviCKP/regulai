@@ -17,7 +17,8 @@ export function Conversation() {
   return (
     <MessageScrollerProvider autoScroll defaultScrollPosition="last-anchor" scrollPreviousItemPeek={56}>
       <MessageScroller className="min-h-0 flex-1">
-        <MessageScrollerViewport aria-label="Mensajes">
+        {/* Text leaving under the header fades instead of being cut mid-line. */}
+        <MessageScrollerViewport aria-label="Mensajes" className="[mask-image:linear-gradient(to_bottom,transparent,#000_1rem)]">
           <MessageScrollerContent
             aria-live="off"
             aria-busy={streaming || undefined}
@@ -33,7 +34,7 @@ export function Conversation() {
         <MessageScrollerButton
           variant="outline"
           size="sm"
-          className="bottom-3 h-8 gap-1.5 rounded-full bg-background px-3 text-[0.8125rem] font-medium text-muted-foreground shadow-sm"
+          className="bottom-3 h-8 gap-1.5 rounded-full bg-background px-3 text-[0.8125rem] font-medium text-muted-foreground shadow-sm data-[active=false]:duration-150"
         >
           <ArrowDownIcon className="size-3.5" aria-hidden />
           Ir al final

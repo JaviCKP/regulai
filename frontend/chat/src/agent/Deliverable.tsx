@@ -17,6 +17,7 @@ import { useArtifactViewer } from "../viewer/ArtifactViewer"
 import { canPreview as canOpenViewer, PAGE } from "../viewer/contracts"
 
 const DOWNLOAD = /^\/chat\/agent\/artifacts\/[0-9a-f-]+\/download\/(?:\?format=(?:docx|pdf))?$/
+const ACTION = "h-8 gap-1.5 px-2.5 text-[0.8125rem] text-muted-foreground hover:text-foreground pointer-coarse:h-11"
 const REVIEW = /^\/chat\/agent\/artifacts\/[0-9a-f-]+\/review\/$/
 
 const KIND: Record<string, string> = {
@@ -121,6 +122,7 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
   }
 
   const canPreview = model.delivered && (model.viewer || model.pagesPreview)
+  const editable = professional && model.delivered && !live
   const thumb = model.delivered && model.document && model.pagesPreview ? model.pages[0] : null
   const coverage = artifact.coverage || artifact.verification_checks?.coverage
   const checks = artifact.verification_checks ?? {}
@@ -130,10 +132,12 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
     <m.article
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-3 rounded-xl bg-surface p-3 ring-1 ring-border"
+      className="@container flex flex-col gap-3 rounded-xl bg-surface p-3 ring-1 ring-border"
       data-status={artifact.status || ""}
     >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      {/* Name first; the actions sit beside it when the card is wide and in a row of their own
+          below it when it is narrow. Each action says what it does without hover. */}
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 @lg:grid-cols-[auto_minmax(0,1fr)_auto]">
         {thumb ? (
           <button type="button" className="relative h-14 w-11 shrink-0 overflow-hidden rounded-md bg-white ring-1 ring-border transition-shadow hover:ring-input focus-visible:outline-2 focus-visible:outline-ring"
             aria-label={`Vista previa de ${model.title}`} onClick={(event) => open(event.currentTarget)}>
@@ -144,32 +148,32 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
             <Icon className="size-5" aria-hidden />
           </span>
         )}
-        <div className="min-w-0 flex-1 basis-40">
+        <div className="min-w-0">
           <h3 className="truncate text-sm font-semibold" title={model.title}>{model.title}</h3>
           <p className="truncate text-xs text-subtle-foreground tabular-nums">{model.meta}</p>
         </div>
-        <div className="ml-auto flex shrink-0 items-center gap-1">
-          {canPreview && (
-            <Button variant="ghost" size="icon" className="size-9 text-muted-foreground pointer-coarse:size-11" aria-label={`Vista previa de ${model.title}`} title="Vista previa" onClick={(event) => open(event.currentTarget)}>
-              <EyeIcon />
-            </Button>
-          )}
-          {model.delivered && model.downloads.map((download, index) => (
-            <Button key={download.format} variant={index ? "ghost" : "outline"} size="sm"
-              className={cn("h-9 gap-1.5 px-2.5 pointer-coarse:h-11", index > 0 && "text-muted-foreground")}
-              render={<a href={download.url} download={artifact.filename || ""} />}
-              aria-label={`Descargar ${download.format.toUpperCase()}`}>
-              <DownloadIcon aria-hidden />
-              <span className="text-xs font-semibold">{download.format.toUpperCase()}</span>
-            </Button>
-          ))}
-          {professional && model.delivered && !live && (
-            <Button variant="ghost" size="icon" className="size-9 text-muted-foreground pointer-coarse:size-11" aria-label={`Editar ${model.title}`} title="Editar"
-              onClick={() => { session.editRevision(artifact, model.title); session.focusComposer?.() }}>
-              <PencilIcon />
-            </Button>
-          )}
-        </div>
+        {(canPreview || (model.delivered && model.downloads.length > 0) || editable) && (
+          <div className="col-span-2 -ml-2.5 flex flex-wrap items-center gap-0.5 @lg:col-span-1 @lg:ml-0">
+            {canPreview && (
+              <Button variant="ghost" size="sm" className={ACTION} aria-label={`Vista previa de ${model.title}`} onClick={(event) => open(event.currentTarget)}>
+                <EyeIcon aria-hidden />Vista previa
+              </Button>
+            )}
+            {model.delivered && model.downloads.map((download) => (
+              <Button key={download.format} variant="ghost" size="sm" className={ACTION}
+                render={<a href={download.url} download={artifact.filename || ""} />}
+                aria-label={`Descargar ${download.format.toUpperCase()}`}>
+                <DownloadIcon aria-hidden />{download.format.toUpperCase()}
+              </Button>
+            ))}
+            {editable && (
+              <Button variant="ghost" size="sm" className={ACTION} aria-label={`Editar ${model.title}`}
+                onClick={() => { session.editRevision(artifact, model.title); session.focusComposer?.() }}>
+                <PencilIcon aria-hidden />Editar
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {model.mock && (

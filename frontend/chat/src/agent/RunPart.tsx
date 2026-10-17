@@ -326,7 +326,7 @@ function SkillNotices({ view }: { view: RunView }) {
           >
             <BookOpenIcon className="size-3.5 shrink-0" aria-hidden />
             <span className="truncate">{skill.name}</span>
-            {skill.reason && SKILL_REASON[skill.reason] && <span className="font-normal text-brand-strong/75">· {SKILL_REASON[skill.reason]}</span>}
+            {skill.reason && SKILL_REASON[skill.reason] && <span className="font-normal text-brand-strong">· {SKILL_REASON[skill.reason]}</span>}
           </m.span>
         ))}
       </AnimatePresence>

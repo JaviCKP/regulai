@@ -250,7 +250,10 @@ function blockNode(block: Block, streaming: boolean): HTMLElement {
       cells(block.rows[0]!).forEach((cell, index) => {
         const th = inline(el("th"), cell)
         th.setAttribute("scope", "col")
-        if (aligns[index]) th.style.textAlign = aligns[index]!
+        if (aligns[index]) {
+          th.style.textAlign = aligns[index]!
+          th.dataset.align = aligns[index]!
+        }
         head.appendChild(th)
       })
       const body = table.appendChild(el("tbody"))
@@ -258,7 +261,10 @@ function blockNode(block: Block, streaming: boolean): HTMLElement {
         const tr = body.appendChild(el("tr"))
         cells(row).forEach((cell, index) => {
           const td = inline(el("td"), cell)
-          if (aligns[index]) td.style.textAlign = aligns[index]!
+          if (aligns[index]) {
+            td.style.textAlign = aligns[index]!
+            td.dataset.align = aligns[index]!
+          }
           tr.appendChild(td)
         })
       })

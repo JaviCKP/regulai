@@ -189,6 +189,16 @@
   }
 }
 
+/* A list that scrolls shows a soft edge only where more content waits, without script:
+ * the covers scroll with the content and uncover the fixed shadows at either end. */
+:where(.regulai-chat) .rg-scroll-shadows {
+  background:
+    linear-gradient(var(--popover) 30%, transparent) top / 100% 1.5rem no-repeat local,
+    linear-gradient(transparent, var(--popover) 70%) bottom / 100% 1.5rem no-repeat local,
+    radial-gradient(farthest-side at 50% 0, color-mix(in oklab, var(--foreground) 14%, transparent), transparent) top / 100% 0.5rem no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, color-mix(in oklab, var(--foreground) 14%, transparent), transparent) bottom / 100% 0.5rem no-repeat scroll;
+}
+
 @media (forced-colors: active) {
   :where(.regulai-chat) [data-slot="input-group"] { border: 1px solid CanvasText; }
 }

@@ -1,9 +1,11 @@
 import { CheckIcon, ExternalLinkIcon, RotateCwIcon, SearchIcon, XIcon } from "lucide-react"
-import { useEffect, useId, useMemo, useRef, useState, type RefObject } from "react"
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTitle } from "@/components/ui/popover"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
+import { useMediaQuery } from "@/lib/hooks"
 import { cn } from "@/lib/utils"
 
 import { useSession } from "../app/session-context"
@@ -11,7 +13,8 @@ import { displayName, summary, type SkillsApi } from "./use-skills"
 
 /* The manual way to choose skills for the next agent message: `/` at the start
  * of an empty message or the button. A searchable listbox (arrows, Enter,
- * Escape) inside a popover anchored to the composer. */
+ * Escape) inside a popover anchored to the composer; on a phone, where neither
+ * side of the composer has room for it, a bottom sheet with the same content. */
 
 /** Closing by Escape or the close button returns focus to where the picker came from;
  * choosing returns it to the message; a click elsewhere leaves focus where it lands. */
@@ -61,21 +64,38 @@ export function SkillPicker({ skills, open, onClose, onChosen, anchor }: {
       : !matches.length ? "No hay skills con ese nombre. Prueba otra búsqueda." : "Se usará en el próximo mensaje."
     : "")
 
+  const sheet = useMediaQuery("(max-width: 639px)")
+  const onOpenChange = (next: boolean, details: { reason: string }) => {
+    if (!next) onClose(details.reason === "escape-key" || details.reason === "close-press")
+  }
+  const title = "Skills para el próximo mensaje"
+  // Only the list scrolls: title, search, automatic selection and the library link stay in view.
+  const frame = "gap-2 overflow-hidden *:shrink-0"
+
+  if (sheet) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" showCloseButton={false} initialFocus={search} finalFocus={false}
+          className={cn(frame, "max-h-[85dvh] rounded-t-2xl p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]")}>
+          {body(<SheetTitle className="flex-1 text-[0.8125rem] font-semibold">{title}</SheetTitle>)}
+        </SheetContent>
+      </Sheet>
+    )
+  }
   return (
-    <Popover open={open} onOpenChange={(next, details) => {
-      if (!next) onClose(details.reason === "escape-key" || details.reason === "close-press")
-    }}>
-      <PopoverContent
-        anchor={anchor}
-        side="top"
-        align="start"
-        sideOffset={8}
-        initialFocus={search}
-        finalFocus={false}
-        className="max-h-(--available-height) w-[min(26rem,calc(100vw-1.5rem))] gap-2 overflow-y-auto p-2 *:shrink-0"
-      >
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverContent anchor={anchor} side="top" align="start" sideOffset={8} initialFocus={search} finalFocus={false}
+        className={cn(frame, "max-h-(--available-height) w-[min(26rem,calc(100vw-1.5rem))] p-2")}>
+        {body(<PopoverTitle className="flex-1 text-[0.8125rem] font-semibold">{title}</PopoverTitle>)}
+      </PopoverContent>
+    </Popover>
+  )
+
+  function body(heading: ReactNode) {
+    return (
+      <>
         <div className="flex items-center gap-2 px-1.5 pt-1">
-          <PopoverTitle className="flex-1 text-[0.8125rem] font-semibold">Skills para el próximo mensaje</PopoverTitle>
+          {heading}
           <Button variant="ghost" size="icon-sm" className="text-muted-foreground" aria-label="Cerrar selector de skills" onClick={() => onClose(true)}>
             <XIcon />
           </Button>
@@ -109,7 +129,7 @@ export function SkillPicker({ skills, open, onClose, onChosen, anchor }: {
           />
         </label>
         <div id={listId} role="listbox" aria-label="Skills instaladas" aria-multiselectable="true" aria-busy={skills.loading}
-          className="flex max-h-60 flex-col gap-px overflow-y-auto">
+          className="rg-scroll-shadows flex max-h-60 min-h-14 flex-col gap-px overflow-y-auto overscroll-contain shrink!">
           {matches.map((row, index) => {
             const selected = skills.selected.includes(row.id)
             const usable = skills.ready(row)
@@ -170,7 +190,7 @@ export function SkillPicker({ skills, open, onClose, onChosen, anchor }: {
           Gestionar skills
           <ExternalLinkIcon className="size-3.5" aria-hidden />
         </a>
-      </PopoverContent>
-    </Popover>
-  )
+      </>
+    )
+  }
 }

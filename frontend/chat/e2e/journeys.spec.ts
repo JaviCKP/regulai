@@ -97,6 +97,8 @@ test("agent: / opens the skills picker; the choice is a chip; Escape returns foc
   const list = page.getByRole("listbox", { name: "Skills instaladas" })
   await expect(list).toBeVisible()
   await expect(page.getByRole("combobox")).toBeFocused()
+  // The catalogue is requested on opening: choose once its options are there, as a person would.
+  await expect(list.getByRole("option").first()).toBeVisible()
   await page.keyboard.press("ArrowDown")
   await page.keyboard.press("Enter")
   await expect(list).toBeHidden()
