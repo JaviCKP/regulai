@@ -5,10 +5,11 @@ import json
 from unittest.mock import patch
 import httpx
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 from pydantic import ValidationError
 
 from front import test_chat_flow, test_pipeline
+from front.test_chat_island import bootstrap as island_bootstrap
 from front.classification import difficulty_level
 from front.models import EngineModel, Prompt
 from front.policy import AIConfig
@@ -144,7 +145,9 @@ class DifficultyPipelineTests(test_chat_flow.ChatFixture):
     def test_provider_limits_do_not_disable_security_or_verification(self):
         self.company.ai_config['limits'] = {'provider_managed': True}
         self.company.save()
-        self.assertContains(self.client.get('/chat/'), 'Límites del proveedor')
+        self.assertTrue(island_bootstrap(self.client.get('/chat/'))['models']['provider_limits'])
+        with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+            self.assertContains(self.client.get('/chat/'), 'Límites del proveedor')
         self.send('/api/chat/send/', 'SYNTHETIC_SECRET')
         self.provider.assert_not_called()
         self.http.assert_not_called()

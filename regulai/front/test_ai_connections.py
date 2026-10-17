@@ -9,10 +9,11 @@ from django.apps import apps
 from django.contrib.auth.models import User
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
-from django.test import Client, TestCase, TransactionTestCase
+from django.test import Client, TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 
 from .ai_connections import SERVICES, service_engines
+from .test_chat_island import bootstrap as island_bootstrap
 from .models import AuditLog, Company, CompanyEngine, Engine, ObfuscationConfig, Profile, Prompt, Role
 
 
@@ -201,7 +202,10 @@ class ServiceSettingsTests(TestCase):
         return self.client.get(self.url).context['setup'].get('token', '')
 
     def test_basic_setup_requires_key_review_and_preserves_existing_configuration(self):
-        self.assertContains(self.client.get('/chat/'), 'Falta configurar la IA')
+        # The island says it from its bootstrap; the legacy page (rollback) renders it.
+        self.assertTrue(island_bootstrap(self.client.get('/chat/'))['setup']['missing'])
+        with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+            self.assertContains(self.client.get('/chat/'), 'Falta configurar la IA')
         self.assertEqual(self.setup_token(), '')
         self.client.post(self.url, {'jev': self.keys['jev']})
         self.assertEqual(self.setup_token(), '')

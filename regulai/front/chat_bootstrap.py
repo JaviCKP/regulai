@@ -149,7 +149,9 @@ def _turn(turn):
                    if answer is not None and (not run or run.get('professional')) else None),
         'assistant_file': None,
         'receipt_url': reverse('front:chat_request_receipt', args=[request_id]) if request_id and prompt.status != 'legacy' else None,
-        'evidence_url': reverse('front:chat_request_evidence', args=[request_id]) if request_id else None,
+        # As the server page: the evidence export only next to verified citations.
+        'evidence_url': (reverse('front:chat_request_evidence', args=[request_id])
+                         if request_id and answer is not None and answer['evidence'] else None),
     }
     if assistant is not None and assistant.file_name and assistant.response_file:
         data['assistant_file'] = {'name': assistant.file_name, 'size': assistant.file_size or None,

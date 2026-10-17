@@ -7,6 +7,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from front.models import Company, Conversation, Message, Profile, Prompt, Response
+from front.test_chat_island import bootstrap as island_bootstrap
 
 
 class ChatUITests(TestCase):
@@ -73,7 +74,23 @@ class ChatUITests(TestCase):
         assistant.save()
         Message.objects.create(conversation=self.prompt.conversation, role='user', content='Legacy message')
         self.client.force_login(self.owner)
-        page = self.client.get(reverse('front:chat_conversation', args=[self.prompt.conversation_id]))
+        url = reverse('front:chat_conversation', args=[self.prompt.conversation_id])
+        # Island: text travels as JSON (json_script escapes <, > and &) and React renders it as text.
+        page = self.client.get(url)
+        self.assertEqual(page.status_code, 200)
+        for raw in ('<script>private input', '<img src=x', '<script>evidence', 'private-token', 'private-hash',
+                    'private-policy', 'private-key', 'private document', 'document-hash'):
+            self.assertNotContains(page, raw)
+        turns = island_bootstrap(page)['turns']
+        recorded = next(turn for turn in turns if turn['request_id'] == str(self.prompt.request_id))
+        self.assertEqual((recorded['user']['content'], recorded['answer']['text'], recorded['answer']['unverified']),
+                         ('<script>private input</script>', '<img src=x onerror=alert(1)>', False))
+        self.assertEqual((recorded['receipt_url'], recorded['evidence_url']), (self.receipt_url, self.evidence_url))
+        self.assertEqual(recorded['answer']['evidence'][0]['excerpt'], '<script>evidence</script>')
+        self.assertEqual(recorded['assistant_file']['url'], reverse('front:chat_download_file', args=[assistant.pk]))
+        self.assertTrue(next(turn for turn in turns if (turn['user'] or {}).get('content') == 'Legacy message')['legacy'])
+        with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+            page = self.client.get(url)
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, '&lt;script&gt;private input&lt;/script&gt;')
         self.assertContains(page, '&lt;img src=x onerror=alert(1)&gt;')
@@ -90,7 +107,12 @@ class ChatUITests(TestCase):
         self.prompt.decision['verification'] = {'status': 'failed'}
         self.prompt.save(update_fields=['decision'])
         self.client.force_login(self.owner)
-        page = self.client.get(reverse('front:chat_conversation', args=[self.prompt.conversation_id]))
+        url = reverse('front:chat_conversation', args=[self.prompt.conversation_id])
+        recorded = island_bootstrap(self.client.get(url))['turns'][0]
+        self.assertEqual((recorded['answer']['unverified'], recorded['answer']['evidence'], recorded['evidence_url'], recorded['receipt_url']),
+                         (True, [], None, self.receipt_url))
+        with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+            page = self.client.get(url)
         self.assertContains(page, 'No verificado', count=1)
         self.assertNotContains(page, self.evidence_url)
         self.assertNotContains(page, 'evidence&lt;/script&gt;')

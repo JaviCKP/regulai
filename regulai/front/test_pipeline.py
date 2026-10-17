@@ -4,7 +4,9 @@ from types import SimpleNamespace
 from unittest.mock import patch
 from decimal import Decimal
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from front import test_chat_flow
+from front.test_chat_island import bootstrap as island_bootstrap
 from front.connectors import ChatResponse, OpenAIConnector
 from front.models import CompanyEngine, EngineModel, Message, ObfuscationConfig, Profile, Prompt, Rule
 
@@ -79,7 +81,9 @@ class PipelineTests(test_chat_flow.ChatFixture):
         session['selected_engine_id'] = 99999
         session['selected_model_id'] = 99999
         session.save()
-        self.assertContains(self.client.get('/chat/'), 'Selección automática del modelo')
+        self.assertTrue(island_bootstrap(self.client.get('/chat/'))['models']['automatic'])
+        with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+            self.assertContains(self.client.get('/chat/'), 'Selección automática del modelo')
         result = self.send('/chat/send/', auto_route='true', engine_id=99999, model_id=99999).json()
         self.assertEqual(result['status'], 'completed')
         self.assertEqual(result['receipt']['route']['mode'], 'auto')

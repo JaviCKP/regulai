@@ -1,12 +1,14 @@
 """Runtime checks for the framework upgrade, without provider traffic."""
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import connection
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 
 from front.models import Company, CompanyEngine, Engine, Profile
 from front.file_security import validate_uploaded_file
+from front.test_chat_island import bootstrap as island_bootstrap
 
 
 class RuntimeTests(TestCase):
@@ -21,7 +23,12 @@ class RuntimeTests(TestCase):
         self.assertEqual(protected.post('/login/', {'username': 'runtime'}).status_code, 403)
         self.assertEqual(self.client.get('/chat/').status_code, 302)
         self.assertTrue(self.client.login(username='runtime', password='synthetic-password'))
-        self.assertContains(self.client.get('/chat/'), 'csrfmiddlewaretoken')
+        # The island sends its token from the bootstrap; the legacy page (rollback) from its form.
+        page = self.client.get('/chat/')
+        self.assertTrue(island_bootstrap(page)['csrf_token'])
+        self.assertIn(settings.CSRF_COOKIE_NAME, page.cookies)
+        with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+            self.assertContains(self.client.get('/chat/'), 'csrfmiddlewaretoken')
         response = self.client.post('/api/auth/login/', {
             'username': 'runtime', 'password': 'synthetic-password',
         })

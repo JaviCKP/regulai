@@ -11,6 +11,7 @@ from django.conf import settings
 from front.chat_service import send_chat_message
 from front.management.commands.run_demo import offline_demo, seed_demo
 from front.models import ObfuscationConfig
+from front.test_chat_island import bootstrap as island_bootstrap
 
 
 @override_settings(DEMO_MODE=True)
@@ -84,6 +85,11 @@ class DemoTests(TestCase):
         actor = seed_demo()
         self.client.force_login(actor)
         with override_settings(TEMPLATES=demo_settings.TEMPLATES):
-            self.assertContains(self.client.get('/chat/'), 'fallo simulado')
+            # The island shows the banner from its bootstrap; the legacy page (rollback) renders it.
+            self.assertTrue(island_bootstrap(self.client.get('/chat/'))['demo'])
+            with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+                self.assertContains(self.client.get('/chat/'), 'fallo simulado')
             with override_settings(DEMO_MODE=False):
-                self.assertNotContains(self.client.get('/chat/'), 'fallo simulado')
+                self.assertFalse(island_bootstrap(self.client.get('/chat/'))['demo'])
+                with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+                    self.assertNotContains(self.client.get('/chat/'), 'fallo simulado')
