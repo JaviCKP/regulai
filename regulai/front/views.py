@@ -1313,7 +1313,7 @@ def chat_view(request, conversation_id=None):
     # that may start in agent mode. Without the managed connector it never appears.
     agent_drive = (agent_mode or (agent_available and not conversation)) and getattr(settings, 'REGULAY_AGENT_MCP_ENABLED', False)
 
-    return render(request, "chat/chat.html", {
+    context = {
         "conversation": conversation,
         "conversation_title": display_title(conversation) if conversation else '',
         "conversation_groups": conversation_groups(conversations),
@@ -1332,7 +1332,16 @@ def chat_view(request, conversation_id=None):
         "automatic_routing": profile.company.ai_config.get('routing', {}).get('mode') == 'auto',
         "difficulty_routing": profile.company.ai_config.get('routing', {}).get('strategy') == 'difficulty',
         "provider_managed_limits": profile.company.ai_config.get('limits', {}).get('provider_managed', False),
-    })
+    }
+    from .chat_assets import react_enabled
+    if react_enabled():
+        # One frontend per page: the island gets the same projection as JSON.
+        from .chat_bootstrap import chat_bootstrap
+        return render(request, "chat/app.html", {
+            "bootstrap": chat_bootstrap(request, context, runs),
+            "conversation_title": context["conversation_title"],
+        })
+    return render(request, "chat/chat.html", context)
 
 
 @login_required

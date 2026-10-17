@@ -171,6 +171,9 @@ REGULAY_AGENT_PACKAGES_ENABLED = False
 REGULAY_AGENT_BROWSER_ENABLED = False
 REGULAY_AGENT_MCP_ENABLED = False  # Managed Drive grant required; assistant connections are unrelated.
 REGULAY_AGENT_MCP_WRITES_ENABLED = False  # Requires validated pilot and separate write grant.
+# Chat frontend: 'react' (static/chat-app build) or 'legacy' (server templates and
+# IIFE scripts). One frontend per page; 'legacy' is the local rollback (task 79).
+REGULAI_CHAT_FRONTEND = os.environ.get('REGULAI_CHAT_FRONTEND', 'react')
 
 # Django REST Framework Configuration
 REST_FRAMEWORK = {
