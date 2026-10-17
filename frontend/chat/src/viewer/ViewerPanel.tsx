@@ -117,7 +117,7 @@ function ViewerBody({ opened, onClose, onSelect, width, onWidth, wide }: PanelPr
       </div>
       {state.status === "ready" && data && (
         <Tabs defaultValue={typeof data.html === "string" ? "preview" : "code"} className="flex min-h-0 flex-1 flex-col gap-0 px-4 pt-3">
-          <TabsList className="w-fit">
+          <TabsList className="w-fit pointer-coarse:h-12!">
             {typeof data.html === "string" && <TabsTrigger value="preview">Vista previa</TabsTrigger>}
             <TabsTrigger value="code">Código</TabsTrigger>
           </TabsList>

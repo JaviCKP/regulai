@@ -212,7 +212,7 @@ export function Composer() {
                     <m.div key="file" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.12 } }}
                       className="flex max-w-full min-w-0 items-center gap-2 rounded-xl bg-surface py-1.5 pr-1 pl-2 ring-1 ring-border" data-slot="selected-file">
                       <FileChip file={file} />
-                      <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground pointer-coarse:size-9" aria-label={`Quitar ${file.name}`}
+                      <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground pointer-coarse:size-10" aria-label={`Quitar ${file.name}`}
                         onClick={() => { setFile(null); textarea.current?.focus() }}>
                         <XIcon />
                       </Button>

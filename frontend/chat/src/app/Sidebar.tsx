@@ -43,7 +43,7 @@ export function Sidebar({ onHide, onNavigate }: { onHide?: () => void; onNavigat
   return (
     <nav className="flex h-full min-h-0 flex-col" aria-label="Conversaciones">
       <div className="flex h-14 shrink-0 items-center gap-2 px-3">
-        <a href={boot.urls.home} className="flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 text-[0.9375rem] font-semibold tracking-tight text-foreground">
+        <a href={boot.urls.home} className="flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 text-[0.9375rem] font-semibold tracking-tight text-foreground pointer-coarse:min-h-11">
           <img src={boot.urls.logo} alt="" className="size-6 shrink-0" />
           <span>regul<span className="text-brand">AI</span></span>
         </a>
@@ -60,13 +60,13 @@ export function Sidebar({ onHide, onNavigate }: { onHide?: () => void; onNavigat
       <div className="flex shrink-0 flex-col gap-1 px-3 pb-2">
         <a
           href={boot.urls.chat}
-          className="flex h-9 items-center gap-2 rounded-lg px-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface-3/70 focus-visible:outline-2 focus-visible:outline-ring"
+          className="flex h-9 items-center gap-2 rounded-lg px-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface-3/70 focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:h-11"
           onClick={onNavigate}
         >
           <SquarePenIcon className="size-4 text-muted-foreground" aria-hidden />
           Nueva conversación
         </a>
-        <label className="flex h-9 items-center gap-2 rounded-lg px-2.5 text-sm text-muted-foreground transition-colors focus-within:bg-background focus-within:ring-1 focus-within:ring-input hover:bg-surface-3/50">
+        <label className="flex h-9 items-center gap-2 rounded-lg px-2.5 text-sm text-muted-foreground transition-colors focus-within:bg-background focus-within:ring-1 focus-within:ring-input hover:bg-surface-3/50 pointer-coarse:h-11">
           <SearchIcon className="size-4 shrink-0" aria-hidden />
           <input
             type="search"
@@ -75,7 +75,7 @@ export function Sidebar({ onHide, onNavigate }: { onHide?: () => void; onNavigat
             placeholder="Buscar"
             aria-label="Buscar conversaciones"
             autoComplete="off"
-            className="min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-subtle-foreground [&::-webkit-search-cancel-button]:hidden"
+            className="h-full min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-subtle-foreground [&::-webkit-search-cancel-button]:hidden"
           />
         </label>
       </div>
@@ -94,7 +94,7 @@ export function Sidebar({ onHide, onNavigate }: { onHide?: () => void; onNavigat
                       aria-current={current ? "page" : undefined}
                       onClick={onNavigate}
                       className={cn(
-                        "flex min-h-9 items-center gap-2 rounded-lg py-1.5 pr-9 pl-2.5 text-sm text-foreground/85 transition-colors hover:bg-surface-3/70 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11",
+                        "flex min-h-9 items-center gap-2 rounded-lg py-1.5 pr-9 pl-2.5 text-sm text-foreground/85 transition-colors hover:bg-surface-3/70 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11 pointer-coarse:pr-12",
                         current && "bg-surface-3 font-medium text-foreground",
                       )}
                     >
@@ -105,7 +105,7 @@ export function Sidebar({ onHide, onNavigate }: { onHide?: () => void; onNavigat
                       href={remove(item.id)}
                       aria-label={`Eliminar «${item.title}»`}
                       title="Eliminar"
-                      className="absolute top-1/2 right-1 flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-subtle-foreground opacity-0 transition-opacity group-hover/thread:opacity-100 hover:bg-surface-3 hover:text-danger focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:opacity-70"
+                      className="absolute top-1/2 right-1 flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-subtle-foreground opacity-0 transition-opacity group-hover/thread:opacity-100 hover:bg-surface-3 hover:text-danger focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:right-0 pointer-coarse:size-11 pointer-coarse:opacity-70"
                     >
                       <Trash2Icon className="size-3.5" aria-hidden />
                     </a>

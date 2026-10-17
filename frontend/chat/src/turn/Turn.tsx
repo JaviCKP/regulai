@@ -70,7 +70,7 @@ function RequestPart({ turn }: { turn: TurnModel }) {
         <a
           href={answer.file.url}
           download={answer.file.name}
-          className="flex w-fit max-w-full items-center gap-2.5 rounded-xl bg-surface px-3 py-2 text-sm ring-1 ring-border transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-ring"
+          className="flex w-fit max-w-full items-center gap-2.5 rounded-xl bg-surface px-3 py-2 text-sm ring-1 ring-border transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11"
         >
           <FileTextIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
           <span className="min-w-0 truncate font-medium">{answer.file.name}</span>

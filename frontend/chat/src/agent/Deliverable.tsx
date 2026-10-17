@@ -203,7 +203,7 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
       {!model.delivered && !reviewable && <p className="text-xs text-subtle-foreground">Archivo pendiente de entrega verificada.</p>}
 
       <Collapsible>
-        <CollapsibleTrigger className="group/more flex items-center gap-1 rounded-md text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+        <CollapsibleTrigger className="group/more -my-1.5 flex min-h-7 w-fit items-center gap-1 rounded-md pr-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:my-0 pointer-coarse:min-h-11">
           <ChevronRightIcon className="size-3.5 transition-transform group-aria-expanded/more:rotate-90" aria-hidden />
           Revisión y comprobaciones
           {failed > 0 && <span className="ml-1 rounded-full bg-danger-soft px-1.5 text-[0.6875rem] font-semibold text-danger tabular-nums">{failed} fallida{failed > 1 ? "s" : ""}</span>}

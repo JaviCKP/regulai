@@ -77,7 +77,7 @@ export function ModelMenu() {
       <DropdownMenuTrigger
         className={cn(
           "flex h-8 min-w-0 items-center gap-1 rounded-lg px-2 text-[0.8125rem] font-medium text-muted-foreground transition-colors",
-          "hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring aria-expanded:bg-surface-2 aria-expanded:text-foreground pointer-coarse:h-11",
+          "hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring aria-expanded:bg-surface-2 aria-expanded:text-foreground pointer-coarse:h-11 pointer-coarse:min-w-11 pointer-coarse:justify-center",
         )}
         aria-label={`Modelo: ${label}`}
       >

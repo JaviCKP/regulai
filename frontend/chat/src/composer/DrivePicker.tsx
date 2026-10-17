@@ -39,7 +39,7 @@ export function DrivePicker({ onChosen }: { onChosen: () => void }) {
         <PopoverTitle className="text-[0.8125rem] font-semibold">Nombre del CSV o XLSX en la carpeta autorizada</PopoverTitle>
         <form className="flex gap-2" onSubmit={(event) => { event.preventDefault(); void search() }}>
           <input ref={input} value={query} maxLength={160} autoComplete="off" onChange={(event) => setQuery(event.target.value)}
-            aria-label="Nombre del archivo" className="h-9 min-w-0 flex-1 rounded-md bg-surface-2 px-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50" />
+            aria-label="Nombre del archivo" className="h-9 min-w-0 flex-1 rounded-md bg-surface-2 px-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50 pointer-coarse:h-11" />
           <Button type="submit" size="sm" variant="outline" className="h-9" disabled={state.status === "loading"}><SearchIcon aria-hidden />Buscar</Button>
         </form>
         <div role="status" className="flex flex-col gap-1 text-[0.8125rem]">

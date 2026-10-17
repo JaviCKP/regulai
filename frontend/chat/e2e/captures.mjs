@@ -32,11 +32,33 @@ function watch(page, width) {
   })
 }
 
+// On touch screens every visible control should offer about a fingertip (40 px). Links and
+// citations inside running text are exempt (WCAG 2.5.8); citations get a larger hit area in CSS.
+const TARGETS = () => {
+  const selector = "button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=menuitem], [role=menuitemradio], [role=option], [role=radio], [role=switch], [role=tab]"
+  const small = []
+  for (const node of document.querySelectorAll(selector)) {
+    const rect = node.getBoundingClientRect()
+    const style = getComputedStyle(node)
+    if (!rect.width || !rect.height || style.visibility === "hidden" || Number(style.opacity) === 0) continue
+    if (rect.bottom <= 0 || rect.top >= innerHeight || rect.right <= 0 || rect.left >= innerWidth) continue
+    if (node.matches(".rg-md a, .rg-md .rg-cite") || node.closest("[aria-hidden=true], .sr-only, [inert]")) continue
+    // A control inside a label is reached through the whole label.
+    const label = node.closest("label")?.getBoundingClientRect()
+    if (label && label.height >= 40 && label.width >= 40) continue
+    if (rect.height < 40 || rect.width < 40) {
+      small.push({ control: (node.getAttribute("aria-label") || node.textContent || node.getAttribute("role") || node.tagName).trim().slice(0, 48), width: Math.round(rect.width), height: Math.round(rect.height) })
+    }
+  }
+  return small
+}
+
 async function shot(page, width, name) {
   await page.waitForTimeout(300)
   await page.screenshot({ path: join(out, String(width), `${name}.png`), animations: "disabled" })
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
-  report.shots.push({ width, name, overflow })
+  const smallTargets = width < 1024 ? await page.evaluate(TARGETS) : undefined
+  report.shots.push({ width, name, overflow, ...(smallTargets ? { smallTargets } : {}) })
 }
 
 async function send(page, text) {
@@ -190,4 +212,5 @@ if (process.env.VIDEO) {
 
 await browser.close()
 writeFileSync(join(out, "capturas.json"), JSON.stringify(report, null, 2))
-console.log(JSON.stringify({ shots: report.shots.length, overflow: report.shots.filter((shot) => shot.overflow), errors: report.errors, foreign: report.foreign }))
+const small = report.shots.flatMap((shot) => (shot.smallTargets ?? []).map((target) => `${shot.width}/${shot.name}: ${target.control} ${target.width}x${target.height}`))
+console.log(JSON.stringify({ shots: report.shots.length, overflow: report.shots.filter((shot) => shot.overflow), errors: report.errors, foreign: report.foreign, smallTargets: [...new Set(small)] }, null, 1))
