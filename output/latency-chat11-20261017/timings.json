@@ -1,0 +1,1286 @@
+{
+  "observed_at": "2026-10-17T15:11:24.109469+00:00",
+  "conversation_id": 11,
+  "runs": [
+    {
+      "id": "30ebf222-fd20-4937-b8fb-be17cfcb0883",
+      "status": "completed",
+      "created_at": "2026-10-17T15:08:29.102446+00:00",
+      "prompt_created_at": "2026-10-17 15:08:29.068543+00:00",
+      "started_at": "2026-10-17 15:08:30.185778+00:00",
+      "finished_at": "2026-10-17 15:08:54.700340+00:00",
+      "queue_s": 1.083,
+      "total_s": 25.598,
+      "prompt_characters": 4,
+      "source": false,
+      "request_operation": "chat",
+      "inference_options": {},
+      "skills": {
+        "catalog_count": 1,
+        "selected_count": 0
+      },
+      "decision_keys": [
+        "calls",
+        "delivery",
+        "history_digest",
+        "history_eligible",
+        "history_scope",
+        "history_selection",
+        "history_version",
+        "inference_options",
+        "input_digest",
+        "jev",
+        "limits",
+        "policy",
+        "privacy_answer",
+        "route",
+        "schema_version",
+        "total",
+        "verification",
+        "work_profile"
+      ],
+      "error_type": null,
+      "calls": [
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 1,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:49.981676+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:08:49.986993+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 2,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:50.228561+00:00",
+          "duration_ms": 9,
+          "completed_at": "2026-10-17T15:08:50.237160+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 3,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:50.487061+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:08:50.491897+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 4,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:50.693027+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:08:50.698117+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 5,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:50.914026+00:00",
+          "duration_ms": 7,
+          "completed_at": "2026-10-17T15:08:50.920798+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 6,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:51.153508+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:08:51.159930+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 7,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:51.597920+00:00",
+          "duration_ms": 13,
+          "completed_at": "2026-10-17T15:08:51.610402+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 8,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:51.811774+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:08:51.817810+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 9,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:52.036821+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:08:52.042448+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0.00162720",
+          "usage": {
+            "total_tokens": 5382,
+            "prompt_tokens": 5368,
+            "completion_tokens": 14
+          },
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "generation",
+          "sequence": 10,
+          "cost_kind": "tariff_estimate",
+          "started_at": "2026-10-17T15:08:52.200150+00:00",
+          "duration_ms": 1765,
+          "completed_at": "2026-10-17T15:08:53.965200+00:00",
+          "input_tokens": 5368,
+          "output_tokens": 14,
+          "provider_name": "openai_compatible",
+          "model_effective": "deepseek-flash",
+          "model_requested": "deepseek-flash"
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+          "purpose": "obfuscation",
+          "sequence": 11,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:08:54.181906+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:08:54.188063+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        }
+      ],
+      "inferences": [
+        {
+          "at": "2026-10-17T15:08:49.684213+00:00",
+          "elapsed_s": 20.582,
+          "status": "completed",
+          "inference": {
+            "cost": "0.00162720",
+            "status": "completed",
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "generation",
+            "sequence": 10,
+            "cost_kind": "tariff_estimate",
+            "started_at": "2026-10-17T15:08:52.200150+00:00",
+            "duration_ms": 1765,
+            "completed_at": "2026-10-17T15:08:53.965200+00:00",
+            "provider_name": "openai_compatible",
+            "model_effective": "deepseek-flash",
+            "model_requested": "deepseek-flash",
+            "inference_options": null
+          }
+        }
+      ],
+      "operations": [],
+      "events": [
+        {
+          "id": 212,
+          "kind": "queued",
+          "at": "2026-10-17T15:08:29.192909+00:00",
+          "elapsed_s": 0.09,
+          "data": {},
+          "data_keys": [
+            "text"
+          ]
+        },
+        {
+          "id": 213,
+          "kind": "claimed",
+          "at": "2026-10-17T15:08:30.189945+00:00",
+          "elapsed_s": 1.087,
+          "data": {
+            "interval": {
+              "category": "queue",
+              "started_at": "2026-10-17T15:08:29.102446+00:00",
+              "completed_at": "2026-10-17T15:08:30.185839+00:00"
+            },
+            "duration_ms": 1083
+          },
+          "data_keys": [
+            "duration_ms",
+            "interval",
+            "text"
+          ]
+        },
+        {
+          "id": 214,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:49.544108+00:00",
+          "elapsed_s": 20.442,
+          "data": {
+            "phase": "save_server",
+            "category": "checkpoint",
+            "started_at": "2026-10-17T15:08:46.770611+00:00",
+            "duration_ms": 2772,
+            "completed_at": "2026-10-17T15:08:49.542990+00:00"
+          },
+          "data_keys": [
+            "archive_bytes",
+            "attempt",
+            "category",
+            "checkpoint_id",
+            "completed_at",
+            "duration_ms",
+            "execution_id",
+            "expanded_bytes",
+            "file_count",
+            "message_count",
+            "phase",
+            "serialized_bytes",
+            "started_at"
+          ]
+        },
+        {
+          "id": 215,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:49.993093+00:00",
+          "elapsed_s": 20.891,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:49.981676+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:08:49.986993+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 216,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:50.245430+00:00",
+          "elapsed_s": 21.143,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:50.228561+00:00",
+            "duration_ms": 9,
+            "completed_at": "2026-10-17T15:08:50.237160+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 217,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:50.497933+00:00",
+          "elapsed_s": 21.395,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:50.487061+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:08:50.491897+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 218,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:50.704095+00:00",
+          "elapsed_s": 21.602,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:50.693027+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:08:50.698117+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 219,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:50.927031+00:00",
+          "elapsed_s": 21.825,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:50.914026+00:00",
+            "duration_ms": 7,
+            "completed_at": "2026-10-17T15:08:50.920798+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 220,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:51.174786+00:00",
+          "elapsed_s": 22.072,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:51.153508+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:08:51.159930+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 221,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:51.616989+00:00",
+          "elapsed_s": 22.515,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:51.597920+00:00",
+            "duration_ms": 13,
+            "completed_at": "2026-10-17T15:08:51.610402+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 222,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:51.824116+00:00",
+          "elapsed_s": 22.722,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:51.811774+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:08:51.817810+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 223,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:52.049327+00:00",
+          "elapsed_s": 22.947,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:52.036821+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:08:52.042448+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 224,
+          "kind": "inference.started",
+          "at": "2026-10-17T15:08:52.621392+00:00",
+          "elapsed_s": 23.519,
+          "data": {
+            "mode": "complete",
+            "reason": "policy_needs_complete_text",
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "generation",
+            "started_at": "2026-10-17T15:08:52.616840+00:00"
+          },
+          "data_keys": [
+            "call_id",
+            "mode",
+            "purpose",
+            "reason",
+            "started_at"
+          ]
+        },
+        {
+          "id": 225,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:53.975740+00:00",
+          "elapsed_s": 24.873,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "generation",
+            "category": "provider",
+            "started_at": "2026-10-17T15:08:52.200150+00:00",
+            "duration_ms": 1765,
+            "completed_at": "2026-10-17T15:08:53.965200+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 226,
+          "kind": "interval",
+          "at": "2026-10-17T15:08:54.201178+00:00",
+          "elapsed_s": 25.099,
+          "data": {
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:08:54.181906+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:08:54.188063+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 227,
+          "kind": "inference.finished",
+          "at": "2026-10-17T15:08:54.251179+00:00",
+          "elapsed_s": 25.149,
+          "data": {
+            "mode": "complete",
+            "reason": "policy_needs_complete_text",
+            "status": "completed",
+            "call_id": "e12ee7b1-42d4-4690-b819-742c4737b318",
+            "purpose": "generation",
+            "started_at": "2026-10-17T15:08:52.616840+00:00",
+            "duration_ms": 1765,
+            "completed_at": "2026-10-17T15:08:54.249202+00:00"
+          },
+          "data_keys": [
+            "call_id",
+            "completed_at",
+            "duration_ms",
+            "incomplete",
+            "message_id",
+            "mode",
+            "offset",
+            "purpose",
+            "reason",
+            "started_at",
+            "status",
+            "tool_count",
+            "usage_reference"
+          ]
+        },
+        {
+          "id": 228,
+          "kind": "completed",
+          "at": "2026-10-17T15:08:54.704273+00:00",
+          "elapsed_s": 25.602,
+          "data": {},
+          "data_keys": [
+            "text"
+          ]
+        },
+        {
+          "id": 229,
+          "kind": "run.finished",
+          "at": "2026-10-17T15:08:54.709275+00:00",
+          "elapsed_s": 25.607,
+          "data": {
+            "status": "completed"
+          },
+          "data_keys": [
+            "close_cursor",
+            "financial_pending",
+            "known_cost",
+            "status",
+            "unknown_cost"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6be64fae-2ca1-4f07-b50a-fad55fccedf0",
+      "status": "completed",
+      "created_at": "2026-10-17T15:09:02.158197+00:00",
+      "prompt_created_at": "2026-10-17 15:09:02.127208+00:00",
+      "started_at": "2026-10-17 15:09:02.539768+00:00",
+      "finished_at": "2026-10-17 15:09:28.198018+00:00",
+      "queue_s": 0.382,
+      "total_s": 26.04,
+      "prompt_characters": 30,
+      "source": false,
+      "request_operation": "chat",
+      "inference_options": {},
+      "skills": {
+        "catalog_count": 1,
+        "selected_count": 0
+      },
+      "decision_keys": [
+        "calls",
+        "delivery",
+        "history_digest",
+        "history_eligible",
+        "history_scope",
+        "history_selection",
+        "history_version",
+        "inference_options",
+        "input_digest",
+        "jev",
+        "limits",
+        "policy",
+        "privacy_answer",
+        "route",
+        "schema_version",
+        "total",
+        "verification",
+        "work_profile"
+      ],
+      "error_type": null,
+      "calls": [
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 1,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:23.577955+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:09:23.583751+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 2,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:23.782544+00:00",
+          "duration_ms": 14,
+          "completed_at": "2026-10-17T15:09:23.796462+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 3,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:24.049970+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:09:24.054988+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 4,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:24.271862+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:09:24.276588+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 5,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:24.617257+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:09:24.622574+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 6,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:24.837741+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:09:24.843363+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 7,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:25.076632+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:09:25.081605+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 8,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:25.305523+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:09:25.310469+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 9,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:25.837388+00:00",
+          "duration_ms": 13,
+          "completed_at": "2026-10-17T15:09:25.850677+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 10,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:26.065359+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:09:26.071706+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 11,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:26.290032+00:00",
+          "duration_ms": 6,
+          "completed_at": "2026-10-17T15:09:26.296058+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        },
+        {
+          "cost": "0.00166170",
+          "usage": {
+            "total_tokens": 5431,
+            "prompt_tokens": 5395,
+            "completion_tokens": 36
+          },
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "generation",
+          "sequence": 12,
+          "cost_kind": "tariff_estimate",
+          "started_at": "2026-10-17T15:09:26.439677+00:00",
+          "duration_ms": 1135,
+          "completed_at": "2026-10-17T15:09:27.574396+00:00",
+          "input_tokens": 5395,
+          "output_tokens": 36,
+          "provider_name": "openai_compatible",
+          "model_effective": "deepseek-flash",
+          "model_requested": "deepseek-flash"
+        },
+        {
+          "cost": "0",
+          "status": "completed",
+          "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+          "purpose": "obfuscation",
+          "sequence": 13,
+          "cost_kind": "configured_zero",
+          "started_at": "2026-10-17T15:09:27.797627+00:00",
+          "duration_ms": 5,
+          "completed_at": "2026-10-17T15:09:27.802990+00:00",
+          "provider_name": "local",
+          "model_requested": null
+        }
+      ],
+      "inferences": [
+        {
+          "at": "2026-10-17T15:09:23.329429+00:00",
+          "elapsed_s": 21.171,
+          "status": "completed",
+          "inference": {
+            "cost": "0.00166170",
+            "status": "completed",
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "generation",
+            "sequence": 12,
+            "cost_kind": "tariff_estimate",
+            "started_at": "2026-10-17T15:09:26.439677+00:00",
+            "duration_ms": 1135,
+            "completed_at": "2026-10-17T15:09:27.574396+00:00",
+            "provider_name": "openai_compatible",
+            "model_effective": "deepseek-flash",
+            "model_requested": "deepseek-flash",
+            "inference_options": null
+          }
+        }
+      ],
+      "operations": [],
+      "events": [
+        {
+          "id": 230,
+          "kind": "queued",
+          "at": "2026-10-17T15:09:02.224003+00:00",
+          "elapsed_s": 0.066,
+          "data": {},
+          "data_keys": [
+            "text"
+          ]
+        },
+        {
+          "id": 231,
+          "kind": "claimed",
+          "at": "2026-10-17T15:09:02.540970+00:00",
+          "elapsed_s": 0.383,
+          "data": {
+            "interval": {
+              "category": "queue",
+              "started_at": "2026-10-17T15:09:02.158197+00:00",
+              "completed_at": "2026-10-17T15:09:02.539782+00:00"
+            },
+            "duration_ms": 382
+          },
+          "data_keys": [
+            "duration_ms",
+            "interval",
+            "text"
+          ]
+        },
+        {
+          "id": 232,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:23.164188+00:00",
+          "elapsed_s": 21.006,
+          "data": {
+            "phase": "save_server",
+            "category": "checkpoint",
+            "started_at": "2026-10-17T15:09:20.214570+00:00",
+            "duration_ms": 2948,
+            "completed_at": "2026-10-17T15:09:23.162691+00:00"
+          },
+          "data_keys": [
+            "archive_bytes",
+            "attempt",
+            "category",
+            "checkpoint_id",
+            "completed_at",
+            "duration_ms",
+            "execution_id",
+            "expanded_bytes",
+            "file_count",
+            "message_count",
+            "phase",
+            "serialized_bytes",
+            "started_at"
+          ]
+        },
+        {
+          "id": 233,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:23.594072+00:00",
+          "elapsed_s": 21.436,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:23.577955+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:09:23.583751+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 234,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:23.806752+00:00",
+          "elapsed_s": 21.649,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:23.782544+00:00",
+            "duration_ms": 14,
+            "completed_at": "2026-10-17T15:09:23.796462+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 235,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:24.061090+00:00",
+          "elapsed_s": 21.903,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:24.049970+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:09:24.054988+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 236,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:24.282202+00:00",
+          "elapsed_s": 22.124,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:24.271862+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:09:24.276588+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 237,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:24.629767+00:00",
+          "elapsed_s": 22.472,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:24.617257+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:09:24.622574+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 238,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:24.849921+00:00",
+          "elapsed_s": 22.692,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:24.837741+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:09:24.843363+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 239,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:25.087767+00:00",
+          "elapsed_s": 22.93,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:25.076632+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:09:25.081605+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 240,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:25.317229+00:00",
+          "elapsed_s": 23.159,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:25.305523+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:09:25.310469+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 241,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:25.859845+00:00",
+          "elapsed_s": 23.702,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:25.837388+00:00",
+            "duration_ms": 13,
+            "completed_at": "2026-10-17T15:09:25.850677+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 242,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:26.077580+00:00",
+          "elapsed_s": 23.919,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:26.065359+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:09:26.071706+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 243,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:26.302532+00:00",
+          "elapsed_s": 24.144,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:26.290032+00:00",
+            "duration_ms": 6,
+            "completed_at": "2026-10-17T15:09:26.296058+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 244,
+          "kind": "inference.started",
+          "at": "2026-10-17T15:09:26.465176+00:00",
+          "elapsed_s": 24.307,
+          "data": {
+            "mode": "complete",
+            "reason": "policy_needs_complete_text",
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "generation",
+            "started_at": "2026-10-17T15:09:26.461290+00:00"
+          },
+          "data_keys": [
+            "call_id",
+            "mode",
+            "purpose",
+            "reason",
+            "started_at"
+          ]
+        },
+        {
+          "id": 245,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:27.584417+00:00",
+          "elapsed_s": 25.426,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "generation",
+            "category": "provider",
+            "started_at": "2026-10-17T15:09:26.439677+00:00",
+            "duration_ms": 1135,
+            "completed_at": "2026-10-17T15:09:27.574396+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 246,
+          "kind": "interval",
+          "at": "2026-10-17T15:09:27.810068+00:00",
+          "elapsed_s": 25.652,
+          "data": {
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "obfuscation",
+            "category": "protection",
+            "started_at": "2026-10-17T15:09:27.797627+00:00",
+            "duration_ms": 5,
+            "completed_at": "2026-10-17T15:09:27.802990+00:00"
+          },
+          "data_keys": [
+            "attempt",
+            "call_id",
+            "category",
+            "completed_at",
+            "duration_ms",
+            "purpose",
+            "started_at"
+          ]
+        },
+        {
+          "id": 247,
+          "kind": "inference.finished",
+          "at": "2026-10-17T15:09:27.873656+00:00",
+          "elapsed_s": 25.715,
+          "data": {
+            "mode": "complete",
+            "reason": "policy_needs_complete_text",
+            "status": "completed",
+            "call_id": "5636bf64-3dcf-4e01-8745-c2373c96c329",
+            "purpose": "generation",
+            "started_at": "2026-10-17T15:09:26.461290+00:00",
+            "duration_ms": 1135,
+            "completed_at": "2026-10-17T15:09:27.871168+00:00"
+          },
+          "data_keys": [
+            "call_id",
+            "completed_at",
+            "duration_ms",
+            "incomplete",
+            "message_id",
+            "mode",
+            "offset",
+            "purpose",
+            "reason",
+            "started_at",
+            "status",
+            "tool_count",
+            "usage_reference"
+          ]
+        },
+        {
+          "id": 248,
+          "kind": "completed",
+          "at": "2026-10-17T15:09:28.200682+00:00",
+          "elapsed_s": 26.042,
+          "data": {},
+          "data_keys": [
+            "text"
+          ]
+        },
+        {
+          "id": 249,
+          "kind": "run.finished",
+          "at": "2026-10-17T15:09:28.204637+00:00",
+          "elapsed_s": 26.046,
+          "data": {
+            "status": "completed"
+          },
+          "data_keys": [
+            "close_cursor",
+            "financial_pending",
+            "known_cost",
+            "status",
+            "unknown_cost"
+          ]
+        }
+      ]
+    }
+  ]
+}

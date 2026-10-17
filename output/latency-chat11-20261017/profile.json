@@ -1,0 +1,750 @@
+{
+  "execution": "6be64fae-2ca1-4f07-b50a-fad55fccedf0",
+  "provider_calls": 0,
+  "data_writes": 0,
+  "measurement": "existing cached fragments; no mutations allowed; every transaction rolled back",
+  "fragments": [
+    {
+      "execution": "30ebf222-fd20-4937-b8fb-be17cfcb0883",
+      "groups": {
+        "agent": {
+          "count": 168,
+          "short_fragments": 156,
+          "first_s": 1.276,
+          "last_s": 24.966
+        },
+        "user": {
+          "count": 1,
+          "short_fragments": 1,
+          "first_s": 0.13,
+          "last_s": 0.13
+        },
+        "content": {
+          "count": 10,
+          "short_fragments": 2,
+          "first_s": 20.76,
+          "last_s": 24.98
+        }
+      }
+    },
+    {
+      "execution": "6be64fae-2ca1-4f07-b50a-fad55fccedf0",
+      "groups": {
+        "agent": {
+          "count": 173,
+          "short_fragments": 160,
+          "first_s": 0.526,
+          "last_s": 25.521
+        },
+        "user": {
+          "count": 1,
+          "short_fragments": 1,
+          "first_s": 0.091,
+          "last_s": 0.091
+        },
+        "content": {
+          "count": 12,
+          "short_fragments": 3,
+          "first_s": 21.312,
+          "last_s": 25.536
+        }
+      }
+    }
+  ],
+  "measurements": [
+    {
+      "phase": "context",
+      "seconds": 0.0899,
+      "sql_seconds": 0.0229,
+      "sql_count": {
+        "SELECT": 23
+      },
+      "tables": {
+        "auth_user": 2,
+        "front_profile": 4,
+        "front_department": 1,
+        "front_company": 3,
+        "front_conversation": 3,
+        "front_agentaccessgrant": 2,
+        "front_agentmodelprofile": 3,
+        "front_prompt": 5,
+        "front_companyengine": 1,
+        "front_engine": 1,
+        "front_enginemodel": 1,
+        "front_obfuscationconfig": 1,
+        "front_agentinput": 1,
+        "front_agentexecution": 3,
+        "front_message": 1,
+        "front_response": 1,
+        "front_rule": 1,
+        "front_rulesgroup": 1,
+        "front_agentskillinstallation": 1,
+        "front_agentskillrevision": 1
+      },
+      "functions": [
+        {
+          "file": "agents/service.py",
+          "line": 43,
+          "function": "_context",
+          "calls": 1,
+          "self_s": 0.0002,
+          "cumulative_s": 0.0899
+        },
+        {
+          "file": "agents/skill_context.py",
+          "line": 52,
+          "function": "binding",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0263
+        },
+        {
+          "file": "agents/skill_context.py",
+          "line": 25,
+          "function": "_entries",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0262
+        },
+        {
+          "file": "agents/skills.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0161
+        },
+        {
+          "file": "agents/skill_bundles.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0141
+        },
+        {
+          "file": "agents/history.py",
+          "line": 52,
+          "function": "for_prompt",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0122
+        },
+        {
+          "file": "chat_service.py",
+          "line": 200,
+          "function": "authorized_history",
+          "calls": 1,
+          "self_s": 0.0001,
+          "cumulative_s": 0.0107
+        },
+        {
+          "file": "policy.py",
+          "line": 251,
+          "function": "evaluate_policy",
+          "calls": 1,
+          "self_s": 0.0003,
+          "cumulative_s": 0.0074
+        },
+        {
+          "file": "access.py",
+          "line": 61,
+          "function": "authorized_conversations",
+          "calls": 2,
+          "self_s": 0.0,
+          "cumulative_s": 0.0055
+        },
+        {
+          "file": "agents/jobs.py",
+          "line": 65,
+          "function": "development_profile",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0043
+        },
+        {
+          "file": "agents/capabilities.py",
+          "line": 128,
+          "function": "profile_for",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0043
+        },
+        {
+          "file": "policy.py",
+          "line": 232,
+          "function": "scan_rules",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0038
+        },
+        {
+          "file": "access.py",
+          "line": 32,
+          "function": "actor_company",
+          "calls": 2,
+          "self_s": 0.0,
+          "cumulative_s": 0.0033
+        },
+        {
+          "file": "policy.py",
+          "line": 223,
+          "function": "active_rules",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 0.0031
+        }
+      ]
+    },
+    {
+      "phase": "skill_catalog_first",
+      "seconds": 3.3512,
+      "sql_seconds": 1.1486,
+      "sql_count": {
+        "SELECT": 1990,
+        "SAVEPOINT": 339,
+        "RELEASE": 339
+      },
+      "tables": {
+        "front_agentskillinstallation": 1,
+        "front_agentskillrevision": 1,
+        "front_company": 679,
+        "front_prompt": 339,
+        "front_conversation": 374,
+        "auth_user": 187,
+        "front_profile": 374,
+        "front_privacyrevision": 222,
+        "front_privacyselection": 222,
+        "front_conversationalias": 222,
+        "front_privacyturn": 187,
+        "front_privacymessage": 152
+      },
+      "functions": [
+        {
+          "file": "agents/skill_context.py",
+          "line": 59,
+          "function": "bootstrap",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 3.3511
+        },
+        {
+          "file": "privacy.py",
+          "line": 203,
+          "function": "protect_tree",
+          "calls": 114,
+          "self_s": 0.0049,
+          "cumulative_s": 3.3461
+        },
+        {
+          "file": "privacy.py",
+          "line": 212,
+          "function": "field",
+          "calls": 112,
+          "self_s": 0.0011,
+          "cumulative_s": 3.2397
+        },
+        {
+          "file": "privacy.py",
+          "line": 179,
+          "function": "alias_text",
+          "calls": 152,
+          "self_s": 0.0016,
+          "cumulative_s": 2.7871
+        },
+        {
+          "file": "privacy.py",
+          "line": 323,
+          "function": "protect_batch",
+          "calls": 152,
+          "self_s": 0.0014,
+          "cumulative_s": 2.3936
+        },
+        {
+          "file": "privacy.py",
+          "line": 101,
+          "function": "prepare_turn",
+          "calls": 187,
+          "self_s": 0.0076,
+          "cumulative_s": 2.3244
+        },
+        {
+          "file": "privacy.py",
+          "line": 235,
+          "function": "protect_message",
+          "calls": 152,
+          "self_s": 0.004,
+          "cumulative_s": 2.2363
+        },
+        {
+          "file": "privacy.py",
+          "line": 87,
+          "function": "effective_revision",
+          "calls": 187,
+          "self_s": 0.0027,
+          "cumulative_s": 1.5645
+        },
+        {
+          "file": "privacy.py",
+          "line": 77,
+          "function": "authorize",
+          "calls": 187,
+          "self_s": 0.0063,
+          "cumulative_s": 1.264
+        },
+        {
+          "file": "access.py",
+          "line": 61,
+          "function": "authorized_conversations",
+          "calls": 187,
+          "self_s": 0.0024,
+          "cumulative_s": 0.5015
+        },
+        {
+          "file": "access.py",
+          "line": 32,
+          "function": "actor_company",
+          "calls": 187,
+          "self_s": 0.0017,
+          "cumulative_s": 0.317
+        },
+        {
+          "file": "privacy.py",
+          "line": 317,
+          "function": "required",
+          "calls": 305,
+          "self_s": 0.0046,
+          "cumulative_s": 0.3146
+        },
+        {
+          "file": "privacy_policy.py",
+          "line": 142,
+          "function": "revision_config",
+          "calls": 35,
+          "self_s": 0.0013,
+          "cumulative_s": 0.0868
+        },
+        {
+          "file": "encryption.py",
+          "line": 108,
+          "function": "decrypt_value",
+          "calls": 748,
+          "self_s": 0.002,
+          "cumulative_s": 0.0784
+        }
+      ]
+    },
+    {
+      "phase": "professional_bootstrap_cached",
+      "seconds": 4.3573,
+      "sql_seconds": 1.4473,
+      "sql_count": {
+        "SELECT": 2000,
+        "SAVEPOINT": 340,
+        "RELEASE": 340
+      },
+      "tables": {
+        "front_company": 683,
+        "front_agentskillinstallation": 1,
+        "front_agentskillrevision": 1,
+        "front_prompt": 340,
+        "front_conversation": 376,
+        "auth_user": 188,
+        "front_profile": 376,
+        "front_privacyrevision": 223,
+        "front_privacyselection": 223,
+        "front_conversationalias": 223,
+        "front_privacyturn": 188,
+        "front_privacymessage": 153
+      },
+      "functions": [
+        {
+          "file": "agents/professional.py",
+          "line": 148,
+          "function": "bootstrap",
+          "calls": 1,
+          "self_s": 0.0002,
+          "cumulative_s": 4.3572
+        },
+        {
+          "file": "agents/skill_context.py",
+          "line": 59,
+          "function": "bootstrap",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 4.3318
+        },
+        {
+          "file": "privacy.py",
+          "line": 203,
+          "function": "protect_tree",
+          "calls": 114,
+          "self_s": 0.0065,
+          "cumulative_s": 4.3265
+        },
+        {
+          "file": "privacy.py",
+          "line": 212,
+          "function": "field",
+          "calls": 112,
+          "self_s": 0.0015,
+          "cumulative_s": 4.2451
+        },
+        {
+          "file": "privacy.py",
+          "line": 179,
+          "function": "alias_text",
+          "calls": 152,
+          "self_s": 0.0024,
+          "cumulative_s": 3.5671
+        },
+        {
+          "file": "privacy.py",
+          "line": 323,
+          "function": "protect_batch",
+          "calls": 152,
+          "self_s": 0.0017,
+          "cumulative_s": 3.0667
+        },
+        {
+          "file": "privacy.py",
+          "line": 101,
+          "function": "prepare_turn",
+          "calls": 188,
+          "self_s": 0.0111,
+          "cumulative_s": 3.0535
+        },
+        {
+          "file": "privacy.py",
+          "line": 235,
+          "function": "protect_message",
+          "calls": 152,
+          "self_s": 0.0056,
+          "cumulative_s": 2.866
+        },
+        {
+          "file": "privacy.py",
+          "line": 87,
+          "function": "effective_revision",
+          "calls": 188,
+          "self_s": 0.0039,
+          "cumulative_s": 2.073
+        },
+        {
+          "file": "privacy.py",
+          "line": 77,
+          "function": "authorize",
+          "calls": 188,
+          "self_s": 0.0096,
+          "cumulative_s": 1.7192
+        },
+        {
+          "file": "access.py",
+          "line": 61,
+          "function": "authorized_conversations",
+          "calls": 188,
+          "self_s": 0.0037,
+          "cumulative_s": 0.7044
+        },
+        {
+          "file": "access.py",
+          "line": 32,
+          "function": "actor_company",
+          "calls": 188,
+          "self_s": 0.0027,
+          "cumulative_s": 0.447
+        },
+        {
+          "file": "privacy.py",
+          "line": 317,
+          "function": "required",
+          "calls": 307,
+          "self_s": 0.0101,
+          "cumulative_s": 0.4011
+        },
+        {
+          "file": "privacy_policy.py",
+          "line": 142,
+          "function": "revision_config",
+          "calls": 35,
+          "self_s": 0.0019,
+          "cumulative_s": 0.1234
+        }
+      ]
+    },
+    {
+      "phase": "bootstrap_full_tree_cached",
+      "seconds": 5.7931,
+      "sql_seconds": 2.009,
+      "sql_count": {
+        "SELECT": 3446,
+        "SAVEPOINT": 603,
+        "RELEASE": 603
+      },
+      "tables": {
+        "front_prompt": 603,
+        "front_company": 1206,
+        "front_conversation": 640,
+        "auth_user": 320,
+        "front_profile": 640,
+        "front_privacyrevision": 357,
+        "front_privacyselection": 357,
+        "front_conversationalias": 357,
+        "front_privacyturn": 320,
+        "front_privacymessage": 283
+      },
+      "functions": [
+        {
+          "file": "privacy.py",
+          "line": 203,
+          "function": "protect_tree",
+          "calls": 232,
+          "self_s": 0.0104,
+          "cumulative_s": 5.793
+        },
+        {
+          "file": "privacy.py",
+          "line": 212,
+          "function": "field",
+          "calls": 210,
+          "self_s": 0.0014,
+          "cumulative_s": 5.4552
+        },
+        {
+          "file": "privacy.py",
+          "line": 179,
+          "function": "alias_text",
+          "calls": 283,
+          "self_s": 0.0034,
+          "cumulative_s": 5.2137
+        },
+        {
+          "file": "privacy.py",
+          "line": 323,
+          "function": "protect_batch",
+          "calls": 283,
+          "self_s": 0.0024,
+          "cumulative_s": 4.4672
+        },
+        {
+          "file": "privacy.py",
+          "line": 235,
+          "function": "protect_message",
+          "calls": 283,
+          "self_s": 0.0069,
+          "cumulative_s": 4.1593
+        },
+        {
+          "file": "privacy.py",
+          "line": 101,
+          "function": "prepare_turn",
+          "calls": 320,
+          "self_s": 0.0136,
+          "cumulative_s": 3.9889
+        },
+        {
+          "file": "privacy.py",
+          "line": 87,
+          "function": "effective_revision",
+          "calls": 320,
+          "self_s": 0.0042,
+          "cumulative_s": 2.6676
+        },
+        {
+          "file": "privacy.py",
+          "line": 77,
+          "function": "authorize",
+          "calls": 320,
+          "self_s": 0.0119,
+          "cumulative_s": 2.1987
+        },
+        {
+          "file": "access.py",
+          "line": 61,
+          "function": "authorized_conversations",
+          "calls": 320,
+          "self_s": 0.0039,
+          "cumulative_s": 0.8785
+        },
+        {
+          "file": "privacy.py",
+          "line": 317,
+          "function": "required",
+          "calls": 566,
+          "self_s": 0.009,
+          "cumulative_s": 0.5981
+        },
+        {
+          "file": "access.py",
+          "line": 32,
+          "function": "actor_company",
+          "calls": 320,
+          "self_s": 0.0027,
+          "cumulative_s": 0.5519
+        },
+        {
+          "file": "encryption.py",
+          "line": 108,
+          "function": "decrypt_value",
+          "calls": 1280,
+          "self_s": 0.0032,
+          "cumulative_s": 0.1294
+        },
+        {
+          "file": "privacy_policy.py",
+          "line": 142,
+          "function": "revision_config",
+          "calls": 37,
+          "self_s": 0.0011,
+          "cumulative_s": 0.087
+        },
+        {
+          "file": "encrypted_fields.py",
+          "line": 51,
+          "function": "from_db_value",
+          "calls": 640,
+          "self_s": 0.001,
+          "cumulative_s": 0.0684
+        }
+      ]
+    },
+    {
+      "phase": "skill_catalog_repeat",
+      "seconds": 3.7265,
+      "sql_seconds": 1.2724,
+      "sql_count": {
+        "SELECT": 1990,
+        "SAVEPOINT": 339,
+        "RELEASE": 339
+      },
+      "tables": {
+        "front_agentskillinstallation": 1,
+        "front_agentskillrevision": 1,
+        "front_company": 679,
+        "front_prompt": 339,
+        "front_conversation": 374,
+        "auth_user": 187,
+        "front_profile": 374,
+        "front_privacyrevision": 222,
+        "front_privacyselection": 222,
+        "front_conversationalias": 222,
+        "front_privacyturn": 187,
+        "front_privacymessage": 152
+      },
+      "functions": [
+        {
+          "file": "agents/skill_context.py",
+          "line": 59,
+          "function": "bootstrap",
+          "calls": 1,
+          "self_s": 0.0,
+          "cumulative_s": 3.7262
+        },
+        {
+          "file": "privacy.py",
+          "line": 203,
+          "function": "protect_tree",
+          "calls": 114,
+          "self_s": 0.0073,
+          "cumulative_s": 3.7217
+        },
+        {
+          "file": "privacy.py",
+          "line": 212,
+          "function": "field",
+          "calls": 112,
+          "self_s": 0.0017,
+          "cumulative_s": 3.637
+        },
+        {
+          "file": "privacy.py",
+          "line": 179,
+          "function": "alias_text",
+          "calls": 152,
+          "self_s": 0.0021,
+          "cumulative_s": 3.1207
+        },
+        {
+          "file": "privacy.py",
+          "line": 323,
+          "function": "protect_batch",
+          "calls": 152,
+          "self_s": 0.0017,
+          "cumulative_s": 2.6867
+        },
+        {
+          "file": "privacy.py",
+          "line": 101,
+          "function": "prepare_turn",
+          "calls": 187,
+          "self_s": 0.0098,
+          "cumulative_s": 2.5658
+        },
+        {
+          "file": "privacy.py",
+          "line": 235,
+          "function": "protect_message",
+          "calls": 152,
+          "self_s": 0.0053,
+          "cumulative_s": 2.514
+        },
+        {
+          "file": "privacy.py",
+          "line": 87,
+          "function": "effective_revision",
+          "calls": 187,
+          "self_s": 0.0034,
+          "cumulative_s": 1.7181
+        },
+        {
+          "file": "privacy.py",
+          "line": 77,
+          "function": "authorize",
+          "calls": 187,
+          "self_s": 0.0098,
+          "cumulative_s": 1.4104
+        },
+        {
+          "file": "access.py",
+          "line": 61,
+          "function": "authorized_conversations",
+          "calls": 187,
+          "self_s": 0.0033,
+          "cumulative_s": 0.5545
+        },
+        {
+          "file": "access.py",
+          "line": 32,
+          "function": "actor_company",
+          "calls": 187,
+          "self_s": 0.002,
+          "cumulative_s": 0.3499
+        },
+        {
+          "file": "privacy.py",
+          "line": 317,
+          "function": "required",
+          "calls": 305,
+          "self_s": 0.0062,
+          "cumulative_s": 0.3433
+        },
+        {
+          "file": "encryption.py",
+          "line": 108,
+          "function": "decrypt_value",
+          "calls": 748,
+          "self_s": 0.0021,
+          "cumulative_s": 0.0926
+        },
+        {
+          "file": "privacy_policy.py",
+          "line": 142,
+          "function": "revision_config",
+          "calls": 35,
+          "self_s": 0.0014,
+          "cumulative_s": 0.0848
+        }
+      ]
+    }
+  ]
+}
