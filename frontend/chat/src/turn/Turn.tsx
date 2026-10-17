@@ -1,5 +1,5 @@
 import { ChevronRightIcon, DownloadIcon, FileTextIcon, PencilLineIcon, QuoteIcon, RotateCwIcon, TriangleAlertIcon } from "lucide-react"
-import { memo, useCallback, useEffect, useRef, useState } from "react"
+import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -16,7 +16,9 @@ import { getJSON } from "../transport/http"
 import type { EvidenceItem, Receipt } from "../types"
 import { Notice } from "./Notice"
 import { CopyButton, SentAttachment, StatusLine, UserMessage } from "./parts"
-import { RequestReceipt } from "./Receipt"
+
+// The decision record renders only when someone opens "Detalles".
+const RequestReceipt = lazy(() => import("./Receipt").then((module) => ({ default: module.RequestReceipt })))
 
 export const Turn = memo(function Turn({ turn }: { turn: TurnModel }) {
   const phase = useChat((state) => state.attachments[turn.key] ?? null)
@@ -276,8 +278,11 @@ function Actions({ turn, request, source }: { turn: TurnModel; request: RequestS
             <span className="font-medium text-muted-foreground">Registro de la decisión</span>
             <a className="text-brand-strong underline-offset-2 hover:underline" href={url} download>Exportar JSON</a>
           </div>
-          {loaded ? <RequestReceipt receipt={loaded.receipt} status={loaded.status} />
-            : failed ? <p className="text-[0.8125rem] text-muted-foreground">No se ha podido cargar el registro con tus permisos actuales.</p>
+          {loaded ? (
+            <Suspense fallback={<p className="text-[0.8125rem] text-muted-foreground">Cargando…</p>}>
+              <RequestReceipt receipt={loaded.receipt} status={loaded.status} />
+            </Suspense>
+          ) : failed ? <p className="text-[0.8125rem] text-muted-foreground">No se ha podido cargar el registro con tus permisos actuales.</p>
             : <p className="text-[0.8125rem] text-muted-foreground">Cargando…</p>}
         </div>
       </CollapsibleContent>

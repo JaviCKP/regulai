@@ -4,7 +4,7 @@ import {
 import { Radio } from "@base-ui/react/radio"
 import { RadioGroup } from "@base-ui/react/radio-group"
 import { AnimatePresence, m } from "motion/react"
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -19,11 +19,13 @@ import { useChat, useSession } from "../app/session-context"
 import { isLiveRun } from "../state/model"
 import { fileIcon } from "../turn/parts"
 import type { Mode } from "../types"
-import { DrivePicker } from "./DrivePicker"
 import { ModelMenu } from "./ModelMenu"
-import { SkillPicker } from "./SkillPicker"
 import { useSkills } from "./use-skills"
 import { fileProblem } from "./validate"
+
+// Loaded on first use: the skills picker when it opens, the Drive picker when Drive is configured.
+const SkillPicker = lazy(() => import("./SkillPicker").then((module) => ({ default: module.SkillPicker })))
+const DrivePicker = lazy(() => import("./DrivePicker").then((module) => ({ default: module.DrivePicker })))
 
 /* One surface: write, attach, `/` and send/stop. Enter sends unless an IME is
  * composing; Shift+Enter is a new line. One file per message, checked against
@@ -49,7 +51,8 @@ export function Composer() {
   const [problem, setProblem] = useState("")
   const [dragging, setDragging] = useState(false)
   const [profile, setProfile] = useState(boot.composer.inference_profiles[0]?.value ?? "")
-  const [picker, setPicker] = useState<{ open: boolean; fromSlash: boolean }>({ open: false, fromSlash: false })
+  // `used`: the picker's code loads the first time it opens and then stays mounted.
+  const [picker, setPicker] = useState({ open: false, fromSlash: false, used: false })
   const textarea = useRef<HTMLTextAreaElement>(null)
   const fileInput = useRef<HTMLInputElement>(null)
   const surface = useRef<HTMLDivElement>(null)
@@ -263,7 +266,7 @@ export function Composer() {
                 setText(value)
                 const native = event.nativeEvent as InputEvent
                 if (agent && skills.enabled && skills.runtime && !native.isComposing && value === "/" && event.target.selectionStart === 1 && event.target.selectionEnd === 1) {
-                  setPicker({ open: true, fromSlash: true })
+                  setPicker({ open: true, fromSlash: true, used: true })
                 }
               }}
               onKeyDown={(event) => {
@@ -285,14 +288,18 @@ export function Composer() {
                     <Button ref={skillButton} type="button" variant="ghost" size="icon" disabled={!skills.runtime}
                       className="size-8 text-muted-foreground aria-expanded:bg-surface-2 aria-expanded:text-foreground pointer-coarse:size-11"
                       aria-label="Usar una skill (/)" aria-haspopup="dialog" aria-expanded={picker.open}
-                      onClick={() => setPicker((current) => ({ open: !current.open, fromSlash: false }))} />
+                      onClick={() => setPicker((current) => ({ open: !current.open, fromSlash: false, used: true }))} />
                   }>
                     <SquareSlashIcon />
                   </TooltipTrigger>
                   <TooltipContent>{skills.runtime ? "Usar una skill" : "La ejecución de skills está desactivada"}</TooltipContent>
                 </Tooltip>
               )}
-              {agent && boot.composer.drive && <DrivePicker onChosen={() => textarea.current?.focus()} />}
+              {agent && boot.composer.drive && (
+                <Suspense fallback={<span className="size-8 shrink-0 pointer-coarse:size-11" aria-hidden />}>
+                  <DrivePicker onChosen={() => textarea.current?.focus()} />
+                </Suspense>
+              )}
               {showModes && <ModeToggle mode={mode} onChange={setMode} />}
               {agent && boot.composer.inference_profiles.length > 1 && (
                 <ProfileMenu value={profile} onChange={setProfile} />
@@ -311,21 +318,23 @@ export function Composer() {
           )}
         </div>
       </form>
-      {skills.enabled && (
-        <SkillPicker
-          skills={skills}
-          open={picker.open}
-          onClose={(returnFocus) => {
-            const target = picker.fromSlash ? textarea.current : skillButton.current
-            setPicker({ open: false, fromSlash: false })
-            if (returnFocus) window.requestAnimationFrame(() => target?.focus())
-          }}
-          onChosen={() => {
-            if (picker.fromSlash && draft.current === "/") setText("")
-            window.requestAnimationFrame(() => textarea.current?.focus())
-          }}
-          anchor={surface}
-        />
+      {skills.enabled && picker.used && (
+        <Suspense fallback={null}>
+          <SkillPicker
+            skills={skills}
+            open={picker.open}
+            onClose={(returnFocus) => {
+              const target = picker.fromSlash ? textarea.current : skillButton.current
+              setPicker({ open: false, fromSlash: false, used: true })
+              if (returnFocus) window.requestAnimationFrame(() => target?.focus())
+            }}
+            onChosen={() => {
+              if (picker.fromSlash && draft.current === "/") setText("")
+              window.requestAnimationFrame(() => textarea.current?.focus())
+            }}
+            anchor={surface}
+          />
+        </Suspense>
       )}
       {empty && agent && boot.composer.suggestions.length > 0 && (
         <div className="flex flex-wrap gap-2 px-1" aria-label="Sugerencias">

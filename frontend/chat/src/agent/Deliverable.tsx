@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils"
 import { useSession } from "../app/session-context"
 import { postJSON } from "../transport/http"
 import type { Artifact, RunSnapshot } from "../types"
-import { canPreview as canOpenViewer, useArtifactViewer } from "../viewer/ArtifactViewer"
-import { PAGE } from "../viewer/PagesDialog"
+import { useArtifactViewer } from "../viewer/ArtifactViewer"
+import { canPreview as canOpenViewer, PAGE } from "../viewer/contracts"
 
 const DOWNLOAD = /^\/chat\/agent\/artifacts\/[0-9a-f-]+\/download\/(?:\?format=(?:docx|pdf))?$/
 const REVIEW = /^\/chat\/agent\/artifacts\/[0-9a-f-]+\/review\/$/
@@ -124,7 +124,6 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
 
   return (
     <m.article
-      layout="position"
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col gap-3 rounded-xl bg-surface p-3 ring-1 ring-border"

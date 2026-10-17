@@ -44,7 +44,7 @@ def assets():
     entry = manifest.get(ENTRY)
     if not isinstance(entry, dict) or not entry.get('isEntry') or not isinstance(entry.get('file'), str):
         raise ManifestError('chat_manifest_entry')
-    css, preload, seen = [], [], set()
+    css, preload, seen, later = [], [], set(), []
 
     def visit(key, root=False):
         if key in seen:
@@ -55,13 +55,27 @@ def assets():
             raise ManifestError('chat_manifest_chunk')
         for name in chunk.get('imports', []):
             visit(name)
+        later.extend(chunk.get('dynamicImports', []))
         if not root:
             preload.append(chunk['file'])
         css.extend(file for file in chunk.get('css', []) if file not in css)
 
     visit(ENTRY, root=True)
-    files = [entry['file'], *preload, *css]
-    for file in files:
+    # Chunks loaded on demand (viewer, pickers, details) are not linked, but a build
+    # missing any of them is incomplete: the page then falls back to the legacy chat.
+    files, reached = {entry['file'], *preload, *css}, set()
+    while later:
+        key = later.pop()
+        if key in reached or key in seen:
+            continue
+        reached.add(key)
+        chunk = manifest.get(key)
+        if not isinstance(chunk, dict) or not isinstance(chunk.get('file'), str):
+            raise ManifestError('chat_manifest_chunk')
+        files.add(chunk['file'])
+        files.update(chunk.get('css', []))
+        later.extend(chunk.get('imports', []) + chunk.get('dynamicImports', []))
+    for file in sorted(files):
         if not finders.find(f'{ROOT}/{file}'):
             raise ManifestError('chat_asset_missing')
     return {'script': static(f'{ROOT}/{entry["file"]}'),

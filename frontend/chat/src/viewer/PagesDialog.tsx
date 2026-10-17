@@ -5,24 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { list, present } from "@/lib/format"
 
-import type { Artifact } from "../types"
+import { PAGE, type PagesRequest } from "./contracts"
 
-/* Rendered pages (PDF/Office) or a workbook sample from the verified record.
- * Images come from the authenticated page endpoint; nothing external loads. */
-
-export type PagesRequest = {
-  runId: string
-  artifact: Artifact
-  title: string
-  meta: string
-  focusIndex: number
-  trigger: HTMLElement | null
-  verified: boolean
-  downloads: { format: string; url: string }[]
-  review?: { ready: boolean; confirm: () => void; pageLoaded: (index: number) => void }
-}
-
-export const PAGE = /^\/chat\/agent\/artifacts\/[0-9a-f-]+\/pages\/\d+\/$/
+/* Rendered pages (PDF/Office) or a workbook sample from the verified record,
+ * loaded the first time it opens. Images come from the authenticated page
+ * endpoint; nothing external loads. */
 
 export function PagesDialog({ request, onClose }: { request: PagesRequest | null; onClose: () => void }) {
   const focusRef = useRef<HTMLElement | null>(null)

@@ -1,9 +1,8 @@
 import { MenuIcon, PanelLeftOpenIcon, SparklesIcon, SquarePenIcon, TriangleAlertIcon } from "lucide-react"
-import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m } from "motion/react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { AnimatePresence, LazyMotion, MotionConfig, m } from "motion/react"
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMediaQuery, useStoredFlag } from "@/lib/hooks"
 import { cn } from "@/lib/utils"
@@ -17,6 +16,9 @@ import { SessionContext, useChat, useSession } from "./session-context"
 import { Sidebar } from "./Sidebar"
 
 const QUIET = [0.2, 0.7, 0.2, 1] as const
+// Movement is added once its chunk arrives; until then every state renders in place.
+const motionFeatures = () => import("./motion-features").then((module) => module.default)
+const Drawer = lazy(() => import("./Drawer"))
 
 export function ChatApp({ session }: { session: ChatSession }) {
   // StrictMode mounts twice in development: start/suspend are both idempotent.
@@ -26,7 +28,7 @@ export function ChatApp({ session }: { session: ChatSession }) {
   }, [session])
   return (
     <SessionContext.Provider value={session}>
-      <LazyMotion features={domAnimation} strict>
+      <LazyMotion features={motionFeatures} strict>
         <MotionConfig reducedMotion="user" transition={{ duration: 0.18, ease: QUIET }}>
           <TooltipProvider delay={500} closeDelay={0}>
             <ArtifactViewerProvider>
@@ -49,6 +51,7 @@ function Shell() {
   const desktop = useMediaQuery("(min-width: 1024px)")
   const [sidebar, setSidebar] = useStoredFlag("regulai.chat.threads", true, encode, decode)
   const [drawer, setDrawer] = useState(false)
+  const [drawerUsed, setDrawerUsed] = useState(false)
   const empty = useChat((state) => state.turns.length === 0)
   const menuButton = useRef<HTMLButtonElement>(null)
   const showSidebar = desktop && sidebar
@@ -73,13 +76,12 @@ function Shell() {
           <Sidebar onHide={() => setSidebar(false)} />
         </aside>
       )}
-      {!desktop && (
-        <Sheet open={drawer} onOpenChange={setDrawer}>
-          <SheetContent side="left" className="w-[min(20rem,88vw)] gap-0 bg-surface p-0" showCloseButton={false} finalFocus={menuButton}>
-            <SheetTitle className="sr-only">Conversaciones y cuenta</SheetTitle>
+      {!desktop && drawerUsed && (
+        <Suspense fallback={null}>
+          <Drawer open={drawer} onOpenChange={setDrawer} finalFocus={menuButton}>
             <Sidebar onNavigate={closeDrawer} />
-          </SheetContent>
-        </Sheet>
+          </Drawer>
+        </Suspense>
       )}
       <main className="relative flex min-w-0 flex-1 flex-col" data-artifact-room="">
         {session.boot.demo && (
@@ -92,7 +94,7 @@ function Shell() {
           desktop={desktop}
           sidebarVisible={showSidebar}
           onShowSidebar={() => setSidebar(true)}
-          onOpenDrawer={() => setDrawer(true)}
+          onOpenDrawer={() => { setDrawerUsed(true); setDrawer(true) }}
           menuButton={menuButton}
         />
         <div className="relative flex min-h-0 flex-1 flex-col">
