@@ -1,0 +1,1108 @@
+{
+  "scope": "Synthetic PostgreSQL admission and production claim function; no provider/network/SDK latency.",
+  "conditions": {
+    "postgres": "17-alpine on loopback:55483; isolated tmpfs fixture database",
+    "input": "same synthetic CSV/chat request; independent conversation for every job",
+    "cold": "first claim on a fresh thread/database connection, not a cold application process",
+    "warm": "same worker database connections reused after first claim",
+    "baseline": "production immediate claim followed by the former fixed 500 ms worker idle sleep",
+    "after": "production claim with PostgreSQL commit notification and maximum 5 s timeout",
+    "phases": "same deterministic offsets in the idle interval for both variants",
+    "queue": "AgentExecution.started_at minus created_at; includes admission transaction after row creation",
+    "queries": "SELECTs in worker claim thread, including initial idle checks",
+    "transport": "admission uses Django HTTP TestClient; claims run in process, excluding HTTP transit",
+    "free_capacity": true,
+    "paid_calls": 0,
+    "admission_throttle": "isolated in-process cache reset before each sample, outside measurement"
+  },
+  "groups": [
+    {
+      "mode": "poll_500ms",
+      "concurrent_jobs": 1,
+      "samples": [
+        {
+          "warmth": "cold_connection",
+          "phase_seconds": 0.01,
+          "jobs": [
+            {
+              "queue_ms": 467.507,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.083,
+          "jobs": [
+            {
+              "queue_ms": 401.417,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.156,
+          "jobs": [
+            {
+              "queue_ms": 328.959,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.229,
+          "jobs": [
+            {
+              "queue_ms": 257.233,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.302,
+          "jobs": [
+            {
+              "queue_ms": 159.878,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.375,
+          "jobs": [
+            {
+              "queue_ms": 142.259,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.018,
+          "jobs": [
+            {
+              "queue_ms": 411.755,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.091,
+          "jobs": [
+            {
+              "queue_ms": 408.532,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.164,
+          "jobs": [
+            {
+              "queue_ms": 322.556,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.237,
+          "jobs": [
+            {
+              "queue_ms": 225.233,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.31,
+          "jobs": [
+            {
+              "queue_ms": 198.371,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.383,
+          "jobs": [
+            {
+              "queue_ms": 157.082,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.026,
+          "jobs": [
+            {
+              "queue_ms": 465.359,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.099,
+          "jobs": [
+            {
+              "queue_ms": 391.141,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.172,
+          "jobs": [
+            {
+              "queue_ms": 314.11,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.245,
+          "jobs": [
+            {
+              "queue_ms": 241.555,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.318,
+          "jobs": [
+            {
+              "queue_ms": 171.485,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.391,
+          "jobs": [
+            {
+              "queue_ms": 100.528,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.034,
+          "jobs": [
+            {
+              "queue_ms": 454.563,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.107,
+          "jobs": [
+            {
+              "queue_ms": 382.987,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.18,
+          "jobs": [
+            {
+              "queue_ms": 276.192,
+              "claim_selects": 33
+            }
+          ]
+        }
+      ],
+      "cold_connection": {
+        "jobs": 1,
+        "queue_p50_ms": 467.507,
+        "queue_p95_ms": 467.507,
+        "claim_selects_p50": 33,
+        "claim_selects_max": 33
+      },
+      "warm_connection": {
+        "jobs": 20,
+        "queue_p50_ms": 295.151,
+        "queue_p95_ms": 454.563,
+        "claim_selects_p50": 33.0,
+        "claim_selects_max": 33
+      }
+    },
+    {
+      "mode": "poll_500ms",
+      "concurrent_jobs": 2,
+      "samples": [
+        {
+          "warmth": "cold_connection",
+          "phase_seconds": 0.01,
+          "jobs": [
+            {
+              "queue_ms": 494.445,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 436.457,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.083,
+          "jobs": [
+            {
+              "queue_ms": 334.33,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 219.945,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.156,
+          "jobs": [
+            {
+              "queue_ms": 340.719,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 229.668,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.229,
+          "jobs": [
+            {
+              "queue_ms": 297.811,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 261.975,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.302,
+          "jobs": [
+            {
+              "queue_ms": 223.4,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 137.894,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.375,
+          "jobs": [
+            {
+              "queue_ms": 292.427,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 187.997,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.018,
+          "jobs": [
+            {
+              "queue_ms": 479.224,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 381.551,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.091,
+          "jobs": [
+            {
+              "queue_ms": 390.377,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 304.358,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.164,
+          "jobs": [
+            {
+              "queue_ms": 309.18,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 244.068,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.237,
+          "jobs": [
+            {
+              "queue_ms": 267.902,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 135.172,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.31,
+          "jobs": [
+            {
+              "queue_ms": 261.633,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 207.927,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.383,
+          "jobs": [
+            {
+              "queue_ms": 123.834,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 471.56,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.026,
+          "jobs": [
+            {
+              "queue_ms": 452.599,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 345.637,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.099,
+          "jobs": [
+            {
+              "queue_ms": 390.046,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 187.574,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.172,
+          "jobs": [
+            {
+              "queue_ms": 322.613,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 250.916,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.245,
+          "jobs": [
+            {
+              "queue_ms": 243.719,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 177.246,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.318,
+          "jobs": [
+            {
+              "queue_ms": 203.032,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 126.181,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.391,
+          "jobs": [
+            {
+              "queue_ms": 172.356,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 507.648,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.034,
+          "jobs": [
+            {
+              "queue_ms": 449.212,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 341.204,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.107,
+          "jobs": [
+            {
+              "queue_ms": 394.092,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 313.093,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.18,
+          "jobs": [
+            {
+              "queue_ms": 345.876,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 168.509,
+              "claim_selects": 33
+            }
+          ]
+        }
+      ],
+      "cold_connection": {
+        "jobs": 2,
+        "queue_p50_ms": 465.451,
+        "queue_p95_ms": 494.445,
+        "claim_selects_p50": 33.0,
+        "claim_selects_max": 33
+      },
+      "warm_connection": {
+        "jobs": 40,
+        "queue_p50_ms": 280.164,
+        "queue_p95_ms": 471.56,
+        "claim_selects_p50": 33.0,
+        "claim_selects_max": 38
+      }
+    },
+    {
+      "mode": "notification",
+      "concurrent_jobs": 1,
+      "samples": [
+        {
+          "warmth": "cold_connection",
+          "phase_seconds": 0.01,
+          "jobs": [
+            {
+              "queue_ms": 118.561,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.083,
+          "jobs": [
+            {
+              "queue_ms": 94.499,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.156,
+          "jobs": [
+            {
+              "queue_ms": 112.257,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.229,
+          "jobs": [
+            {
+              "queue_ms": 248.142,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.302,
+          "jobs": [
+            {
+              "queue_ms": 99.643,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.375,
+          "jobs": [
+            {
+              "queue_ms": 122.939,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.018,
+          "jobs": [
+            {
+              "queue_ms": 93.148,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.091,
+          "jobs": [
+            {
+              "queue_ms": 98.508,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.164,
+          "jobs": [
+            {
+              "queue_ms": 96.045,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.237,
+          "jobs": [
+            {
+              "queue_ms": 106.542,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.31,
+          "jobs": [
+            {
+              "queue_ms": 92.001,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.383,
+          "jobs": [
+            {
+              "queue_ms": 95.072,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.026,
+          "jobs": [
+            {
+              "queue_ms": 101.764,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.099,
+          "jobs": [
+            {
+              "queue_ms": 90.511,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.172,
+          "jobs": [
+            {
+              "queue_ms": 135.358,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.245,
+          "jobs": [
+            {
+              "queue_ms": 107.122,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.318,
+          "jobs": [
+            {
+              "queue_ms": 112.633,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.391,
+          "jobs": [
+            {
+              "queue_ms": 98.202,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.034,
+          "jobs": [
+            {
+              "queue_ms": 158.099,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.107,
+          "jobs": [
+            {
+              "queue_ms": 97.144,
+              "claim_selects": 33
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.18,
+          "jobs": [
+            {
+              "queue_ms": 95.797,
+              "claim_selects": 33
+            }
+          ]
+        }
+      ],
+      "cold_connection": {
+        "jobs": 1,
+        "queue_p50_ms": 118.561,
+        "queue_p95_ms": 118.561,
+        "claim_selects_p50": 33,
+        "claim_selects_max": 33
+      },
+      "warm_connection": {
+        "jobs": 20,
+        "queue_p50_ms": 99.076,
+        "queue_p95_ms": 158.099,
+        "claim_selects_p50": 33.0,
+        "claim_selects_max": 33
+      }
+    },
+    {
+      "mode": "notification",
+      "concurrent_jobs": 2,
+      "samples": [
+        {
+          "warmth": "cold_connection",
+          "phase_seconds": 0.01,
+          "jobs": [
+            {
+              "queue_ms": 106.324,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 118.547,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.083,
+          "jobs": [
+            {
+              "queue_ms": 106.491,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 135.012,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.156,
+          "jobs": [
+            {
+              "queue_ms": 123.539,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 101.038,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.229,
+          "jobs": [
+            {
+              "queue_ms": 96.511,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 99.024,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.302,
+          "jobs": [
+            {
+              "queue_ms": 99.006,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 91.501,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.375,
+          "jobs": [
+            {
+              "queue_ms": 92.504,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 152.722,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.018,
+          "jobs": [
+            {
+              "queue_ms": 221.312,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 177.599,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.091,
+          "jobs": [
+            {
+              "queue_ms": 136.02,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 153.442,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.164,
+          "jobs": [
+            {
+              "queue_ms": 106.583,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 97.95,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.237,
+          "jobs": [
+            {
+              "queue_ms": 106.523,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 130.689,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.31,
+          "jobs": [
+            {
+              "queue_ms": 214.062,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 163.321,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.383,
+          "jobs": [
+            {
+              "queue_ms": 99.839,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 91.191,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.026,
+          "jobs": [
+            {
+              "queue_ms": 93.251,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 95.505,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.099,
+          "jobs": [
+            {
+              "queue_ms": 96.0,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 93.522,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.172,
+          "jobs": [
+            {
+              "queue_ms": 156.816,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 114.624,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.245,
+          "jobs": [
+            {
+              "queue_ms": 120.229,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 104.438,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.318,
+          "jobs": [
+            {
+              "queue_ms": 112.161,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 104.5,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.391,
+          "jobs": [
+            {
+              "queue_ms": 109.51,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 100.078,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.034,
+          "jobs": [
+            {
+              "queue_ms": 112.467,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 104.016,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.107,
+          "jobs": [
+            {
+              "queue_ms": 108.573,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 115.279,
+              "claim_selects": 38
+            }
+          ]
+        },
+        {
+          "warmth": "warm_connection",
+          "phase_seconds": 0.18,
+          "jobs": [
+            {
+              "queue_ms": 173.086,
+              "claim_selects": 33
+            },
+            {
+              "queue_ms": 139.177,
+              "claim_selects": 38
+            }
+          ]
+        }
+      ],
+      "cold_connection": {
+        "jobs": 2,
+        "queue_p50_ms": 112.435,
+        "queue_p95_ms": 118.547,
+        "claim_selects_p50": 35.5,
+        "claim_selects_max": 38
+      },
+      "warm_connection": {
+        "jobs": 40,
+        "queue_p50_ms": 107.578,
+        "queue_p95_ms": 177.599,
+        "claim_selects_p50": 35.5,
+        "claim_selects_max": 38
+      }
+    }
+  ]
+}

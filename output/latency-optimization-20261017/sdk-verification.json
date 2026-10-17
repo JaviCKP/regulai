@@ -1,0 +1,79 @@
+{
+  "recorded_at_utc": "2026-10-17T15:59:30.690629+00:00",
+  "checkout": "C:\\Users\\javi\\Documents\\Codex\\regulai-privacy",
+  "interpreter": "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe",
+  "python_version": "3.12.11",
+  "execution": "Elevated host SDK venv; unittest TextTestRunner per module; all imported front/ops file paths asserted under checkout before and after tests",
+  "network": "Tests use mocked HTTP; no paid provider or VM invocation",
+  "results": [
+    {
+      "module": "ops.agent_chat.test_p1_skills_runtime",
+      "selected_tests": 6,
+      "tests_run": 6,
+      "passed": 6,
+      "skipped_tests": 0,
+      "failures": [],
+      "errors": [],
+      "skip_events": [],
+      "seconds": 0.79207,
+      "successful": true,
+      "reproduce_command": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe -m unittest ops.agent_chat.test_p1_skills_runtime"
+    },
+    {
+      "module": "ops.agent_chat.test_p1_skill_materialization",
+      "selected_tests": 11,
+      "tests_run": 3,
+      "passed": 3,
+      "skipped_tests": 8,
+      "failures": [],
+      "errors": [],
+      "skip_events": [
+        {
+          "test": "setUpClass (ops.agent_chat.test_p1_skill_materialization.SkillMaterializationMountTests)",
+          "reason": "Opt-in Linux mount test: pass --docker; never creates a cloud VM"
+        }
+      ],
+      "seconds": 0.001814,
+      "successful": true,
+      "reproduce_command": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe -m unittest ops.agent_chat.test_p1_skill_materialization"
+    },
+    {
+      "module": "ops.agent_chat.test_queue_dispatch",
+      "selected_tests": 3,
+      "tests_run": 3,
+      "passed": 3,
+      "skipped_tests": 0,
+      "failures": [],
+      "errors": [],
+      "skip_events": [],
+      "seconds": 0.020347,
+      "successful": true,
+      "reproduce_command": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe -m unittest ops.agent_chat.test_queue_dispatch"
+    }
+  ],
+  "total": {
+    "selected_tests": 20,
+    "tests_run": 12,
+    "passed": 12,
+    "skipped_tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 0.814231
+  },
+  "source_sha256": {
+    "regulai/front/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "regulai/front/agents/__init__.py": "a54e602f95dc33f0e422abe0c434e27049fd5a952783de7848fede7d9ea5db42",
+    "regulai/front/agents/adapter.py": "05066335b3f93f76ba61a7c1f7b7d501d4f4e42cc4f1ad845bbf491c2586eabc",
+    "regulai/front/agents/professional_worker.py": "155eae313a78f082b532e3c033cf2515fd3a447033e24ed51109d14a45aa6eae",
+    "regulai/front/agents/protocol.py": "2c628199210bf06cb727f44620db8ef665da2cf9705102d23e6b89b368169880",
+    "regulai/front/agents/runtime_contract.py": "51fbf28b81b2573a1290a17b6cbe6ce593b32da01a2104032e5cefe31f6e057d",
+    "regulai/front/agents/sandbox_pool.py": "5d438fb84b8f14de33be51b6b698657a140d8a729a3d7145c801b47a394ead31",
+    "regulai/front/agents/skill_backend.py": "32cb9e7cac403d862568fbfca06dcf598591a366fd018fd566cdd20210e69f3d",
+    "regulai/front/agents/worker.py": "bd14449a5745db162f7e2ed3e997be9a4078842a3bcefca8da402d01ac142bc3",
+    "regulai/front/agents/workspace_backend.py": "1981b0b4bb909b846ea529f13927e21466970672bf03f26f491715c30cf4b13c",
+    "ops/agent_chat/test_p0_runtime.py": "af2f92b2b4d21862dbbfb09b0ba85dec219b7d59d6b2a4c25028b1efe49862c7",
+    "ops/agent_chat/test_p1_skill_materialization.py": "6217666c86022d3cbc23f70b4e49b15555a5f4c3ba3d42eaa4d60c0409bfee43",
+    "ops/agent_chat/test_p1_skills_runtime.py": "7713596e6d6438980f9313907bc19ca5be1254de8b098efad077821380765873",
+    "ops/agent_chat/test_queue_dispatch.py": "ca6a5b3b1f469e238c83c872a51550a02dc1d03a8dd3290ffe47a5e5c29ee911"
+  }
+}

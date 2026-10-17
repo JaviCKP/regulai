@@ -1,0 +1,1024 @@
+{
+  "rows": [
+    {
+      "index": 0,
+      "cache": "process-cold",
+      "entry": "/chat/",
+      "sensitive": false,
+      "catalog_count": 1,
+      "queue_s": 0.562984,
+      "preparation_s": 20.146881,
+      "first_inference_s": 20.709865,
+      "entry_to_provider_s": 20.871944,
+      "inference_http_to_provider_s": 2.627255,
+      "sql_preparation": {
+        "SELECT": 15922,
+        "SAVEPOINT": 1733,
+        "RELEASE": 1733,
+        "INSERT": 203,
+        "UPDATE": 35
+      },
+      "sql_by_path": {
+        "/chat/": {
+          "SELECT": 102,
+          "INSERT": 8,
+          "UPDATE": 7,
+          "SAVEPOINT": 5,
+          "RELEASE": 5
+        },
+        "/internal/agents/claim/": {
+          "SELECT": 226,
+          "SAVEPOINT": 1,
+          "INSERT": 1,
+          "RELEASE": 1,
+          "UPDATE": 2
+        },
+        "driver": {
+          "SELECT": 201
+        },
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 7797,
+          "SAVEPOINT": 960,
+          "RELEASE": 960,
+          "INSERT": 145
+        },
+        "/internal/agents/run/skills/": {
+          "SELECT": 4110,
+          "SAVEPOINT": 307,
+          "RELEASE": 307,
+          "INSERT": 1
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 2507,
+          "SAVEPOINT": 414,
+          "RELEASE": 414,
+          "INSERT": 16,
+          "UPDATE": 1
+        },
+        "/internal/agents/run/renew/": {
+          "SELECT": 88,
+          "UPDATE": 1,
+          "SAVEPOINT": 2,
+          "RELEASE": 2,
+          "INSERT": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 1420,
+          "SAVEPOINT": 50,
+          "INSERT": 40,
+          "RELEASE": 50,
+          "UPDATE": 33
+        }
+      },
+      "http_durations_s": {
+        "/internal/agents/claim/": [
+          0.28963278800074477,
+          0.150983430999986,
+          0.034995803000128944,
+          0.029969764000270516,
+          0.02554866500031494,
+          0.03536871600044833,
+          0.029622111998833134,
+          0.03699903300002916,
+          0.03818917500029784,
+          0.03036776400040253,
+          0.03396614200028125,
+          0.030141019000438973,
+          0.02878673300074297,
+          0.02728525899874512,
+          0.02225758799977484,
+          0.027964156000962248,
+          0.022015354999894043,
+          0.02636449400051788,
+          0.02878715699989698,
+          0.02612709300046845,
+          0.026128180001251167,
+          0.02654513999914343,
+          0.02562839699930919,
+          0.03377740299947618,
+          0.039072823001333745,
+          0.034555518001070595,
+          0.030703148999236873,
+          0.02755161200002476,
+          0.027370466999855125,
+          0.022423651000281097,
+          0.023189382000055048,
+          0.03332699800012051,
+          0.02651362100004917,
+          0.02638542499880714,
+          0.07486681800037331,
+          0.024488019000273198,
+          0.03306898599839769,
+          0.025925155001459643,
+          0.028819519000535365,
+          0.14188601699970604,
+          0.035203859999455744,
+          0.017662644999290933
+        ],
+        "/internal/agents/run/bootstrap/": [
+          9.265252146000421
+        ],
+        "/internal/agents/run/skills/": [
+          2.9384977129993786,
+          2.5788159890016686
+        ],
+        "/internal/agents/run/checkpoint/": [
+          2.6021847239990166
+        ],
+        "/internal/agents/run/renew/": [
+          2.5127960199988593
+        ],
+        "/internal/agents/inference/": [
+          2.9919043789996067
+        ],
+        "/internal/agents/run/review-status/": [
+          0.25822533200152975
+        ],
+        "/internal/agents/run/complete/": [
+          0.14653630599968892
+        ]
+      },
+      "privacy_fragments": 179,
+      "checkpoint_count": 1,
+      "inference_count": 1,
+      "provider_calls": 1,
+      "status": "completed",
+      "sql_callers": {}
+    },
+    {
+      "index": 1,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": true,
+      "catalog_count": 1,
+      "queue_s": 0.454926,
+      "preparation_s": 23.152267,
+      "first_inference_s": 23.607193,
+      "entry_to_provider_s": 23.685643,
+      "inference_http_to_provider_s": 2.854061,
+      "sql_preparation": {
+        "SELECT": 15929,
+        "SAVEPOINT": 1735,
+        "RELEASE": 1735,
+        "INSERT": 205,
+        "UPDATE": 35
+      },
+      "sql_by_path": {
+        "/chat/send/": {
+          "SELECT": 130,
+          "INSERT": 10,
+          "UPDATE": 7,
+          "SAVEPOINT": 6,
+          "RELEASE": 6
+        },
+        "driver": {
+          "SELECT": 229
+        },
+        "/internal/agents/claim/": {
+          "SELECT": 246,
+          "SAVEPOINT": 1,
+          "INSERT": 1,
+          "RELEASE": 1,
+          "UPDATE": 2
+        },
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 7801,
+          "SAVEPOINT": 961,
+          "RELEASE": 961,
+          "INSERT": 146
+        },
+        "/internal/agents/run/skills/": {
+          "SELECT": 4110,
+          "SAVEPOINT": 307,
+          "RELEASE": 307,
+          "INSERT": 1
+        },
+        "/internal/agents/run/renew/": {
+          "SELECT": 88,
+          "UPDATE": 1,
+          "SAVEPOINT": 2,
+          "RELEASE": 2,
+          "INSERT": 1
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 2507,
+          "SAVEPOINT": 414,
+          "RELEASE": 414,
+          "INSERT": 16,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 1423,
+          "SAVEPOINT": 51,
+          "INSERT": 41,
+          "RELEASE": 51,
+          "UPDATE": 33
+        }
+      },
+      "http_durations_s": {
+        "/internal/agents/claim/": [
+          0.09382880300108809,
+          0.02944611199927749,
+          0.026834702999622095,
+          0.02763306199994986,
+          0.02373347300090245,
+          0.027988251000351738,
+          0.02499651200014341,
+          0.04277150400048413,
+          0.025124752999545308,
+          0.03102051899986691,
+          0.029454403000272578,
+          0.03284995499961951,
+          0.02782938300151727,
+          0.032035005000579986,
+          0.03576190999956452,
+          0.033035860000381945,
+          0.025112631999945734,
+          0.033810179000283824,
+          0.030466436999631696,
+          0.037627401999998256,
+          0.03958329099987168,
+          0.025425849999010097,
+          0.025807200001509045,
+          0.0328168830001232,
+          0.02837067100153945,
+          0.021389587000157917,
+          0.030805761000010534,
+          0.023537756000223453,
+          0.024548205999963102,
+          0.037464160999661544,
+          0.08695015599914768,
+          0.03180052499919839,
+          0.0517402179993951,
+          0.04378700699999172,
+          0.03360178600087238,
+          0.11891246599952865,
+          0.03313157000047795,
+          0.03493934200014337,
+          0.029419385999062797,
+          0.044258915999307646,
+          0.03034519500033639,
+          0.03331507000075362,
+          0.023518842999692424,
+          0.026698069001213298,
+          0.036125273998550256,
+          0.028221472000950598
+        ],
+        "/internal/agents/run/bootstrap/": [
+          9.50691371999892
+        ],
+        "/internal/agents/run/skills/": [
+          3.1694374489998154,
+          4.177383502999874
+        ],
+        "/internal/agents/run/renew/": [
+          0.24414474199875258
+        ],
+        "/internal/agents/run/checkpoint/": [
+          3.2505062780001026
+        ],
+        "/internal/agents/inference/": [
+          3.1744932969995716
+        ],
+        "/internal/agents/run/review-status/": [
+          0.16878693000035128
+        ],
+        "/internal/agents/run/complete/": [
+          0.14881769900057407
+        ]
+      },
+      "privacy_fragments": 179,
+      "checkpoint_count": 1,
+      "inference_count": 1,
+      "provider_calls": 1,
+      "status": "completed",
+      "sql_callers": {}
+    },
+    {
+      "index": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": false,
+      "catalog_count": 1,
+      "queue_s": 0.191813,
+      "preparation_s": 20.670622,
+      "first_inference_s": 20.862435,
+      "entry_to_provider_s": 20.922643,
+      "inference_http_to_provider_s": 2.345956,
+      "sql_preparation": {
+        "SELECT": 15922,
+        "SAVEPOINT": 1733,
+        "RELEASE": 1733,
+        "INSERT": 203,
+        "UPDATE": 35
+      },
+      "sql_by_path": {
+        "/api/chat/send/": {
+          "SELECT": 126,
+          "INSERT": 8,
+          "UPDATE": 7,
+          "SAVEPOINT": 5,
+          "RELEASE": 5
+        },
+        "driver": {
+          "SELECT": 199
+        },
+        "/internal/agents/claim/": {
+          "SELECT": 226,
+          "SAVEPOINT": 1,
+          "INSERT": 1,
+          "RELEASE": 1,
+          "UPDATE": 2
+        },
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 7797,
+          "SAVEPOINT": 960,
+          "RELEASE": 960,
+          "INSERT": 145
+        },
+        "/internal/agents/run/skills/": {
+          "SELECT": 4110,
+          "SAVEPOINT": 307,
+          "RELEASE": 307,
+          "INSERT": 1
+        },
+        "/internal/agents/run/renew/": {
+          "SELECT": 88,
+          "UPDATE": 1,
+          "SAVEPOINT": 2,
+          "RELEASE": 2,
+          "INSERT": 1
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 2507,
+          "SAVEPOINT": 414,
+          "RELEASE": 414,
+          "INSERT": 16,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 1420,
+          "SAVEPOINT": 50,
+          "INSERT": 40,
+          "RELEASE": 50,
+          "UPDATE": 33
+        }
+      },
+      "http_durations_s": {
+        "/internal/agents/claim/": [
+          0.07909365400155366,
+          0.022235917000216432,
+          0.02734434200101532,
+          0.027729426001315005,
+          0.02483955900061119,
+          0.02426167900011933,
+          0.04824382799961313,
+          0.35592828699918755,
+          0.036449875000471366,
+          0.02271792699866637,
+          0.027813278000394348,
+          0.027084646999355755,
+          0.025922782999259653,
+          0.025277659000494168,
+          0.040731416000198806,
+          0.04247446699991997,
+          0.03449815100066189,
+          0.026170180999542936,
+          0.022265595998760546,
+          0.025476066999544855,
+          0.02209780099838099,
+          0.029241039001135505,
+          0.0262326159991062,
+          0.026759254000353394,
+          0.03770764900036738,
+          0.02935642500051472,
+          0.024679508998815436,
+          0.03313903200069035,
+          0.026714236999396235,
+          0.024444332999337348,
+          0.031010581998998532,
+          0.026916273000097135,
+          0.03691392800101312,
+          0.022403218999897945,
+          0.03805724199992255,
+          0.0244349010008591,
+          0.03070916899923759,
+          0.035475365999445785,
+          0.03031252700020559,
+          0.03731717799928447,
+          0.02755727499970817
+        ],
+        "/internal/agents/run/bootstrap/": [
+          9.71608044200002
+        ],
+        "/internal/agents/run/skills/": [
+          2.6687185119990318,
+          3.2778841580002336
+        ],
+        "/internal/agents/run/renew/": [
+          0.19923077000021294
+        ],
+        "/internal/agents/run/checkpoint/": [
+          2.5450232370003505
+        ],
+        "/internal/agents/inference/": [
+          2.7365273630002775
+        ],
+        "/internal/agents/run/review-status/": [
+          0.29031401199972606
+        ],
+        "/internal/agents/run/complete/": [
+          0.2169794239998737
+        ]
+      },
+      "privacy_fragments": 179,
+      "checkpoint_count": 1,
+      "inference_count": 1,
+      "provider_calls": 1,
+      "status": "completed",
+      "sql_callers": {}
+    },
+    {
+      "index": 3,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": true,
+      "catalog_count": 1,
+      "queue_s": 0.153592,
+      "preparation_s": 20.063897,
+      "first_inference_s": 20.217489,
+      "entry_to_provider_s": 20.279004,
+      "inference_http_to_provider_s": 2.833054,
+      "sql_preparation": {
+        "SELECT": 15929,
+        "SAVEPOINT": 1735,
+        "RELEASE": 1735,
+        "INSERT": 205,
+        "UPDATE": 35
+      },
+      "sql_by_path": {
+        "/chat/": {
+          "SELECT": 105,
+          "INSERT": 10,
+          "UPDATE": 7,
+          "SAVEPOINT": 6,
+          "RELEASE": 6
+        },
+        "/internal/agents/claim/": {
+          "SELECT": 221,
+          "SAVEPOINT": 1,
+          "INSERT": 1,
+          "RELEASE": 1,
+          "UPDATE": 2
+        },
+        "driver": {
+          "SELECT": 197
+        },
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 7801,
+          "SAVEPOINT": 961,
+          "RELEASE": 961,
+          "INSERT": 146
+        },
+        "/internal/agents/run/skills/": {
+          "SELECT": 4110,
+          "SAVEPOINT": 307,
+          "RELEASE": 307,
+          "INSERT": 1
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 2507,
+          "SAVEPOINT": 414,
+          "RELEASE": 414,
+          "INSERT": 16,
+          "UPDATE": 1
+        },
+        "/internal/agents/run/renew/": {
+          "SELECT": 88,
+          "UPDATE": 1,
+          "SAVEPOINT": 2,
+          "RELEASE": 2,
+          "INSERT": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 1423,
+          "SAVEPOINT": 51,
+          "INSERT": 41,
+          "RELEASE": 51,
+          "UPDATE": 33
+        }
+      },
+      "http_durations_s": {
+        "/internal/agents/claim/": [
+          0.1235543120001239,
+          0.02687476500068442,
+          0.028819609000493074,
+          0.029738855999312364,
+          0.02823342500050785,
+          0.03854817499995988,
+          0.031677344000854646,
+          0.030261543999586138,
+          0.021993161000864347,
+          0.02874223100116069,
+          0.023361421001027338,
+          0.027175259998330148,
+          0.028110490999097237,
+          0.03767601000072318,
+          0.024193252000259236,
+          0.021625987999868812,
+          0.022785037001085584,
+          0.021656416000041645,
+          0.04134521200103336,
+          0.023303496000153245,
+          0.02792071000112628,
+          0.027110009999887552,
+          0.031125775998589233,
+          0.09361882300072466,
+          0.03598440000132541,
+          0.027305487001285655,
+          0.03052956400097173,
+          0.02057996199982881,
+          0.028051445000528474,
+          0.025288311000622343,
+          0.03223779300060414,
+          0.033113899000454694,
+          0.026620202999765752,
+          0.030200822999177035,
+          0.030390949999855366,
+          0.030833009999696515,
+          0.022616408999965643,
+          0.05356387999927392,
+          0.02732184999877063,
+          0.03374256300048728
+        ],
+        "/internal/agents/run/bootstrap/": [
+          9.010448512999574
+        ],
+        "/internal/agents/run/skills/": [
+          2.692487693999283,
+          2.72830673000135
+        ],
+        "/internal/agents/run/checkpoint/": [
+          2.6582348179999826
+        ],
+        "/internal/agents/run/renew/": [
+          2.2652580350004428
+        ],
+        "/internal/agents/inference/": [
+          3.1777042579997214
+        ],
+        "/internal/agents/run/review-status/": [
+          0.1837680120006553
+        ],
+        "/internal/agents/run/complete/": [
+          0.1458341069992457
+        ]
+      },
+      "privacy_fragments": 179,
+      "checkpoint_count": 1,
+      "inference_count": 1,
+      "provider_calls": 1,
+      "status": "completed",
+      "sql_callers": {}
+    },
+    {
+      "index": 4,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": false,
+      "catalog_count": 1,
+      "queue_s": 0.284341,
+      "preparation_s": 22.861827,
+      "first_inference_s": 23.146168,
+      "entry_to_provider_s": 23.22731,
+      "inference_http_to_provider_s": 2.635124,
+      "sql_preparation": {
+        "SELECT": 15922,
+        "SAVEPOINT": 1733,
+        "RELEASE": 1733,
+        "INSERT": 203,
+        "UPDATE": 35
+      },
+      "sql_by_path": {
+        "/chat/send/": {
+          "SELECT": 126,
+          "INSERT": 8,
+          "UPDATE": 7,
+          "SAVEPOINT": 5,
+          "RELEASE": 5
+        },
+        "driver": {
+          "SELECT": 214
+        },
+        "/internal/agents/claim/": {
+          "SELECT": 236,
+          "SAVEPOINT": 1,
+          "INSERT": 1,
+          "RELEASE": 1,
+          "UPDATE": 2
+        },
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 7797,
+          "SAVEPOINT": 960,
+          "RELEASE": 960,
+          "INSERT": 145
+        },
+        "/internal/agents/run/skills/": {
+          "SELECT": 4110,
+          "SAVEPOINT": 307,
+          "RELEASE": 307,
+          "INSERT": 1
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 2507,
+          "SAVEPOINT": 414,
+          "RELEASE": 414,
+          "INSERT": 16,
+          "UPDATE": 1
+        },
+        "/internal/agents/run/renew/": {
+          "SELECT": 88,
+          "UPDATE": 1,
+          "SAVEPOINT": 2,
+          "RELEASE": 2,
+          "INSERT": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 1420,
+          "SAVEPOINT": 50,
+          "INSERT": 40,
+          "RELEASE": 50,
+          "UPDATE": 33
+        }
+      },
+      "http_durations_s": {
+        "/internal/agents/claim/": [
+          0.07093915800032846,
+          0.018977519001055043,
+          0.03252685099869268,
+          0.02476513699912175,
+          0.025493887998891296,
+          0.02869900299992878,
+          0.029458169999998063,
+          0.02938154699950246,
+          0.02587852800024848,
+          0.028886036001495086,
+          0.021363859999837587,
+          0.023123185001168167,
+          0.023534259998996276,
+          0.02235239699984959,
+          0.022994415001448942,
+          0.023758425000778516,
+          0.033925744999578455,
+          0.027332330999342958,
+          0.023731897001198377,
+          0.022503226000480936,
+          0.02388354399954551,
+          0.03424028599874873,
+          0.030893814999217284,
+          0.038599876999796834,
+          0.029184679000536562,
+          0.022201318000952597,
+          0.028354846999718575,
+          0.026965470999130048,
+          0.03202953400068509,
+          0.03420245900088048,
+          0.6565374309993786,
+          0.9209530279986211,
+          0.029696203000639798,
+          0.029049369999484043,
+          0.026584772998830886,
+          0.031936113999108784,
+          0.03123802400114073,
+          0.036407243000212475,
+          0.02048978399943735,
+          0.03824177100068482,
+          0.025160882998534362,
+          0.039652653998928145,
+          0.023577489000672358
+        ],
+        "/internal/agents/run/bootstrap/": [
+          9.237999937000495
+        ],
+        "/internal/agents/run/skills/": [
+          2.8777959380004177,
+          2.6962494409999636
+        ],
+        "/internal/agents/run/checkpoint/": [
+          5.303132101000301
+        ],
+        "/internal/agents/run/renew/": [
+          5.234745703999579
+        ],
+        "/internal/agents/inference/": [
+          2.971365183000671
+        ],
+        "/internal/agents/run/review-status/": [
+          0.16648976800024684
+        ],
+        "/internal/agents/run/complete/": [
+          0.15816591499969945
+        ]
+      },
+      "privacy_fragments": 179,
+      "checkpoint_count": 1,
+      "inference_count": 1,
+      "provider_calls": 1,
+      "status": "completed",
+      "sql_callers": {}
+    },
+    {
+      "index": 5,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": true,
+      "catalog_count": 1,
+      "queue_s": 0.158827,
+      "preparation_s": 20.181565,
+      "first_inference_s": 20.340392,
+      "entry_to_provider_s": 20.425197,
+      "inference_http_to_provider_s": 2.328998,
+      "sql_preparation": {
+        "SELECT": 15929,
+        "SAVEPOINT": 1735,
+        "RELEASE": 1735,
+        "INSERT": 205,
+        "UPDATE": 35
+      },
+      "sql_by_path": {
+        "/api/chat/send/": {
+          "SELECT": 130,
+          "INSERT": 10,
+          "UPDATE": 7,
+          "SAVEPOINT": 6,
+          "RELEASE": 6
+        },
+        "/internal/agents/claim/": {
+          "SELECT": 221,
+          "SAVEPOINT": 1,
+          "INSERT": 1,
+          "RELEASE": 1,
+          "UPDATE": 2
+        },
+        "driver": {
+          "SELECT": 197
+        },
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 7801,
+          "SAVEPOINT": 961,
+          "RELEASE": 961,
+          "INSERT": 146
+        },
+        "/internal/agents/run/skills/": {
+          "SELECT": 4110,
+          "SAVEPOINT": 307,
+          "RELEASE": 307,
+          "INSERT": 1
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 2507,
+          "SAVEPOINT": 414,
+          "RELEASE": 414,
+          "INSERT": 16,
+          "UPDATE": 1
+        },
+        "/internal/agents/run/renew/": {
+          "SELECT": 88,
+          "UPDATE": 1,
+          "SAVEPOINT": 2,
+          "RELEASE": 2,
+          "INSERT": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 1423,
+          "SAVEPOINT": 51,
+          "INSERT": 41,
+          "RELEASE": 51,
+          "UPDATE": 33
+        }
+      },
+      "http_durations_s": {
+        "/internal/agents/claim/": [
+          0.09567035799955192,
+          0.02425105899965274,
+          0.028114667999034282,
+          0.029768051999781164,
+          0.031735716000184766,
+          0.02505334300076356,
+          0.024115713000355754,
+          0.023274916000445955,
+          0.0328183910005464,
+          0.06289650699909544,
+          0.03216675600015151,
+          0.038050982999266125,
+          0.027616809999017278,
+          0.09225090600011754,
+          0.02951937500074564,
+          0.040375838998443214,
+          0.035631777998787584,
+          0.031506870000157505,
+          0.021854234000784345,
+          0.022763163999115932,
+          0.023630808000234538,
+          0.024384641999859014,
+          0.023109747999114916,
+          0.024560456000472186,
+          0.04769818199929432,
+          0.03485894000004919,
+          0.029125072000169894,
+          0.03248474499923759,
+          0.03134842200051935,
+          0.030605750000177068,
+          0.029791017999741598,
+          0.03648087500005204,
+          0.03557588100011344,
+          0.028475302000515512,
+          0.04447518500091974,
+          0.020532380000076955,
+          0.029880472999138874,
+          0.028493853000327363,
+          0.022495564000564627,
+          0.024787481999737793
+        ],
+        "/internal/agents/run/bootstrap/": [
+          9.410276941998745
+        ],
+        "/internal/agents/run/skills/": [
+          2.4744486279996636,
+          2.9020645250002417
+        ],
+        "/internal/agents/run/checkpoint/": [
+          2.950448083000083
+        ],
+        "/internal/agents/run/renew/": [
+          2.8575505499993596
+        ],
+        "/internal/agents/inference/": [
+          2.660041529999944
+        ],
+        "/internal/agents/run/review-status/": [
+          0.14988266799991834
+        ],
+        "/internal/agents/run/complete/": [
+          0.12901661800060538
+        ]
+      },
+      "privacy_fragments": 179,
+      "checkpoint_count": 1,
+      "inference_count": 1,
+      "provider_calls": 1,
+      "status": "completed",
+      "sql_callers": {}
+    },
+    {
+      "index": 6,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": false,
+      "catalog_count": 1,
+      "queue_s": 0.218716,
+      "preparation_s": 19.447966,
+      "first_inference_s": 19.666682,
+      "entry_to_provider_s": 19.744488,
+      "inference_http_to_provider_s": 2.231785,
+      "sql_preparation": {
+        "SELECT": 15922,
+        "SAVEPOINT": 1733,
+        "RELEASE": 1733,
+        "INSERT": 203,
+        "UPDATE": 35
+      },
+      "sql_by_path": {
+        "/chat/": {
+          "SELECT": 102,
+          "INSERT": 8,
+          "UPDATE": 7,
+          "SAVEPOINT": 5,
+          "RELEASE": 5
+        },
+        "driver": {
+          "SELECT": 192
+        },
+        "/internal/agents/claim/": {
+          "SELECT": 216,
+          "SAVEPOINT": 1,
+          "INSERT": 1,
+          "RELEASE": 1,
+          "UPDATE": 2
+        },
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 7797,
+          "SAVEPOINT": 960,
+          "RELEASE": 960,
+          "INSERT": 145
+        },
+        "/internal/agents/run/skills/": {
+          "SELECT": 4110,
+          "SAVEPOINT": 307,
+          "RELEASE": 307,
+          "INSERT": 1
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 2507,
+          "SAVEPOINT": 414,
+          "RELEASE": 414,
+          "INSERT": 16,
+          "UPDATE": 1
+        },
+        "/internal/agents/run/renew/": {
+          "SELECT": 88,
+          "UPDATE": 1,
+          "SAVEPOINT": 2,
+          "RELEASE": 2,
+          "INSERT": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 1420,
+          "SAVEPOINT": 50,
+          "INSERT": 40,
+          "RELEASE": 50,
+          "UPDATE": 33
+        }
+      },
+      "http_durations_s": {
+        "/internal/agents/claim/": [
+          0.06698840900025971,
+          0.02068659100041259,
+          0.03212358000018867,
+          0.03586005500073952,
+          0.03179259600074147,
+          0.07212069199886173,
+          0.03381774799890991,
+          0.03286153299995931,
+          0.028008256000248366,
+          0.029372345999945537,
+          0.021085144999233307,
+          0.022845527000754373,
+          0.030051310000999365,
+          0.026986573999238317,
+          0.02480793999893649,
+          0.028262214000278618,
+          0.06304189799993765,
+          0.035499245999744744,
+          0.03641926999989664,
+          0.02980739799932053,
+          0.02213759000005666,
+          0.03566811500058975,
+          0.029415802000585245,
+          0.020401748000949738,
+          0.040984302999277133,
+          0.024657394000314525,
+          0.03719116100000974,
+          0.02706596099960734,
+          0.023341445999903954,
+          0.10945676299888873,
+          0.028495344000475598,
+          0.03025645900015661,
+          0.036458978000155184,
+          0.025645666999480454,
+          0.022803874999226537,
+          0.027258295000137878,
+          0.022091266999268555,
+          0.029594321000331547,
+          0.01856480000060401
+        ],
+        "/internal/agents/run/bootstrap/": [
+          9.150699576999614
+        ],
+        "/internal/agents/run/skills/": [
+          2.4792778709997947,
+          2.712667989999318
+        ],
+        "/internal/agents/run/checkpoint/": [
+          2.7635528430000704
+        ],
+        "/internal/agents/run/renew/": [
+          2.21959131299991
+        ],
+        "/internal/agents/inference/": [
+          2.5345211740004743
+        ],
+        "/internal/agents/run/review-status/": [
+          0.1419893170004798
+        ],
+        "/internal/agents/run/complete/": [
+          0.12278412900013791
+        ]
+      },
+      "privacy_fragments": 179,
+      "checkpoint_count": 1,
+      "inference_count": 1,
+      "provider_calls": 1,
+      "status": "completed",
+      "sql_callers": {}
+    }
+  ],
+  "method": "cloned installed data; real SDK/dispatcher and internal HTTP; Django HTTP entry client; MockTransport provider; external sockets denied",
+  "variant": "baseline",
+  "round": 7,
+  "database": "regulai_p1_latency_baseline_7",
+  "images": {
+    "web": "sha256:b36f6f4db48e24038dfbb9870bb6e3c10033c68029208226cee129681f3c0763",
+    "worker": "sha256:8f1c0cd83a50178218c2f4395dc03a7fa0179d6b672c89c6fcc63de50acef6a1"
+  }
+}

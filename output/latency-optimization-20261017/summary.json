@@ -1,0 +1,1638 @@
+{
+  "status": "complete",
+  "formal_rounds": {
+    "baseline": [
+      7,
+      8,
+      9
+    ],
+    "after": [
+      10,
+      11,
+      12
+    ]
+  },
+  "expected_rows_per_variant": 21,
+  "observed_rows": {
+    "baseline": 21,
+    "after": 21
+  },
+  "issues": [],
+  "percentiles": "p95 nearest-rank ceil(0.95*n); median usual, no interpolated p95",
+  "image_checks": {
+    "immutable_and_stable": true,
+    "after_matches_final_build": true
+  },
+  "measurement": {
+    "preparation_s": "Asignación del worker hasta primera request al proveedor simulado.",
+    "queue_s": "Creación de ejecución hasta asignación del worker.",
+    "first_inference_s": "Creación de ejecución hasta primera request al proveedor simulado (cola + preparación).",
+    "entry_to_provider_s": "Inicio del POST de admisión hasta primera request al proveedor simulado.",
+    "sql_preparation": "Sentencias capturadas antes del proveedor en rutas /internal/ salvo claim; excluye admisión y driver.",
+    "cold": "Primer mensaje de un proceso nuevo; Django ya inicializado. No mide arranque del SO ni caché fría de PostgreSQL.",
+    "inputs": "Mismas dos entradas sintéticas (simple/con datos sensibles), mismo orden y tres entradas HTTP por ronda.",
+    "limitations": "3 muestras frías y 18 calientes por variante; p95 es descriptivo de esta muestra. Proveedor simulado, sin nuevas llamadas de pago."
+  },
+  "variants": {
+    "baseline": {
+      "cohorts": {
+        "all": {
+          "n": 21,
+          "queue_s": {
+            "n": 21,
+            "min": 0.137651,
+            "median": 0.2679,
+            "p95": 0.520843,
+            "max": 0.562984
+          },
+          "preparation_s": {
+            "n": 21,
+            "min": 18.545521,
+            "median": 20.181565,
+            "p95": 22.861827,
+            "max": 23.152267
+          },
+          "first_inference_s": {
+            "n": 21,
+            "min": 18.74615,
+            "median": 20.629317,
+            "p95": 23.146168,
+            "max": 23.607193
+          },
+          "entry_to_provider_s": {
+            "n": 21,
+            "min": 18.807461,
+            "median": 20.6902,
+            "p95": 23.22731,
+            "max": 23.685643
+          },
+          "inference_http_to_provider_s": {
+            "n": 21,
+            "min": 2.12716,
+            "median": 2.360625,
+            "p95": 3.006647,
+            "max": 3.726584
+          },
+          "sql_selects": {
+            "n": 21,
+            "min": 15922,
+            "median": 15922,
+            "p95": 15929,
+            "max": 15929
+          },
+          "sql_statements": {
+            "n": 21,
+            "min": 19626,
+            "median": 19626,
+            "p95": 19639,
+            "max": 19639
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 334425,
+            "SAVEPOINT": 36411,
+            "RELEASE": 36411,
+            "INSERT": 4281,
+            "UPDATE": 735
+          }
+        },
+        "process-cold": {
+          "n": 3,
+          "queue_s": {
+            "n": 3,
+            "min": 0.514604,
+            "median": 0.520843,
+            "p95": 0.562984,
+            "max": 0.562984
+          },
+          "preparation_s": {
+            "n": 3,
+            "min": 19.166441,
+            "median": 20.12701,
+            "p95": 20.146881,
+            "max": 20.146881
+          },
+          "first_inference_s": {
+            "n": 3,
+            "min": 19.681045,
+            "median": 20.647853,
+            "p95": 20.709865,
+            "max": 20.709865
+          },
+          "entry_to_provider_s": {
+            "n": 3,
+            "min": 19.796625,
+            "median": 20.74102,
+            "p95": 20.871944,
+            "max": 20.871944
+          },
+          "inference_http_to_provider_s": {
+            "n": 3,
+            "min": 2.360625,
+            "median": 2.462538,
+            "p95": 2.627255,
+            "max": 2.627255
+          },
+          "sql_selects": {
+            "n": 3,
+            "min": 15922,
+            "median": 15922,
+            "p95": 15922,
+            "max": 15922
+          },
+          "sql_statements": {
+            "n": 3,
+            "min": 19626,
+            "median": 19626,
+            "p95": 19626,
+            "max": 19626
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 47766,
+            "SAVEPOINT": 5199,
+            "RELEASE": 5199,
+            "INSERT": 609,
+            "UPDATE": 105
+          }
+        },
+        "warm": {
+          "n": 18,
+          "queue_s": {
+            "n": 18,
+            "min": 0.137651,
+            "median": 0.2117,
+            "p95": 0.492543,
+            "max": 0.492543
+          },
+          "preparation_s": {
+            "n": 18,
+            "min": 18.545521,
+            "median": 20.314465,
+            "p95": 23.152267,
+            "max": 23.152267
+          },
+          "first_inference_s": {
+            "n": 18,
+            "min": 18.74615,
+            "median": 20.55614,
+            "p95": 23.607193,
+            "max": 23.607193
+          },
+          "entry_to_provider_s": {
+            "n": 18,
+            "min": 18.807461,
+            "median": 20.619273,
+            "p95": 23.685643,
+            "max": 23.685643
+          },
+          "inference_http_to_provider_s": {
+            "n": 18,
+            "min": 2.12716,
+            "median": 2.338687,
+            "p95": 3.726584,
+            "max": 3.726584
+          },
+          "sql_selects": {
+            "n": 18,
+            "min": 15922,
+            "median": 15925.5,
+            "p95": 15929,
+            "max": 15929
+          },
+          "sql_statements": {
+            "n": 18,
+            "min": 19626,
+            "median": 19632.5,
+            "p95": 19639,
+            "max": 19639
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 286659,
+            "SAVEPOINT": 31212,
+            "RELEASE": 31212,
+            "INSERT": 3672,
+            "UPDATE": 630
+          }
+        },
+        "simple": {
+          "n": 12,
+          "queue_s": {
+            "n": 12,
+            "min": 0.138257,
+            "median": 0.27612,
+            "p95": 0.562984,
+            "max": 0.562984
+          },
+          "preparation_s": {
+            "n": 12,
+            "min": 18.545521,
+            "median": 20.245793,
+            "p95": 22.861827,
+            "max": 22.861827
+          },
+          "first_inference_s": {
+            "n": 12,
+            "min": 18.74615,
+            "median": 20.678859,
+            "p95": 23.146168,
+            "max": 23.146168
+          },
+          "entry_to_provider_s": {
+            "n": 12,
+            "min": 18.807461,
+            "median": 20.806482,
+            "p95": 23.22731,
+            "max": 23.22731
+          },
+          "inference_http_to_provider_s": {
+            "n": 12,
+            "min": 2.145235,
+            "median": 2.411582,
+            "p95": 3.726584,
+            "max": 3.726584
+          },
+          "sql_selects": {
+            "n": 12,
+            "min": 15922,
+            "median": 15922.0,
+            "p95": 15922,
+            "max": 15922
+          },
+          "sql_statements": {
+            "n": 12,
+            "min": 19626,
+            "median": 19626.0,
+            "p95": 19626,
+            "max": 19626
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 191064,
+            "SAVEPOINT": 20796,
+            "RELEASE": 20796,
+            "INSERT": 2436,
+            "UPDATE": 420
+          }
+        },
+        "sensitive": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.137651,
+            "median": 0.162789,
+            "p95": 0.492543,
+            "max": 0.492543
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 19.081842,
+            "median": 20.181565,
+            "p95": 23.152267,
+            "max": 23.152267
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 19.244631,
+            "median": 20.340392,
+            "p95": 23.607193,
+            "max": 23.607193
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 19.317216,
+            "median": 20.425197,
+            "p95": 23.685643,
+            "max": 23.685643
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 2.12716,
+            "median": 2.328998,
+            "p95": 2.854061,
+            "max": 2.854061
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 15929,
+            "median": 15929,
+            "p95": 15929,
+            "max": 15929
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 19639,
+            "median": 19639,
+            "p95": 19639,
+            "max": 19639
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 143361,
+            "SAVEPOINT": 15615,
+            "RELEASE": 15615,
+            "INSERT": 1845,
+            "UPDATE": 315
+          }
+        },
+        "process-cold-simple": {
+          "n": 3,
+          "queue_s": {
+            "n": 3,
+            "min": 0.514604,
+            "median": 0.520843,
+            "p95": 0.562984,
+            "max": 0.562984
+          },
+          "preparation_s": {
+            "n": 3,
+            "min": 19.166441,
+            "median": 20.12701,
+            "p95": 20.146881,
+            "max": 20.146881
+          },
+          "first_inference_s": {
+            "n": 3,
+            "min": 19.681045,
+            "median": 20.647853,
+            "p95": 20.709865,
+            "max": 20.709865
+          },
+          "entry_to_provider_s": {
+            "n": 3,
+            "min": 19.796625,
+            "median": 20.74102,
+            "p95": 20.871944,
+            "max": 20.871944
+          },
+          "inference_http_to_provider_s": {
+            "n": 3,
+            "min": 2.360625,
+            "median": 2.462538,
+            "p95": 2.627255,
+            "max": 2.627255
+          },
+          "sql_selects": {
+            "n": 3,
+            "min": 15922,
+            "median": 15922,
+            "p95": 15922,
+            "max": 15922
+          },
+          "sql_statements": {
+            "n": 3,
+            "min": 19626,
+            "median": 19626,
+            "p95": 19626,
+            "max": 19626
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 47766,
+            "SAVEPOINT": 5199,
+            "RELEASE": 5199,
+            "INSERT": 609,
+            "UPDATE": 105
+          }
+        },
+        "process-cold-sensitive": {
+          "n": 0,
+          "queue_s": {
+            "n": 0
+          },
+          "preparation_s": {
+            "n": 0
+          },
+          "first_inference_s": {
+            "n": 0
+          },
+          "entry_to_provider_s": {
+            "n": 0
+          },
+          "inference_http_to_provider_s": {
+            "n": 0
+          },
+          "sql_selects": {
+            "n": 0
+          },
+          "sql_statements": {
+            "n": 0
+          },
+          "sql_totals_by_verb": {}
+        },
+        "warm-simple": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.138257,
+            "median": 0.218716,
+            "p95": 0.319209,
+            "max": 0.319209
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 18.545521,
+            "median": 20.670622,
+            "p95": 22.861827,
+            "max": 22.861827
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 18.74615,
+            "median": 20.862435,
+            "p95": 23.146168,
+            "max": 23.146168
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 18.807461,
+            "median": 20.922643,
+            "p95": 23.22731,
+            "max": 23.22731
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 2.145235,
+            "median": 2.345956,
+            "p95": 3.726584,
+            "max": 3.726584
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 15922,
+            "median": 15922,
+            "p95": 15922,
+            "max": 15922
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 19626,
+            "median": 19626,
+            "p95": 19626,
+            "max": 19626
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 143298,
+            "SAVEPOINT": 15597,
+            "RELEASE": 15597,
+            "INSERT": 1827,
+            "UPDATE": 315
+          }
+        },
+        "warm-sensitive": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.137651,
+            "median": 0.162789,
+            "p95": 0.492543,
+            "max": 0.492543
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 19.081842,
+            "median": 20.181565,
+            "p95": 23.152267,
+            "max": 23.152267
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 19.244631,
+            "median": 20.340392,
+            "p95": 23.607193,
+            "max": 23.607193
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 19.317216,
+            "median": 20.425197,
+            "p95": 23.685643,
+            "max": 23.685643
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 2.12716,
+            "median": 2.328998,
+            "p95": 2.854061,
+            "max": 2.854061
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 15929,
+            "median": 15929,
+            "p95": 15929,
+            "max": 15929
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 19639,
+            "median": 19639,
+            "p95": 19639,
+            "max": 19639
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 143361,
+            "SAVEPOINT": 15615,
+            "RELEASE": 15615,
+            "INSERT": 1845,
+            "UPDATE": 315
+          }
+        }
+      },
+      "entries": {
+        "/chat/": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.137651,
+            "median": 0.218716,
+            "p95": 0.562984,
+            "max": 0.562984
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 19.117727,
+            "median": 20.12701,
+            "p95": 22.579789,
+            "max": 22.579789
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 19.256486,
+            "median": 20.482963,
+            "p95": 22.898998,
+            "max": 22.898998
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 19.324138,
+            "median": 20.548346,
+            "p95": 22.960268,
+            "max": 22.960268
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 2.155415,
+            "median": 2.462538,
+            "p95": 2.833054,
+            "max": 2.833054
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 15922,
+            "median": 15922,
+            "p95": 15929,
+            "max": 15929
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 19626,
+            "median": 19626,
+            "p95": 19639,
+            "max": 19639
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 143319,
+            "SAVEPOINT": 15603,
+            "RELEASE": 15603,
+            "INSERT": 1833,
+            "UPDATE": 315
+          }
+        },
+        "/chat/send/": {
+          "n": 6,
+          "queue_s": {
+            "n": 6,
+            "min": 0.162789,
+            "median": 0.244513,
+            "p95": 0.454926,
+            "max": 0.454926
+          },
+          "preparation_s": {
+            "n": 6,
+            "min": 18.545521,
+            "median": 21.482467,
+            "p95": 23.152267,
+            "max": 23.152267
+          },
+          "first_inference_s": {
+            "n": 6,
+            "min": 18.74615,
+            "median": 21.757356,
+            "p95": 23.607193,
+            "max": 23.607193
+          },
+          "entry_to_provider_s": {
+            "n": 6,
+            "min": 18.807461,
+            "median": 21.864587,
+            "p95": 23.685643,
+            "max": 23.685643
+          },
+          "inference_http_to_provider_s": {
+            "n": 6,
+            "min": 2.12716,
+            "median": 2.444361,
+            "p95": 3.726584,
+            "max": 3.726584
+          },
+          "sql_selects": {
+            "n": 6,
+            "min": 15922,
+            "median": 15925.5,
+            "p95": 15929,
+            "max": 15929
+          },
+          "sql_statements": {
+            "n": 6,
+            "min": 19626,
+            "median": 19632.5,
+            "p95": 19639,
+            "max": 19639
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 95553,
+            "SAVEPOINT": 10404,
+            "RELEASE": 10404,
+            "INSERT": 1224,
+            "UPDATE": 210
+          }
+        },
+        "/api/chat/send/": {
+          "n": 6,
+          "queue_s": {
+            "n": 6,
+            "min": 0.158827,
+            "median": 0.275763,
+            "p95": 0.492543,
+            "max": 0.492543
+          },
+          "preparation_s": {
+            "n": 6,
+            "min": 19.32039,
+            "median": 20.426094,
+            "p95": 21.350105,
+            "max": 21.350105
+          },
+          "first_inference_s": {
+            "n": 6,
+            "min": 19.604016,
+            "median": 20.601413,
+            "p95": 21.640074,
+            "max": 21.640074
+          },
+          "entry_to_provider_s": {
+            "n": 6,
+            "min": 19.683008,
+            "median": 20.67392,
+            "p95": 21.700873,
+            "max": 21.700873
+          },
+          "inference_http_to_provider_s": {
+            "n": 6,
+            "min": 2.15699,
+            "median": 2.338687,
+            "p95": 3.006647,
+            "max": 3.006647
+          },
+          "sql_selects": {
+            "n": 6,
+            "min": 15922,
+            "median": 15925.5,
+            "p95": 15929,
+            "max": 15929
+          },
+          "sql_statements": {
+            "n": 6,
+            "min": 19626,
+            "median": 19632.5,
+            "p95": 19639,
+            "max": 19639
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 95553,
+            "SAVEPOINT": 10404,
+            "RELEASE": 10404,
+            "INSERT": 1224,
+            "UPDATE": 210
+          }
+        }
+      }
+    },
+    "after": {
+      "cohorts": {
+        "all": {
+          "n": 21,
+          "queue_s": {
+            "n": 21,
+            "min": 0.133985,
+            "median": 0.15062,
+            "p95": 0.203127,
+            "max": 0.207579
+          },
+          "preparation_s": {
+            "n": 21,
+            "min": 0.963696,
+            "median": 1.168772,
+            "p95": 2.487349,
+            "max": 2.73977
+          },
+          "first_inference_s": {
+            "n": 21,
+            "min": 1.133599,
+            "median": 1.309364,
+            "p95": 2.638164,
+            "max": 2.942897
+          },
+          "entry_to_provider_s": {
+            "n": 21,
+            "min": 1.196538,
+            "median": 1.376999,
+            "p95": 2.722091,
+            "max": 3.088915
+          },
+          "inference_http_to_provider_s": {
+            "n": 21,
+            "min": 0.467116,
+            "median": 0.589568,
+            "p95": 1.644068,
+            "max": 1.72808
+          },
+          "sql_selects": {
+            "n": 21,
+            "min": 525,
+            "median": 525,
+            "p95": 532,
+            "max": 532
+          },
+          "sql_statements": {
+            "n": 21,
+            "min": 589,
+            "median": 589,
+            "p95": 602,
+            "max": 602
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 11088,
+            "SAVEPOINT": 438,
+            "RELEASE": 438,
+            "INSERT": 312,
+            "UPDATE": 210
+          }
+        },
+        "process-cold": {
+          "n": 3,
+          "queue_s": {
+            "n": 3,
+            "min": 0.142148,
+            "median": 0.150815,
+            "p95": 0.203127,
+            "max": 0.203127
+          },
+          "preparation_s": {
+            "n": 3,
+            "min": 1.487085,
+            "median": 2.487349,
+            "p95": 2.73977,
+            "max": 2.73977
+          },
+          "first_inference_s": {
+            "n": 3,
+            "min": 1.629233,
+            "median": 2.638164,
+            "p95": 2.942897,
+            "max": 2.942897
+          },
+          "entry_to_provider_s": {
+            "n": 3,
+            "min": 1.709014,
+            "median": 2.722091,
+            "p95": 3.088915,
+            "max": 3.088915
+          },
+          "inference_http_to_provider_s": {
+            "n": 3,
+            "min": 0.645791,
+            "median": 1.644068,
+            "p95": 1.72808,
+            "max": 1.72808
+          },
+          "sql_selects": {
+            "n": 3,
+            "min": 525,
+            "median": 525,
+            "p95": 525,
+            "max": 525
+          },
+          "sql_statements": {
+            "n": 3,
+            "min": 589,
+            "median": 589,
+            "p95": 589,
+            "max": 589
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 1575,
+            "SAVEPOINT": 60,
+            "RELEASE": 60,
+            "INSERT": 42,
+            "UPDATE": 30
+          }
+        },
+        "warm": {
+          "n": 18,
+          "queue_s": {
+            "n": 18,
+            "min": 0.133985,
+            "median": 0.149078,
+            "p95": 0.207579,
+            "max": 0.207579
+          },
+          "preparation_s": {
+            "n": 18,
+            "min": 0.963696,
+            "median": 1.149777,
+            "p95": 1.423343,
+            "max": 1.423343
+          },
+          "first_inference_s": {
+            "n": 18,
+            "min": 1.133599,
+            "median": 1.295486,
+            "p95": 1.565361,
+            "max": 1.565361
+          },
+          "entry_to_provider_s": {
+            "n": 18,
+            "min": 1.196538,
+            "median": 1.36378,
+            "p95": 1.631936,
+            "max": 1.631936
+          },
+          "inference_http_to_provider_s": {
+            "n": 18,
+            "min": 0.467116,
+            "median": 0.565545,
+            "p95": 0.819311,
+            "max": 0.819311
+          },
+          "sql_selects": {
+            "n": 18,
+            "min": 525,
+            "median": 528.5,
+            "p95": 532,
+            "max": 532
+          },
+          "sql_statements": {
+            "n": 18,
+            "min": 589,
+            "median": 595.5,
+            "p95": 602,
+            "max": 602
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 9513,
+            "SAVEPOINT": 378,
+            "RELEASE": 378,
+            "INSERT": 270,
+            "UPDATE": 180
+          }
+        },
+        "simple": {
+          "n": 12,
+          "queue_s": {
+            "n": 12,
+            "min": 0.133985,
+            "median": 0.1511,
+            "p95": 0.207579,
+            "max": 0.207579
+          },
+          "preparation_s": {
+            "n": 12,
+            "min": 0.963696,
+            "median": 1.182214,
+            "p95": 2.73977,
+            "max": 2.73977
+          },
+          "first_inference_s": {
+            "n": 12,
+            "min": 1.133599,
+            "median": 1.327205,
+            "p95": 2.942897,
+            "max": 2.942897
+          },
+          "entry_to_provider_s": {
+            "n": 12,
+            "min": 1.196538,
+            "median": 1.396473,
+            "p95": 3.088915,
+            "max": 3.088915
+          },
+          "inference_http_to_provider_s": {
+            "n": 12,
+            "min": 0.467116,
+            "median": 0.59329,
+            "p95": 1.72808,
+            "max": 1.72808
+          },
+          "sql_selects": {
+            "n": 12,
+            "min": 525,
+            "median": 525.0,
+            "p95": 525,
+            "max": 525
+          },
+          "sql_statements": {
+            "n": 12,
+            "min": 589,
+            "median": 589.0,
+            "p95": 589,
+            "max": 589
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 6300,
+            "SAVEPOINT": 240,
+            "RELEASE": 240,
+            "INSERT": 168,
+            "UPDATE": 120
+          }
+        },
+        "sensitive": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.141493,
+            "median": 0.147535,
+            "p95": 0.180791,
+            "max": 0.180791
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 1.0145,
+            "median": 1.166567,
+            "p95": 1.423343,
+            "max": 1.423343
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 1.195291,
+            "median": 1.309364,
+            "p95": 1.565361,
+            "max": 1.565361
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 1.267244,
+            "median": 1.376999,
+            "p95": 1.631936,
+            "max": 1.631936
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 0.493147,
+            "median": 0.556602,
+            "p95": 0.819311,
+            "max": 0.819311
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 532,
+            "median": 532,
+            "p95": 532,
+            "max": 532
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 602,
+            "median": 602,
+            "p95": 602,
+            "max": 602
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 4788,
+            "SAVEPOINT": 198,
+            "RELEASE": 198,
+            "INSERT": 144,
+            "UPDATE": 90
+          }
+        },
+        "process-cold-simple": {
+          "n": 3,
+          "queue_s": {
+            "n": 3,
+            "min": 0.142148,
+            "median": 0.150815,
+            "p95": 0.203127,
+            "max": 0.203127
+          },
+          "preparation_s": {
+            "n": 3,
+            "min": 1.487085,
+            "median": 2.487349,
+            "p95": 2.73977,
+            "max": 2.73977
+          },
+          "first_inference_s": {
+            "n": 3,
+            "min": 1.629233,
+            "median": 2.638164,
+            "p95": 2.942897,
+            "max": 2.942897
+          },
+          "entry_to_provider_s": {
+            "n": 3,
+            "min": 1.709014,
+            "median": 2.722091,
+            "p95": 3.088915,
+            "max": 3.088915
+          },
+          "inference_http_to_provider_s": {
+            "n": 3,
+            "min": 0.645791,
+            "median": 1.644068,
+            "p95": 1.72808,
+            "max": 1.72808
+          },
+          "sql_selects": {
+            "n": 3,
+            "min": 525,
+            "median": 525,
+            "p95": 525,
+            "max": 525
+          },
+          "sql_statements": {
+            "n": 3,
+            "min": 589,
+            "median": 589,
+            "p95": 589,
+            "max": 589
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 1575,
+            "SAVEPOINT": 60,
+            "RELEASE": 60,
+            "INSERT": 42,
+            "UPDATE": 30
+          }
+        },
+        "process-cold-sensitive": {
+          "n": 0,
+          "queue_s": {
+            "n": 0
+          },
+          "preparation_s": {
+            "n": 0
+          },
+          "first_inference_s": {
+            "n": 0
+          },
+          "entry_to_provider_s": {
+            "n": 0
+          },
+          "inference_http_to_provider_s": {
+            "n": 0
+          },
+          "sql_selects": {
+            "n": 0
+          },
+          "sql_statements": {
+            "n": 0
+          },
+          "sql_totals_by_verb": {}
+        },
+        "warm-simple": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.133985,
+            "median": 0.151386,
+            "p95": 0.207579,
+            "max": 0.207579
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 0.963696,
+            "median": 1.111601,
+            "p95": 1.317648,
+            "max": 1.317648
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 1.133599,
+            "median": 1.245586,
+            "p95": 1.480404,
+            "max": 1.480404
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 1.196538,
+            "median": 1.335094,
+            "p95": 1.545955,
+            "max": 1.545955
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 0.467116,
+            "median": 0.574487,
+            "p95": 0.721255,
+            "max": 0.721255
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 525,
+            "median": 525,
+            "p95": 525,
+            "max": 525
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 589,
+            "median": 589,
+            "p95": 589,
+            "max": 589
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 4725,
+            "SAVEPOINT": 180,
+            "RELEASE": 180,
+            "INSERT": 126,
+            "UPDATE": 90
+          }
+        },
+        "warm-sensitive": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.141493,
+            "median": 0.147535,
+            "p95": 0.180791,
+            "max": 0.180791
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 1.0145,
+            "median": 1.166567,
+            "p95": 1.423343,
+            "max": 1.423343
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 1.195291,
+            "median": 1.309364,
+            "p95": 1.565361,
+            "max": 1.565361
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 1.267244,
+            "median": 1.376999,
+            "p95": 1.631936,
+            "max": 1.631936
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 0.493147,
+            "median": 0.556602,
+            "p95": 0.819311,
+            "max": 0.819311
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 532,
+            "median": 532,
+            "p95": 532,
+            "max": 532
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 602,
+            "median": 602,
+            "p95": 602,
+            "max": 602
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 4788,
+            "SAVEPOINT": 198,
+            "RELEASE": 198,
+            "INSERT": 144,
+            "UPDATE": 90
+          }
+        }
+      },
+      "entries": {
+        "/chat/": {
+          "n": 9,
+          "queue_s": {
+            "n": 9,
+            "min": 0.142148,
+            "median": 0.150815,
+            "p95": 0.203127,
+            "max": 0.203127
+          },
+          "preparation_s": {
+            "n": 9,
+            "min": 0.989142,
+            "median": 1.195657,
+            "p95": 2.73977,
+            "max": 2.73977
+          },
+          "first_inference_s": {
+            "n": 9,
+            "min": 1.134212,
+            "median": 1.347043,
+            "p95": 2.942897,
+            "max": 2.942897
+          },
+          "entry_to_provider_s": {
+            "n": 9,
+            "min": 1.216501,
+            "median": 1.422167,
+            "p95": 3.088915,
+            "max": 3.088915
+          },
+          "inference_http_to_provider_s": {
+            "n": 9,
+            "min": 0.468338,
+            "median": 0.595268,
+            "p95": 1.72808,
+            "max": 1.72808
+          },
+          "sql_selects": {
+            "n": 9,
+            "min": 525,
+            "median": 525,
+            "p95": 532,
+            "max": 532
+          },
+          "sql_statements": {
+            "n": 9,
+            "min": 589,
+            "median": 589,
+            "p95": 602,
+            "max": 602
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 4746,
+            "SAVEPOINT": 186,
+            "RELEASE": 186,
+            "INSERT": 132,
+            "UPDATE": 90
+          }
+        },
+        "/chat/send/": {
+          "n": 6,
+          "queue_s": {
+            "n": 6,
+            "min": 0.138594,
+            "median": 0.149078,
+            "p95": 0.207579,
+            "max": 0.207579
+          },
+          "preparation_s": {
+            "n": 6,
+            "min": 1.034888,
+            "median": 1.150879,
+            "p95": 1.317727,
+            "max": 1.317727
+          },
+          "first_inference_s": {
+            "n": 6,
+            "min": 1.23884,
+            "median": 1.295486,
+            "p95": 1.480404,
+            "max": 1.480404
+          },
+          "entry_to_provider_s": {
+            "n": 6,
+            "min": 1.304749,
+            "median": 1.36378,
+            "p95": 1.545955,
+            "max": 1.545955
+          },
+          "inference_http_to_provider_s": {
+            "n": 6,
+            "min": 0.508878,
+            "median": 0.565246,
+            "p95": 0.721255,
+            "max": 0.721255
+          },
+          "sql_selects": {
+            "n": 6,
+            "min": 525,
+            "median": 528.5,
+            "p95": 532,
+            "max": 532
+          },
+          "sql_statements": {
+            "n": 6,
+            "min": 589,
+            "median": 595.5,
+            "p95": 602,
+            "max": 602
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 3171,
+            "SAVEPOINT": 126,
+            "RELEASE": 126,
+            "INSERT": 90,
+            "UPDATE": 60
+          }
+        },
+        "/api/chat/send/": {
+          "n": 6,
+          "queue_s": {
+            "n": 6,
+            "min": 0.133985,
+            "median": 0.15145,
+            "p95": 0.180791,
+            "max": 0.180791
+          },
+          "preparation_s": {
+            "n": 6,
+            "min": 0.963696,
+            "median": 1.176582,
+            "p95": 1.423343,
+            "max": 1.423343
+          },
+          "first_inference_s": {
+            "n": 6,
+            "min": 1.133599,
+            "median": 1.321785,
+            "p95": 1.565361,
+            "max": 1.565361
+          },
+          "entry_to_provider_s": {
+            "n": 6,
+            "min": 1.196538,
+            "median": 1.415243,
+            "p95": 1.631936,
+            "max": 1.631936
+          },
+          "inference_http_to_provider_s": {
+            "n": 6,
+            "min": 0.467116,
+            "median": 0.565545,
+            "p95": 0.819311,
+            "max": 0.819311
+          },
+          "sql_selects": {
+            "n": 6,
+            "min": 525,
+            "median": 528.5,
+            "p95": 532,
+            "max": 532
+          },
+          "sql_statements": {
+            "n": 6,
+            "min": 589,
+            "median": 595.5,
+            "p95": 602,
+            "max": 602
+          },
+          "sql_totals_by_verb": {
+            "SELECT": 3171,
+            "SAVEPOINT": 126,
+            "RELEASE": 126,
+            "INSERT": 90,
+            "UPDATE": 60
+          }
+        }
+      }
+    }
+  },
+  "queue_experiment": {
+    "status": "complete",
+    "groups": [
+      {
+        "mode": "poll_500ms",
+        "concurrent_jobs": 1,
+        "warmth": "cold_connection",
+        "queue_ms": {
+          "n": 1,
+          "min": 467.507,
+          "median": 467.507,
+          "p95": 467.507,
+          "max": 467.507
+        },
+        "claim_selects": {
+          "n": 1,
+          "min": 33,
+          "median": 33,
+          "p95": 33,
+          "max": 33
+        }
+      },
+      {
+        "mode": "poll_500ms",
+        "concurrent_jobs": 1,
+        "warmth": "warm_connection",
+        "queue_ms": {
+          "n": 20,
+          "min": 100.528,
+          "median": 295.151,
+          "p95": 454.563,
+          "max": 465.359
+        },
+        "claim_selects": {
+          "n": 20,
+          "min": 33,
+          "median": 33.0,
+          "p95": 33,
+          "max": 33
+        }
+      },
+      {
+        "mode": "poll_500ms",
+        "concurrent_jobs": 2,
+        "warmth": "cold_connection",
+        "queue_ms": {
+          "n": 2,
+          "min": 436.457,
+          "median": 465.451,
+          "p95": 494.445,
+          "max": 494.445
+        },
+        "claim_selects": {
+          "n": 2,
+          "min": 33,
+          "median": 33.0,
+          "p95": 33,
+          "max": 33
+        }
+      },
+      {
+        "mode": "poll_500ms",
+        "concurrent_jobs": 2,
+        "warmth": "warm_connection",
+        "queue_ms": {
+          "n": 40,
+          "min": 123.834,
+          "median": 280.1645,
+          "p95": 471.56,
+          "max": 507.648
+        },
+        "claim_selects": {
+          "n": 40,
+          "min": 33,
+          "median": 33.0,
+          "p95": 33,
+          "max": 38
+        }
+      },
+      {
+        "mode": "notification",
+        "concurrent_jobs": 1,
+        "warmth": "cold_connection",
+        "queue_ms": {
+          "n": 1,
+          "min": 118.561,
+          "median": 118.561,
+          "p95": 118.561,
+          "max": 118.561
+        },
+        "claim_selects": {
+          "n": 1,
+          "min": 33,
+          "median": 33,
+          "p95": 33,
+          "max": 33
+        }
+      },
+      {
+        "mode": "notification",
+        "concurrent_jobs": 1,
+        "warmth": "warm_connection",
+        "queue_ms": {
+          "n": 20,
+          "min": 90.511,
+          "median": 99.0755,
+          "p95": 158.099,
+          "max": 248.142
+        },
+        "claim_selects": {
+          "n": 20,
+          "min": 33,
+          "median": 33.0,
+          "p95": 33,
+          "max": 33
+        }
+      },
+      {
+        "mode": "notification",
+        "concurrent_jobs": 2,
+        "warmth": "cold_connection",
+        "queue_ms": {
+          "n": 2,
+          "min": 106.324,
+          "median": 112.4355,
+          "p95": 118.547,
+          "max": 118.547
+        },
+        "claim_selects": {
+          "n": 2,
+          "min": 33,
+          "median": 35.5,
+          "p95": 38,
+          "max": 38
+        }
+      },
+      {
+        "mode": "notification",
+        "concurrent_jobs": 2,
+        "warmth": "warm_connection",
+        "queue_ms": {
+          "n": 40,
+          "min": 91.191,
+          "median": 107.578,
+          "p95": 177.599,
+          "max": 221.312
+        },
+        "claim_selects": {
+          "n": 40,
+          "min": 33,
+          "median": 35.5,
+          "p95": 38,
+          "max": 38
+        }
+      }
+    ],
+    "scope": "Cola sintética PostgreSQL, capacidad libre; excluye SDK/proveedor y transporte HTTP del claim.",
+    "cold_scope": "Primera conexión de hilo; no equivale al frío del proceso de la comparación principal."
+  },
+  "catalog_experiment": {
+    "status": "complete",
+    "issues": [],
+    "variants": {
+      "baseline": {
+        "n": 5,
+        "seconds": {
+          "n": 5,
+          "min": 1.824163,
+          "median": 2.003848,
+          "p95": 2.101851,
+          "max": 2.101851
+        },
+        "sql_selects": {
+          "n": 5,
+          "min": 1990,
+          "median": 1990,
+          "p95": 1990,
+          "max": 1990
+        },
+        "sql_statements": {
+          "n": 5,
+          "min": 2668,
+          "median": 2668,
+          "p95": 2668,
+          "max": 2668
+        },
+        "first_iteration_seconds": 2.1018510020003305,
+        "later_iterations_seconds": {
+          "n": 4,
+          "min": 1.824163,
+          "median": 1.944421,
+          "p95": 2.031667,
+          "max": 2.031667
+        },
+        "catalog_counts": [
+          1
+        ]
+      },
+      "after": {
+        "n": 5,
+        "seconds": {
+          "n": 5,
+          "min": 0.015603,
+          "median": 0.017711,
+          "p95": 0.075845,
+          "max": 0.075845
+        },
+        "sql_selects": {
+          "n": 5,
+          "min": 12,
+          "median": 12,
+          "p95": 12,
+          "max": 12
+        },
+        "sql_statements": {
+          "n": 5,
+          "min": 16,
+          "median": 16,
+          "p95": 16,
+          "max": 16
+        },
+        "first_iteration_seconds": 0.07584538300034183,
+        "later_iterations_seconds": {
+          "n": 4,
+          "min": 0.015603,
+          "median": 0.01692,
+          "p95": 0.018049,
+          "max": 0.018049
+        },
+        "catalog_counts": [
+          1
+        ]
+      }
+    },
+    "scope": "Lectura directa del catálogo instalado, 5 repeticiones con rollback; no es latencia completa."
+  },
+  "goals": {
+    "simple_preparation_p95_under_3s": true,
+    "queue_p95_under_500ms": true
+  }
+}

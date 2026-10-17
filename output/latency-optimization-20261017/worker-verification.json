@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-17",
+  "status": "passed",
+  "scope": "Worker dispatcher, PostgreSQL wakeups, concurrent claims and capacity/state/money regression. Synthetic data only.",
+  "unique_tests": 35,
+  "test_executions": 36,
+  "suites": [
+    {
+      "labels": [
+        "front.test_agent_queue_wakeup",
+        "front.test_agent_capacity",
+        "front.test_agent_chat.AgentChatConcurrencyTests"
+      ],
+      "tests": 20,
+      "passed": 20,
+      "seconds": 10.389,
+      "database": "test_regulai_queue_latency",
+      "postgres": "17-alpine",
+      "paid_calls": 0
+    },
+    {
+      "labels": [
+        "ops/agent_chat/test_p0_runtime.py"
+      ],
+      "tests": 12,
+      "passed": 12,
+      "seconds": 6.842,
+      "network": "mock HTTP only"
+    },
+    {
+      "labels": [
+        "ops/agent_chat/test_queue_dispatch.py"
+      ],
+      "tests": 3,
+      "passed": 3,
+      "seconds": 0.033,
+      "network": "mock HTTP only"
+    },
+    {
+      "labels": [
+        "front.test_agent_queue_wakeup.QueueASGIIsolationTests"
+      ],
+      "tests": 1,
+      "passed": 1,
+      "seconds": 0.02,
+      "note": "Repeated standalone and included in PostgreSQL suite; count unique once."
+    }
+  ],
+  "benchmark": {
+    "file": "queue-comparison.json",
+    "script": "ops/agent_chat/latency_queue_benchmark.py",
+    "test_seconds": 53.311,
+    "sample_batches": 84,
+    "claimed_jobs": 126,
+    "warm_jobs": 120,
+    "cold_connection_jobs": 6,
+    "paid_calls": 0,
+    "limits": [
+      "Claims use the production function in-process; HTTP claim transit and SDK startup are excluded.",
+      "Cold means fresh worker database connection, not a cold application process.",
+      "Baseline reproduces the former 500ms dispatch sleep against the same current production claim implementation.",
+      "Isolated fixture rate-limit cache is reset outside each measurement."
+    ]
+  },
+  "invariants_verified": [
+    "NOTIFY emitted only on commit; rollback silent",
+    "LISTEN before empty check prevents lost wakeup",
+    "Two waiters claim one execution once; replay returns identical attempt/token",
+    "No notification uses exactly two durable checks at bounded timeout",
+    "Worker rechecks authorization after wake; revoked connection cannot claim",
+    "Listener limit uses bounded fallback; legacy claim remains immediate",
+    "Actual Django ASGI handles two blocked claim requests and concurrent inference HTTP independently",
+    "Capacity exclusions, uncertain provider accounting and sandbox releases retain existing invariants",
+    "Worker transport retry preserves claim_id; no VM allocation for text jobs"
+  ],
+  "runtime": {
+    "python": "3.12",
+    "django": "5.2.17",
+    "psycopg": "3.3.6",
+    "pg_container": "regulai-latency92-pg",
+    "pg_removed": true,
+    "persistent_volumes": false,
+    "live_installation_modified": false
+  },
+  "commands": {
+    "create_pg": "rtk proxy docker run --detach --rm --pull never --name regulai-latency92-pg --label regulay.task=latency92 --publish 127.0.0.1:55483:5432 --env POSTGRES_USER=task58 --env POSTGRES_PASSWORD=synthetic-ci-only --env POSTGRES_DB=postgres --tmpfs /var/lib/postgresql/data:rw,nosuid,nodev,size=768m postgres:17-alpine",
+    "postgresql": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe -c 'import os,sys;sys.path.insert(0,''regulai'');os.environ[''DJANGO_SETTINGS_MODULE'']=''regulai.privacy_test_settings'';import django;django.setup();from django.conf import settings;settings.DATABASES[''default''][''TEST''][''NAME'']=''test_regulai_queue_latency'';from django.core.management import call_command;call_command(''test'',''front.test_agent_queue_wakeup'',''front.test_agent_capacity'',''front.test_agent_chat.AgentChatConcurrencyTests'',interactive=False,verbosity=2)'",
+    "sdk_regression": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe -m unittest discover -s ops/agent_chat -p test_p0_runtime.py -v",
+    "sdk_claims": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe -m unittest discover -s ops/agent_chat -p test_queue_dispatch.py -v",
+    "asgi_only": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe regulai/manage.py test front.test_agent_queue_wakeup.QueueASGIIsolationTests --settings=regulai.test_settings --noinput -v 2",
+    "benchmark": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe ops/agent_chat/latency_queue_benchmark.py",
+    "cleanup": "rtk proxy docker stop regulai-latency92-pg"
+  },
+  "cwd": "C:/Users/javi/Documents/Codex/regulai-privacy"
+}

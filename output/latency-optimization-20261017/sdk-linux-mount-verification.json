@@ -1,0 +1,105 @@
+{
+  "recorded_at_utc": "2026-10-17T16:08:21.528148+00:00",
+  "checkout": "C:\\Users\\javi\\Documents\\Codex\\regulai-privacy",
+  "command": [
+    "rtk",
+    "proxy",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\ops\\agent_probe\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\javi\\Documents\\Codex\\regulai-privacy\\ops\\agent_chat\\test_p1_skill_materialization.py",
+    "--docker",
+    "-v"
+  ],
+  "image": {
+    "name": "python:3.12.11-slim",
+    "id": "sha256:47ae396f09c1303b8653019811a8498470603d7ffefc29cb07c88f1f8cb3d19f",
+    "pull": "never",
+    "network": "none"
+  },
+  "exit_code": 0,
+  "wall_seconds": 48.579343,
+  "tests_run": 11,
+  "reported_test_seconds": 44.868,
+  "results": [
+    {
+      "test": "test_alias_cannot_replace_platform_file_and_private_view_is_cleaned (__main__.SkillMaterializationMountTests.test_alias_cannot_replace_platform_file_and_private_view_is_cleaned)",
+      "result": "ok"
+    },
+    {
+      "test": "test_failed_publication_is_not_materialized_and_can_retry (__main__.SkillMaterializationMountTests.test_failed_publication_is_not_materialized_and_can_retry)",
+      "result": "ok"
+    },
+    {
+      "test": "test_failed_rollback_blocks_further_materialization_and_stays_read_only (__main__.SkillMaterializationMountTests.test_failed_rollback_blocks_further_materialization_and_stays_read_only)",
+      "result": "ok"
+    },
+    {
+      "test": "test_failed_transfer_cleans_private_bytes_and_can_retry (__main__.SkillMaterializationMountTests.test_failed_transfer_cleans_private_bytes_and_can_retry)",
+      "result": "ok"
+    },
+    {
+      "test": "test_just_in_time_publish_preserves_runtime_and_never_unseals_skills (__main__.SkillMaterializationMountTests.test_just_in_time_publish_preserves_runtime_and_never_unseals_skills)",
+      "result": "ok"
+    },
+    {
+      "test": "test_lost_publication_ack_rolls_back_only_our_mount_then_retries (__main__.SkillMaterializationMountTests.test_lost_publication_ack_rolls_back_only_our_mount_then_retries)",
+      "result": "ok"
+    },
+    {
+      "test": "test_lost_view_ack_restores_original_tree_and_cleans_stage (__main__.SkillMaterializationMountTests.test_lost_view_ack_restores_original_tree_and_cleans_stage)",
+      "result": "ok"
+    },
+    {
+      "test": "test_root_assignment_uses_canonical_alias_boundary (__main__.SkillMaterializationMountTests.test_root_assignment_uses_canonical_alias_boundary)",
+      "result": "ok"
+    },
+    {
+      "test": "test_non_execute_operation_has_no_catalog_or_workspace_effect (__main__.SkillMaterializationValidationTests.test_non_execute_operation_has_no_catalog_or_workspace_effect)",
+      "result": "ok"
+    },
+    {
+      "test": "test_pinned_manifest_digest_is_checked_before_writing (__main__.SkillMaterializationValidationTests.test_pinned_manifest_digest_is_checked_before_writing)",
+      "result": "ok"
+    },
+    {
+      "test": "test_unsafe_aliases_and_manifest_paths_are_denied_before_writing (__main__.SkillMaterializationValidationTests.test_unsafe_aliases_and_manifest_paths_are_denied_before_writing)",
+      "result": "ok"
+    }
+  ],
+  "passed": 11,
+  "skipped": 0,
+  "cleanup": {
+    "before": {},
+    "after_test": {},
+    "forced_cleanup_ids": [],
+    "after_cleanup": {},
+    "clean": true
+  },
+  "source_sha256": {
+    "ops/agent_chat/test_p1_skill_materialization.py": "4cf2db113fc0e80309b1c4672bd0a8e1d08f9cff3a9d12ed4f7935a5c15741da",
+    "regulai/front/agents/skill_backend.py": "32cb9e7cac403d862568fbfca06dcf598591a366fd018fd566cdd20210e69f3d"
+  },
+  "previous_attempts": [
+    {
+      "recorded_at_utc": "2026-10-17T16:06:45.355280+00:00",
+      "exit_code": 1,
+      "passed": 10,
+      "tests_run": 11,
+      "skipped": 0,
+      "failed_tests": [
+        "test_alias_cannot_replace_platform_file_and_private_view_is_cleaned (__main__.SkillMaterializationMountTests.test_alias_cannot_replace_platform_file_and_private_view_is_cleaned)"
+      ],
+      "reason": "Existing fixture mutated catalog after backend snapshot copy; reconstructed backend after preparing malicious bootstrap, retaining all rejection and cleanup assertions.",
+      "cleanup": {
+        "before": {},
+        "after_test": {},
+        "forced_cleanup_ids": [],
+        "after_cleanup": {},
+        "clean": true
+      },
+      "source_sha256": {
+        "ops/agent_chat/test_p1_skill_materialization.py": "6217666c86022d3cbc23f70b4e49b15555a5f4c3ba3d42eaa4d60c0409bfee43",
+        "regulai/front/agents/skill_backend.py": "32cb9e7cac403d862568fbfca06dcf598591a366fd018fd566cdd20210e69f3d"
+      }
+    }
+  ]
+}

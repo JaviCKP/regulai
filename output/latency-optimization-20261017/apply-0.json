@@ -1,0 +1,42 @@
+{
+  "phase": "applied",
+  "services": {
+    "regulai-v2-web": {
+      "running": true,
+      "restarts": 0,
+      "image_id": "sha256:9aa14268c5760c547f0f26c2cff257289528566b84de98e297349fad54b4dcb4"
+    },
+    "regulai-v2-worker": {
+      "running": true,
+      "restarts": 0,
+      "image_id": "sha256:fbdd3ceacfae5e85e322e34127a8469ba0ab5f61e5d920722d11e9b9af4ff2da"
+    }
+  },
+  "private_configuration_unchanged": true,
+  "source_hashes_verified": true,
+  "mounted_readonly_files_unchanged": true,
+  "checkpoint_files_changed_since_switch": 0,
+  "network_and_host_configuration_unchanged": true,
+  "http_health": {
+    "status": 200,
+    "path": "/static/js/skills.js"
+  },
+  "schema_changes": 0,
+  "provider_generation_calls": 0,
+  "existing_data_unchanged": true,
+  "retained_containers": {
+    "regulai-v2-web": "regulai-v2-web-before-latency-20261017-a1",
+    "regulai-v2-worker": "regulai-v2-worker-before-latency-20261017-a1"
+  },
+  "backup": {
+    "file": "before-switch-1792253110856292921.dump",
+    "sha256": "b6d845fcdf926e2f8e8575b49f3a80c947bdb21148f99f81c6dd4ea786dbc1d7",
+    "bytes": 31006324
+  },
+  "checkpoint_backup": {
+    "directory": "/opt/regulai/updates/latency-20261017-a1/checkpoints-before-switch-1792253110856292921",
+    "files": 0,
+    "manifest_sha256": "9fad2c610d05544eca7779d0eda4d5e4ad5c26a4c8f088955f5ea18b9fff0221"
+  },
+  "checkpoint_files_unchanged_before_start": true
+}

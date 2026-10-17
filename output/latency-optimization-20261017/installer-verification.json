@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-17",
+  "status": "passed",
+  "tests": 23,
+  "seconds": 0.364,
+  "target": "ops/agent_chat/latency_remote.py",
+  "target_sha256": "93123e677b17c920e2118584618b2c146c0a370ae26a63f7593b82eaf4bd8516",
+  "command": "rtk proxy python ops/agent_chat/test_latency_recovery.py",
+  "scope": "Offline fault injection only: imports/function definitions are AST-loaded, dispatch is excluded, Docker/network are simulated.",
+  "checks": [
+    "apply repairs partial stop",
+    "apply repairs original rename when candidate rename fails",
+    "apply repairs failed worker startup after web startup",
+    "rollback works with stopped/restarting candidate without health gate",
+    "rollback repairs prior service names after intermediate rename failure",
+    "repair refuses to stop an unexpected container",
+    "readonly mounted key mutation detected without disclosing content",
+    "readonly change during stop aborts and restores original containers",
+    "checkpoint copy happens with both original and candidate services stopped",
+    "private checkpoint backup survives startup pruning and refuses overwrite",
+    "missing state mount and mount outside installation root rejected",
+    "cleanup removes only explicitly enumerated stopped fixture containers by ID, without -v",
+    "cleanup refuses running containers, unknown image, unexpected mounts and active database sessions",
+    "cleanup accepts exact legacy fixture layout and retains all stage artifacts",
+    "future authorized repeat after13 uses strict cleanup",
+    "catalog uses unique task-owned clone and drops it after success or sample failure",
+    "failed catalog creation never drops any existing database"
+  ],
+  "code_review_changes": [
+    "Recover by immutable container IDs; stop inside compensating try",
+    "Persist switch IDs before stopping originals; no automatic database restore",
+    "Original AutoRemove must be false; ownership and identity checks",
+    "Preserve HostConfig/network membership and private configuration digest",
+    "Start web and prove static HTTP readiness before worker",
+    "Validate worker baseline sources independently; SDK-only worker overlay",
+    "Build contexts contain source only, excluding stage backups/private snapshots",
+    "Benchmark report resides in bind mount; complete rows accepted before bounded shutdown",
+    "Fingerprint actual readonly mounted config/secrets/runtime, not only historical helper paths",
+    "Verify checkpoint bytes unchanged until candidate start; record subsequent changed-file count",
+    "Copy checkpoint files to private mode0700 stage, files mode0600, before apply and rollback startup; no automatic overwrite",
+    "cleanup-benchmarks requires successful apply and verification, exact approved run numbers, checked image identity/lineage, full preflight and progress record",
+    "catalog no longer depends on previously deleted benchmark database; creates/restores isolated clone and drops without FORCE in finally",
+    "future documented repeats baseline10..19 and after13..19 covered by strict cleanup"
+  ],
+  "limits": [
+    "Does not prove real Docker startup/rollback; local deployment verification is performed separately by coordinator.",
+    "No data, credentials or installation changed by these tests.",
+    "Unix socket exclusion test skipped on Windows because AF_UNIX unavailable; implementation ignores non-regular filesystem entries."
+  ],
+  "passed": 22,
+  "skipped": 1,
+  "catalog_smoke": {
+    "command": "rtk proxy python ops/agent_chat/latency_local.py catalog-after --round 1",
+    "samples": 5,
+    "selects_per_read": 12,
+    "provider_calls": 0,
+    "database_removed": true,
+    "original_round0_preserved": true
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "phase": "built",
+  "images": {
+    "web": "regulai-v2-web:latency-20261017-a1",
+    "worker": "regulai-v2-worker:latency-20261017-a1"
+  },
+  "image_ids": {
+    "web": "sha256:9aa14268c5760c547f0f26c2cff257289528566b84de98e297349fad54b4dcb4",
+    "worker": "sha256:fbdd3ceacfae5e85e322e34127a8469ba0ab5f61e5d920722d11e9b9af4ff2da"
+  },
+  "source_hashes": {
+    "regulai/front/privacy.py": "aff76bddf5259639034704f21174ffcc17dece48d17d270bd86ebc12ab0ad8bd",
+    "regulai/front/agents/jobs.py": "f07e8ff71ec996c073add2bf53c2b2906ec68394f4536e423eb7c09d93a7a6d9",
+    "regulai/front/agents/skill_context.py": "22f47da1dd0d7901723bb6d110729506834868fb02f5850f1e2333bfbae16b05",
+    "regulai/front/agents/skill_backend.py": "32cb9e7cac403d862568fbfca06dcf598591a366fd018fd566cdd20210e69f3d",
+    "regulai/front/agents/checkpoints.py": "44db1a17502c198b389db380d0812e16b5d0af0c351afbfb83a2dfbdd716a662",
+    "regulai/front/agents/worker.py": "bd14449a5745db162f7e2ed3e997be9a4078842a3bcefca8da402d01ac142bc3",
+    "regulai/front/agents/queue_wakeup.py": "08e5d4855bb0d09e7711b70cd8c0f94bc326a984e7c08b85f7be5afad9692030",
+    "regulai/front/agents/capacity.py": "2eaa50610f3942ccae4a4785d4d2591096abf61bf8cb2e70eee961055a24319d",
+    "regulai/front/agents/service.py": "9f1b9b2039ccb30dac690c2c13f7ede88aa58ecde4fd328a503a6f53f11ccaac",
+    "regulai/front/test_agent_inference.py": "95f5cabbb283d21890dae94160893dfa8503de001d326486242eeec00a684c48",
+    "regulai/front/test_agent_message_batch.py": "086e0893cc2afa2266e53a88f4091b460d142c7e7f0cbf00a74b9260df8162b4",
+    "regulai/front/test_privacy_batch.py": "213791827478648978d9f6e2bc82c9fcb1a946ad71d9df206956c0d8a60dbef6",
+    "regulai/front/test_agent_queue_wakeup.py": "33159c5a7645019a4336252a5d66d069d10904225b0e3a9dbd2d914fbddca8bd",
+    "regulai/front/test_privacy_batch_revocation.py": "2d7d9e970d6fa41606236c47a120e32ec4a5f10e8915c396f2368ea1fbcbac23",
+    "ops/agent_chat/test_queue_dispatch.py": "ca6a5b3b1f469e238c83c872a51550a02dc1d03a8dd3290ffe47a5e5c29ee911",
+    "regulai/front/test_agent_skills_runtime.py": "ad375b084f7b0bc4ee91a2bf535072c88e43d3db67fabff36c716eef85f6d7f9",
+    "ops/agent_chat/test_p1_skills_runtime.py": "7713596e6d6438980f9313907bc19ca5be1254de8b098efad077821380765873",
+    "ops/agent_chat/test_p1_skill_materialization.py": "6217666c86022d3cbc23f70b4e49b15555a5f4c3ba3d42eaa4d60c0409bfee43"
+  },
+  "changed": [
+    "regulai/front/privacy.py",
+    "regulai/front/agents/jobs.py",
+    "regulai/front/agents/skill_context.py",
+    "regulai/front/agents/skill_backend.py",
+    "regulai/front/agents/checkpoints.py",
+    "regulai/front/agents/worker.py",
+    "regulai/front/agents/queue_wakeup.py",
+    "regulai/front/agents/capacity.py",
+    "regulai/front/agents/service.py"
+  ],
+  "changed_by_kind": {
+    "web": [
+      "regulai/front/privacy.py",
+      "regulai/front/agents/jobs.py",
+      "regulai/front/agents/skill_context.py",
+      "regulai/front/agents/skill_backend.py",
+      "regulai/front/agents/checkpoints.py",
+      "regulai/front/agents/worker.py",
+      "regulai/front/agents/queue_wakeup.py",
+      "regulai/front/agents/capacity.py",
+      "regulai/front/agents/service.py"
+    ],
+    "worker": [
+      "regulai/front/agents/skill_backend.py",
+      "regulai/front/agents/worker.py"
+    ]
+  },
+  "files_by_kind": {
+    "web": [
+      "ops/agent_chat/test_p1_skill_materialization.py",
+      "ops/agent_chat/test_p1_skills_runtime.py",
+      "ops/agent_chat/test_queue_dispatch.py",
+      "regulai/front/agents/capacity.py",
+      "regulai/front/agents/checkpoints.py",
+      "regulai/front/agents/jobs.py",
+      "regulai/front/agents/queue_wakeup.py",
+      "regulai/front/agents/service.py",
+      "regulai/front/agents/skill_backend.py",
+      "regulai/front/agents/skill_context.py",
+      "regulai/front/agents/worker.py",
+      "regulai/front/privacy.py",
+      "regulai/front/test_agent_inference.py",
+      "regulai/front/test_agent_message_batch.py",
+      "regulai/front/test_agent_queue_wakeup.py",
+      "regulai/front/test_agent_skills_runtime.py",
+      "regulai/front/test_privacy_batch.py",
+      "regulai/front/test_privacy_batch_revocation.py"
+    ],
+    "worker": [
+      "ops/agent_chat/test_p1_skill_materialization.py",
+      "ops/agent_chat/test_p1_skills_runtime.py",
+      "ops/agent_chat/test_queue_dispatch.py",
+      "regulai/front/agents/skill_backend.py",
+      "regulai/front/agents/worker.py"
+    ]
+  }
+}
