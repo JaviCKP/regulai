@@ -12,8 +12,8 @@ type Yara = { rule_id: number; source_hash: string; strings: string[]; treatment
 type Config = { version: 1; categories: Record<string, Treatment>; literals: Literal[]; yara: Yara[] }
 type Rule = { rule_id: number; name: string; source_hash: string; strings: string[]; reason: string | null; action: string }
 type Review = { current: string; protected: string; current_segments?: PreviewPart[]; protected_segments?: PreviewPart[]; revision_id: number; review_token: string; coverage: string; decision: { policy?: { status?: string } } }
-const categories = [["EMAIL", "Correos electrónicos"], ["PHONE", "Teléfonos"], ["ID", "Documentos de identidad"], ["ACCOUNT", "Cuentas bancarias"], ["CARD", "Tarjetas"], ["PERSON", "Nombres en campos etiquetados"], ["FIELD", "Campos estructurados seleccionados"]]
-const shortLabels: Record<string, string> = { PERSON: "Nombres etiquetados", FIELD: "Campos elegidos", ID: "Documentos" }
+const categories = [["EMAIL", "Correos electrónicos"], ["PHONE", "Teléfonos"], ["ID", "DNI / NIE"], ["ACCOUNT", "Cuentas bancarias / IBAN"], ["CARD", "Tarjetas"], ["PERSON", "Nombres en campos etiquetados"], ["FIELD", "Campos estructurados seleccionados"]]
+const shortLabels: Record<string, string> = { PERSON: "Nombres etiquetados", FIELD: "Campos elegidos", ACCOUNT: "Cuentas / IBAN" }
 const endpoint = "/settings/privacy/configuration/"
 const selectClass = "h-11 max-w-full rounded-lg border-0 bg-surface-2 pl-3 pr-7 text-xs text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring"
 
@@ -22,7 +22,7 @@ export function PrivacySettings({ csrfToken }: { csrfToken: string }) {
   const [rules, setRules] = useState<Rule[]>([])
   const [enabled, setEnabled] = useState(false)
   const [coverage, setCoverage] = useState("")
-  const [sample, setSample] = useState("Ana Fixture escribe a ana@example.invalid. Ana Fixture necesita revisar el proyecto ficticio.")
+  const [sample, setSample] = useState("Correo: demo@example.invalid\nDNI: 12345678Z · Teléfono: +34 612 345 678\nIBAN: ES91 2100 0418 4502 0005 1332\nTarjeta: 4111 1111 1111 1111")
   const [synthetic, setSynthetic] = useState(false)
   const [review, setReview] = useState<Review | null>(null)
   const [busy, setBusy] = useState(false)

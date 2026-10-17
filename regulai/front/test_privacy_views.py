@@ -111,3 +111,52 @@ class PrivacyViewTests(ChatFixture):
         self.assertNotIn('Ana Fixture', page.content.decode())
         self.provider.assert_not_called()
         self.http.assert_not_called()
+
+    def test_options_enable_email_dni_nie_phone_iban_and_card_patterns(self):
+        self.user.is_superuser = True
+        self.user.save()
+        examples = {
+            'EMAIL': ['demo@example.invalid'],
+            'ID': ['12345678Z', 'X1234567L'],
+            'PHONE': ['+34 612 345 678'],
+            'ACCOUNT': ['ES91 2100 0418 4502 0005 1332'],
+            'CARD': ['4111 1111 1111 1111'],
+        }
+        sample = '\n'.join(value for values in examples.values() for value in values)
+        endpoint = '/settings/privacy/configuration/'
+        proposal = {'categories': {category: 'reversible' for category in examples}}
+        review = self.client.post(endpoint, {'action': 'simulate', 'synthetic': True,
+            'configuration': proposal, 'sample': sample}, content_type='application/json')
+        self.assertEqual(review.status_code, 200, review.content)
+        result = review.json()
+        for category, values in examples.items():
+            self.assertIn(f'[[R_{category}_', result['protected'])
+            for value in values:
+                self.assertNotIn(value, result['protected'])
+        activated = self.client.post(endpoint, {'action': 'activate',
+            'revision_id': result['revision_id'], 'review_token': result['review_token']},
+            content_type='application/json')
+        self.assertEqual(activated.status_code, 200, activated.content)
+        saved = self.client.get(endpoint).json()
+        self.assertTrue(saved['enabled'])
+        self.assertEqual(saved['configuration']['categories'], proposal['categories'])
+        preview = self.post('preview', {'text': sample})
+        self.assertEqual(preview.status_code, 200, preview.content)
+        self.assertEqual(preview.json()['count'], 6)
+        for category in examples:
+            self.assertIn(f'[[R_{category}_', preview.json()['protected'])
+        # Disabling optional recovery is also persisted through the signed flow;
+        # mandatory D2 still hides the identifiers.
+        proposal['categories']['ID'] = 'off'
+        review = self.client.post(endpoint, {'action': 'simulate', 'synthetic': True,
+            'configuration': proposal, 'sample': sample}, content_type='application/json').json()
+        self.assertNotIn('[[R_ID_', review['protected'])
+        for value in examples['ID']:
+            self.assertNotIn(value, review['protected'])
+        disabled = self.client.post(endpoint, {'action': 'activate',
+            'revision_id': review['revision_id'], 'review_token': review['review_token']},
+            content_type='application/json')
+        self.assertEqual(disabled.status_code, 200, disabled.content)
+        self.assertEqual(self.client.get(endpoint).json()['configuration']['categories']['ID'], 'off')
+        self.provider.assert_not_called()
+        self.http.assert_not_called()
