@@ -365,7 +365,7 @@ export class ChatSession implements RequestHost, RunHost {
   /** Rejoin a request after reload or a lost connection; never sends again. */
   rejoin(key: string) {
     const controller = this.ensureRequestController(key)
-    if (!controller) return
+    if (!controller || controller.active) return
     this.store.set((state) => ({ ...state, busy: { owner: "request", stoppable: true, hint: "" } }))
     void controller.attach().finally(() => {
       if (!this.store.get().sending) this.recomputeBusy(true)
@@ -450,13 +450,15 @@ export class ChatSession implements RequestHost, RunHost {
 
   /* ------------------------------------------------------------ page lifecycle */
 
-  /** bfcache: streams were closed on pagehide; reopen what is still live. */
+  /** bfcache or StrictMode remount: streams were closed; reopen what is still live. */
   resume() {
     if (this.disposed) return
     this.start()
+    this.requestControllers.forEach((controller) => controller.resume())
   }
 
   suspend() {
     this.runControllers.forEach((controller) => controller.stop())
+    this.requestControllers.forEach((controller) => controller.suspend())
   }
 }

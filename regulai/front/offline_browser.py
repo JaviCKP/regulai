@@ -69,6 +69,20 @@ class OfflineBrowser:
     process, so checks may print JSON for the test to send to the server.
     """
 
+    @classmethod
+    def setUpClass(cls):
+        # These scripts belong to the legacy page (the local rollback of task 79);
+        # the React island has its own browser tests in frontend/chat.
+        from django.test import override_settings
+        cls._legacy_chat = override_settings(REGULAI_CHAT_FRONTEND='legacy')
+        cls._legacy_chat.enable()
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cls._legacy_chat.disable()
+
     def browse(self, checks, page=None, **options):
         if page is not None and hasattr(page, 'content'):
             self.assertEqual(page.status_code, 200)

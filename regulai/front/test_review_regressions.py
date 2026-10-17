@@ -204,7 +204,10 @@ class ReviewRegressionTests(ChatFixture):
 
     def test_b10_chat_can_submit_without_crypto_random_uuid(self):
         # Plain-HTTP origins other than localhost are not secure contexts: no randomUUID.
-        response = self.client.get('/chat/')
+        # The legacy page is the rollback path; the island covers this in lib/ids.test.ts.
+        from django.test import override_settings
+        with override_settings(REGULAI_CHAT_FRONTEND='legacy'):
+            response = self.client.get('/chat/')
         self.assertEqual(response.status_code, 200)
         run = offline_browser.run(r"""
 Object.defineProperty(crypto, 'randomUUID', {value: undefined, configurable: true});

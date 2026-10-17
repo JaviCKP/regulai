@@ -1,6 +1,8 @@
 import {
   ArrowUpIcon, ChevronDownIcon, CloudIcon, PaperclipIcon, PencilIcon, SparklesIcon, SquareIcon, SquareSlashIcon, TriangleAlertIcon, XIcon,
 } from "lucide-react"
+import { Radio } from "@base-ui/react/radio"
+import { RadioGroup } from "@base-ui/react/radio-group"
 import { AnimatePresence, m } from "motion/react"
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 
@@ -9,7 +11,6 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { InputGroup, InputGroupAddon, InputGroupTextarea } from "@/components/ui/input-group"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { fileSize } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -381,24 +382,20 @@ function SendButton({ canSend, stoppable, busy, onStop }: { canSend: boolean; st
 }
 
 function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (mode: Mode) => void }) {
+  const item = "flex h-7 items-center gap-1 rounded-md px-2.5 text-[0.8125rem] text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 data-[checked]:bg-background data-[checked]:text-foreground data-[checked]:shadow-xs pointer-coarse:h-10"
   return (
-    <ToggleGroup
-      value={[mode]}
-      onValueChange={(value: unknown[]) => {
-        const next = value[0]
-        if (next === "chat" || next === "agent") onChange(next)
-      }}
+    <RadioGroup
+      value={mode}
+      onValueChange={(value) => { if (value === "chat" || value === "agent") onChange(value) }}
       aria-label="Modo de la conversación"
-      className="ml-1 h-8 rounded-lg bg-surface-2 p-0.5 pointer-coarse:h-11"
+      className="ml-1 flex h-8 items-center rounded-lg bg-surface-2 p-0.5 pointer-coarse:h-11"
     >
-      <ToggleGroupItem value="chat" className="h-7 rounded-md px-2.5 text-[0.8125rem] text-muted-foreground data-[pressed]:bg-background data-[pressed]:text-foreground data-[pressed]:shadow-xs pointer-coarse:h-10">
-        Chat
-      </ToggleGroupItem>
-      <ToggleGroupItem value="agent" className="h-7 gap-1 rounded-md px-2.5 text-[0.8125rem] text-muted-foreground data-[pressed]:bg-background data-[pressed]:text-foreground data-[pressed]:shadow-xs pointer-coarse:h-10">
+      <Radio.Root value="chat" nativeButton render={<button type="button" />} className={item}>Chat</Radio.Root>
+      <Radio.Root value="agent" nativeButton render={<button type="button" />} className={item}>
         <SparklesIcon className="size-3.5" aria-hidden />
         Agente
-      </ToggleGroupItem>
-    </ToggleGroup>
+      </Radio.Root>
+    </RadioGroup>
   )
 }
 

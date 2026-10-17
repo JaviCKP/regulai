@@ -21,7 +21,7 @@ const QUIET = [0.2, 0.7, 0.2, 1] as const
 export function ChatApp({ session }: { session: ChatSession }) {
   // StrictMode mounts twice in development: start/suspend are both idempotent.
   useEffect(() => {
-    session.start()
+    session.resume()
     return () => session.suspend()
   }, [session])
   return (
@@ -60,7 +60,14 @@ function Shell() {
   const closeDrawer = useCallback(() => setDrawer(false), [])
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-background text-foreground">
+    <div className="flex h-full w-full min-w-0 overflow-hidden bg-background text-foreground">
+      <a
+        href="#regulai-prompt"
+        onClick={(event) => { event.preventDefault(); session.focusComposer?.() }}
+        className="sr-only z-50 rounded-md bg-foreground px-3 py-2 text-sm text-background focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+      >
+        Ir a escribir un mensaje
+      </a>
       {showSidebar && (
         <aside className="flex w-68 shrink-0 flex-col bg-surface" aria-label="Conversaciones y cuenta">
           <Sidebar onHide={() => setSidebar(false)} />

@@ -40,6 +40,8 @@ export class RequestController {
   private uploading = false
   private streamed = false
   private stopRequested = false
+  private suspended = false
+  private attaching = false
 
   constructor(host: RequestHost, key: string, requestId: string, command: Command | null) {
     this.host = host
@@ -51,6 +53,22 @@ export class RequestController {
   private update(patch: Partial<RequestState> | ((state: RequestState) => Partial<RequestState>)) {
     if (this.disposed) return
     this.host.updateRequest(this.key, (state) => ({ ...state, ...(typeof patch === "function" ? patch(state) : patch) }))
+  }
+
+  /** Page hidden (bfcache) or StrictMode cleanup: stop reading, keep the request; resume() rejoins. */
+  suspend() {
+    if (this.done || this.disposed) return
+    this.suspended = true
+    this.abort.abort()
+  }
+
+  resume() {
+    if (!this.suspended || this.disposed || this.done) return
+    void this.attach()
+  }
+
+  get active() {
+    return this.attaching && !this.suspended
   }
 
   dispose() {
@@ -100,7 +118,7 @@ export class RequestController {
       }
     } catch (error) {
       this.uploading = false
-      if (this.disposed) return
+      if (this.disposed || this.suspended) return
       if (isAbort(error) && this.stopRequested) {
         await this.afterAbortedUpload()
         return
@@ -171,6 +189,16 @@ export class RequestController {
   /** Rejoin: replays from the last applied event and never starts work. */
   async attach({ reportMissing = true }: { reportMissing?: boolean } = {}): Promise<boolean> {
     this.done = false
+    this.suspended = false
+    this.attaching = true
+    try {
+      return await this.rejoin(reportMissing)
+    } finally {
+      this.attaching = false
+    }
+  }
+
+  private async rejoin(reportMissing: boolean): Promise<boolean> {
     this.abort = new AbortController()
     const signal = this.abort.signal
     let missing = false
@@ -192,7 +220,7 @@ export class RequestController {
         if (isAbort(error) || this.disposed) return false
       }
     }
-    if (this.done || this.disposed) return this.done
+    if (this.done || this.disposed || this.suspended) return this.done
     if (missing) {
       // Not registered for this account: never claim that it is still running.
       if (reportMissing) {

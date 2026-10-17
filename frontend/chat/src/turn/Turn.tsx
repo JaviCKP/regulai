@@ -1,4 +1,4 @@
-import { ChevronRightIcon, DownloadIcon, FileTextIcon, QuoteIcon, RotateCwIcon, TriangleAlertIcon } from "lucide-react"
+import { ChevronRightIcon, DownloadIcon, FileTextIcon, PencilLineIcon, QuoteIcon, RotateCwIcon, TriangleAlertIcon } from "lucide-react"
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -171,7 +171,12 @@ function OutcomeNotice({ turn, outcome, request }: { turn: TurnModel; outcome: O
         </Notice>
       )
     case "cancelled":
-      return <p className="text-[0.8125rem] text-subtle-foreground">{outcome.own ? outcome.text || "Respuesta detenida." : outcome.text}</p>
+      return (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <p className="text-[0.8125rem] text-subtle-foreground">{outcome.own ? outcome.text || "Respuesta detenida." : outcome.text}</p>
+          {turn.fresh && !request.receipt && <RestoreDraft turnKey={turn.key} />}
+        </div>
+      )
     case "pending":
       return (
         <div className="flex flex-wrap items-center gap-3">
@@ -188,7 +193,10 @@ function OutcomeNotice({ turn, outcome, request }: { turn: TurnModel; outcome: O
           tone="error"
           title="No se pudo obtener el resultado"
           live={live}
-          actions={<Button size="sm" variant="outline" disabled={busy} onClick={() => session.retry(turn.key)}><RotateCwIcon aria-hidden />Reintentar</Button>}
+          actions={<>
+            <Button size="sm" variant="outline" disabled={busy} onClick={() => session.retry(turn.key)}><RotateCwIcon aria-hidden />Reintentar</Button>
+            <RestoreDraft turnKey={turn.key} />
+          </>}
         >
           <p>{outcome.text}</p>
         </Notice>
@@ -217,6 +225,19 @@ function OutcomeNotice({ turn, outcome, request }: { turn: TurnModel; outcome: O
     default:
       return null
   }
+}
+
+/** A send that never reached the server goes back to the composer; nothing is resent. */
+function RestoreDraft({ turnKey }: { turnKey: string }) {
+  const session = useSession()
+  return (
+    <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => {
+      const draft = session.takeDraft(turnKey)
+      if (draft) session.restoreComposer?.(draft)
+    }}>
+      <PencilLineIcon aria-hidden />Recuperar mensaje
+    </Button>
+  )
 }
 
 function Actions({ turn, request, source }: { turn: TurnModel; request: RequestState; source: string }) {

@@ -1,9 +1,11 @@
 """Read-only projection of a conversation for the chat page (front/chat_page.py)."""
 from datetime import timedelta
+import json
 import re
 import uuid
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.utils import timezone
 
 from front import chat_page
@@ -54,6 +56,23 @@ class ChatPageProjectionTests(ChatFixture):
         with patch('front.local_masking.mask_local_texts', side_effect=TimeoutError('busy')):
             self.assertEqual(chat_page.display_titles([long]), ['Conversación'])
 
+    def test_island_bootstrap_titles_never_carry_the_raw_first_message(self):
+        conversation = self.conversation('Por favor revisa este token urgente: sk-proj-ABCDEFGHIJKLMNOPQRSTUV1234')
+        page = self.client.get(f'/chat/{conversation.pk}/')
+        self.assertTemplateUsed(page, 'chat/app.html')
+        self.assertContains(page, '<title>Por favor revisa este token urgente: [secreto protegido]', html=False)
+        boot = json.loads(re.search(r'<script id="regulai-chat-bootstrap" type="application/json">(.*?)</script>',
+                                    page.content.decode(), re.S)[1])
+        masked = 'Por favor revisa este token urgente: [secreto protegido]'
+        self.assertEqual(boot['conversation']['title'], masked)
+        self.assertEqual([item['title'] for group in boot['threads'] for item in group['items']], [masked])
+        # Only the person's own message carries what they typed; titles never do.
+        for turn in boot['turns']:
+            turn.pop('user')
+        boot['conversation'].pop('title')
+        self.assertNotIn('sk-proj-ABCDE', json.dumps(boot))
+
+    @override_settings(REGULAI_CHAT_FRONTEND='legacy')
     def test_sidebar_header_and_delete_page_never_show_the_raw_first_message(self):
         conversation = self.conversation('Por favor revisa este token urgente: sk-proj-ABCDEFGHIJKLMNOPQRSTUV1234')
         page = self.client.get(f'/chat/{conversation.pk}/')
