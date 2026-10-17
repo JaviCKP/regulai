@@ -1,0 +1,16 @@
+ ✓ src/markdown/equivalence.test.tsx > legacy renderer > shows raw HTML as text and loads no images 22ms
+ ✓ src/markdown/equivalence.test.tsx > legacy renderer > links only http(s) and mailto 3ms
+ ✓ src/markdown/equivalence.test.tsx > legacy renderer > labels masking markers outside code and citations 3ms
+ ✓ src/markdown/equivalence.test.tsx > legacy renderer > demotes headings and labels tables and tasks 7ms
+ ✓ src/markdown/equivalence.test.tsx > legacy renderer > keeps incomplete fragments readable while streaming 5ms
+ ✓ src/markdown/equivalence.test.tsx > legacy renderer > keeps the identity of finished blocks while the last grows 2ms
+ ✓ src/markdown/equivalence.test.tsx > legacy renderer > leaves nothing after a retraction 1ms
+ ✓ src/markdown/equivalence.test.tsx > streamdown renderer > shows raw HTML as text and loads no images 26ms
+ ✓ src/markdown/equivalence.test.tsx > streamdown renderer > links only http(s) and mailto 5ms
+ ✓ src/markdown/equivalence.test.tsx > streamdown renderer > labels masking markers outside code and citations 4ms
+ ✓ src/markdown/equivalence.test.tsx > streamdown renderer > demotes headings and labels tables and tasks 9ms
+ × src/markdown/equivalence.test.tsx > streamdown renderer > keeps incomplete fragments readable while streaming 11ms
+ ✓ src/markdown/equivalence.test.tsx > streamdown renderer > keeps the identity of finished blocks while the last grows 5ms
+ ✓ src/markdown/equivalence.test.tsx > streamdown renderer > leaves nothing after a retraction 3ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 13 passed (14)
