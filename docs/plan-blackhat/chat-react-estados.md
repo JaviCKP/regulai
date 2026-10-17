@@ -34,7 +34,7 @@ justifica. Ningún estado se deduce del tiempo transcurrido ni del HTML generado
 | Perfil de respuesta | Profesional con > 1 perfil |
 | Contexto | Archivo de Drive, revisión en edición o revisión a la que se aplicarán cambios; se puede quitar |
 | Drive | Búsqueda CSV/XLSX en carpeta autorizada, sólo Agente |
-| Skills | `/` literal (sin IME, caret en 1) o botón; catálogo diferido; ≤ 3; Auto persistente; borrador y selección pendiente al volver de la biblioteca |
+| Skills | `/` literal (sin IME, caret en 1) o botón; catálogo diferido; ≤ 3; Auto persistente; borrador y selección pendiente al volver de la biblioteca; por debajo de 640 px, hoja inferior con el mismo contenido; sólo la lista se desplaza |
 
 ## Turno de chat (petición web)
 
@@ -47,8 +47,11 @@ justifica. Ningún estado se deduce del tiempo transcurrido ni del HTML generado
 | Texto retirado | `retract` | Desaparece del DOM y de copiar; línea «Reintentando»/«Comprobando» |
 | Completada | `final` completed | Respuesta, «No verificado» si procede, archivo, citas, copiar, detalles |
 | Bloqueada / confirmación / cancelada / error | `final` status + códigos | Aviso corto con causa, efecto y acción (confirmar, cancelar, comprobar, reenviar); un bloqueo sin regla coincidente muestra el motivo de la política (`error`, también tras recargar vía bootstrap) |
-| Sin resultado / conexión perdida / no disponible | reattach agotado / 404 | «Comprobar estado» nunca repite la petición |
+| Envío sin confirmar | fallo de red o página de error del proxy; el reenganche no obtiene respuesta | «Reintentar» con la misma identidad (el servidor deduplica); sin «Recuperar mensaje», porque un envío nuevo podría ejecutarse dos veces |
+| Envío no registrado | reenganche con 404, o negativa previa a procesarlo (429 del limitador, sesión o CSRF caducados, redirección al login) | Motivo corto («Demasiados mensajes seguidos», «La sesión ya no es válida»), «Reintentar» y «Recuperar mensaje»; el adjunto queda «No enviado» |
+| Conexión perdida / no disponible | reattach agotado / 404 tras recargar | «Comprobar estado» nunca repite la petición |
 | Recarga con petición viva | `notice.kind=live` | Se reengancha desde `after=0`, sin enviar |
+| Página restaurada (bfcache) | `pageshow` persistida | Se reengancha ocupando el compositor; una subida cortada al ocultar la página vuelve como no registrada si el servidor no la conoce |
 
 ## Ejecución del agente
 
@@ -61,7 +64,7 @@ justifica. Ningún estado se deduce del tiempo transcurrido ni del HTML generado
 | Espera de decisión | `visual_pending`, `approval_pending`, exportación | Visible fuera del plegable, con la acción |
 | Fallo, parcial, incierto | `result.error`, `delivery.status`, `interrupted`, `outcome_unknown` | Visible siempre; no se oculta en detalles |
 | Entregables | `artifacts`/`current_revision` + `delivery` | Tarjeta compacta: nombre, tipo, tamaño si existe; revisión y comprobaciones al desplegar. Vista previa/descarga/editar sólo cuando el servidor la serviría (`file_continuity.delivered`: en un recibo completo o parcial, o, sin recibo, con la ejecución completada); antes, «Archivo pendiente de entrega verificada» |
-| Revocado | 404/`revoked` | Se retiran texto, tarjetas, recibos y avisos; acción «Actualizar estado» |
+| Revocado | 404/`revoked` | Se retiran texto, tarjetas, recibos, avisos, «Reanudar» y la petición interpretada; acción «Actualizar estado» |
 | Reanudar / detener | `resumable`, `cancel_url` | Acciones en el propio turno |
 | Uso y coste | `receipt.total`, llamadas | Sólo bajo demanda; desconocido ≠ 0 |
 

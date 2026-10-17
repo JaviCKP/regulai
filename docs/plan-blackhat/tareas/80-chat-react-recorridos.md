@@ -1,7 +1,7 @@
 # 80 — Chat React: recorridos y sistema visual
 
-Status: pendiente.
-Blocked by: [79](79-chat-react-base.md).
+Status: completada.
+Blocked by: ninguno ([79](79-chat-react-base.md) completada).
 
 Especificación: [prompt de renovación](../../../output/chat-ui-research-20261017/prompt.md),
 apartados de dirección visual 1–8; [inventario de estados](../chat-react-estados.md).
@@ -20,3 +20,18 @@ y después menús, historial, visor y recuperación, con adaptador al protocolo
 actual (transporte, estado y presentación separados). Un único ChatMarkdown con
 la política de contenido (Streamdown sólo si supera equivalencia). Sin useChat ni
 otro runtime; sin multiarchivo, edición, regeneración ni voz nuevos.
+
+Verificación observada: recorrido vertical completo y después menús, historial,
+visor y recuperación sobre el protocolo actual, con transporte (`transport/`),
+estado (`state/`) y presentación separados; un único bootstrap y dueño del DOM,
+con limpieza idempotente en StrictMode, desmontaje y `pagehide`. Compositor de una
+sola superficie (Enter, Mayús+Enter e IME; `/`; adjuntar con comprobación local;
+enviar/detener). Streaming sólo con los fragmentos del transporte, deduplicados
+por `seq` y sin reanimar el historial; sigue el final salvo si la persona sube a
+leer («Ir al final»). Actividad tipo Trace, aviso de skill deduplicado y sin robar
+foco, entregables compactos con acciones sólo cuando el servidor serviría el
+archivo, y visor lateral desde 1100 px (modal por debajo) con `iframe` sin
+permisos. Visor, selectores, detalles y Motion se cargan al primer uso. Áreas
+táctiles de 40–44 px con puntero grueso; la auditoría automática de las capturas
+no encuentra ningún control por debajo de 40 px. Pruebas, medidas y límites en
+[81](81-chat-react-verificacion.md).
