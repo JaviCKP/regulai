@@ -57,6 +57,13 @@ class ProjectionTests(SimpleTestCase):
         self.assertEqual(b.feed(self.token, final=True)[0].text, UNAVAILABLE)
         self.assertEqual(a.feed(self.token[10:], final=True)[0].text, 'Ana')
 
+    def test_discarded_token_does_not_advance_preceding_text_segment(self):
+        parser = Projection({})
+        ordinary = parser.feed('ok [[R_' + 'x' * 100)
+        self.assertEqual((ordinary[0].start, ordinary[0].end, ordinary[0].text), (0, 3, 'ok '))
+        unavailable = parser.feed(']]', final=True)[0]
+        self.assertEqual((unavailable.start, unavailable.end), (3, 109))
+
 
 class VerticalContractTests(TestCase):
     def test_protected_http_and_incremental_natural_response(self):

@@ -50,16 +50,18 @@ class Projection:
         segments = []
         plain = []
         plain_start = self.offset
+        plain_end = self.offset
 
         def emit(kind, text, start, end):
-            nonlocal plain_start
+            nonlocal plain_start, plain_end
             if kind == 'text':
                 if not plain:
                     plain_start = start
                 plain.append(text)
+                plain_end = end
             else:
                 if plain:
-                    segments.append(Segment('text', ''.join(plain), plain_start, start))
+                    segments.append(Segment('text', ''.join(plain), plain_start, plain_end))
                     plain.clear()
                 segments.append(Segment(kind, text, start, end))
 
@@ -104,7 +106,7 @@ class Projection:
                 self.pending = ''
             self.closed = True
         if plain:
-            segments.append(Segment('text', ''.join(plain), plain_start, self.offset))
+            segments.append(Segment('text', ''.join(plain), plain_start, plain_end))
         return segments
 
 
