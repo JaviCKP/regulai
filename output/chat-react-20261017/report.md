@@ -51,17 +51,22 @@ Técnico:
 
 ## Cómo aplicarlo
 
-En `entrega/` (en el worktree) hay dos parches contra `2bfb930`:
+En `entrega/` (en el worktree) hay dos parches contra `2bfb930` y el script que los
+genera:
 
 - `chat-react-codigo.patch`: código, pruebas, documentación y build.
 - `chat-react-evidencias.patch`: capturas, grabación y medidas (`output/`).
+- `make_delivery.py`: los vuelve a generar desde la rama y los comprueba con
+  `git apply --check` contra el checkout principal.
 
-Comprobados con `git apply --check` contra el checkout principal tal como está. Allí
-tres archivos (`.github/workflows/ci.yml`, `docs/plan-blackhat/README.md` y
-`regulai/front/test_review_regressions.py`) tienen CRLF o una mezcla en la copia de
-trabajo; el parche respeta, línea a línea, los finales de línea de esas copias, así
-que basta un `git apply` normal (no `--3way`: los cambios del checkout no están en el
-índice). Para volver al chat anterior sin desinstalar nada:
+El checkout principal tiene trabajo en curso fuera del índice y sigue cambiando
+(durante la entrega cambió `docs/plan-blackhat/README.md`): conviene comprobar justo
+antes de aplicar. Algunos archivos tienen allí CRLF en la copia de trabajo y LF en el
+repositorio (hoy, `.github/workflows/ci.yml` y `regulai/front/test_review_regressions.py`);
+el parche copia línea a línea esos finales de línea, así que basta un `git apply`
+normal (no `--3way`: los cambios del checkout no están en el índice). Si la
+comprobación falla, `python entrega/make_delivery.py entrega` lo regenera desde el
+worktree. Para volver al chat anterior sin desinstalar nada:
 `REGULAI_CHAT_FRONTEND=legacy`.
 
 ## Pruebas ejecutadas
