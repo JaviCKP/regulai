@@ -33,9 +33,10 @@ function notices(): Plugin {
           if (match) packages.set(match[2]!, match[1]!)
         }
       }
-      const sections = [...packages.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([name, directory]) => {
+      // Code-point order and sorted listings: the same bytes on every OS and locale.
+      const sections = [...packages.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([name, directory]) => {
         const manifest = JSON.parse(readFileSync(join(directory, "package.json"), "utf8")) as { version: string; license?: string }
-        const file = readdirSync(directory).find((entry) => /^licen[cs]e/i.test(entry))
+        const file = readdirSync(directory).sort().find((entry) => /^licen[cs]e/i.test(entry))
         const text = file ? readFileSync(join(directory, file), "utf8").replace(/\r\n?/g, "\n").trim() : `License: ${manifest.license}`
         return `----------------------------------------------------------------------\n${name} ${manifest.version} (${manifest.license})\n\n${text}\n`
       })
