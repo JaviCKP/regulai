@@ -1,0 +1,24 @@
+{
+  "phase": "verified",
+  "image_id": "sha256:b36f6f4db48e24038dfbb9870bb6e3c10033c68029208226cee129681f3c0763",
+  "installed_hashes": {
+    "regulai/front/agents/service.py": "8d1ad448da086fc8108a20eb547529fbab9de9f8123d9e51f37f7901453f3a05",
+    "regulai/front/agents/delivery.py": "69d63f0e162d556c64db32b0f2c8fe9622ef56773aa986142a8ca5f4e9519e2b",
+    "regulai/front/test_privacy_agent.py": "4d932290d24274b47e8bc7d2f68340882f3ccf5f2db693100ce3087df1bd84c0",
+    "regulai/front/test_privacy_boundaries.py": "ecfba1ab7a043233fdcbcbbca19a739f78c9079e83eaf2fdadeba4d1009d185a",
+    "regulai/static/js/agent-chat.js": "fa78dcb74723a3a180d32aab5a499b41eddf6c8b5a628af5219d400ed525251d",
+    "regulai/static/chat-app/manifest.json": "a2654d34dbe1da7b6226986b17f6a78c788fc2954cc7cd2022b50a23dab23808"
+  },
+  "services": {
+    "regulai-v2-web": {
+      "running": true,
+      "restarts": 0
+    },
+    "regulai-v2-worker": {
+      "running": true,
+      "restarts": 0
+    }
+  },
+  "private_configuration_unchanged": true,
+  "provider_generation_calls": 0
+}

@@ -780,10 +780,15 @@ def infer(token, attempt, payload):
             allowed_destinations=government.destinations, require_quality=False,
             max_output_tokens=options['max_output_tokens'] if options else (None if cfg.limits.provider_managed else cfg.routing.max_output_tokens),
             provider_managed=False if options else cfg.limits.provider_managed)
-        _images(execution, messages, agent, model, cfg)
         from front.privacy import required
-        if required(execution.prompt) and any(isinstance(m.content, list) for m in messages):
+        # The SDK also uses content blocks for plain system/user text. Only
+        # strict text blocks may cross this boundary; reject media before loading it.
+        if required(execution.prompt) and any(isinstance(m.content, list) and any(
+                not isinstance(part, dict) or set(part) != {'type', 'text'}
+                or part.get('type') != 'text' or not isinstance(part.get('text'), str)
+                for part in m.content) for m in messages):
             raise AgentDenied('privacy_binary_channel_blocked')
+        _images(execution, messages, agent, model, cfg)
         policy_payload = json.dumps([asdict(m) for m in messages], ensure_ascii=False)
         privacy_directions = (['context'] * (len(instructions) + len(skill_instructions))
             + ['history'] * len(history_messages)

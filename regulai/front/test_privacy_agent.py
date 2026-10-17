@@ -43,6 +43,32 @@ class PrivacyAgentTests(AgentFixture, TestCase):
         self.assertEqual(len(self.wire), 2)
         self.assertEqual(ConversationAlias.objects.count(), 2)
 
+    def test_text_blocks_are_protected_without_becoming_binary_inputs(self):
+        for purpose in ('generation', 'compaction'):
+            request = self.request(purpose=purpose, messages=[
+                {'role': 'system', 'content': [{'type': 'text', 'text': 'Responde brevemente.'}]},
+                {'role': 'user', 'content': [{'type': 'text', 'text': 'Hola Ana Fixture'},
+                                           {'type': 'text', 'text': 'ana@example.invalid'}]},
+            ])
+            result = self.infer(request)
+            self.assertEqual(result['status'], 'completed', result)
+            self.assertEqual(self.infer(request), result)
+        self.assertEqual(len(self.wire), 2)
+        self.assertNotIn('Ana Fixture', json.dumps(self.wire))
+        self.assertNotIn('ana@example.invalid', json.dumps(self.wire))
+        self.assertIn('[[R_EMAIL_', json.dumps(self.requests))
+        self.assertTrue(all(p['type'] == 'text' for p in self.requests[-1]['messages'][0]['content']))
+
+    def test_mixed_image_blocks_are_denied_before_resolving_pixels(self):
+        with patch('front.agents.service._images') as hydrate:
+            result = self.infer(self.request(messages=[{'role': 'user', 'content': [
+                {'type': 'text', 'text': 'Describe la imagen'},
+                {'type': 'image_ref', 'reference': '12345678-1234-1234-1234-123456789012'},
+            ]}]))
+        self.assertEqual(result['code'], 'privacy_binary_channel_blocked')
+        hydrate.assert_not_called()
+        self.assertFalse(self.wire)
+
     def test_worker_binary_and_original_resolution_are_denied(self):
         from front.agents.jobs import bootstrap
         self.execution.job = {'source': str(self.asset.pk)}

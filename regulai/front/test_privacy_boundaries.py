@@ -69,6 +69,51 @@ class PrivacyBoundaryTests(AgentFixture, TestCase):
         self.assertFalse(PrivacyUse.objects.filter(call_key='worker:bootstrap').exists())
         self.assertEqual(PrivacyOccurrence.objects.count(), occurrences)
 
+    @override_settings(REGULAY_SKILLS_RUNTIME=True)
+    def test_greeting_with_sdk_text_blocks_completes_through_three_send_entries(self):
+        import base64
+        import hashlib
+        import uuid
+        from front.models import AgentSkillInstallation, AgentSkillRevision
+        body = b'---\nname: design\ndescription: Design HTML\n---\nUse only for design tasks.\n'
+        installation = AgentSkillInstallation.objects.create(company=self.company, owner=self.user,
+            source_identity='test:greeting-design', alias='design', enabled=True)
+        manifest = [{'path': 'SKILL.md', 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}]
+        installation.current_revision = AgentSkillRevision.objects.create(installation=installation,
+            origin='test:greeting-design', folder_sha256=digest(manifest), manifest=manifest,
+            metadata={'name': 'design', 'description': 'Design HTML'}, license='Test package',
+            compatibility={'profile': 'professional', 'tools': ['read_file']},
+            bundle=json.dumps({'SKILL.md': base64.b64encode(body).decode()}))
+        installation.save(update_fields=['current_revision'])
+        for path in ('/chat/', '/chat/send/', '/api/chat/send/'):
+            with self.subTest(path=path):
+                run = professional_fixture.ProfessionalTests.queued(self, 'hola', url=path)
+                self.activate(run)
+                boot = self.private('bootstrap', {})
+                self.assertEqual(boot.status_code, 200, boot.content)
+                self.assertEqual(len(boot.json()['skills']['catalog']), 1)
+                self.assertFalse(run.job['request']['delivery_required'])
+                call_id = str(uuid.uuid4())
+                response = self.client.post('/internal/agents/inference/', {
+                    'call_id': call_id,
+                    'messages': [{'role': 'system', 'content': [
+                        {'type': 'text', 'text': 'Responde con un saludo.'},
+                        {'type': 'text', 'text': 'Respeta los límites de herramientas.'},
+                        {'type': 'text', 'text': 'Usa el contexto autorizado.'},
+                        {'type': 'text', 'text': 'Catálogo del SDK reemplazado por el servidor.'}],
+                        'skill_catalog': {'digest': run.job['skills']['digest'], 'block_index': 3}},
+                                 {'role': 'user', 'content': boot.json()['message']}],
+                }, content_type='application/json', HTTP_AUTHORIZATION='Bearer ' + self.token,
+                    HTTP_X_REGULAY_ATTEMPT=str(run.attempt))
+                self.assertEqual(response.json()['status'], 'completed', response.content)
+                result = self.private('complete', {'final_call_id': call_id})
+                self.assertEqual(result.status_code, 200, result.content)
+                run.refresh_from_db()
+                run.prompt.refresh_from_db()
+                self.assertEqual(run.status, 'completed')
+                self.assertEqual(run.prompt.decision['delivery']['status'], 'not_required')
+        self.assertEqual(len(self.requests), 3)
+
     def test_search_public_read_and_worker_results_cross_captured_boundaries_protected(self):
         def http(request):
             self.wire.append({'url': str(request.url), 'headers': dict(request.headers), 'body': request.content.decode()})

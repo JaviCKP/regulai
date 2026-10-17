@@ -7,10 +7,11 @@ Usuario **admin**, empresa **Pruebas de Javi**. La contraseña se conserva.
 La conexión existente ofrece **DeepSeek Flash** y **DeepSeek Pro**. El agente
 **Asistente de trabajo** utiliza Flash. No se han trasladado claves a otra cuenta.
 
-## Cuatro pruebas
+## Cinco pruebas
 
 | Dónde | Texto para pegar | Resultado esperado |
 | --- | --- | --- |
+| Chat nuevo, modo Agente | `hola` | Respuesta breve en el chat; no solicita ni intenta entregar archivos. |
 | «Contacto de ejemplo», modo Chat | `Prepara una ficha: Lucia Romero, lucia.romero@example.com, DNI 12345678Z, teléfono +34 612 345 678.` | El botón del escudo («Ver lo que recibirá la IA») muestra correo, DNI y teléfono protegidos; la vista del propietario conserva los valores recuperables. |
 | Chat nuevo | `SOLO USO INTERNO` seguido de un salto de línea y `Plan comercial del próximo trimestre.` | Bloqueo por «Documentación interna», antes del proveedor. |
 | Chat nuevo | `Listado de personal: Lucia Romero, salario de ejemplo 32000 EUR.` | Pide confirmación por «Datos de personal». Cancelar no consulta al modelo. |
@@ -50,3 +51,4 @@ No se ha realizado una nueva revisión visual: el acceso del navegador automatiz
 fue rechazado por su política de URL.
 
 [Registro técnico y reversión](tareas/90-demo-privacidad-cuenta-local.md).
+[Corrección del bloqueo de saludos y comprobaciones posteriores](tareas/91-saludo-agente-bloques-texto.md).

@@ -222,6 +222,6 @@ export type RunSnapshot = {
   export_enabled?: boolean
   current_revision?: Artifact | null
   events?: AgentEvent[]
-  delivery?: { status?: string; artifacts?: { artifact_id?: string; id?: string; sha256?: string }[] } | null
+  delivery?: { status?: string; required?: boolean; artifacts?: { artifact_id?: string; id?: string; sha256?: string }[] } | null
   artifacts?: Artifact[]
 }

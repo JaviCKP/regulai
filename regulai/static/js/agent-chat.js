@@ -302,7 +302,7 @@
     if (watcher.unavailable) return {text: 'Estado no disponible', tone: 'bad', icon: 'alert'};
     const delivery = watcher.data?.delivery;
     if (delivery?.status === 'partial') return {text: 'Entrega parcial', tone: 'warn', icon: 'alert'};
-    if (delivery?.status === 'failed') return {text: 'No se pudo entregar el archivo', tone: 'bad', icon: 'alert'};
+    if (delivery?.status === 'failed') return {text: delivery.required === false ? 'No se pudo completar la respuesta' : 'No se pudo entregar el archivo', tone: 'bad', icon: 'alert'};
     if (status === 'completed' && delivery?.status === 'complete') return {text: 'Archivo disponible', tone: 'ok', icon: 'check'};
     if (status === 'completed' && delivery?.status === 'not_required') return {text: 'Respuesta completada', tone: 'ok', icon: 'check'};
     if (live(status) && delivery?.status === 'pending' && list(watcher.data?.artifacts).length)

@@ -73,6 +73,9 @@ def partial(run, reason):
         ('Los archivos indicados están verificados y disponibles. ' if delivery['artifacts'] else 'No hay una entrega de archivo verificada. ') +
         ('Hay operaciones de resultado desconocido; no se repetirán automáticamente.' if uncertain else
          'El trabajo solicitado no se ha completado.'))
+    if not delivery.get('required') and not delivery['artifacts']:
+        content = 'La respuesta se ha interrumpido.' + (
+            ' Hay operaciones de resultado desconocido; no se repetirán automáticamente.' if uncertain else '')
     message = Message.objects.create(conversation=run.conversation, role='assistant', content=content)
     Response.objects.create(prompt=run.prompt, assistant_message=message, content=content,
         evidence={'artifacts': delivery['artifacts'], 'partial': True, 'reason': reason})

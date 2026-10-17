@@ -1,0 +1,206 @@
+{
+  "id": "2290394c-4a68-4c8f-8efd-4ead9190027b",
+  "status": "failed",
+  "prompt_status": "failed",
+  "greeting_matches": true,
+  "job_keys": [
+    "base",
+    "checkpoint",
+    "checkpoint_at",
+    "effective_options",
+    "history",
+    "inference",
+    "kind",
+    "limits",
+    "logical_id",
+    "manifest",
+    "network_sealed",
+    "private_data",
+    "request",
+    "skills",
+    "source",
+    "source_kind",
+    "version",
+    "work_profile",
+    "worker_protocol"
+  ],
+  "source": false,
+  "base": false,
+  "restore_checkpoint": false,
+  "skills": {
+    "catalog_count": 1,
+    "selected_count": 0,
+    "auto": true
+  },
+  "request": {
+    "pages": null,
+    "formats": [],
+    "version": 2,
+    "language": "es",
+    "operation": "chat",
+    "allow_mock": false,
+    "references": [],
+    "ambiguities": [],
+    "base_format": null,
+    "requirements": {
+      "pages": null,
+      "formats": [],
+      "minimum_files": 0
+    },
+    "delivery_required": false,
+    "language_explicit": false,
+    "research_required": false
+  },
+  "error_type": "privacy_binary_channel_blocked",
+  "calls": [
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": null,
+      "status": "completed",
+      "code": null
+    }
+  ],
+  "inputs": [
+    {
+      "kind": "manifest",
+      "path": "manifest"
+    },
+    {
+      "kind": "checkpoint",
+      "path": "checkpoint/latest"
+    }
+  ],
+  "inferences": [
+    {
+      "status": "rejected"
+    }
+  ],
+  "events": [
+    {
+      "kind": "queued",
+      "data": {}
+    },
+    {
+      "kind": "claimed",
+      "data": {
+        "duration_ms": 197
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "phase": "save_server",
+        "duration_ms": 2766
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 5
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 5
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 5
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 6
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 5
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 7
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 12
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 5
+      }
+    },
+    {
+      "kind": "interval",
+      "data": {
+        "duration_ms": 5
+      }
+    },
+    {
+      "kind": "failed",
+      "data": {}
+    },
+    {
+      "kind": "run.finished",
+      "data": {
+        "status": "failed"
+      }
+    }
+  ],
+  "hashes": {
+    "professional.py": "b668b21f96c022788eaf7377de083204099f5acaf5c2109b995cf3e0b6d22ffc",
+    "skill_context.py": "509af0b98a5bf785d726a69881367e8be5e17122197561e4d410e9f05a239fad",
+    "checkpoints.py": "48c6f0e7f92c023969aa60f581d9b94d7d015633140437dda27a61eb7675d594",
+    "service.py": "0052a79af300b93503d608f491a1a39d9be99588802379ac18803c6d4e1fdb27"
+  }
+}
