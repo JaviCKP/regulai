@@ -276,6 +276,7 @@ export function Composer() {
               }}
             />
             <InputGroupAddon align="block-end" className="gap-1 px-2 pt-1 pb-2">
+              <PrivacyPreview text={text} />
               <Tooltip>
                 <TooltipTrigger render={<Button type="button" variant="ghost" size="icon" className="size-8 text-muted-foreground pointer-coarse:size-11" aria-label="Adjuntar archivo" disabled={attachDisabled} onClick={() => fileInput.current?.click()} />}>
                   <PaperclipIcon />
@@ -431,3 +432,4 @@ function ProfileMenu({ value, onChange }: { value: string; onChange: (value: str
     </DropdownMenu>
   )
 }
+import { PrivacyPreview } from "../privacy/PrivacyPanel"

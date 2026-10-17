@@ -86,7 +86,7 @@ function RunBody({ view, turn }: { view: RunView; turn: TurnModel }) {
   const HeadIcon = head.icon ? TONE_ICON[head.icon] : null
   const data = view.data
   const answers = view.segments.filter((segment) => !segment.tools)
-  const bootAnswer = view.run.professional && !answers.length && !view.unavailable
+  const bootAnswer = view.run.professional && !answers.length && !view.unavailable && !session.boot.privacy?.enabled
     ? session.boot.turns.find((item) => item.run_id === view.run.id)?.answer?.text ?? ""
     : ""
   const failure = view.run.status === "failed" && typeof data?.result?.error === "string" ? data.result.error.trim() : ""

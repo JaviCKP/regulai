@@ -32,7 +32,13 @@ export const ChatMarkdown = memo(function ChatMarkdown({ source, projection, str
       clear(root)
       // Authorised originals are opaque data, including Markdown destinations,
       // HTML and nested tokens. No parser, link, image or preview sees them.
-      root.textContent = projection.text
+      for (const segment of projection.segments) {
+        const span = document.createElement("span")
+        span.textContent = segment.text
+        span.dataset.privacyStart = String(segment.start)
+        span.dataset.privacyEnd = String(segment.end)
+        root.append(span)
+      }
       return
     }
     if (!source) clear(root)

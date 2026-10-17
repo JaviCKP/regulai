@@ -40,7 +40,10 @@ function notices(): Plugin {
         const text = file ? readFileSync(join(directory, file), "utf8").replace(/\r\n?/g, "\n").trim() : `License: ${manifest.license}`
         return `----------------------------------------------------------------------\n${name} ${manifest.version} (${manifest.license})\n\n${text}\n`
       })
-      this.emitFile({ type: "asset", fileName: "THIRD-PARTY-NOTICES.txt", source: `${COPIED}\n${sections.join("\n")}` })
+      const sourceNotices = readFileSync(new URL("./THIRD_PARTY.md", import.meta.url), "utf8").replace(/\r\n?/g, "\n")
+      const sourceLicenses = ["ai-elements.txt", "Apache-2.0.txt", "react-bits.txt"].map(name =>
+        readFileSync(new URL(`./licenses/${name}`, import.meta.url), "utf8").replace(/\r\n?/g, "\n"))
+      this.emitFile({ type: "asset", fileName: "THIRD-PARTY-NOTICES.txt", source: `${COPIED}\n${sourceNotices}\n${sourceLicenses.join("\n")}\n${sections.join("\n")}` })
     },
   }
 }

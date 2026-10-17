@@ -143,8 +143,9 @@ export class RunController {
     if (this.run.professional && !isLiveRun(this.run.status) && message) {
       // Professional runs answer in text too: the stored message completes its segment once.
       const answer = [...this.segments.values()].filter((segment) => !segment.tools).pop()
-      if (answer) Object.assign(answer, { text: message, done: true, incomplete: false })
-      else this.segments.set("final", { id: "final", text: message, offset: bytes(message), done: true, incomplete: false, tools: 0, unread: false })
+      const projection = data.result?.assistant_message?.projection
+      if (answer) Object.assign(answer, { text: message, projection, done: true, incomplete: false })
+      else this.segments.set("final", { id: "final", text: message, projection, offset: bytes(message), done: true, incomplete: false, tools: 0, unread: false })
     }
     this.publish({
       loaded: true, unavailable: false, data, skew: skew ?? null, note: null,

@@ -72,7 +72,7 @@ export function SentAttachment({ name, size, phase, note }: { name: string; size
 }
 
 /** The person's message; only a message sent from this page enters with movement. */
-export function UserMessage({ content, fresh, children }: { content: string; fresh: boolean; children?: ReactNode }) {
+export function UserMessage({ content, projection, fresh, children }: { content: string; projection?: import("../types").NaturalProjection; fresh: boolean; children?: ReactNode }) {
   return (
     <m.div
       className="flex flex-col items-end gap-2"
@@ -80,8 +80,8 @@ export function UserMessage({ content, fresh, children }: { content: string; fre
       animate={{ opacity: 1, y: 0 }}
     >
       {content && (
-        <div className="max-w-[88%] rounded-2xl bg-surface-2 px-4 py-2.5 text-[0.9375rem] leading-relaxed break-words whitespace-pre-wrap text-foreground sm:max-w-[34rem]">
-          {content}
+        <div data-privacy-user="" className="max-w-[88%] rounded-2xl bg-surface-2 px-4 py-2.5 text-[0.9375rem] leading-relaxed break-words whitespace-pre-wrap text-foreground sm:max-w-[34rem]">
+          {projection ? projection.segments.map((part, index) => <span key={index} data-privacy-start={part.start} data-privacy-end={part.end}>{part.text}</span>) : content}
         </div>
       )}
       {children}
@@ -90,7 +90,7 @@ export function UserMessage({ content, fresh, children }: { content: string; fre
 }
 
 /** Copy confirms only when the browser confirms; a failure says so. */
-export function CopyButton({ text, label = "Copiar respuesta" }: { text: () => string | Promise<string>; label?: string }) {
+export function CopyButton({ text, label = "Copiar respuesta", icon: Icon = CopyIcon }: { text: () => string | Promise<string>; label?: string; icon?: typeof CopyIcon }) {
   const session = useSession()
   const [done, setDone] = useState(false)
   const timer = useRef(0)
@@ -113,15 +113,15 @@ export function CopyButton({ text, label = "Copiar respuesta" }: { text: () => s
       <TooltipTrigger
         render={
           // It opens a row pulled left by -ml-2: on touch the wider target keeps its glyph on the text edge.
-          <Button variant="ghost" size="icon" className="size-8 text-muted-foreground pointer-coarse:size-11 pointer-coarse:justify-start pointer-coarse:pl-2" aria-label={done ? "Copiado" : label} onClick={copy} />
+          <Button variant="ghost" size="icon" className="size-11 text-muted-foreground" aria-label={done ? "Copiado" : label} onClick={copy} />
         }
       >
         <span className="relative size-4">
-          <CopyIcon className={cn("absolute inset-0 size-4 transition-[opacity,scale] duration-150", done && "scale-75 opacity-0")} aria-hidden />
+          <Icon className={cn("absolute inset-0 size-4 transition-[opacity,scale] duration-150", done && "scale-75 opacity-0")} aria-hidden />
           <CheckIcon className={cn("absolute inset-0 size-4 text-success transition-[opacity,scale] duration-150", !done && "scale-75 opacity-0")} aria-hidden />
         </span>
       </TooltipTrigger>
-      <TooltipContent>{done ? "Copiado" : "Copiar"}</TooltipContent>
+      <TooltipContent>{done ? "Copiado" : label}</TooltipContent>
     </Tooltip>
   )
 }

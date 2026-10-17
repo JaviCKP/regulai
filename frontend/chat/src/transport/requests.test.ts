@@ -304,4 +304,25 @@ describe("RequestController", () => {
     await controller.attach()
     expect(state.request.outcome).toMatchObject({ kind: "error", title: "Petición no disponible" })
   })
+
+  it("keeps natural projections independent across tabs, deduplicates replay and clears a new attempt", () => {
+    const tabs = [host(), host()]
+    const controllers = tabs.map(tab => new RequestController(tab.value, "k", command().requestId, command()))
+    const projection = (text: string, seq: number, start: number) => ({ version: 1 as const, source_seq: seq,
+      protected_end: start + 47, text, append: true, complete: false, render: "text" as const,
+      segments: [{ kind: "original" as const, text, start, end: start + 47 }] })
+    for (const controller of controllers) {
+      const event = { type: "delta" as const, seq: 1, attempt: 1, text: "canonical", projection: projection("Ana", 1, 0) }
+      controller.apply(event)
+      controller.apply(event)
+      controller.apply({ type: "delta", seq: 2, attempt: 1, text: " next", projection: projection(" Fixture", 2, 47) })
+    }
+    expect(tabs.map(tab => tab.state.request.projection?.text)).toEqual(["Ana Fixture", "Ana Fixture"])
+    controllers[0]!.apply({ type: "retract", seq: 3, reason: "retry", attempt: 1 })
+    expect(tabs[0]!.state.request.projection).toBeUndefined()
+    expect(tabs[1]!.state.request.projection?.text).toBe("Ana Fixture")
+    controllers[0]!.apply({ type: "delta", seq: 4, attempt: 2, text: "new", projection: projection("Nuevo", 4, 0) })
+    expect(tabs[0]!.state.request.projection?.text).toBe("Nuevo")
+    controllers.forEach(controller => controller.dispose())
+  })
 })

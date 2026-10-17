@@ -101,7 +101,8 @@ class ChatIslandTests(ChatFixture):
         page = self.client.get(f'/chat/{conversation.pk}/')
         boot = bootstrap(page)
         self.assertEqual(set(boot), {'version', 'csrf_token', 'urls', 'user', 'navigation', 'alerts', 'demo', 'setup',
-                                     'conversation', 'threads', 'composer', 'models', 'turns', 'runs'})
+                                     'conversation', 'threads', 'composer', 'models', 'turns', 'runs', 'privacy'})
+        self.assertEqual(set(boot['privacy']), {'enabled', 'history_url'})
         self.assertEqual(set(boot['user']), {'name', 'initial', 'company', 'avatar_url'})
         self.assertEqual(set(boot['conversation']), {'id', 'title', 'mode', 'auto_skills'})
         self.assertEqual(set(boot['composer']), {'modes', 'mode', 'professional', 'agent_available', 'accept', 'max_bytes',

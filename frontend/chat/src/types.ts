@@ -211,7 +211,7 @@ export type ExportProposal = {
 
 export type RunSnapshot = {
   run: RunData
-  result?: { error?: string; assistant_message?: { content?: string }; receipt?: Receipt } & Record<string, unknown>
+  result?: { error?: string; assistant_message?: { content?: string; projection?: NaturalProjection }; receipt?: Receipt } & Record<string, unknown>
   receipt?: Receipt
   export?: ExportProposal | null
   high_watermark?: number

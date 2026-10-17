@@ -22,6 +22,8 @@ import { CopyButton, SentAttachment, StatusLine, UserMessage } from "./parts"
 const RequestReceipt = lazy(() => import("./Receipt").then((module) => ({ default: module.RequestReceipt })))
 
 export const Turn = memo(function Turn({ turn }: { turn: TurnModel }) {
+  const session = useSession()
+  const finished = useChat(state => state.requests[turn.key]?.phase === "done" || (turn.runId && state.runs[turn.runId]?.run.status === "completed"))
   const phase = useChat((state) => state.attachments[turn.key] ?? null)
   const agentConversation = useChat((state) => state.mode === "agent")
   const note = turn.user?.file && !phase
@@ -30,11 +32,11 @@ export const Turn = memo(function Turn({ turn }: { turn: TurnModel }) {
   return (
     <article className="flex flex-col gap-4" data-turn="" data-request-id={turn.requestId ?? undefined} data-run={turn.runId ?? undefined}>
       {turn.user && (
-        <UserMessage content={turn.user.projection?.text ?? turn.user.content} fresh={turn.fresh}>
+        <UserMessage content={turn.user.projection?.text ?? turn.user.content} projection={turn.user.projection} fresh={turn.fresh}>
           {turn.user.file && <SentAttachment name={turn.user.file.name} size={turn.user.file.size} phase={phase} note={note} />}
         </UserMessage>
       )}
-      {turn.requestId && turn.user?.projection && <div className="self-end"><PrivacyCopies requestId={turn.requestId} role="user" /></div>}
+      {turn.requestId && turn.user && (turn.user.projection || session.boot.privacy?.enabled && finished) && <div className="self-end"><PrivacyCopies requestId={turn.requestId} role="user" /></div>}
       <div className="flex min-w-0 flex-col gap-3">
         {turn.runId ? <RunPart runId={turn.runId} turn={turn} /> : <RequestPart turn={turn} />}
         {turn.legacy && turn.user && (

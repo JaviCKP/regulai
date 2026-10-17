@@ -108,7 +108,7 @@ export class RequestController {
     this.seq = 0
     this.text = ""
     this.update({
-      phase: "sending", seq: 0, text: "", streaming: false, retracted: false, outcome: null, note: "", stopping: false,
+      phase: "sending", seq: 0, text: "", projection: undefined, streaming: false, retracted: false, outcome: null, note: "", stopping: false,
       stage: action === "cancel" ? "Cancelando" : command.mode === "agent" ? "Enviando al agente" : "Enviando",
     })
     if (!action && command.file) this.host.setAttachment(this.key, "sending")
@@ -289,6 +289,7 @@ export class RequestController {
         if (event.attempt !== this.attempt) {
           this.attempt = event.attempt
           this.text = ""
+          this.update({ projection: undefined })
         }
         this.text += event.text || ""
         this.host.updateRequest(this.key, (state) => ({ ...state, projection: applyProjection(state.projection, event.projection) }))

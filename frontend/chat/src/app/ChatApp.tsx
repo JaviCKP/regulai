@@ -14,6 +14,7 @@ import { Conversation } from "./Conversation"
 import { EmptyHero } from "./EmptyHero"
 import { SessionContext, useChat, useSession } from "./session-context"
 import { Sidebar } from "./Sidebar"
+import { PrivacyMenu, PrivacySelection } from "../privacy/PrivacyPanel"
 
 const QUIET = [0.2, 0.7, 0.2, 1] as const
 // Movement is added once its chunk arrives; until then every state renders in place.
@@ -100,6 +101,7 @@ function Shell() {
         <div className="relative flex min-h-0 flex-1 flex-col">
           {empty ? <EmptyHero /> : <Conversation />}
           <ComposerDock empty={empty} />
+          <PrivacySelection />
         </div>
       </main>
     </div>
@@ -153,6 +155,7 @@ function Header({ desktop, sidebarVisible, onShowSidebar, onOpenDrawer, menuButt
           <SquarePenIcon />
         </Button>
       )}
+      <PrivacyMenu />
     </header>
   )
 }

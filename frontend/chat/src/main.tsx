@@ -18,6 +18,14 @@ declare global {
 }
 
 function mount() {
+  const settings = document.getElementById("regulai-privacy-settings")
+  if (settings && !settings.dataset.mounted) {
+    settings.dataset.mounted = "true"
+    void import("./privacy/PrivacySettings").then(({ PrivacySettings }) => {
+      createRoot(settings).render(<PrivacySettings csrfToken={settings.dataset.csrf ?? ""} />)
+    })
+    return
+  }
   if (window.__regulaiChat) return
   const host = document.getElementById("regulai-chat-root")
   if (!host) return
