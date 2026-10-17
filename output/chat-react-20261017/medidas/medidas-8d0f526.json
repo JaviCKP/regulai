@@ -1,0 +1,1182 @@
+{
+  "fixture": true,
+  "machine": "win32",
+  "cpuThrottling": 4,
+  "runs": 5,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "lab": {
+    "chat": 1,
+    "agent": 5
+  },
+  "resources": {
+    "legacy": {
+      "nueva": {
+        "path": "chat/",
+        "requests": 19,
+        "bytes": 1094606,
+        "gzip": 241898,
+        "byType": {
+          "stylesheet": {
+            "requests": 5,
+            "bytes": 595802,
+            "gzip": 82272
+          },
+          "document": {
+            "requests": 1,
+            "bytes": 24234,
+            "gzip": 6037
+          },
+          "image": {
+            "requests": 1,
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          "script": {
+            "requests": 12,
+            "bytes": 464774,
+            "gzip": 143827
+          }
+        },
+        "files": [
+          {
+            "type": "stylesheet",
+            "url": "/static/css/styles.min.css?v=sidebar-toggle-1",
+            "bytes": 382611,
+            "gzip": 45554
+          },
+          {
+            "type": "document",
+            "url": "/chat/",
+            "bytes": 24234,
+            "gzip": 6037
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/chat.css?v=p1-skills-auto-1",
+            "bytes": 59118,
+            "gzip": 11545
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/artifacts.css?v=p1-stream-1",
+            "bytes": 2940,
+            "gzip": 1009
+          },
+          {
+            "type": "image",
+            "url": "/static/images/logos/logo.png",
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          {
+            "type": "script",
+            "url": "/static/js/sidebarmenu.js",
+            "bytes": 2542,
+            "gzip": 815
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/jquery.min.js",
+            "bytes": 87533,
+            "gzip": 30406
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/bootstrap.bundle.min.js",
+            "bytes": 80721,
+            "gzip": 23858
+          },
+          {
+            "type": "script",
+            "url": "/static/js/app.min.js?v=sidebar-toggle-1",
+            "bytes": 1843,
+            "gzip": 699
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/iconify-icon.min.js",
+            "bytes": 22200,
+            "gzip": 8214
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/solar-icons.js",
+            "bytes": 88274,
+            "gzip": 27613
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/brand-icons.js",
+            "bytes": 1667,
+            "gzip": 875
+          },
+          {
+            "type": "script",
+            "url": "/static/js/chat-markdown.js?v=p1-stream-1",
+            "bytes": 13845,
+            "gzip": 4487
+          },
+          {
+            "type": "script",
+            "url": "/static/js/chat.js?v=p1-skills-2",
+            "bytes": 61033,
+            "gzip": 17048
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/icons/tabler-icons/tabler-icons.css",
+            "bytes": 146896,
+            "gzip": 23105
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/vendor/simplebar.css",
+            "bytes": 4237,
+            "gzip": 1059
+          },
+          {
+            "type": "script",
+            "url": "/static/js/artifact-viewer.js?v=p1-stream-1",
+            "bytes": 7170,
+            "gzip": 2486
+          },
+          {
+            "type": "script",
+            "url": "/static/js/agent-chat.js?v=p1-skills-auto-1",
+            "bytes": 69520,
+            "gzip": 18788
+          },
+          {
+            "type": "script",
+            "url": "/static/js/skills.js?v=p1-skills-auto-1",
+            "bytes": 28426,
+            "gzip": 8538
+          }
+        ]
+      },
+      "chat": {
+        "path": "chat/1/",
+        "requests": 19,
+        "bytes": 1099917,
+        "gzip": 243423,
+        "byType": {
+          "stylesheet": {
+            "requests": 5,
+            "bytes": 595802,
+            "gzip": 82272
+          },
+          "document": {
+            "requests": 1,
+            "bytes": 29545,
+            "gzip": 7562
+          },
+          "image": {
+            "requests": 1,
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          "script": {
+            "requests": 12,
+            "bytes": 464774,
+            "gzip": 143827
+          }
+        },
+        "files": [
+          {
+            "type": "stylesheet",
+            "url": "/static/css/styles.min.css?v=sidebar-toggle-1",
+            "bytes": 382611,
+            "gzip": 45554
+          },
+          {
+            "type": "document",
+            "url": "/chat/1/",
+            "bytes": 29545,
+            "gzip": 7562
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/chat.css?v=p1-skills-auto-1",
+            "bytes": 59118,
+            "gzip": 11545
+          },
+          {
+            "type": "image",
+            "url": "/static/images/logos/logo.png",
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/artifacts.css?v=p1-stream-1",
+            "bytes": 2940,
+            "gzip": 1009
+          },
+          {
+            "type": "script",
+            "url": "/static/js/sidebarmenu.js",
+            "bytes": 2542,
+            "gzip": 815
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/jquery.min.js",
+            "bytes": 87533,
+            "gzip": 30406
+          },
+          {
+            "type": "script",
+            "url": "/static/js/app.min.js?v=sidebar-toggle-1",
+            "bytes": 1843,
+            "gzip": 699
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/bootstrap.bundle.min.js",
+            "bytes": 80721,
+            "gzip": 23858
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/brand-icons.js",
+            "bytes": 1667,
+            "gzip": 875
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/solar-icons.js",
+            "bytes": 88274,
+            "gzip": 27613
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/iconify-icon.min.js",
+            "bytes": 22200,
+            "gzip": 8214
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/icons/tabler-icons/tabler-icons.css",
+            "bytes": 146896,
+            "gzip": 23105
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/vendor/simplebar.css",
+            "bytes": 4237,
+            "gzip": 1059
+          },
+          {
+            "type": "script",
+            "url": "/static/js/chat-markdown.js?v=p1-stream-1",
+            "bytes": 13845,
+            "gzip": 4487
+          },
+          {
+            "type": "script",
+            "url": "/static/js/chat.js?v=p1-skills-2",
+            "bytes": 61033,
+            "gzip": 17048
+          },
+          {
+            "type": "script",
+            "url": "/static/js/artifact-viewer.js?v=p1-stream-1",
+            "bytes": 7170,
+            "gzip": 2486
+          },
+          {
+            "type": "script",
+            "url": "/static/js/skills.js?v=p1-skills-auto-1",
+            "bytes": 28426,
+            "gzip": 8538
+          },
+          {
+            "type": "script",
+            "url": "/static/js/agent-chat.js?v=p1-skills-auto-1",
+            "bytes": 69520,
+            "gzip": 18788
+          }
+        ]
+      },
+      "agente": {
+        "path": "chat/5/",
+        "requests": 19,
+        "bytes": 1093310,
+        "gzip": 241557,
+        "byType": {
+          "stylesheet": {
+            "requests": 5,
+            "bytes": 595802,
+            "gzip": 82272
+          },
+          "document": {
+            "requests": 1,
+            "bytes": 22938,
+            "gzip": 5696
+          },
+          "image": {
+            "requests": 1,
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          "script": {
+            "requests": 12,
+            "bytes": 464774,
+            "gzip": 143827
+          }
+        },
+        "files": [
+          {
+            "type": "stylesheet",
+            "url": "/static/css/styles.min.css?v=sidebar-toggle-1",
+            "bytes": 382611,
+            "gzip": 45554
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/chat.css?v=p1-skills-auto-1",
+            "bytes": 59118,
+            "gzip": 11545
+          },
+          {
+            "type": "document",
+            "url": "/chat/5/",
+            "bytes": 22938,
+            "gzip": 5696
+          },
+          {
+            "type": "image",
+            "url": "/static/images/logos/logo.png",
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/artifacts.css?v=p1-stream-1",
+            "bytes": 2940,
+            "gzip": 1009
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/jquery.min.js",
+            "bytes": 87533,
+            "gzip": 30406
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/bootstrap.bundle.min.js",
+            "bytes": 80721,
+            "gzip": 23858
+          },
+          {
+            "type": "script",
+            "url": "/static/js/sidebarmenu.js",
+            "bytes": 2542,
+            "gzip": 815
+          },
+          {
+            "type": "script",
+            "url": "/static/js/app.min.js?v=sidebar-toggle-1",
+            "bytes": 1843,
+            "gzip": 699
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/iconify-icon.min.js",
+            "bytes": 22200,
+            "gzip": 8214
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/brand-icons.js",
+            "bytes": 1667,
+            "gzip": 875
+          },
+          {
+            "type": "script",
+            "url": "/static/vendor/solar-icons.js",
+            "bytes": 88274,
+            "gzip": 27613
+          },
+          {
+            "type": "script",
+            "url": "/static/js/chat-markdown.js?v=p1-stream-1",
+            "bytes": 13845,
+            "gzip": 4487
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/vendor/simplebar.css",
+            "bytes": 4237,
+            "gzip": 1059
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/css/icons/tabler-icons/tabler-icons.css",
+            "bytes": 146896,
+            "gzip": 23105
+          },
+          {
+            "type": "script",
+            "url": "/static/js/chat.js?v=p1-skills-2",
+            "bytes": 61033,
+            "gzip": 17048
+          },
+          {
+            "type": "script",
+            "url": "/static/js/artifact-viewer.js?v=p1-stream-1",
+            "bytes": 7170,
+            "gzip": 2486
+          },
+          {
+            "type": "script",
+            "url": "/static/js/skills.js?v=p1-skills-auto-1",
+            "bytes": 28426,
+            "gzip": 8538
+          },
+          {
+            "type": "script",
+            "url": "/static/js/agent-chat.js?v=p1-skills-auto-1",
+            "bytes": 69520,
+            "gzip": 18788
+          }
+        ]
+      }
+    },
+    "react": {
+      "nueva": {
+        "path": "chat/",
+        "requests": 10,
+        "bytes": 858647,
+        "gzip": 270506,
+        "byType": {
+          "document": {
+            "requests": 1,
+            "bytes": 5035,
+            "gzip": 1916
+          },
+          "stylesheet": {
+            "requests": 1,
+            "bytes": 94638,
+            "gzip": 15570
+          },
+          "script": {
+            "requests": 7,
+            "bytes": 749178,
+            "gzip": 243258
+          },
+          "image": {
+            "requests": 1,
+            "bytes": 9796,
+            "gzip": 9762
+          }
+        },
+        "files": [
+          {
+            "type": "document",
+            "url": "/chat/",
+            "bytes": 5035,
+            "gzip": 1916
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/chat-app/assets/main-WMTjWYAP.css",
+            "bytes": 94638,
+            "gzip": 15570
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/jsx-runtime-BX5dh3L7.js",
+            "bytes": 971,
+            "gzip": 557
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/react-DpvdKi1d.js",
+            "bytes": 7871,
+            "gzip": 3004
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/format-Be6CF4nv.js",
+            "bytes": 921,
+            "gzip": 491
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/button-_95fEWPc.js",
+            "bytes": 42303,
+            "gzip": 16925
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/useScrollLock-LXhNc15n.js",
+            "bytes": 54195,
+            "gzip": 18387
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/main-dMzBVf5n.js",
+            "bytes": 548222,
+            "gzip": 172410
+          },
+          {
+            "type": "image",
+            "url": "/static/images/logos/logo.png",
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/motion-features-B04xk92O.js",
+            "bytes": 94695,
+            "gzip": 31484
+          }
+        ]
+      },
+      "chat": {
+        "path": "chat/1/",
+        "requests": 10,
+        "bytes": 862106,
+        "gzip": 271986,
+        "byType": {
+          "document": {
+            "requests": 1,
+            "bytes": 8494,
+            "gzip": 3396
+          },
+          "stylesheet": {
+            "requests": 1,
+            "bytes": 94638,
+            "gzip": 15570
+          },
+          "script": {
+            "requests": 7,
+            "bytes": 749178,
+            "gzip": 243258
+          },
+          "image": {
+            "requests": 1,
+            "bytes": 9796,
+            "gzip": 9762
+          }
+        },
+        "files": [
+          {
+            "type": "document",
+            "url": "/chat/1/",
+            "bytes": 8494,
+            "gzip": 3396
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/chat-app/assets/main-WMTjWYAP.css",
+            "bytes": 94638,
+            "gzip": 15570
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/format-Be6CF4nv.js",
+            "bytes": 921,
+            "gzip": 491
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/jsx-runtime-BX5dh3L7.js",
+            "bytes": 971,
+            "gzip": 557
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/button-_95fEWPc.js",
+            "bytes": 42303,
+            "gzip": 16925
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/react-DpvdKi1d.js",
+            "bytes": 7871,
+            "gzip": 3004
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/useScrollLock-LXhNc15n.js",
+            "bytes": 54195,
+            "gzip": 18387
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/main-dMzBVf5n.js",
+            "bytes": 548222,
+            "gzip": 172410
+          },
+          {
+            "type": "image",
+            "url": "/static/images/logos/logo.png",
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/motion-features-B04xk92O.js",
+            "bytes": 94695,
+            "gzip": 31484
+          }
+        ]
+      },
+      "agente": {
+        "path": "chat/5/",
+        "requests": 10,
+        "bytes": 858389,
+        "gzip": 270366,
+        "byType": {
+          "document": {
+            "requests": 1,
+            "bytes": 4777,
+            "gzip": 1776
+          },
+          "stylesheet": {
+            "requests": 1,
+            "bytes": 94638,
+            "gzip": 15570
+          },
+          "script": {
+            "requests": 7,
+            "bytes": 749178,
+            "gzip": 243258
+          },
+          "image": {
+            "requests": 1,
+            "bytes": 9796,
+            "gzip": 9762
+          }
+        },
+        "files": [
+          {
+            "type": "document",
+            "url": "/chat/5/",
+            "bytes": 4777,
+            "gzip": 1776
+          },
+          {
+            "type": "stylesheet",
+            "url": "/static/chat-app/assets/main-WMTjWYAP.css",
+            "bytes": 94638,
+            "gzip": 15570
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/jsx-runtime-BX5dh3L7.js",
+            "bytes": 971,
+            "gzip": 557
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/react-DpvdKi1d.js",
+            "bytes": 7871,
+            "gzip": 3004
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/button-_95fEWPc.js",
+            "bytes": 42303,
+            "gzip": 16925
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/format-Be6CF4nv.js",
+            "bytes": 921,
+            "gzip": 491
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/useScrollLock-LXhNc15n.js",
+            "bytes": 54195,
+            "gzip": 18387
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/main-dMzBVf5n.js",
+            "bytes": 548222,
+            "gzip": 172410
+          },
+          {
+            "type": "image",
+            "url": "/static/images/logos/logo.png",
+            "bytes": 9796,
+            "gzip": 9762
+          },
+          {
+            "type": "script",
+            "url": "/static/chat-app/assets/motion-features-B04xk92O.js",
+            "bytes": 94695,
+            "gzip": 31484
+          }
+        ]
+      }
+    }
+  },
+  "load": {
+    "legacy": {
+      "nueva": {
+        "fcp": 400,
+        "domContentLoaded": 439.7,
+        "load": 440.5,
+        "longTasks": 0,
+        "longTaskMs": 0,
+        "blockingMs": 0,
+        "longestMs": 0,
+        "samples": [
+          {
+            "fcp": 344,
+            "domContentLoaded": 386.30000000074506,
+            "load": 388.8999999985099,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          },
+          {
+            "fcp": 400,
+            "domContentLoaded": 439.69999999925494,
+            "load": 440.5,
+            "longTasks": 1,
+            "longTaskMs": 53,
+            "blockingMs": 3,
+            "longestMs": 53
+          },
+          {
+            "fcp": 432,
+            "domContentLoaded": 523.0999999977648,
+            "load": 524.0999999977648,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          },
+          {
+            "fcp": 348,
+            "domContentLoaded": 392.8999999985099,
+            "load": 393.6000000014901,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          },
+          {
+            "fcp": 432,
+            "domContentLoaded": 511,
+            "load": 512.6000000014901,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          }
+        ]
+      },
+      "chat": {
+        "fcp": 404,
+        "domContentLoaded": 517.3,
+        "load": 518.2,
+        "longTasks": 1,
+        "longTaskMs": 100,
+        "blockingMs": 50,
+        "longestMs": 100,
+        "samples": [
+          {
+            "fcp": 440,
+            "domContentLoaded": 577,
+            "load": 577.9000000022352,
+            "longTasks": 1,
+            "longTaskMs": 127,
+            "blockingMs": 77,
+            "longestMs": 127
+          },
+          {
+            "fcp": 492,
+            "domContentLoaded": 613.9000000022352,
+            "load": 614.9000000022352,
+            "longTasks": 1,
+            "longTaskMs": 103,
+            "blockingMs": 53,
+            "longestMs": 103
+          },
+          {
+            "fcp": 376,
+            "domContentLoaded": 496.80000000074506,
+            "load": 497.69999999925494,
+            "longTasks": 1,
+            "longTaskMs": 98,
+            "blockingMs": 48,
+            "longestMs": 98
+          },
+          {
+            "fcp": 404,
+            "domContentLoaded": 517.3000000007451,
+            "load": 518.1999999992549,
+            "longTasks": 1,
+            "longTaskMs": 100,
+            "blockingMs": 50,
+            "longestMs": 100
+          },
+          {
+            "fcp": 396,
+            "domContentLoaded": 506.1000000014901,
+            "load": 507.1000000014901,
+            "longTasks": 1,
+            "longTaskMs": 99,
+            "blockingMs": 49,
+            "longestMs": 99
+          }
+        ]
+      },
+      "agente": {
+        "fcp": 340,
+        "domContentLoaded": 367.9,
+        "load": 368.5,
+        "longTasks": 0,
+        "longTaskMs": 0,
+        "blockingMs": 0,
+        "longestMs": 0,
+        "samples": [
+          {
+            "fcp": 340,
+            "domContentLoaded": 373,
+            "load": 374,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          },
+          {
+            "fcp": 340,
+            "domContentLoaded": 367.5,
+            "load": 368.5,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          },
+          {
+            "fcp": 336,
+            "domContentLoaded": 369.1000000014901,
+            "load": 369.70000000298023,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          },
+          {
+            "fcp": 340,
+            "domContentLoaded": 367.8999999985099,
+            "load": 368.5,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          },
+          {
+            "fcp": 328,
+            "domContentLoaded": 363.3999999985099,
+            "load": 364,
+            "longTasks": 0,
+            "longTaskMs": 0,
+            "blockingMs": 0,
+            "longestMs": 0
+          }
+        ]
+      }
+    },
+    "react": {
+      "nueva": {
+        "fcp": 576,
+        "domContentLoaded": 245.1,
+        "load": 245.5,
+        "longTasks": 2,
+        "longTaskMs": 313,
+        "blockingMs": 213,
+        "longestMs": 205,
+        "samples": [
+          {
+            "fcp": 524,
+            "domContentLoaded": 211.30000000074506,
+            "load": 211.5,
+            "longTasks": 2,
+            "longTaskMs": 301,
+            "blockingMs": 201,
+            "longestMs": 205
+          },
+          {
+            "fcp": 640,
+            "domContentLoaded": 269.80000000074506,
+            "load": 270.19999999925494,
+            "longTasks": 2,
+            "longTaskMs": 365,
+            "blockingMs": 265,
+            "longestMs": 241
+          },
+          {
+            "fcp": 624,
+            "domContentLoaded": 245.10000000149012,
+            "load": 245.5,
+            "longTasks": 2,
+            "longTaskMs": 347,
+            "blockingMs": 247,
+            "longestMs": 242
+          },
+          {
+            "fcp": 524,
+            "domContentLoaded": 218.69999999925494,
+            "load": 219,
+            "longTasks": 2,
+            "longTaskMs": 300,
+            "blockingMs": 200,
+            "longestMs": 202
+          },
+          {
+            "fcp": 576,
+            "domContentLoaded": 270.30000000074506,
+            "load": 270.69999999925494,
+            "longTasks": 2,
+            "longTaskMs": 313,
+            "blockingMs": 213,
+            "longestMs": 198
+          }
+        ]
+      },
+      "chat": {
+        "fcp": 624,
+        "domContentLoaded": 225.5,
+        "load": 225.6,
+        "longTasks": 3,
+        "longTaskMs": 365,
+        "blockingMs": 215,
+        "longestMs": 186,
+        "samples": [
+          {
+            "fcp": 624,
+            "domContentLoaded": 237.19999999925494,
+            "load": 237.39999999850988,
+            "longTasks": 3,
+            "longTaskMs": 363,
+            "blockingMs": 213,
+            "longestMs": 175
+          },
+          {
+            "fcp": 688,
+            "domContentLoaded": 229.39999999850988,
+            "load": 229.39999999850988,
+            "longTasks": 3,
+            "longTaskMs": 435,
+            "blockingMs": 285,
+            "longestMs": 238
+          },
+          {
+            "fcp": 664,
+            "domContentLoaded": 225.19999999925494,
+            "load": 225.60000000149012,
+            "longTasks": 3,
+            "longTaskMs": 409,
+            "blockingMs": 259,
+            "longestMs": 206
+          },
+          {
+            "fcp": 612,
+            "domContentLoaded": 225.5,
+            "load": 225.60000000149012,
+            "longTasks": 3,
+            "longTaskMs": 352,
+            "blockingMs": 202,
+            "longestMs": 174
+          },
+          {
+            "fcp": 616,
+            "domContentLoaded": 224.69999999925494,
+            "load": 225,
+            "longTasks": 3,
+            "longTaskMs": 365,
+            "blockingMs": 215,
+            "longestMs": 186
+          }
+        ]
+      },
+      "agente": {
+        "fcp": 496,
+        "domContentLoaded": 225,
+        "load": 225.2,
+        "longTasks": 2,
+        "longTaskMs": 265,
+        "blockingMs": 165,
+        "longestMs": 167,
+        "samples": [
+          {
+            "fcp": 492,
+            "domContentLoaded": 225,
+            "load": 225.19999999925494,
+            "longTasks": 2,
+            "longTaskMs": 263,
+            "blockingMs": 163,
+            "longestMs": 166
+          },
+          {
+            "fcp": 524,
+            "domContentLoaded": 249.69999999925494,
+            "load": 250.19999999925494,
+            "longTasks": 2,
+            "longTaskMs": 265,
+            "blockingMs": 165,
+            "longestMs": 167
+          },
+          {
+            "fcp": 496,
+            "domContentLoaded": 222.10000000149012,
+            "load": 222.60000000149012,
+            "longTasks": 2,
+            "longTaskMs": 259,
+            "blockingMs": 159,
+            "longestMs": 166
+          },
+          {
+            "fcp": 492,
+            "domContentLoaded": 217.90000000223517,
+            "load": 218.30000000074506,
+            "longTasks": 2,
+            "longTaskMs": 267,
+            "blockingMs": 167,
+            "longestMs": 172
+          },
+          {
+            "fcp": 516,
+            "domContentLoaded": 232.90000000223517,
+            "load": 233,
+            "longTasks": 2,
+            "longTaskMs": 273,
+            "blockingMs": 173,
+            "longestMs": 171
+          }
+        ]
+      }
+    }
+  },
+  "stream": {
+    "legacy": {
+      "chat": {
+        "runs": 5,
+        "events": [
+          {
+            "events": 104,
+            "domUpdates": 106,
+            "matched": 104
+          },
+          {
+            "events": 106,
+            "domUpdates": 108,
+            "matched": 106
+          },
+          {
+            "events": 106,
+            "domUpdates": 108,
+            "matched": 106
+          },
+          {
+            "events": 103,
+            "domUpdates": 105,
+            "matched": 103
+          },
+          {
+            "events": 107,
+            "domUpdates": 109,
+            "matched": 107
+          }
+        ],
+        "medianMs": 9.5,
+        "p95Ms": 17.1,
+        "maxMs": 20.1
+      },
+      "agente": {
+        "runs": 3,
+        "events": [
+          {
+            "events": 18,
+            "domUpdates": 17,
+            "matched": 18
+          },
+          {
+            "events": 18,
+            "domUpdates": 17,
+            "matched": 18
+          },
+          {
+            "events": 18,
+            "domUpdates": 17,
+            "matched": 18
+          }
+        ],
+        "medianMs": 9.7,
+        "p95Ms": 23.5,
+        "maxMs": 24.2
+      }
+    },
+    "react": {
+      "chat": {
+        "runs": 5,
+        "events": [
+          {
+            "events": 104,
+            "domUpdates": 105,
+            "matched": 104
+          },
+          {
+            "events": 105,
+            "domUpdates": 106,
+            "matched": 105
+          },
+          {
+            "events": 103,
+            "domUpdates": 104,
+            "matched": 103
+          },
+          {
+            "events": 103,
+            "domUpdates": 104,
+            "matched": 103
+          },
+          {
+            "events": 109,
+            "domUpdates": 110,
+            "matched": 109
+          }
+        ],
+        "medianMs": 9.1,
+        "p95Ms": 17.1,
+        "maxMs": 19.9
+      },
+      "agente": {
+        "runs": 3,
+        "events": [
+          {
+            "events": 18,
+            "domUpdates": 14,
+            "matched": 18
+          },
+          {
+            "events": 18,
+            "domUpdates": 14,
+            "matched": 18
+          },
+          {
+            "events": 18,
+            "domUpdates": 13,
+            "matched": 18
+          }
+        ],
+        "medianMs": 11.7,
+        "p95Ms": 25.2,
+        "maxMs": 31
+      }
+    }
+  }
+}

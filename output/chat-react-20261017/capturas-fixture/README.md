@@ -7,12 +7,14 @@ base de datos PostgreSQL desechable con datos sintéticos, proveedor simulado
 ni sandbox). No muestra datos reales, ni la latencia, la calidad o el coste de
 un proveedor real.
 
-- Generado con `frontend/chat/e2e/captures.mjs` sobre el build servido por
-  Django (`ASGIStaticFilesHandler`, sin servidor de desarrollo), Chromium de
-  Playwright 1.62.1, `deviceScaleFactor` 1. A 360 px se emula un teléfono
-  (táctil, `isMobile`); a 768 px, pantalla táctil.
+- Generado con `frontend/chat/e2e/captures.mjs` sobre el código de `8d0f526`,
+  con el build servido por Django (`ASGIStaticFilesHandler`, sin servidor de
+  desarrollo), Chromium de Playwright 1.62.1 y `deviceScaleFactor` 1. A 360 px se
+  emula un teléfono (táctil, `isMobile`); a 768 px, pantalla táctil.
 - `capturas.json`: lista de capturas, desbordes horizontales, errores de
-  consola/red y peticiones a otros orígenes (ninguna).
+  consola/red y peticiones a otros orígenes (ninguno en las 65 capturas). A 768 y
+  360 px registra además los controles visibles de menos de 40 px; los enlaces y
+  citas dentro del texto quedan exentos (WCAG 2.5.8). Esta tanda no tiene ninguno.
 - `video/recorrido-1440.webm`: respuesta progresiva, lectura hacia arriba sin
   arrastre, vuelta al final, agente con skill, entrega, visor y detalle final.
 
