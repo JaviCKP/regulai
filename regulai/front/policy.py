@@ -148,6 +148,11 @@ class HistoryConfig(StrictConfig):
     max_bytes: int = Field(default=32768, ge=0, le=1048576)
 
 
+class PrivacyReference(StrictConfig):
+    version: Literal[1] = 1
+    revision_id: int = Field(gt=0)
+
+
 class AIConfig(StrictConfig):
     version: Literal[1] = 1
     revision: int = Field(default=1, ge=1)
@@ -155,6 +160,7 @@ class AIConfig(StrictConfig):
     classification_policy: ClassificationPolicyConfig = Field(default_factory=ClassificationPolicyConfig)
     masking: MaskingConfig = Field(default_factory=MaskingConfig)
     history: HistoryConfig = Field(default_factory=HistoryConfig)
+    privacy: PrivacyReference | None = None
     local_sensitivity: Sensitivity = 'unknown'
     allow_empty_rules: bool = False
     destinations: dict[Sensitivity, list[str]] = Field(default_factory=dict)

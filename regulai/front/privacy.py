@@ -191,3 +191,76 @@ def protect_tree(context, value):
                 if key.lower() in fields and isinstance(item, str) else protect_tree(context, item))
                 for key, item in value.items()}
     return value
+
+
+def protect_message(context, text, *, source_key):
+    """Persist canonical text + occurrences atomically, before any caller sends.
+
+    Idempotency keys identify message revisions, not transport chunks. Changed
+    input under the same key is an error; callers cannot silently overwrite it.
+    """
+    from .models import PrivacyMessage, PrivacyOccurrence
+    from .privacy_policy import detect_ranges, revision_config
+    if not isinstance(source_key, str) or not 1 <= len(source_key) <= 160:
+        raise ValueError('privacy_source_invalid')
+    if not isinstance(text, str) or len(text.encode()) > MAX_BYTES:
+        raise ValueError('privacy_input_invalid')
+    with transaction.atomic():
+        turn = prepare_turn(context)
+        if turn is None:
+            return text
+        input_digest = keyed_digest(text)
+        previous = PrivacyMessage.objects.filter(turn=turn, source_key=source_key).first()
+        if previous:
+            if previous.input_digest != input_digest:
+                raise ValueError('privacy_idempotency_conflict')
+            return previous.protected
+        config, rules = revision_config(context, turn.revision)
+        tokens = set(TOKEN.findall(text))
+        known = set(ConversationAlias.objects.filter(**context.scope(), token__in=tokens).values_list('token', flat=True))
+        if tokens != known:
+            raise ValueError('privacy_reference_unavailable')
+        ranges = detect_ranges(text, config, rules)
+        replacements, variants = [], {}
+        for start, end, category, reversible, detector in ranges:
+            original = text[start:end]
+            replacement = alias_value(context, category, original) if reversible else f'[[REGULAI_{category if category != "FIELD" else "SECRET"}]]'
+            row = ConversationAlias.objects.filter(**context.scope(), token=replacement).first() if TOKEN.fullmatch(replacement) else None
+            replacements.append((start, end, category, detector, replacement, row))
+        protected = text
+        for start, end, _, _, replacement, _ in reversed(replacements):
+            protected = protected[:start] + replacement + protected[end:]
+        message = PrivacyMessage.objects.create(turn=turn, source_key=source_key,
+            input_digest=input_digest, protected=protected)
+        cursor, source_end = 0, 0
+        for index, (start, end, category, detector, replacement, row) in enumerate(replacements):
+            cursor += len(text[source_end:start].encode('utf-8'))
+            finish = cursor + len(replacement.encode('utf-8'))
+            PrivacyOccurrence.objects.create(message=message, alias=row, start=cursor, end=finish,
+                category=category, detector=detector)
+            if row and row.original != text[start:end]:
+                variants[str(cursor)] = text[start:end]
+            cursor, source_end = finish, end
+        if variants:
+            message.variants = json.dumps(variants, ensure_ascii=False)
+            message.save(update_fields=['variants'])
+        return protected
+
+
+def record_use(context, call_key, texts):
+    """Idempotent inference allowlist. No claim about delivery or money is made."""
+    from collections import Counter
+    from .models import PrivacyUse
+    with transaction.atomic():
+        turn = prepare_turn(context)
+        if turn is None:
+            return
+        counts = Counter(token for text in texts for token in TOKEN.findall(text))
+        rows = list(ConversationAlias.objects.filter(**context.scope(), token__in=counts))
+        if len(rows) != len(counts):
+            raise ValueError('privacy_reference_unavailable')
+        for row in rows:
+            use, _ = PrivacyUse.objects.get_or_create(turn=turn, call_key=call_key, alias=row,
+                defaults={'count': counts[row.token]})
+            if use.count != counts[row.token]:
+                raise ValueError('privacy_idempotency_conflict')
