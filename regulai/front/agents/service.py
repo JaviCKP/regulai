@@ -380,19 +380,8 @@ def _classify(execution, context, government, messages, policy_texts):
 
 
 def _protect_tree(execution, value):
-    if isinstance(value, str):
-        return alias_text(execution, value)
-    if isinstance(value, list):
-        return [_protect_tree(execution, item) for item in value]
-    if isinstance(value, dict):
-        from front.local_masking import _SECRET_KEY
-        fields = {'nombre': 'PERSON', 'full_name': 'PERSON', 'titular': 'PERSON',
-            'email': 'EMAIL', 'correo': 'EMAIL', 'telefono': 'PHONE', 'dni': 'ID', 'iban': 'ACCOUNT'}
-        return {alias_text(execution, key): ('[[REGULAI_SECRET]]' if _SECRET_KEY.fullmatch(key)
-                else alias_value(execution, fields[key.lower()], item)
-                if key.lower() in fields and isinstance(item, str) else _protect_tree(execution, item))
-                for key, item in value.items()}
-    return value
+    from front.privacy import ProtectionContext, protect_tree
+    return protect_tree(ProtectionContext.from_prompt(execution.prompt), value)
 
 
 def _reference_shields(execution, message, content, calls):
