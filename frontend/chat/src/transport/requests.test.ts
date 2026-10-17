@@ -120,10 +120,131 @@ describe("RequestController", () => {
     const { state, value } = host()
     const controller = new RequestController(value, "k", command().requestId, command())
     await controller.submit()
-    expect(state.request.outcome).toMatchObject({ kind: "unsent" })
+    // The server said it does not know the request: the draft may come back.
+    expect(state.request.outcome).toMatchObject({ kind: "unsent", restorable: true })
     await controller.submit()
     const ids = calls.filter((item) => item.init?.method === "POST").map((item) => (item.init!.body as FormData).get("request_id"))
     expect(ids).toEqual([command().requestId, command().requestId])
+  })
+
+  it("offers only a retry with the same identity when nothing confirms whether the send arrived", async () => {
+    vi.useFakeTimers()
+    try {
+      vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
+        calls.push({ url, init })
+        throw new TypeError("network down")
+      }))
+      const { state, value } = host()
+      const file = new File(["x"], "a.txt")
+      const controller = new RequestController(value, "k", command().requestId, command({ file, fileName: "a.txt" }))
+      const sending = controller.submit()
+      await vi.runAllTimersAsync()
+      await sending
+      expect(calls.filter((item) => item.url.includes("/stream/"))).toHaveLength(6)
+      // It may be running on the server: a new send with another id could run it twice.
+      expect(state.request.outcome).toMatchObject({ kind: "unsent", restorable: false, title: "No se pudo obtener el resultado" })
+      expect(state.attachment).toBeNull()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("treats an HTML rate-limit page as a refusal: nothing ran and the draft may come back", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
+      calls.push({ url, init })
+      return new Response("<!doctype html><title>Demasiadas peticiones</title>", { status: 429, headers: { "Content-Type": "text/html; charset=utf-8", "Retry-After": "12" } })
+    }))
+    const { state, value } = host()
+    const file = new File(["x"], "a.txt")
+    const controller = new RequestController(value, "k", command().requestId, command({ file, fileName: "a.txt" }))
+    await controller.submit()
+    expect(calls).toHaveLength(1)
+    expect(state.request.outcome).toEqual({
+      kind: "unsent", restorable: true, title: "Demasiados mensajes seguidos",
+      text: "Espera 12 s y reintenta. Este mensaje no se ha enviado.",
+    })
+    expect(state.attachment).toBe("cancelled")
+    expect(state.busy.at(-1)).toBe(false)
+  })
+
+  it("treats the agent's JSON rate limit, which has no status, as the same refusal", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ error: "Too many messages. Please wait a moment.", rate_limit: { limit: 30 } }, { status: 429 })))
+    const { state, value } = host()
+    const controller = new RequestController(value, "k", command().requestId, command({ mode: "agent" }))
+    await controller.submit()
+    expect(state.request.outcome).toMatchObject({ kind: "unsent", restorable: true, title: "Demasiados mensajes seguidos" })
+  })
+
+  it("asks to reload when the session or its CSRF token is no longer valid", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("<!doctype html><h1>Forbidden</h1>", { status: 403, headers: { "Content-Type": "text/html" } })))
+    const { state, value } = host()
+    const controller = new RequestController(value, "k", command().requestId, command())
+    await controller.submit()
+    expect(state.request.outcome).toMatchObject({ kind: "unsent", restorable: true, title: "La sesión ya no es válida" })
+  })
+
+  it("rejoins after a proxy error page, because the request may have run", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
+      calls.push({ url, init })
+      if (init?.method === "POST") return new Response("<html>Bad gateway</html>", { status: 502, headers: { "Content-Type": "text/html" } })
+      return sse([{ type: "final", seq: 3, result: { status: "completed", assistant_message: { content: "Hecho" }, receipt: { verification: { status: "passed" } } } }])
+    }))
+    const { state, value } = host()
+    const controller = new RequestController(value, "k", command().requestId, command())
+    await controller.submit()
+    expect(calls.filter((item) => item.init?.method === "POST")).toHaveLength(1)
+    expect(state.request.outcome).toMatchObject({ kind: "answer", text: "Hecho" })
+  })
+
+  it("holds the composer while a page restored from bfcache rejoins its stream", async () => {
+    let call = 0
+    vi.stubGlobal("fetch", vi.fn((url: string, init?: RequestInit) => {
+      calls.push({ url, init })
+      call++
+      if (call === 1) {
+        // The first stream stays open until the page hides it.
+        return Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode('data: {"type":"accepted","seq":1}\n\n'))
+            init?.signal?.addEventListener("abort", () => controller.error(new DOMException("Aborted", "AbortError")))
+          },
+        }), { headers: { "Content-Type": "text/event-stream" } }))
+      }
+      return Promise.resolve(sse([{ type: "final", seq: 2, result: { status: "completed", assistant_message: { content: "Listo" }, receipt: { verification: { status: "passed" } } } }]))
+    }))
+    const { state, value } = host()
+    const controller = new RequestController(value, "k", command().requestId, command())
+    const sending = controller.submit()
+    await flush()
+    controller.suspend()
+    await sending
+    expect(state.busy.at(-1)).toBe(false)
+    controller.resume()
+    expect(state.busy.at(-1)).toBe(true)
+    await vi.waitFor(() => expect(state.request.outcome).toMatchObject({ kind: "answer", text: "Listo" }))
+    expect(calls[1]!.url).toBe(`/chat/requests/${command().requestId}/stream/?after=1`)
+    expect(state.busy.at(-1)).toBe(false)
+  })
+
+  it("brings back, as not sent, an upload the page cut before the server received it", async () => {
+    vi.stubGlobal("fetch", vi.fn((url: string, init?: RequestInit) => {
+      calls.push({ url, init })
+      if (init?.method === "POST") {
+        return new Promise<Response>((_resolve, reject) => init.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError"))))
+      }
+      return Promise.resolve(new Response(null, { status: 404 }))
+    }))
+    const { state, value } = host()
+    const file = new File(["x"], "a.txt")
+    const controller = new RequestController(value, "k", command().requestId, command({ file, fileName: "a.txt" }))
+    const sending = controller.submit()
+    await flush()
+    controller.suspend()
+    await sending
+    controller.resume()
+    await vi.waitFor(() => expect(state.request.outcome).toMatchObject({ kind: "unsent", restorable: true }))
+    expect(state.request.outcome).not.toMatchObject({ title: "Petición no disponible" })
+    expect(state.attachment).toBe("cancelled")
   })
 
   it("aborts an upload that has not arrived and says so only after the server confirms it does not know it", async () => {

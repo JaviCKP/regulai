@@ -40,7 +40,8 @@ export type Outcome =
   | { kind: "cancelled"; own: boolean; text: string }
   | { kind: "pending"; stale: boolean }
   | { kind: "error"; title: string; text: string; code?: string; retracted: boolean; actions: ErrorAction[] }
-  | { kind: "unsent"; text: string }
+  /** No result. `restorable` only when the server registered nothing, so the draft can come back. */
+  | { kind: "unsent"; title: string; text: string; restorable: boolean }
   | { kind: "system"; title: string; text: string }
   | { kind: "context"; title: string; text: string }
 

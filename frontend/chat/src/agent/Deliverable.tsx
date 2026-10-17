@@ -3,14 +3,14 @@ import {
   FileImageIcon, FileSpreadsheetIcon, FileTextIcon, PencilIcon, PresentationIcon, TriangleAlertIcon,
 } from "lucide-react"
 import { m } from "motion/react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { fileSize, list, present } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
-import { useSession } from "../app/session-context"
+import { useChat, useSession } from "../app/session-context"
 import { postJSON } from "../transport/http"
 import type { Artifact, RunSnapshot } from "../types"
 import { useArtifactViewer } from "../viewer/ArtifactViewer"
@@ -87,11 +87,14 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
   const reviewable = !model.verified && model.document && typeof artifact.review_url === "string" && REVIEW.test(artifact.review_url)
   const [loaded, setLoaded] = useState<Set<number>>(() => new Set())
   const [reviewing, setReviewing] = useState(false)
+  // The dialog keeps the request it opened with, so the guard lives here: one confirmation in flight.
+  const confirming = useRef(false)
   const allLoaded = reviewable && model.pages.length > 0 && model.pages.length === model.pageUrls.length && loaded.size === model.pageUrls.length
 
   const pageLoaded = useCallback((index: number) => setLoaded((current) => (current.has(index) ? current : new Set(current).add(index))), [])
   const confirmReview = useCallback(async () => {
-    if (!artifact.review_url || !REVIEW.test(artifact.review_url)) return
+    if (!artifact.review_url || !REVIEW.test(artifact.review_url) || confirming.current) return
+    confirming.current = true
     setReviewing(true)
     try {
       await postJSON(artifact.review_url, { sha256: artifact.sha256, page_sha256: artifact.page_sha256, checks: artifact.review_checks })
@@ -101,6 +104,7 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
     } catch {
       session.runController(runId)?.note("No se pudo registrar la revisión visual. Recarga el estado para comprobar los permisos y la ejecución.", "error")
     } finally {
+      confirming.current = false
       setReviewing(false)
     }
   }, [artifact, runId, session, viewer])
@@ -235,14 +239,14 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
 
 function ExportForm({ artifact }: { artifact: Artifact }) {
   const session = useSession()
+  const busy = useChat((state) => Boolean(state.busy.owner) || state.sending)
   const [name, setName] = useState(`informe-r${artifact.revision}.${artifact.format || "xlsx"}`)
   return (
     <form
       className="flex flex-wrap items-end gap-2 rounded-lg bg-background p-2.5 ring-1 ring-border"
       onSubmit={(event) => {
         event.preventDefault()
-        session.prepareExport(artifact, name)
-        session.send({ prompt: "Guarda la revisión verificada en la carpeta autorizada de Drive.", file: null, mode: "agent" })
+        session.requestExport(artifact, name)
       }}
     >
       <label className="flex min-w-48 flex-1 flex-col gap-1 text-xs text-muted-foreground">
@@ -250,7 +254,7 @@ function ExportForm({ artifact }: { artifact: Artifact }) {
         <input value={name} maxLength={120} onChange={(event) => setName(event.target.value)}
           className="h-8 rounded-md bg-background px-2 text-sm text-foreground ring-1 ring-input focus-visible:outline-2 focus-visible:outline-ring" />
       </label>
-      <Button type="submit" size="sm" variant="outline"><CloudUploadIcon aria-hidden />Preparar exportación</Button>
+      <Button type="submit" size="sm" variant="outline" disabled={busy}><CloudUploadIcon aria-hidden />Preparar exportación</Button>
     </form>
   )
 }

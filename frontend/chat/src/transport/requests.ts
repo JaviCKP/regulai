@@ -42,6 +42,10 @@ export class RequestController {
   private stopRequested = false
   private suspended = false
   private attaching = false
+  /** The last rejoin heard from the server that it has no such request. */
+  private missing = false
+  /** The page was hidden while the body was still uploading. */
+  private interrupted = false
 
   constructor(host: RequestHost, key: string, requestId: string, command: Command | null) {
     this.host = host
@@ -59,12 +63,25 @@ export class RequestController {
   suspend() {
     if (this.done || this.disposed) return
     this.suspended = true
+    this.interrupted = this.uploading
     this.abort.abort()
   }
 
+  /** Rejoining holds the composer, as the send did; an upload cut by the page may never have arrived. */
   resume() {
     if (!this.suspended || this.disposed || this.done) return
-    void this.attach()
+    const upload = this.interrupted
+    this.interrupted = false
+    this.host.setRequestBusy(this.key, true, true)
+    void this.attach({ reportMissing: !upload })
+      .then(() => {
+        if (upload && this.missing && !this.done && !this.disposed) {
+          this.notSent("No se pudo obtener el resultado", "La página se ocultó antes de terminar la subida y el servidor no la recibió.", true)
+        }
+      })
+      .finally(() => {
+        if (!this.disposed) this.host.setRequestBusy(this.key, false, false)
+      })
   }
 
   get active() {
@@ -105,15 +122,18 @@ export class RequestController {
         headers: { Accept: this.streamed ? "text/event-stream" : "application/json" },
       })
       this.uploading = false
-      // The body has reached the server once it answers.
-      if (command.file && !action) this.host.setAttachment(this.key, "received")
       if (this.streamed && response.body && (response.headers.get("Content-Type") || "").includes("text/event-stream")) {
+        // The body has reached the server once it answers with the stream.
+        if (command.file && !action) this.host.setAttachment(this.key, "received")
         this.update({ phase: "live" })
         await readEventStream<ChatEvent>(response, (event) => this.apply(event), signal)
         if (!this.done && !this.disposed) await this.attach()
       } else {
-        // Blocked and unavailable replies carry useful JSON even with 403/503.
-        const data = (await response.json().catch(() => ({}))) as RequestResult
+        // Blocked and unavailable replies carry useful JSON even with 403/503; an HTML page
+        // (rate limit, expired session or CSRF, proxy error) is not a result of this request.
+        const data = await readResult(response)
+        if (!data) throw new ReplyError(response)
+        if (command.file && !action) this.host.setAttachment(this.key, "received")
         this.finish(data)
       }
     } catch (error) {
@@ -123,14 +143,27 @@ export class RequestController {
         await this.afterAbortedUpload()
         return
       }
-      // The request may have started before the connection failed: rejoin it.
-      if (this.streamed) await this.attach({ reportMissing: false })
+      const refused = error instanceof ReplyError ? refusal(error) : null
+      if (refused) {
+        this.notSent(refused.title, refused.text, true)
+        return
+      }
+      // The request may have started before the connection failed: rejoin it. Only the server
+      // saying it does not know the request lets the draft come back; otherwise a new send could
+      // run it twice, so retrying keeps this identity.
+      let missing = false
+      if (this.streamed) {
+        await this.attach({ reportMissing: false })
+        missing = this.missing
+      }
       if (!this.done && !this.disposed) {
-        this.update({
-          phase: "done", stage: null,
-          outcome: { kind: "unsent", text: "No se pudo confirmar el envío. Reintentar consulta esta misma petición; no crea otra." },
-        })
-        if (command.file) this.host.setAttachment(this.key, "cancelled")
+        this.notSent(
+          "No se pudo obtener el resultado",
+          missing
+            ? "La petición no llegó al servidor. Reintentar la envía con la misma identidad."
+            : "No se pudo confirmar el envío. Reintentar consulta esta misma petición; no crea otra.",
+          missing,
+        )
       }
     } finally {
       if (!this.disposed) {
@@ -201,7 +234,7 @@ export class RequestController {
   private async rejoin(reportMissing: boolean): Promise<boolean> {
     this.abort = new AbortController()
     const signal = this.abort.signal
-    let missing = false
+    this.missing = false
     this.update((state) => ({ phase: "reconnecting", stage: state.text ? state.stage : "Reconectando" }))
     for (let attempt = 0; attempt < 6 && !this.done && !this.disposed; attempt++) {
       try {
@@ -210,7 +243,7 @@ export class RequestController {
           headers: { Accept: "text/event-stream" }, cache: "no-store", credentials: "same-origin", signal,
         })
         if (response.status === 404) {
-          missing = true
+          this.missing = true
           break
         }
         if (!response.ok || !response.body) continue
@@ -221,7 +254,7 @@ export class RequestController {
       }
     }
     if (this.done || this.disposed || this.suspended) return this.done
-    if (missing) {
+    if (this.missing) {
       // Not registered for this account: never claim that it is still running.
       if (reportMissing) {
         this.done = true
@@ -284,6 +317,14 @@ export class RequestController {
     return true
   }
 
+  /** No result. Retrying reuses this identity; the draft comes back only when nothing was registered. */
+  private notSent(title: string, text: string, restorable: boolean) {
+    this.done = true
+    this.update({ phase: "done", stage: null, streaming: false, stopping: false, outcome: { kind: "unsent", title, text, restorable } })
+    if (this.command?.file) this.host.setAttachment(this.key, restorable ? "cancelled" : null)
+    this.host.announce(title)
+  }
+
   /** Growing text paints once per frame, never per token. */
   private paint() {
     if (this.frame) return
@@ -327,6 +368,39 @@ export class RequestController {
     }
     this.host.announce(said[outcome.kind] ?? (outcome.kind === "error" ? outcome.title : ""))
   }
+}
+
+/** A reply that is not a request result, e.g. the HTML page of a rate limit, login or proxy error. */
+class ReplyError extends Error {
+  readonly status: number
+  readonly retryAfter: string | null
+  readonly redirected: boolean
+  constructor(response: Response) {
+    super("reply_not_result")
+    this.status = response.status
+    this.retryAfter = response.headers.get("Retry-After")
+    this.redirected = response.redirected
+  }
+}
+
+/** Every result the send endpoints return is JSON with a status, accepted agent runs included. */
+async function readResult(response: Response): Promise<RequestResult | null> {
+  if (!(response.headers.get("Content-Type") || "").includes("json")) return null
+  const data: unknown = await response.json().catch(() => null)
+  return data && typeof data === "object" && typeof (data as RequestResult).status === "string" ? (data as RequestResult) : null
+}
+
+/** Refusals that happen before the request is handled, so nothing was registered or run. */
+function refusal(error: ReplyError): { title: string; text: string } | null {
+  if (error.status === 429) {
+    const seconds = Number(error.retryAfter)
+    const wait = error.retryAfter && Number.isFinite(seconds) && seconds > 0 ? `Espera ${Math.ceil(seconds)} s` : "Espera un momento"
+    return { title: "Demasiados mensajes seguidos", text: `${wait} y reintenta. Este mensaje no se ha enviado.` }
+  }
+  if (error.status === 401 || error.status === 403 || error.redirected) {
+    return { title: "La sesión ya no es válida", text: "Recarga la página para continuar. Este mensaje no se ha enviado." }
+  }
+  return null
 }
 
 function formData(command: Command, action: string, stream: boolean): FormData {

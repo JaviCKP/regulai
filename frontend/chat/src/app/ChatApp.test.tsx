@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ChatSession } from "../state/session"
 import { bootstrap } from "../test/boot"
+import type { Artifact, BootTurn, RunData } from "../types"
 import { ChatApp } from "./ChatApp"
 
 /* The composer and session as a person uses them (jsdom; transport scripted). */
@@ -125,5 +126,55 @@ describe("composer", () => {
     session.dispose()
     session.dispose()
     expect(session.isDisposed).toBe(true)
+  })
+})
+
+describe("agent runs", () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  const run: RunData = {
+    id: "run-1", request_id: "req-1", professional: false, resumable: true, resume_url: "/chat/agent/runs/run-1/resume/",
+    status: "interrupted", request: { formats: ["html"], language: "es" }, created_at: null, started_at: null, finished_at: null,
+    events_url: "/chat/agent/runs/run-1/events/", status_url: "/chat/agent/runs/run-1/", cancel_url: "",
+  }
+  const turn: BootTurn = {
+    request_id: "req-1", status: "accepted", run_id: "run-1", legacy: false, live: false,
+    user: { content: "Crea un HTML", file_name: null, file_size: null }, notice: null, answer: null,
+    assistant_file: null, receipt_url: null, evidence_url: null,
+  }
+
+  it("drops Resume once the run is no longer authorized and only offers to refresh its state", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ error: "agent_not_found" }, { status: 404 })))
+    mount({
+      conversation: { id: 9, title: "Agente", mode: "agent", auto_skills: true }, composer: { mode: "agent", modes: ["agent"] },
+      turns: [turn], runs: { [run.id]: run },
+    })
+    await screen.findByRole("button", { name: /Actualizar estado/ })
+    expect(screen.queryByRole("button", { name: /Reanudar/ })).toBeNull()
+  })
+
+  it("keeps no export intent when the send is refused and carries it only with an accepted send", () => {
+    const calls: Call[] = []
+    vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
+      calls.push({ url, init })
+      return pendingStream()
+    }))
+    const boot = () => bootstrap({ conversation: { id: 9, title: "Agente", mode: "agent", auto_skills: true }, composer: { mode: "agent", modes: ["agent"] } })
+    const artifact = { id: "rev-2", logical_id: "art-1", revision: 2, format: "xlsx" } as Artifact
+
+    // Another request is in flight: the export is refused and leaves nothing for the next message.
+    const busy = new ChatSession(boot())
+    expect(busy.send({ prompt: "Primero", file: null, mode: "agent" })).toBe(true)
+    expect(busy.requestExport(artifact, "informe.xlsx")).toBe(false)
+    expect(busy.store.get().pendingExport).toBeNull()
+    busy.dispose()
+
+    const idle = new ChatSession(boot())
+    calls.length = 0
+    expect(idle.requestExport(artifact, "informe.xlsx")).toBe(true)
+    const body = calls.find((call) => call.init?.method === "POST")!.init!.body as FormData
+    expect([body.get("artifact_id"), body.get("base_revision"), body.get("export_name")]).toEqual(["art-1", "rev-2", "informe.xlsx"])
+    expect(idle.store.get().pendingExport).toBeNull()
+    idle.dispose()
   })
 })

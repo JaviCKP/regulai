@@ -196,11 +196,11 @@ function OutcomeNotice({ turn, outcome, request }: { turn: TurnModel; outcome: O
       return (
         <Notice
           tone="error"
-          title="No se pudo obtener el resultado"
+          title={outcome.title}
           live={live}
           actions={<>
             <Button size="sm" variant="outline" disabled={busy} onClick={() => session.retry(turn.key)}><RotateCwIcon aria-hidden />Reintentar</Button>
-            <RestoreDraft turnKey={turn.key} />
+            {outcome.restorable && <RestoreDraft turnKey={turn.key} />}
           </>}
         >
           <p>{outcome.text}</p>
@@ -232,7 +232,7 @@ function OutcomeNotice({ turn, outcome, request }: { turn: TurnModel; outcome: O
   }
 }
 
-/** A send that never reached the server goes back to the composer; nothing is resent. */
+/** A send the server never registered goes back to the composer; nothing is resent. */
 function RestoreDraft({ turnKey }: { turnKey: string }) {
   const session = useSession()
   return (

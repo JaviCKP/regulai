@@ -15,6 +15,7 @@ export function PagesDialog({ request, onClose }: { request: PagesRequest | null
   const focusRef = useRef<HTMLElement | null>(null)
   // Pages seen here count for the review too: confirming requires every page loaded.
   const [loaded, setLoaded] = useState<Set<number>>(() => new Set())
+  const [confirming, setConfirming] = useState(false)
   useEffect(() => {
     setLoaded(new Set())
     if (request?.focusIndex) window.setTimeout(() => focusRef.current?.scrollIntoView({ block: "start" }), 60)
@@ -65,7 +66,17 @@ export function PagesDialog({ request, onClose }: { request: PagesRequest | null
               {request.review && !request.verified && (
                 <>
                   <p className="mr-auto text-xs text-muted-foreground">Tu confirmación registra únicamente la revisión visual; la exportación se autoriza aparte.</p>
-                  <Button disabled={!(request.review.ready || (valid.length === urls.length && loaded.size === urls.length && urls.length > 0))} onClick={request.review.confirm}>
+                  <Button
+                    disabled={confirming || !(request.review.ready || (valid.length === urls.length && loaded.size === urls.length && urls.length > 0))}
+                    onClick={async () => {
+                      setConfirming(true)
+                      try {
+                        await request.review?.confirm()
+                      } finally {
+                        setConfirming(false)
+                      }
+                    }}
+                  >
                     <CheckIcon aria-hidden />
                     Confirmar revisión visual
                   </Button>

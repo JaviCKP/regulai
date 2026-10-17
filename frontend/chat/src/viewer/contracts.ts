@@ -20,5 +20,5 @@ export type PagesRequest = {
   trigger: HTMLElement | null
   verified: boolean
   downloads: { format: string; url: string }[]
-  review?: { ready: boolean; confirm: () => void; pageLoaded: (index: number) => void }
+  review?: { ready: boolean; confirm: () => void | Promise<void>; pageLoaded: (index: number) => void }
 }

@@ -183,7 +183,8 @@ const STEP_ICON: Record<Step["state"], { icon: typeof InfoIcon; className: strin
 }
 
 function ActivityDetail({ view, steps }: { view: RunView; steps: Step[] }) {
-  const request = brief(view.run.request)
+  // A run that is no longer authorized keeps nothing of its projection, the request summary included.
+  const request = view.unavailable ? "" : brief(view.run.request)
   const times = timings(view.events)
   const data = view.data
   const notes = view.segments.filter((segment) => segment.tools)
@@ -345,7 +346,8 @@ function RunActions({ view, live, copySource, onRefresh }: { view: RunView; live
   }, [controller, open])
   const copy = useMemo(() => () => plain(copySource), [copySource])
   const hasDetails = Boolean(view.data) && !view.unavailable
-  if (!live && !view.run.resumable && !view.unavailable && !hasDetails && !copySource) return null
+  const resumable = Boolean(view.run.resumable) && !view.unavailable
+  if (!live && !resumable && !view.unavailable && !hasDetails && !copySource) return null
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="flex flex-col">
       <div className="-ml-2 flex flex-wrap items-center gap-0.5">
@@ -355,7 +357,7 @@ function RunActions({ view, live, copySource, onRefresh }: { view: RunView; live
             <SquareIcon className="size-3 fill-current" aria-hidden />Detener
           </Button>
         )}
-        {view.run.resumable && (
+        {resumable && (
           <Button variant="ghost" size="sm" disabled={resuming} className="h-8 text-[0.8125rem] text-muted-foreground pointer-coarse:h-11"
             onClick={async () => { setResuming(true); await controller?.resume(); setResuming(false) }}>
             <PlayIcon aria-hidden />Reanudar

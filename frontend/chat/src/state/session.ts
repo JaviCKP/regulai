@@ -392,7 +392,7 @@ export class ChatSession implements RequestHost, RunHost {
     }
   }
 
-  /** Puts a send that never reached the server back into the composer. */
+  /** Puts a send the server never registered back into the composer (callers check that first). */
   takeDraft(key: string): { prompt: string; file: File | null } | null {
     const command = this.commandFor(key)
     if (!command) return null
@@ -434,9 +434,12 @@ export class ChatSession implements RequestHost, RunHost {
     this.setContext({ kind: "revision", artifact, title })
   }
 
-  prepareExport(artifact: Artifact, exportName: string) {
-    if (!artifact.logical_id) return
+  /** Asks the agent to export a verified revision. The intent exists only with the send that carries it,
+   * so a refused send (another request in flight) leaves nothing behind for a later message. */
+  requestExport(artifact: Artifact, exportName: string): boolean {
+    if (!artifact.logical_id || !this.canSend()) return false
     this.store.set((state) => ({ ...state, pendingExport: { artifactId: artifact.logical_id!, baseRevision: artifact.id, exportName } }))
+    return this.send({ prompt: "Guarda la revisión verificada en la carpeta autorizada de Drive.", file: null, mode: "agent" })
   }
 
   setMode(mode: Mode) {
