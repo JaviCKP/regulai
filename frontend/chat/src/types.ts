@@ -3,6 +3,11 @@
 
 export type Mode = "chat" | "agent"
 
+export type NaturalProjection = {
+  version: 1; source_seq: number; protected_end: number; text: string; complete: boolean; render: "text"; append?: boolean
+  segments: { kind: "text" | "original" | "unavailable"; text: string; start: number; end: number }[]
+}
+
 export type NavItem = { key: string; label: string; href: string; active: boolean }
 export type NavGroup = { label: string; items: NavItem[] }
 
@@ -71,6 +76,7 @@ export type RunData = {
 
 export type Bootstrap = {
   version: 1
+  privacy?: { enabled: boolean; history_url: string | null }
   csrf_token: string
   urls: {
     home: string; chat: string; conversation: string; delete: string; send: string; send_conversation: string
@@ -116,7 +122,7 @@ export type ChatEvent =
   | { type: "accepted"; seq: number; conversation_id?: number }
   | { type: "stage"; seq: number; stage: string; model?: string; attempt?: number }
   | { type: "delivery"; seq: number; mode: string; reason?: string | null }
-  | { type: "delta"; seq: number; text: string; attempt: number }
+  | { type: "delta"; seq: number; text: string; attempt: number; projection?: NaturalProjection }
   | { type: "retract"; seq: number; reason?: string; attempt?: number }
   | { type: "final"; seq: number; result: RequestResult; http_status?: number }
 
@@ -131,7 +137,8 @@ export type RequestResult = {
   consent_reason?: string
   consent_rules?: { name?: string }[]
   blocked_rules?: { name?: string }[]
-  assistant_message?: { content?: string; file_name?: string; file_url?: string; file_size?: number }
+  user_message?: { content?: string; protected_copy?: string; projection?: NaturalProjection }
+  assistant_message?: { content?: string; file_name?: string; file_url?: string; file_size?: number; protected_copy?: string; projection?: NaturalProjection }
   receipt?: Receipt
   evidence?: { items?: EvidenceItem[] } | EvidenceItem[]
   agent?: RunData
@@ -174,7 +181,7 @@ export type AgentEvent = {
   created_at: string
 }
 
-export type TextSegmentSnapshot = { message_id: string; inference_id?: string; text: string; offset: number; expired?: boolean }
+export type TextSegmentSnapshot = { message_id: string; inference_id?: string; text: string; projection?: NaturalProjection; offset: number; expired?: boolean }
 
 export type Artifact = Record<string, unknown> & {
   id: string

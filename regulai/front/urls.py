@@ -25,7 +25,11 @@ from .views import (
 
 app_name = 'front'
 
+from . import privacy_views
+
 urlpatterns = [
+    path('chat/privacy/conversations/<int:conversation_id>/history/', privacy_views.history, name='privacy_history'),
+    path('chat/privacy/requests/<uuid:request_id>/', privacy_views.message, name='privacy_message'),
     path('chat/agent/artifacts/<uuid:artifact_id>/preview/', artifact_preview.preview, name='agent_artifact_preview'),
     path('skills/', skill_views.library, name='skills_library'),
     path('skills/conversations/<int:conversation_id>/preference/', skill_views.preference, name='skill_preference'),

@@ -72,7 +72,7 @@ def serialized_event(row, *, snapshot_text=True):
         'kind': row.kind, 'data': data, 'created_at': row.created_at.isoformat()}
 
 
-def fetch_event_batch(actor, run_id, cursor=0, limit=100):
+def fetch_event_batch(actor, run_id, cursor=0, limit=100, projection_state=None):
     """Read-only polling: no reaper, artifacts, receipts or recovery computation."""
     from .jobs import authorized_run
     run = authorized_run(actor, run_id)
@@ -81,9 +81,16 @@ def fetch_event_batch(actor, run_id, cursor=0, limit=100):
         run = AgentExecution.objects.select_for_update().get(pk=run.pk)
         rows = list(run.events.filter(pk__gt=cursor).order_by('pk')[:limit])
         high = run.events.order_by('-pk').values_list('pk', flat=True).first() or 0
-        return {'run': {'id': str(run.pk), 'status': run.status},
-            'events': [serialized_event(row, snapshot_text=False) for row in rows], 'high_watermark': high,
-            'provider_active': run.active_call is not None}
+    from front.privacy_presentation import agent_batch
+    events = agent_batch(actor.pk, run, [serialized_event(row, snapshot_text=False) for row in rows], cursor, projection_state)
+    for event in events:
+        if event['kind'].startswith('text.') and len(json.dumps(event, ensure_ascii=False).encode()) > FRAME_BYTES:
+            event['kind'] = 'text.snapshot'
+            event['data'] = {key: value for key, value in event['data'].items() if key not in ('text', 'projection')}
+            event['data']['snapshot_required'] = True
+    return {'run': {'id': str(run.pk), 'status': run.status},
+        'events': events, 'high_watermark': high,
+        'provider_active': run.active_call is not None}
 
 
 def text_snapshot(execution):

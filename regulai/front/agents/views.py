@@ -35,7 +35,6 @@ def _operation(request, handler):
         from front.privacy import required, ProtectionContext, protect_tree, outbound, keyed_digest
         if operation_run is not None and required(operation_run.prompt):
             run = operation_run
-            result = protect_tree(ProtectionContext.from_prompt(run.prompt), result)
             packed = json.dumps(result, ensure_ascii=False)
             outbound(run.prompt, 'worker:' + keyed_digest(packed), [packed])
         response = JsonResponse(result, status=200)
@@ -169,12 +168,12 @@ def _events(rows, limit=None):
     return [serialized_event(row) for row in (rows[:limit] if limit else rows)]
 
 
-def _snapshot(actor, run_id, cursor=None):
+def _snapshot(actor, run_id, cursor=None, projection_state=None):
     from django.db import transaction
     from front.models import AgentExecution
     from .event_store import fetch_event_batch
     if cursor is not None:
-        return fetch_event_batch(actor, run_id, cursor)
+        return fetch_event_batch(actor, run_id, cursor, projection_state=projection_state)
     with transaction.atomic():
         # Scope the lock to this user's run; _full_snapshot revalidates current
         # company, grant, connection, policy and skill bindings under that lock.
@@ -201,7 +200,8 @@ def _full_snapshot(actor, run_id):
             export_enabled = True
     except AgentDenied:
         pass
-    result = request_result(run.prompt).data
+    from front.privacy_presentation import result_view, agent_snapshots, agent_batch
+    result = result_view(actor.pk, request_result(run.prompt).data)
     # Not repeated inside result: a long run's receipt is large and this endpoint is polled on every event.
     receipt = result.pop('receipt', {})
     from .web_tools import source_summary
@@ -215,7 +215,7 @@ def _full_snapshot(actor, run_id):
         artifacts = professional_artifacts_for_run(run) if professional else list(run.artifacts.order_by('revision'))
     return {'run': run_data(run), 'result': result, 'receipt': receipt, 'export': display(run),
         'high_watermark': run.events.order_by('-pk').values_list('pk', flat=True).first() or 0,
-        'text_segments': text_snapshot(run),
+        'text_segments': agent_snapshots(actor.pk, run, text_snapshot(run)),
         'sources': source_summary(run) if professional else [],
         'operations': [{'name': row.name, 'status': row.status, 'created_at': row.created_at,
             'completed_at': row.completed_at, 'details_url': f'/chat/agent/runs/{run.pk}/operations/{row.pk}/'}
@@ -299,11 +299,12 @@ async def events(request, run_id):
     if not hasattr(request, 'scope'):
         return JsonResponse({'error': 'agent_sse_requires_asgi'}, status=503)
     actor = await request.auser()
+    projection_state = {}
     try:
         cursor = int(request.headers.get('Last-Event-ID') or request.GET.get('cursor', '0'))
         if cursor < 0:
             raise ValueError('Invalid cursor')
-        first = await sync_to_async(_snapshot)(actor, run_id, cursor)
+        first = await sync_to_async(_snapshot)(actor, run_id, cursor, projection_state)
     except (AgentDenied, ValueError):
         return HttpResponse(status=404)
 
@@ -326,8 +327,8 @@ async def events(request, run_id):
                 # Tool completion and artifact publication need the same prompt
                 # delivery as text; no provider call is active during those phases.
                 await asyncio.sleep(.15 if batch['run']['status'] == 'active' else .5)
-                batch = await sync_to_async(_snapshot)(actor, run_id, cursor)
-        except AgentDenied:
+                batch = await sync_to_async(_snapshot)(actor, run_id, cursor, projection_state)
+        except (AgentDenied, ValueError):
             yield 'event: revoked\ndata: {}\n\n'
         except asyncio.CancelledError:
             # A disconnected browser never cancels or reruns execution.

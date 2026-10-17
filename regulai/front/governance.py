@@ -161,17 +161,21 @@ class GovernedCalls:
         if outbound_texts is not None:
             from .privacy import outbound
             metadata = [model or '']
+            credentials = []
             if destination.startswith('engine:') and (int(destination.split(':')[1]), model_pk) in self.rows:
                 engine = self.rows[(int(destination.split(':')[1]), model_pk)][0]
-                metadata += [engine.api_key, engine.engine.base_url or '']
+                metadata += [engine.engine.base_url or '']
+                credentials.append(engine.api_key)
             try:
                 outbound(self.prompt, str(self.call_context.get('call_id') or '') + ':' + str(len(self.prompt.decision['calls'])),
-                    outbound_texts, metadata=metadata)
+                    outbound_texts, metadata=metadata, credentials=credentials)
             except ValueError:
                 raise PipelineStop('privacy_protection_failed') from None
         call = {'purpose': purpose, 'provider': destination, 'model': model, 'status': 'started',
                 'cost': None, 'cost_bound': str(cost_bound) if cost_bound is not None else None,
                 'price_snapshot': prices, 'currency': 'USD', 'cost_kind': 'unknown', 'transport': transport}
+        if outbound_texts is not None:
+            call['privacy_call_key'] = str(self.call_context.get('call_id') or '') + ':' + str(len(self.prompt.decision['calls']))
         call.update(self.call_context)
         if transport == 'local':
             call.update(cost='0', cost_kind='configured_zero', cost_scope='api')

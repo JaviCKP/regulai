@@ -19,6 +19,24 @@ from .models import Conversation, ConversationAlias, Profile, PrivacyRevision, P
 TOKEN = re.compile(r'\[\[R_[A-Z]{1,24}_[a-f0-9]{32}\]\]')
 MAX_BYTES = 512_000
 MAX_MATCHES = 4096
+STRUCTURAL_IDS = frozenset({'id', 'execution', 'execution_id', 'attempt', 'attempt_id', 'call_id',
+    'reference', 'revision_id', 'installation_id', 'artifact_id', 'input_reference', 'logical_id',
+    'base_revision', 'sha256', 'digest', 'folder_sha256', 'instruction_digest', 'request_id'})
+OPAQUE_ID = re.compile(r'(?:[a-f0-9]{64}|[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})')
+
+
+def structural_ids(value):
+    """Shield typed protocol IDs from accidental phone/card pattern matches.
+
+    Explicit selections/YARA are always checked on the unshielded value first.
+    Arbitrary text (including a JSON string in a message) receives no exemption.
+    """
+    if isinstance(value, list):
+        return [structural_ids(item) for item in value]
+    if isinstance(value, dict):
+        return {key: 'PROTOCOLIDENTIFIER' if key in STRUCTURAL_IDS and isinstance(item, str)
+                and OPAQUE_ID.fullmatch(item) else structural_ids(item) for key, item in value.items()}
+    return value
 
 
 @dataclass(frozen=True)
@@ -192,6 +210,14 @@ def protect_tree(context, value):
         fields = {'nombre': 'PERSON', 'full_name': 'PERSON', 'titular': 'PERSON',
                   'email': 'EMAIL', 'correo': 'EMAIL', 'telefono': 'PHONE', 'dni': 'ID', 'iban': 'ACCOUNT'}
         def field(key, item):
+            if key in STRUCTURAL_IDS and isinstance(item, str) and OPAQUE_ID.fullmatch(item) and context.prompt_id:
+                from .privacy_policy import detect_ranges, revision_config
+                turn = prepare_turn(context)
+                if turn:
+                    config, rules = revision_config(context, turn.revision)
+                    if detect_ranges(item, config, rules, patterns=False):
+                        raise ValueError('privacy_selected_protocol_identifier')
+                    return item
             if _SECRET_KEY.fullmatch(key):
                 return '[[REGULAI_SECRET]]'
             if key.lower() not in fields or not isinstance(item, str):
@@ -356,20 +382,27 @@ def record_use(context, call_key, texts):
         rows = list(ConversationAlias.objects.filter(**context.scope(), token__in=counts))
         if len(rows) != len(counts):
             raise ValueError('privacy_reference_unavailable')
+        historical = None
         for row in rows:
             if (not row.privacyoccurrence_set.filter(message__turn=turn).exists()
                     and not PrivacyUse.objects.filter(alias=row,
                         turn__prompt__conversation_id=context.conversation_id,
                         turn__prompt__user_id=context.user_id, turn__prompt__company_id=context.company_id,
                         turn__prompt__status='completed').exists()):
-                raise ValueError('privacy_reference_not_issued')
+                if historical is None:
+                    from .chat_service import authorized_history
+                    actor = authorize(context).user
+                    historical = set(token for message in authorized_history(actor,
+                        Conversation.objects.get(pk=context.conversation_id)) for token in TOKEN.findall(message.content))
+                if row.token not in historical:
+                    raise ValueError('privacy_reference_not_issued')
             use, _ = PrivacyUse.objects.get_or_create(turn=turn, call_key=call_key, alias=row,
                 defaults={'count': counts[row.token]})
             if use.count != counts[row.token]:
                 raise ValueError('privacy_idempotency_conflict')
 
 
-def outbound(prompt, call_key, texts, *, metadata=()):
+def outbound(prompt, call_key, texts, *, metadata=(), credentials=()):
     if not required(prompt):
         return
     context = ProtectionContext.from_prompt(prompt)
@@ -381,7 +414,16 @@ def outbound(prompt, call_key, texts, *, metadata=()):
     candidates = [text for text in [*texts, *metadata] if isinstance(text, str)]
     from .privacy_policy import detect_ranges, revision_config
     config, rules = revision_config(context, turn.revision)
-    if (any(detect_ranges(text, config, rules) for text in candidates)
+    def unsafe(text):
+        if detect_ranges(text, config, rules, patterns=False):
+            return True
+        try:
+            shielded = json.dumps(structural_ids(json.loads(text)), ensure_ascii=False)
+        except (ValueError, TypeError):
+            shielded = text
+        return bool(detect_ranges(shielded, config, rules))
+    if (any(unsafe(text) for text in candidates)
+            or any(detect_ranges(text, config, rules, patterns=False) for text in credentials)
             or any(value in text for value in values for text in candidates)):
         raise ValueError('privacy_original_at_boundary')
     record_use(context, call_key, texts)

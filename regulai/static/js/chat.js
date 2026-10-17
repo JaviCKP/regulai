@@ -330,6 +330,12 @@
   /* Markdown */
   const sources = new WeakMap();
   function renderMarkdown(node, source, options = {}) {
+    if (options.projection) {
+      node.textContent = options.projection.text;
+      node.style.whiteSpace = 'pre-wrap';
+      sources.set(node, options.projection.text);
+      return;
+    }
     sources.set(node, source);
     if (window.RegulayMarkdown) window.RegulayMarkdown.render(node, source, options);
     else node.textContent = source;
@@ -412,7 +418,7 @@
     body = target.appendChild(body || el('div', 'rg-md'));
     body.classList.remove('is-streaming');
     body.dataset.md = '';
-    renderMarkdown(body, text, {animate: !body._rgBlocks});
+    renderMarkdown(body, text, {animate: !body._rgBlocks, projection: message.projection});
     if (message.file_name && message.file_url && /^\/chat\/download\/\d+\/$/.test(message.file_url)) {
       const link = target.appendChild(el('a', 'rg-file-chip'));
       link.href = message.file_url;
@@ -621,7 +627,7 @@
   function paint(live) {
     live.frame = 0;
     if (!live.body) return;
-    renderMarkdown(live.body, live.text, {streaming: true, animate: true});
+    renderMarkdown(live.body, live.text, {streaming: true, animate: true, projection: live.projection});
     follow(live.requestId);
   }
   function handleEvent(live, event) {
@@ -641,6 +647,8 @@
       case 'delta':
         if (event.attempt !== live.attempt) { live.attempt = event.attempt; live.text = ''; }
         live.text += event.text || '';
+        live.projection = event.projection && event.projection.append && live.projection
+          ? {...event.projection, text: live.projection.text + event.projection.text} : event.projection;
         if (!live.body || !live.body.isConnected) {
           live.body = live.ai.appendChild(el('div', 'rg-md is-streaming'));
           live.body.setAttribute('aria-busy', 'true');
@@ -1205,6 +1213,19 @@
     try { threads = window.localStorage.getItem(THREADS_KEY) || 'shown'; } catch (_) { /* Optional. */ }
     if (desktop()) setThreads(threads !== 'hidden');
     hydrate(document);
+    if (app.dataset.conversation) {
+      fetch(`/chat/privacy/conversations/${encodeURIComponent(app.dataset.conversation)}/history/`, {cache: 'no-store', credentials: 'same-origin'})
+        .then(response => response.ok ? response.json() : Promise.reject())
+        .then(data => list(data.turns).forEach(record => {
+          const article = document.querySelector(`.rg-turn[data-request-id="${CSS.escape(record.request_id)}"]`);
+          if (!article) return;
+          const bubble = article.querySelector('.rg-bubble');
+          if (bubble && record.user_message?.projection) bubble.textContent = record.user_message.projection.text;
+          const body = article.querySelector('.rg-msg-ai > .rg-md');
+          if (body && record.assistant_message?.projection) renderMarkdown(body, record.assistant_message.content,
+            {projection: record.assistant_message.projection});
+        })).catch(() => toast('La vista natural no está disponible con tus permisos actuales.'));
+    }
     initEvents();
     initModelPicker();
     if (!app.dataset.conversation) setMode(currentMode());

@@ -347,8 +347,9 @@ def chat_send_message(request):
     command['content'] = command['content'] or ''
     command['file'] = request.FILES.get('file')
     result = send_chat_message(request.user, command)
-    return Response(result.data, status=result.http_status,
-        headers={'Retry-After': '5'} if result.http_status == 429 else None)
+    from front.privacy_presentation import safe_result_view
+    return Response(safe_result_view(request.user.pk, result.data), status=result.http_status,
+        headers={'Cache-Control': 'private, no-store', **({'Retry-After': '5'} if result.http_status == 429 else {})})
 
 
 @api_view(['GET'])

@@ -13,6 +13,7 @@ import { clear, render } from "./renderer"
 
 type Props = {
   source: string
+  projection?: import("@/types").NaturalProjection
   streaming?: boolean
   /** Fade in blocks that appear while this message is live; history never animates. */
   animate?: boolean
@@ -21,15 +22,22 @@ type Props = {
   className?: string
 }
 
-export const ChatMarkdown = memo(function ChatMarkdown({ source, streaming = false, animate = false, onCite, onCopied, className }: Props) {
+export const ChatMarkdown = memo(function ChatMarkdown({ source, projection, streaming = false, animate = false, onCite, onCopied, className }: Props) {
   const ref = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     const root = ref.current
     if (!root) return
+    if (projection) {
+      clear(root)
+      // Authorised originals are opaque data, including Markdown destinations,
+      // HTML and nested tokens. No parser, link, image or preview sees them.
+      root.textContent = projection.text
+      return
+    }
     if (!source) clear(root)
     else render(root, source, { streaming, animate })
-  }, [source, streaming, animate])
+  }, [source, projection, streaming, animate])
 
   const click = useCallback(async (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement
@@ -53,7 +61,7 @@ export const ChatMarkdown = memo(function ChatMarkdown({ source, streaming = fal
   return (
     <div
       ref={ref}
-      className={cn("rg-md", className)}
+      className={cn("rg-md", projection && "whitespace-pre-wrap break-words", className)}
       data-streaming={streaming ? "" : undefined}
       aria-busy={streaming || undefined}
       onClick={click}

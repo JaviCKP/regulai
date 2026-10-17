@@ -1529,7 +1529,9 @@ def chat_send_message(request, conversation_id=None):
         from .chat_streaming import stream_send
         return stream_send(request, _web_command(request, conversation_id))
     result = send_chat_message(request.user, _web_command(request, conversation_id))
-    response = JsonResponse(result.data, status=result.http_status)
+    from .privacy_presentation import safe_result_view
+    response = JsonResponse(safe_result_view(request.user.pk, result.data), status=result.http_status)
+    response['Cache-Control'] = 'private, no-store'
     if result.http_status == 429:
         response['Retry-After'] = '5'
     return response

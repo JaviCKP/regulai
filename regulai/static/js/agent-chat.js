@@ -474,6 +474,8 @@
         this.generating = null;
         const segment = this.segments.get(event.data?.message_id);
         if (segment) {
+          if (event.data.projection) segment.projection = {...event.data.projection,
+            text: (segment.projection?.text || '') + event.data.projection.text};
           segment.done = true;
           segment.incomplete = Boolean(event.data.incomplete);
           segment.tools = event.data.tool_count || 0;
@@ -512,6 +514,8 @@
         this.recoverText();
         return;
       } else { segment.text += data.text; segment.offset += bytes.length; }
+      if (data.projection) segment.projection = data.projection.append && segment.projection
+        ? {...data.projection, text: segment.projection.text + data.projection.text} : data.projection;
       this.queueText(segment);
     }
     recoverText() {
@@ -530,7 +534,8 @@
           value.unread = false;
           value.status.textContent = value.incomplete ? 'Respuesta incompleta · texto autorizado recibido' : value.tools ? 'Nota pública del modelo' : '';
           value.status.hidden = !value.status.textContent;
-          if (window.RegulayMarkdown) window.RegulayMarkdown.render(value.body, value.text, {streaming: !value.done});
+          if (value.projection) { value.body.textContent = value.projection.text; value.body.style.whiteSpace = 'pre-wrap'; }
+          else if (window.RegulayMarkdown) window.RegulayMarkdown.render(value.body, value.text, {streaming: !value.done});
           else value.body.textContent = value.text;
         });
         this.dirtySegments.clear();

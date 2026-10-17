@@ -104,13 +104,13 @@ def yara_ranges(text, selection, rule):
     return ranges
 
 
-def detect_ranges(text, config, rules=()):
+def detect_ranges(text, config, rules=(), *, patterns=True):
     from .privacy import MAX_BYTES, MAX_MATCHES, TOKEN, resolve_spans
     if not isinstance(text, str) or len(text.encode()) > MAX_BYTES:
         raise ValueError('privacy_input_invalid')
     references = [m.span() for m in TOKEN.finditer(text)]
     spans = []
-    for start, end, category in detect_spans(text):
+    for start, end, category in detect_spans(text) if patterns else []:
         treatment = config.categories.get(category, 'off')
         if category == 'SECRET' or treatment != 'off':
             spans.append((start, end, category, category != 'SECRET' and treatment == 'reversible', 'local'))

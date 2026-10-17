@@ -291,6 +291,7 @@ export class RequestController {
           this.text = ""
         }
         this.text += event.text || ""
+        this.host.updateRequest(this.key, (state) => ({ ...state, projection: applyProjection(state.projection, event.projection) }))
         this.paint()
         break
       case "retract": {
@@ -300,7 +301,7 @@ export class RequestController {
         if (this.frame) cancelAnimationFrame(this.frame)
         this.frame = 0
         this.update({
-          seq: this.seq, text: "", streaming: false, retracted: true,
+          seq: this.seq, text: "", projection: undefined, streaming: false, retracted: true,
           stage: retry ? "Reintentando" : "Comprobando",
           note: retry ? "El texto anterior no superó las comprobaciones y se ha retirado." : "El texto mostrado se ha retirado.",
         })
@@ -424,3 +425,4 @@ function formData(command: Command, action: string, stream: boolean): FormData {
   form.append("csrfmiddlewaretoken", csrf())
   return form
 }
+import { applyProjection } from "./projection"

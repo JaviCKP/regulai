@@ -261,6 +261,7 @@ def complete(token, attempt, payload):
             Response.objects.create(prompt=run.prompt, assistant_message=message, content=content,
                 evidence={'artifacts': delivery['artifacts'], 'sources': list(sources)})
         run.prompt.decision['delivery'] = delivery
+        run.prompt.decision['privacy_answer'] = {'inference_id': str(final.call_id)}
         run.prompt.decision['verification'] = {'status': 'partial', 'scope': 'artifact_integrity_and_declared_coverage',
             'artifacts': [str(a.pk) for a in artifacts], 'semantic_quality': 'not_guaranteed'}
         run.prompt.decision.update(history_version=2, history_scope='text_only', history_eligible=True,

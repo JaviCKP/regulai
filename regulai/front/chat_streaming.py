@@ -239,7 +239,8 @@ class StreamGuard:
         if delta:
             if self.prompt is not None:
                 self.prompt._shown = self.attempt
-            self.events.emit('delta', text=delta, attempt=self.attempt)
+            self.events.emit('delta', text=delta, attempt=self.attempt,
+                             privacy_call_key=getattr(self, 'privacy_call_key', None))
 
     def mask(self, value):
         if self.protector is not None:
@@ -346,6 +347,10 @@ def _frame(event):
 
 
 def _sync_frames(events, after=0):
+    from .privacy_presentation import ChatPresentation
+    view = ChatPresentation(events.user_id, events.request_id)
+    for item in events.since(0)[:after]:
+        view.event(item)
     seq = after
     while True:
         batch = events.wait(seq, 10)
@@ -354,12 +359,25 @@ def _sync_frames(events, after=0):
             continue
         for event in batch:
             seq = event['seq']
-            yield _frame(event)
+            try:
+                projected = view.event(event)
+            except ValueError:
+                yield _frame({'type': 'retract', 'seq': seq, 'reason': 'privacy_access_revoked'})
+                yield _frame({'type': 'final', 'seq': seq + 1, 'result': {'status': 'failed',
+                    'error': 'La vista ya no está autorizada.'}})
+                return
+            yield _frame(projected)
             if event['type'] == 'final':
                 return
 
 
 async def _async_frames(events, after=0):
+    from .privacy_presentation import ChatPresentation
+    from asgiref.sync import sync_to_async
+    view = ChatPresentation(events.user_id, events.request_id)
+    apply = sync_to_async(view.event)
+    for item in events.since(0)[:after]:
+        await apply(item)
     seq, idle = after, 0.0
     try:
         while True:
@@ -374,7 +392,14 @@ async def _async_frames(events, after=0):
             idle = 0.0
             for event in batch:
                 seq = event['seq']
-                yield _frame(event)
+                try:
+                    projected = await apply(event)
+                except ValueError:
+                    yield _frame({'type': 'retract', 'seq': seq, 'reason': 'privacy_access_revoked'})
+                    yield _frame({'type': 'final', 'seq': seq + 1, 'result': {'status': 'failed',
+                        'error': 'La vista ya no está autorizada.'}})
+                    return
+                yield _frame(projected)
                 if event['type'] == 'final':
                     return
     except asyncio.CancelledError:
@@ -445,7 +470,8 @@ def _stored(prompt_id, user_id, *, final=False):
     if prompt.status in ('processing', 'received') and not final:
         return None
     result = request_result(prompt)
-    return {'type': 'final', 'result': result.data, 'http_status': result.http_status}
+    from .privacy_presentation import safe_result_view
+    return {'type': 'final', 'result': safe_result_view(user_id, result.data), 'http_status': result.http_status}
 
 
 def _sync_db(prompt_id, user_id, after):

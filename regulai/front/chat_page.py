@@ -165,6 +165,10 @@ def turns(conversation, runs=None):
     for message in conversation.messages.select_related('request_record', 'response_record__prompt').all():
         if message.role == 'user':
             prompt = getattr(message, 'request_record', None)
+            from .privacy import required
+            if prompt is not None and required(prompt):
+                from .privacy_presentation import canonical_user
+                message.content = canonical_user(prompt, message.content)
             turn = {**blank, 'user': message, 'prompt': prompt, 'legacy': prompt is None}
             if prompt is not None:
                 by_prompt[prompt.pk] = turn

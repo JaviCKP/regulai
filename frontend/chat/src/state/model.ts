@@ -1,6 +1,6 @@
 import { list } from "@/lib/format"
 import { DISCLOSURES, ERROR_TITLES, SETUP_CODES } from "@/lib/labels"
-import type {
+import type { NaturalProjection,
   AgentEvent, Artifact, BootTurn, EvidenceItem, Mode, Receipt, RequestResult, RunData, RunSnapshot, ThreadGroup,
 } from "@/types"
 
@@ -31,7 +31,7 @@ export type Command = {
 export type FileLink = { name: string; size: number | null; url: string }
 
 export type Outcome =
-  | { kind: "answer"; text: string; unverified: boolean; evidence: EvidenceItem[]; file: FileLink | null; contextNote?: string }
+  | { kind: "answer"; text: string; projection?: NaturalProjection; unverified: boolean; evidence: EvidenceItem[]; file: FileLink | null; contextNote?: string }
   | { kind: "blocked"; rules: string[]; reason: string }
   | {
       kind: "consent"; rules: string[]; reason: string; disclosures: string[]; notices: string[]
@@ -54,6 +54,7 @@ export type RequestState = {
   seq: number
   attempt: number
   text: string
+  projection?: NaturalProjection
   streaming: boolean
   retracted: boolean
   stage: string | null
@@ -68,7 +69,7 @@ export type TurnModel = {
   requestId: string | null
   runId: string | null
   legacy: boolean
-  user: { content: string; file: { name: string; size: number | null } | null } | null
+  user: { content: string; projection?: NaturalProjection; file: { name: string; size: number | null } | null } | null
   receiptUrl: string | null
   evidenceUrl: string | null
   /** Created by a send in this page (animated once); history never animates. */
@@ -85,7 +86,7 @@ export type Step = {
   skill?: { name: string; reason: string | null }
 }
 
-export type Segment = { id: string; text: string; offset: number; done: boolean; incomplete: boolean; tools: number }
+export type Segment = { id: string; text: string; projection?: NaturalProjection; offset: number; done: boolean; incomplete: boolean; tools: number }
 
 export type SkillActivation = { key: string; name: string; reason: string | null; eventId: number; fresh: boolean }
 
@@ -162,7 +163,7 @@ export function outcomeFromResult(data: RequestResult, command: Command | null, 
       ? raw.filter((item) => item && typeof item === "object" && typeof item.locator === "string")
         .map((item) => ({ claim_index: item.claim_index ?? null, locator: item.locator, excerpt: item.excerpt || (item as { text?: string }).text || "" }))
       : []
-    return { kind: "answer", text, unverified, evidence, file }
+    return { kind: "answer", text, projection: message.projection, unverified, evidence, file }
   }
   if (status === "blocked") {
     const rules = names(data.blocked_rules)

@@ -15,6 +15,14 @@ const view = (source: string, props: Partial<Parameters<typeof ChatMarkdown>[0]>
 describe("ChatMarkdown content policy", () => {
   afterEach(() => vi.unstubAllGlobals())
 
+  it("renders authorised originals as opaque text with no executable destinations", () => {
+    const text = '<img src="https://exfil.invalid/">[secret](https://exfil.invalid/) [[R_EMAIL_00000000000000000000000000000000]]\u0001'
+    const root = view("canonical", { projection: { version: 1, source_seq: 3, protected_end: 47,
+      text, segments: [{ kind: "original", text, start: 0, end: 47 }], complete: true, render: "text" } })
+    expect(root.textContent).toBe(text)
+    expect(root.querySelectorAll("a,img,script,iframe,video,source")).toHaveLength(0)
+  })
+
   it("never parses markup: HTML is shown as text and nothing executes or loads", () => {
     const root = view("<img src=x onerror=alert(1)> **bien** <script>alert(2)</script>\n\n![logo](https://tracker.invalid/p.png)")
     expect(root.querySelectorAll("img, script, iframe, object, embed, video, audio, source")).toHaveLength(0)

@@ -1,9 +1,9 @@
 import { requestUUID } from "@/lib/ids"
-import type { Artifact, Bootstrap, Mode, RunData } from "@/types"
+import type { Artifact, Bootstrap, Mode, RunData, RequestResult } from "@/types"
 
 import { RequestController, type RequestHost } from "../transport/requests"
 import { initialRunView, RunController, type RunHost } from "../transport/runs"
-import { setCsrfToken } from "../transport/http"
+import { setCsrfToken, getJSON } from "../transport/http"
 import {
   emptyRequest, isLiveRun, requestFromBoot, turnFromBoot,
   type AttachmentPhase, type ChatState, type Command, type ComposerContext, type RequestState, type RunView, type TurnModel,
@@ -83,6 +83,7 @@ export class ChatSession implements RequestHost, RunHost {
   /** Starts what the page needs now: the latest and live runs, and rejoins live requests. */
   start() {
     if (this.disposed) return
+    if (this.boot.privacy?.history_url) void this.loadNaturalHistory(this.boot.privacy.history_url)
     const state = this.store.get()
     state.turns.forEach((turn) => {
       if (turn.runId) {
@@ -92,6 +93,30 @@ export class ChatSession implements RequestHost, RunHost {
         this.rejoin(turn.key)
       }
     })
+  }
+
+  private async loadNaturalHistory(url: string) {
+    try {
+      const { data } = await getJSON<{ turns: RequestResult[] }>(url)
+      if (this.disposed) return
+      this.store.set((state) => {
+        const records = new Map(data.turns.map((record) => [record.request_id, record]))
+        const requests = { ...state.requests }
+        const turns = state.turns.map((turn) => {
+          const record = records.get(turn.requestId ?? "")
+          if (!record) return turn
+          const request = requests[turn.key]
+          if (request?.outcome?.kind === "answer" && record.assistant_message?.projection) {
+            requests[turn.key] = { ...request, outcome: { ...request.outcome, projection: record.assistant_message.projection } }
+          }
+          return turn.user && record.user_message?.projection
+            ? { ...turn, user: { ...turn.user, projection: record.user_message.projection } } : turn
+        })
+        return { ...state, turns, requests }
+      })
+    } catch {
+      if (!this.disposed) this.toast("No se pudo cargar la vista natural con tus permisos actuales.", true)
+    }
   }
 
   dispose() {

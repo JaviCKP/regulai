@@ -90,13 +90,15 @@ export function UserMessage({ content, fresh, children }: { content: string; fre
 }
 
 /** Copy confirms only when the browser confirms; a failure says so. */
-export function CopyButton({ text, label = "Copiar respuesta" }: { text: () => string; label?: string }) {
+export function CopyButton({ text, label = "Copiar respuesta" }: { text: () => string | Promise<string>; label?: string }) {
   const session = useSession()
   const [done, setDone] = useState(false)
   const timer = useRef(0)
   useEffect(() => () => window.clearTimeout(timer.current), [])
   const copy = useCallback(async () => {
-    const ok = await copyText(text())
+    let value: string
+    try { value = await text() } catch { session.toast("La copia ya no está autorizada. Actualiza la conversación.", true); return }
+    const ok = await copyText(value)
     if (!ok) {
       session.toast("No se pudo copiar. Selecciona el texto y cópialo manualmente.", true)
       return

@@ -224,6 +224,8 @@ def chat_bootstrap(request, context, runs):
         'navigation': navigation(request, permissions),
         'alerts': _alerts(request, permissions),
         'demo': bool(getattr(settings, 'DEMO_MODE', False)),
+        'privacy': {'enabled': bool(profile.company.ai_config.get('privacy')),
+            'history_url': reverse('front:privacy_history', args=[conversation.pk]) if conversation else None},
         'setup': {'missing': not profile.company.ai_config, 'can_manage': can_manage_company_policy(user)},
         'conversation': ({'id': conversation.id, 'title': context['conversation_title'], 'mode': conversation.mode,
                           'auto_skills': bool(getattr(conversation, 'auto_skills', True))}

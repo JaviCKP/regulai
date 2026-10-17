@@ -15,6 +15,7 @@ import type { Outcome, RequestState, TurnModel } from "../state/model"
 import { getJSON } from "../transport/http"
 import type { EvidenceItem, Receipt } from "../types"
 import { Notice } from "./Notice"
+import { PrivacyCopies } from "../privacy/PrivacyCopies"
 import { CopyButton, SentAttachment, StatusLine, UserMessage } from "./parts"
 
 // The decision record renders only when someone opens "Detalles".
@@ -29,10 +30,11 @@ export const Turn = memo(function Turn({ turn }: { turn: TurnModel }) {
   return (
     <article className="flex flex-col gap-4" data-turn="" data-request-id={turn.requestId ?? undefined} data-run={turn.runId ?? undefined}>
       {turn.user && (
-        <UserMessage content={turn.user.content} fresh={turn.fresh}>
+        <UserMessage content={turn.user.projection?.text ?? turn.user.content} fresh={turn.fresh}>
           {turn.user.file && <SentAttachment name={turn.user.file.name} size={turn.user.file.size} phase={phase} note={note} />}
         </UserMessage>
       )}
+      {turn.requestId && turn.user?.projection && <div className="self-end"><PrivacyCopies requestId={turn.requestId} role="user" /></div>}
       <div className="flex min-w-0 flex-col gap-3">
         {turn.runId ? <RunPart runId={turn.runId} turn={turn} /> : <RequestPart turn={turn} />}
         {turn.legacy && turn.user && (
@@ -64,7 +66,7 @@ function RequestPart({ turn }: { turn: TurnModel }) {
           No verificado
         </span>
       )}
-      {source && <Answer turn={turn} source={source} streaming={!answer && request.streaming} live={turn.fresh} evidence={answer?.evidence ?? []} />}
+      {source && <Answer turn={turn} source={source} projection={answer?.projection ?? request.projection} streaming={!answer && request.streaming} live={turn.fresh} evidence={answer?.evidence ?? []} />}
       {answer?.contextNote && <p className="text-[0.8125rem] text-subtle-foreground">{answer.contextNote}</p>}
       {answer?.file && (
         <a
@@ -84,7 +86,7 @@ function RequestPart({ turn }: { turn: TurnModel }) {
   )
 }
 
-function Answer({ turn, source, streaming, live, evidence }: { turn: TurnModel; source: string; streaming: boolean; live: boolean; evidence: EvidenceItem[] }) {
+function Answer({ turn, source, projection, streaming, live, evidence }: { turn: TurnModel; source: string; projection?: import("@/types").NaturalProjection; streaming: boolean; live: boolean; evidence: EvidenceItem[] }) {
   const [open, setOpen] = useState(false)
   const list = useRef<HTMLOListElement>(null)
   const cite = useCallback((index: string) => {
@@ -99,7 +101,7 @@ function Answer({ turn, source, streaming, live, evidence }: { turn: TurnModel; 
   }, [])
   return (
     <>
-      <ChatMarkdown source={source} streaming={streaming} animate={live} onCite={evidence.length ? cite : undefined} />
+      <ChatMarkdown source={source} projection={projection} streaming={streaming} animate={live} onCite={evidence.length ? cite : undefined} />
       {evidence.length > 0 && (
         <Collapsible open={open} onOpenChange={setOpen}>
           <CollapsibleTrigger className="group/cites flex w-fit items-center gap-1.5 rounded-md py-1 text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
@@ -266,7 +268,8 @@ function Actions({ turn, request, source }: { turn: TurnModel; request: RequestS
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="flex flex-col">
       <div className="-ml-2 flex items-center gap-0.5">
-        {source && <CopyButton text={copy} />}
+        {source && (request.outcome?.kind === "answer" && request.outcome.projection && turn.requestId
+          ? <PrivacyCopies requestId={turn.requestId} /> : <CopyButton text={copy} />)}
         <CollapsibleTrigger className="group/details flex h-8 items-center gap-1 rounded-md px-2 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:h-11">
           Detalles
           <ChevronRightIcon className="size-3.5 transition-transform group-aria-expanded/details:rotate-90" aria-hidden />

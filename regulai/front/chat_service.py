@@ -268,8 +268,11 @@ def send_chat_message(actor, command, *, call_observer=None, events=None):
         if not conversation:
             return error_result('conversation_not_found', 404)
     mode = command.get('mode')
-    if profile.company.ai_config.get('privacy') and command.get('file'):
-        return error_result('privacy_binary_channel_blocked', 403)
+    if profile.company.ai_config.get('privacy'):
+        if any(command.get(key) for key in ('file', 'document_reference', 'artifact_id', 'base_revision')):
+            return error_result('privacy_binary_channel_blocked', 403)
+        if '[[R_' in text:
+            return error_result('privacy_reference_unavailable', 403)
     if mode not in (None, '', 'chat', 'agent'):
         return error_result('input_invalid')
     if conversation and mode and mode != conversation.mode:
@@ -727,6 +730,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             call, started = start_call('generation', f'engine:{engine.pk}', model.model_id,
                 policy_texts + [('prompts', m.content) for m in messages], selection.estimated_cost,
                 selection.price_snapshot, verify_reserve, model_pk=model.pk, outbound_texts=[m.content for m in messages])
+            if guard is not None:
+                guard.privacy_call_key = call.get('privacy_call_key')
             connector = get_connector(engine.engine.connector_type, engine.api_key, engine.engine.base_url or None)
             try:
                 try:
@@ -842,6 +847,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if checks['status'] != 'passed':
             content = 'No verificado\n\n' + content
         with transaction.atomic():
+            prompt.decision['privacy_answer'] = {'call_key': call.get('privacy_call_key')}
             prompt.user_message.content = text
             prompt.user_message.save(update_fields=['content'])
             assistant = Message.objects.create(conversation=prompt.conversation, role='assistant',

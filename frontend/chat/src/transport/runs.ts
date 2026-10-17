@@ -173,6 +173,7 @@ export class RunController {
       this.generating = null
       const segment = this.segments.get(String(event.data?.message_id))
       if (segment) {
+        if (event.data.projection) segment.projection = applyProjection(segment.projection, event.data.projection as unknown as import("@/types").NaturalProjection)
         segment.done = true
         segment.incomplete = Boolean(event.data.incomplete)
         segment.tools = Number(event.data.tool_count) || 0
@@ -221,6 +222,7 @@ export class RunController {
       segment.text += data.text
       segment.offset += width
     }
+    if (data.projection) segment.projection = applyProjection(segment.projection, data.projection)
     this.queueText(segment)
   }
 
@@ -385,3 +387,4 @@ export class RunController {
     }
   }
 }
+import { applyProjection } from "./projection"

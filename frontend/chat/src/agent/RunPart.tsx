@@ -23,6 +23,7 @@ import { brief, groupSteps, headline, metaLine, timings, WAITING, type Headline 
 import { getJSON } from "../transport/http"
 import type { Artifact } from "../types"
 import { CopyButton } from "../turn/parts"
+import { PrivacyCopies } from "../privacy/PrivacyCopies"
 import { Deliverable } from "./Deliverable"
 
 // Loaded when they are needed: run details on opening, export proposals when one exists.
@@ -139,7 +140,7 @@ function RunBody({ view, turn }: { view: RunView; turn: TurnModel }) {
       {answers.map((segment) => (
         <div key={segment.id} className="flex flex-col gap-1.5">
           {segment.incomplete && <p className="text-xs text-warning">Respuesta incompleta · texto autorizado recibido</p>}
-          <ChatMarkdown source={segment.text} streaming={!segment.done} animate={turn.fresh || !segment.done} />
+          <ChatMarkdown source={segment.text} projection={segment.projection} streaming={!segment.done} animate={turn.fresh || !segment.done} />
         </div>
       ))}
       {bootAnswer && <ChatMarkdown source={bootAnswer} />}
@@ -223,7 +224,7 @@ function ActivityDetail({ view, steps }: { view: RunView; steps: Step[] }) {
       {notes.map((segment) => (
         <div key={segment.id} className="flex flex-col gap-1 rounded-lg bg-surface-2/60 px-3 py-2">
           <p className="text-xs font-medium text-muted-foreground">Nota pública del modelo</p>
-          <ChatMarkdown source={segment.text} streaming={!segment.done} className="rg-md-compact" />
+          <ChatMarkdown source={segment.text} projection={segment.projection} streaming={!segment.done} className="rg-md-compact" />
         </div>
       ))}
       {sources.length > 0 && <Sources sources={sources} />}
@@ -351,7 +352,8 @@ function RunActions({ view, live, copySource, onRefresh }: { view: RunView; live
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="flex flex-col">
       <div className="-ml-2 flex flex-wrap items-center gap-0.5">
-        {copySource && !live && <CopyButton text={copy} />}
+        {copySource && !live && (session.boot.privacy?.enabled
+          ? <PrivacyCopies requestId={view.run.request_id} /> : <CopyButton text={copy} />)}
         {live && (
           <Button variant="ghost" size="sm" className="h-8 text-[0.8125rem] text-muted-foreground pointer-coarse:h-11" onClick={() => controller?.cancel()}>
             <SquareIcon className="size-3 fill-current" aria-hidden />Detener
