@@ -147,6 +147,72 @@ class ProtectedMessageTests(RegistryFixture, TestCase):
         self.assertNotIn('Ana Fixture', combined)
 
 
+    def test_call_identity_includes_the_whole_payload_and_empty_alias_set(self):
+        first = protect_message(self.context, 'ana@example.invalid', source_key='one')
+        second = protect_message(self.context, 'other@example.invalid', source_key='two')
+        record_use(self.context, 'call:one', [first])
+        for changed in ([second], [], [first, second]):
+            with self.assertRaisesMessage(ValueError, 'privacy_idempotency_conflict'):
+                record_use(self.context, 'call:one', changed)
+        record_use(self.context, 'call:empty', [])
+        with self.assertRaisesMessage(ValueError, 'privacy_idempotency_conflict'):
+            record_use(self.context, 'call:empty', [first])
+        self.assertEqual(PrivacyUse.objects.count(), 1)
+
+    def test_outbound_checks_decoded_urls_json_strings_and_selected_credentials(self):
+        from front.privacy import outbound
+        prompt = Prompt.objects.get(pk=self.context.prompt_id)
+        for value in ('https://example.invalid/Ana%20Fixture', 'https://example.invalid/?q=Ana+Fixture',
+                      'https://example.invalid/?q=Ana%2520Fixture'):
+            with self.assertRaisesMessage(ValueError, 'privacy_original_at_boundary'):
+                outbound(prompt, 'url', [], metadata=[value])
+        revision = PrivacyRevision.objects.get(pk=self.company.ai_config['privacy']['revision_id'])
+        for original in ('Ana\nFixture', 'Ana"Fixture'):
+            PrivacyRevision.objects.filter(pk=revision.pk).update(configuration=json.dumps({'literals': [{'text': original}]}))
+            with self.assertRaisesMessage(ValueError, 'privacy_original_at_boundary'):
+                outbound(prompt, 'escaped', [json.dumps({'title': original})])
+        PrivacyRevision.objects.filter(pk=revision.pk).update(configuration=json.dumps({'literals': [{'text': 'fixture-credential'}]}))
+        with self.assertRaisesMessage(ValueError, 'privacy_original_at_boundary'):
+            outbound(prompt, 'credential', ['ordinary'], credentials=['fixture-credential'])
+        outbound(prompt, 'operational', ['ordinary'], credentials=['sk-synthetic-operational-key'])
+
+    def test_numeric_json_values_and_scientific_notation_cannot_cross_boundary(self):
+        from front.privacy import outbound
+        prompt = Prompt.objects.get(pk=self.context.prompt_id)
+        PrivacyRevision.objects.filter(pk=self.company.ai_config['privacy']['revision_id']).update(
+            configuration=json.dumps({'categories': {'PHONE': 'reversible', 'CARD': 'reversible'}}))
+        for value in ('612345678', '{"telefono":612345678}', '{"telefono":6.12345678e8}',
+                      '[612345678]', '{"card":4111111111111111}',
+                      '{"card":6212345678901234569.0}', '{"card":6.212345678901234569e18}'):
+            with self.subTest(value=value), self.assertRaisesMessage(ValueError, 'privacy_original_at_boundary'):
+                outbound(prompt, 'number', [value])
+        outbound(prompt, 'counts', ['{"count":42,"enabled":true}'])
+
+    def test_validation_only_does_not_count_an_internal_hop(self):
+        from front.privacy import outbound
+        from front.models import PrivacyCall
+        prompt = Prompt.objects.get(pk=self.context.prompt_id)
+        value = protect_message(self.context, 'Ana Fixture', source_key='bootstrap')
+        outbound(prompt, 'internal', [value], record=False)
+        self.assertFalse(PrivacyCall.objects.exists())
+        for _ in range(2):
+            outbound(prompt, 'worker:response', [value])
+        self.assertEqual(PrivacyCall.objects.count(), 1)
+        self.assertEqual(PrivacyUse.objects.get().count, 1)
+
+    def test_protocol_reservation_uuid_is_preserved_but_explicit_selection_still_blocks(self):
+        from front.privacy import protect_tree, outbound
+        prompt = Prompt.objects.get(pk=self.context.prompt_id)
+        value = {'reservation_id': '0a410333-7203-4795-a2c9-014728a90544'}
+        revision_id = self.company.ai_config['privacy']['revision_id']
+        PrivacyRevision.objects.filter(pk=revision_id).update(configuration=json.dumps({'categories': {'CARD': 'reversible'}}))
+        self.assertEqual(protect_tree(self.context, value), value)
+        outbound(prompt, 'reservation', [json.dumps(value)])
+        PrivacyRevision.objects.filter(pk=revision_id).update(configuration=json.dumps({'literals': [{'text': value['reservation_id']}]}))
+        with self.assertRaises(ValueError):
+            outbound(prompt, 'reservation-selected', [json.dumps(value)])
+
+
 class PolicyReviewTests(RegistryFixture, TestCase):
     def setUp(self):
         super().setUp()

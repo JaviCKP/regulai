@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .encrypted_fields import EncryptedCharField
-from .privacy_records import PrivacyRevision, PrivacyTurn, PrivacyMessage, PrivacyOccurrence, PrivacyUse, PrivacySelection
+from .privacy_records import (PrivacyRevision, PrivacyTurn, PrivacyMessage,
+    PrivacyOccurrence, PrivacyUse, PrivacySelection, PrivacyCall)
 from .agents.records import (AgentAccessGrant, AgentOperation, AgentArtifact, AgentEvent, AgentExecution, AgentInference, AgentInput, AgentModelProfile,
                             AgentToolResult, ConversationAlias, AgentDocumentConnection, AgentDocumentReference, AgentExport,
                             AgentSkillInstallation, AgentSkillRevision, AgentSkillInstallOperation)

@@ -21,7 +21,7 @@ MAX_BYTES = 512_000
 MAX_MATCHES = 4096
 STRUCTURAL_IDS = frozenset({'id', 'execution', 'execution_id', 'attempt', 'attempt_id', 'call_id',
     'reference', 'revision_id', 'installation_id', 'artifact_id', 'input_reference', 'logical_id',
-    'base_revision', 'sha256', 'digest', 'folder_sha256', 'instruction_digest', 'request_id'})
+    'base_revision', 'sha256', 'digest', 'folder_sha256', 'instruction_digest', 'request_id', 'reservation_id'})
 OPAQUE_ID = re.compile(r'(?:[a-f0-9]{64}|[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})')
 
 
@@ -334,6 +334,17 @@ def block_unsupported(prompt):
         raise ValueError('privacy_binary_channel_blocked')
 
 
+def protected_user_message(prompt):
+    """Canonical revision of this user's input, shared by admission and bootstrap."""
+    from .models import PrivacyMessage
+    if not required(prompt):
+        return alias_text(ProtectionContext.from_prompt(prompt), prompt.content)
+    context = ProtectionContext.from_prompt(prompt)
+    turn = prepare_turn(context)
+    previous = PrivacyMessage.objects.filter(turn=turn, input_digest=keyed_digest(prompt.content)).first()
+    return previous.protected if previous else protect_message(context, prompt.content, source_key='user:input')
+
+
 def transient_response(prompt, text):
     """Check a cumulative stream prefix without persisting SSE occurrences."""
     from .privacy_policy import detect_ranges, revision_config
@@ -373,11 +384,15 @@ def stream_cut(prompt, text, cut):
 def record_use(context, call_key, texts):
     """Idempotent inference allowlist. No claim about delivery or money is made."""
     from collections import Counter
-    from .models import PrivacyUse
+    from .models import PrivacyUse, PrivacyCall
     with transaction.atomic():
         turn = prepare_turn(context)
         if turn is None:
             return
+        signature = keyed_digest(json.dumps(texts, ensure_ascii=False))
+        call, _ = PrivacyCall.objects.get_or_create(turn=turn, call_key=call_key, defaults={'input_digest': signature})
+        if call.input_digest != signature:
+            raise ValueError('privacy_idempotency_conflict')
         counts = Counter(token for text in texts for token in TOKEN.findall(text))
         rows = list(ConversationAlias.objects.filter(**context.scope(), token__in=counts))
         if len(rows) != len(counts):
@@ -402,7 +417,24 @@ def record_use(context, call_key, texts):
                 raise ValueError('privacy_idempotency_conflict')
 
 
-def outbound(prompt, call_key, texts, *, metadata=(), credentials=()):
+def usage_directions(texts, sections):
+    """Only counts cross into receipts; section contents are never persisted here."""
+    from collections import Counter
+    expected = Counter(token for text in texts for token in TOKEN.findall(text))
+    result, observed = {}, Counter()
+    for direction, text in sections:
+        if direction not in {'input', 'history', 'context'}:
+            raise ValueError('privacy_direction_invalid')
+        for token, count in Counter(TOKEN.findall(text)).items():
+            row = result.setdefault(token, {'input': 0, 'history': 0, 'context': 0})
+            row[direction] += count
+            observed[token] += count
+    if observed != expected:
+        raise ValueError('privacy_direction_mismatch')
+    return result
+
+
+def outbound(prompt, call_key, texts, *, metadata=(), credentials=(), record=True):
     if not required(prompt):
         return
     context = ProtectionContext.from_prompt(prompt)
@@ -414,16 +446,54 @@ def outbound(prompt, call_key, texts, *, metadata=(), credentials=()):
     candidates = [text for text in [*texts, *metadata] if isinstance(text, str)]
     from .privacy_policy import detect_ranges, revision_config
     config, rules = revision_config(context, turn.revision)
+    def semantic_forms(text):
+        from urllib.parse import unquote_plus
+        yield text
+        # Destinations and JSON string values can carry percent-encoded PII.
+        # Bound decoding; an encoding deeper than this is not accepted.
+        for _ in range(3):
+            decoded = unquote_plus(text)
+            if decoded == text:
+                return
+            yield decoded
+            text = decoded
+        if unquote_plus(text) != text:
+            raise ValueError('privacy_encoding_too_deep')
     def unsafe(text):
-        if detect_ranges(text, config, rules, patterns=False):
+        from decimal import Decimal
+        if any(detect_ranges(value, config, rules, patterns=False) for value in semantic_forms(text)):
             return True
         try:
-            shielded = json.dumps(structural_ids(json.loads(text)), ensure_ascii=False)
+            decoded = json.loads(text, parse_float=Decimal)
         except (ValueError, TypeError):
-            shielded = text
-        return bool(detect_ranges(shielded, config, rules))
+            decoded = text
+        def strings(value):
+            if isinstance(value, str):
+                yield value
+            elif isinstance(value, (int, float, Decimal)) and not isinstance(value, bool):
+                # JSON numeric scalars can be phone/account/card values too.
+                # Normalize scientific notation before applying the detectors.
+                number = Decimal(str(value))
+                if not number.is_finite() or abs(number.adjusted()) > 128 or len(number.as_tuple().digits) > 128:
+                    raise ValueError('privacy_number_out_of_bounds')
+                yield format(number, 'f')
+            elif isinstance(value, list):
+                for item in value:
+                    yield from strings(item)
+            elif isinstance(value, dict):
+                for key, item in value.items():
+                    yield key
+                    yield from strings(item)
+        # JSON escaping is a transport representation, not privacy protection.
+        if any(detect_ranges(form, config, rules, patterns=False)
+               for value in strings(decoded) for form in semantic_forms(value)):
+            return True
+        shielded = structural_ids(decoded)
+        return any(detect_ranges(form, config, rules)
+                   for value in strings(shielded) for form in semantic_forms(value))
     if (any(unsafe(text) for text in candidates)
-            or any(detect_ranges(text, config, rules, patterns=False) for text in credentials)
+            or any(detect_ranges(value, config, rules, patterns=False) for text in credentials for value in semantic_forms(text))
             or any(value in text for value in values for text in candidates)):
         raise ValueError('privacy_original_at_boundary')
-    record_use(context, call_key, texts)
+    if record:
+        record_use(context, call_key, texts)

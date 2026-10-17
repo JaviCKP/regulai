@@ -168,7 +168,7 @@ def bootstrap(run, context):
     from .checkpoints import load
     from .file_continuity import restore_references
     from .skill_context import bootstrap as skill_bootstrap
-    from front.privacy import required
+    from front.privacy import required, protected_user_message
     workspace_inputs = restore_references(run, context)
     if required(run.prompt) and (workspace_inputs or asset or base):
         raise AgentDenied('privacy_binary_channel_blocked')
@@ -180,11 +180,11 @@ def bootstrap(run, context):
         'workspace_inputs': workspace_inputs,
         'input': {'path': asset.path, 'base64': asset.original,
             'sha256': asset.digest} if asset else None, 'base': None, 'base_format': base.format if base else None,
-        'message': alias_text(run, run.prompt.content), 'tools': tools, 'limits': run.job['limits'],
+        'message': protected_user_message(run.prompt), 'tools': tools, 'limits': run.job['limits'],
         'reconcile_final_call_id': run.job.get('reconcile_final_call_id'),
         'checkpoint': load(run) if run.job.get('restore_checkpoint') and not run.job.get('reconcile_final_call_id') else None,
         'model_context': {'operation': 'professional', 'request': run.job['request'],
-            'date': timezone.now().isoformat(), 'input_path': asset.path if asset else None,
+            'date': (run.started_at or run.created_at).isoformat(), 'input_path': asset.path if asset else None,
             'base_revision': str(base.pk) if base else None, 'private_data': run.job['private_data'],
             'network_policy': 'Public research and package preparation first. Network closes irreversibly on the first workspace operation when private inputs are present.',
             'limits': run.job['limits'], 'vision': 'inspect_image' in tools}}

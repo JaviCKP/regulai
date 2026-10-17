@@ -155,18 +155,25 @@ class GovernedCalls:
                 raise PipelineStop('authorization_changed')
         return fresh
 
-    def start_call(self, purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None, transport='http', outbound_texts=None):
-        self.preflight(destination, texts, model_pk=model_pk)
+    def start_call(self, purpose, destination, model, texts, cost_bound, prices, reserve=Decimal(0), *, model_pk=None, transport='http', outbound_texts=None, outbound_metadata=(), outbound_credentials=(), outbound_sections=None):
+        fresh = self.preflight(destination, texts, model_pk=model_pk)
         self.ensure_budget(cost_bound, reserve)
+        directions = None
         if outbound_texts is not None:
-            from .privacy import outbound
-            metadata = [model or '']
-            credentials = []
+            from .privacy import outbound, required, usage_directions
+            metadata = [model or '', *outbound_metadata]
+            credentials = list(outbound_credentials)
+            if destination == 'jev':
+                from .jev import ENDPOINT, VERCEL_ENDPOINT
+                credentials.append(fresh.company.jev_api_key)
+                metadata.append(VERCEL_ENDPOINT if self.cfg.jev.transport == 'vercel' else ENDPOINT)
             if destination.startswith('engine:') and (int(destination.split(':')[1]), model_pk) in self.rows:
                 engine = self.rows[(int(destination.split(':')[1]), model_pk)][0]
                 metadata += [engine.engine.base_url or '']
                 credentials.append(engine.api_key)
             try:
+                if outbound_sections is not None and required(self.prompt):
+                    directions = usage_directions(outbound_texts, outbound_sections)
                 outbound(self.prompt, str(self.call_context.get('call_id') or '') + ':' + str(len(self.prompt.decision['calls'])),
                     outbound_texts, metadata=metadata, credentials=credentials)
             except ValueError:
@@ -176,6 +183,8 @@ class GovernedCalls:
                 'price_snapshot': prices, 'currency': 'USD', 'cost_kind': 'unknown', 'transport': transport}
         if outbound_texts is not None:
             call['privacy_call_key'] = str(self.call_context.get('call_id') or '') + ':' + str(len(self.prompt.decision['calls']))
+        if directions is not None:
+            call['privacy_directions'] = directions
         call.update(self.call_context)
         if transport == 'local':
             call.update(cost='0', cost_kind='configured_zero', cost_scope='api')

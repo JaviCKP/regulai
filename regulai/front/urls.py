@@ -30,6 +30,13 @@ from . import privacy_views
 urlpatterns = [
     path('chat/privacy/conversations/<int:conversation_id>/history/', privacy_views.history, name='privacy_history'),
     path('chat/privacy/requests/<uuid:request_id>/', privacy_views.message, name='privacy_message'),
+    path('chat/privacy/preview/', privacy_views.preview, name='privacy_preview_new'),
+    path('chat/privacy/conversations/<int:conversation_id>/preview/', privacy_views.preview, name='privacy_preview'),
+    path('chat/privacy/conversations/<int:conversation_id>/inspector/', privacy_views.inspector, name='privacy_inspector'),
+    path('chat/privacy/conversations/<int:conversation_id>/reveal/', privacy_views.reveal, name='privacy_reveal'),
+    path('chat/privacy/conversations/<int:conversation_id>/selection/', privacy_views.selection, name='privacy_selection'),
+    path('settings/privacy/', privacy_views.settings_page, name='privacy_settings'),
+    path('settings/privacy/configuration/', privacy_views.configuration, name='privacy_configuration'),
     path('chat/agent/artifacts/<uuid:artifact_id>/preview/', artifact_preview.preview, name='agent_artifact_preview'),
     path('skills/', skill_views.library, name='skills_library'),
     path('skills/conversations/<int:conversation_id>/preference/', skill_views.preference, name='skill_preference'),

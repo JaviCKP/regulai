@@ -12,6 +12,28 @@ from .privacy import ProtectionContext, authorize, effective_revision, required,
 from .privacy_projection import Projection, VERSION, UNAVAILABLE
 
 
+def recoverable(row, config, rules):
+    return recoverable_value(row.original, row.kind, config, rules)
+
+
+def recoverable_value(original, kind, config, rules):
+    from .privacy_policy import detect_ranges
+    from .local_masking import detect_spans
+    ranges = detect_ranges(original, config, rules) if original else []
+    return bool(original and not any(kind == 'SECRET' for _, _, kind in detect_spans(original))
+        # A full-condition irreversible YARA rule cannot be cleared by testing
+        # a value in isolation. A literal spanning this value and its context
+        # is likewise not permission to reveal the value on its own.
+        and not any(item.treatment == 'irreversible' for item in config.yara)
+        and not any(item.treatment == 'irreversible' and (
+            original in item.text or item.text in original or any(
+                original.endswith(item.text[:size]) or original.startswith(item.text[-size:])
+                for size in range(1, min(len(original), len(item.text))))) for item in config.literals)
+        and not any(not recover for _, _, _, recover, _ in ranges)
+        and (config.categories.get(kind) == 'reversible'
+             or any(a == 0 and b == len(original) and recover for a,b,_,recover,_ in ranges)))
+
+
 class Presentation:
     def __init__(self, actor_id, prompt, *, inference_id=None, call_key=None, user_message=False):
         if actor_id != prompt.user_id:
@@ -31,9 +53,9 @@ class Presentation:
             raise ValueError('privacy_projection_unavailable')
         if Prompt.objects.filter(pk=self.prompt.pk, status__in=['processing', 'received']).exists():
             prepare_turn(self.context)
-        from .privacy_policy import revision_config, detect_ranges
-        from .local_masking import detect_spans
+        from .privacy_policy import revision_config
         config, rules = revision_config(self.context, revision)
+        self.config, self.rules = config, rules
         uses = turn.uses.all()
         if self.inference_id is not None:
             uses = uses.filter(call_key__startswith=str(self.inference_id) + ':')
@@ -47,11 +69,7 @@ class Presentation:
         values = {}
         for row in ConversationAlias.objects.filter(**self.context.scope(), pk__in=ids):
             original = row.original
-            ranges = detect_ranges(original, config, rules) if original else []
-            if (not original or any(kind == 'SECRET' for _, _, kind in detect_spans(original))
-                    or any(not recover for _, _, _, recover, _ in ranges)
-                    or not (config.categories.get(row.kind) == 'reversible'
-                        or any(a == 0 and b == len(original) and recover for a,b,_,recover,_ in ranges))):
+            if not recoverable(row, config, rules):
                 continue
             values[row.token] = original
         if any(values.get(token) != original for token, original in self.parser.aliases.items()):
@@ -74,8 +92,21 @@ class Presentation:
                 variants = json.loads(message.variants)
                 for segment in self.segments:
                     if segment['kind'] == 'original' and str(segment['start']) in variants:
-                        segment['text'] = variants[str(segment['start'])]
+                        original = variants[str(segment['start'])]
+                        token = self.canonical.encode()[segment['start']:segment['end']].decode()
+                        kind = token[4:].split('_', 1)[0]
+                        if not recoverable_value(original, kind, self.config, self.rules):
+                            raise ValueError('privacy_projection_revoked')
+                        segment['text'] = original
         natural = ''.join(segment['text'] for segment in self.segments)
+        from .privacy_policy import detect_ranges
+        irreversible = [(a, b) for a, b, _, recover, _ in detect_ranges(natural, self.config, self.rules) if not recover]
+        offset = 0
+        for segment in self.segments:
+            end = offset + len(segment['text'])
+            if segment['kind'] == 'original' and any(offset < b and end > a for a, b in irreversible):
+                raise ValueError('privacy_presentation_blocked')
+            offset = end
         # Local only: a restored value never goes to a remote verifier. Rule
         # conditions requiring the whole answer already force complete delivery.
         from .policy import active_rules, scan_rules
@@ -206,7 +237,8 @@ def agent_batch(actor_id, run, events, cursor=0, sessions=None):
 
 def agent_snapshots(actor_id, run, segments):
     if required(run.prompt):
+        finished = set(run.events.filter(kind='inference.finished').values_list('data__message_id', flat=True))
         for segment in segments:
             segment['projection'] = project_message(actor_id, run.prompt, segment['text'],
-                inference_id=segment['inference_id'], final=run.status not in ('active', 'queued'))
+                inference_id=segment['inference_id'], final=run.status not in ('active', 'queued') or segment['message_id'] in finished)
     return segments

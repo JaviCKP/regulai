@@ -327,6 +327,11 @@ def enqueue(actor, command, conversation, text, request_id):
 def accepted(run):
     from front.chat_service import request_result
     run.prompt.refresh_from_db()
+    # The accepted HTTP reply can render the user's message before any worker
+    # or classifier has run. Commit its protected revision before projecting it.
+    from front.privacy import required, protected_user_message
+    if required(run.prompt):
+        protected_user_message(run.prompt)
     result = request_result(run.prompt)
     result.data.update(success=True, mode='agent', agent=run_data(run))
     if run.status in LIVE:
@@ -440,7 +445,8 @@ def bootstrap(token, attempt, payload):
     from front.privacy import ProtectionContext, protect_tree, required, outbound
     if required(run.prompt):
         result = protect_tree(ProtectionContext.from_prompt(run.prompt), result)
-        outbound(run.prompt, 'worker:bootstrap', [json.dumps(result, ensure_ascii=False)])
+        # The HTTP wrapper records the one actual executor response.
+        outbound(run.prompt, 'worker:bootstrap', [json.dumps(result, ensure_ascii=False)], record=False)
     return result
 
 
@@ -457,12 +463,13 @@ def _bootstrap(token, attempt, payload):
             from .professional import bootstrap as professional_bootstrap
             return professional_bootstrap(run, context)
         from .aliases import alias_text, alias_value
+        from front.privacy import protected_user_message
         if run.job['kind'] == 'mock':
             return {'status': 'authorized', 'input': None, 'base': None,
                 'model_context': {'operation': 'mock', 'request': run.job.get('request', {}), 'data_origin': 'invented_sample_data',
                     'min_rows': context[2].min_group_size, 'max_rows': 1000,
                     'columns': ['item', 'amount_cents']},
-                'message': alias_text(run, run.prompt.content), 'execution': str(run.pk), 'skills': skill_data,
+                'message': protected_user_message(run.prompt), 'execution': str(run.pk), 'skills': skill_data,
                 'tools': ['create_mock_excel'] + (['read_file'] if 'read_file' in context[2].tools and skill_data else [])}
         asset = AgentInput.objects.get(pk=run.job['source'], execution=run) if run.job.get('source') else None
         rows = input_rows(_decode(asset), asset.kind) if asset and asset.kind in ('csv', 'xlsx') else []
@@ -479,7 +486,7 @@ def _bootstrap(token, attempt, payload):
                 'checkpoint_ready': bool(run.job.get('checkpoint_ready')), 'model_context': {
                 'operation': 'export', 'artifact_reference': str(base.pk), 'sha256': base.sha256,
                 'name': alias_text(run, run.job['export_name'])},
-                'message': alias_text(run, run.prompt.content), 'tools': ['save_revision']}
+                'message': protected_user_message(run.prompt), 'tools': ['save_revision']}
         model_context['base_format'] = base.format if base else None
         if base and base.verification.get('narrative'):
             from .report_contract import source_content
@@ -496,7 +503,7 @@ def _bootstrap(token, attempt, payload):
             'base': base64.b64encode(_bytes(base)).decode() if base else None,
             'base_format': base.format if base else None, 'base_docx': companion,
             'execution': str(run.pk), 'skills': skill_data,
-            'model_context': model_context, 'message': alias_text(run, run.prompt.content),
+            'model_context': model_context, 'message': protected_user_message(run.prompt),
             'tools': allowed_tools(run.job.get('request') or interpret(run.prompt.content, uploaded=bool(asset), base_format=base.format if base else None),
                 context[2].tools, base=bool(base), source=bool(asset), narrative=bool(base and base.verification.get('narrative')))}
 

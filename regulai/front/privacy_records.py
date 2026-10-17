@@ -63,6 +63,15 @@ class PrivacyUse(models.Model):
         constraints = [models.UniqueConstraint(fields=['turn', 'call_key', 'alias'], name='privacy_use_once')]
 
 
+class PrivacyCall(models.Model):
+    turn = models.ForeignKey(PrivacyTurn, on_delete=models.CASCADE)
+    call_key = models.CharField(max_length=160)
+    input_digest = models.CharField(max_length=64)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['turn', 'call_key'], name='privacy_call_once')]
+
+
 class PrivacySelection(models.Model):
     alias = models.OneToOneField('front.ConversationAlias', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

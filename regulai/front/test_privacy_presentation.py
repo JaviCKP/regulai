@@ -82,3 +82,36 @@ class PresentationTests(RegistryFixture, TestCase):
         ConversationAlias.objects.all().delete()
         with self.assertRaisesMessage(ValueError, 'privacy_projection_revoked'):
             session.feed(' more')
+
+    def test_partial_irreversible_overlap_is_not_revealed_before_suffix_arrives(self):
+        revision = PrivacyRevision.objects.create(company=self.company, author=self.user,
+            configuration=json.dumps({'categories': {'PERSON': 'reversible'},
+                'literals': [{'text': 'Fixture VIP', 'treatment': 'irreversible'}]}),
+            fingerprint='overlap-fixture', detector_version=digest(detector_metadata()))
+        self.company.ai_config['privacy']['revision_id'] = revision.pk
+        self.company.save()
+        self.prompt.status = 'completed'
+        self.prompt.save(update_fields=['status'])
+        token = ConversationAlias.objects.get(kind='PERSON').token
+        session = Presentation(self.user.pk, self.prompt, inference_id='inference-one')
+        first = session.feed(token, append=True)
+        second = session.feed(' VIP', append=True, final=True)
+        self.assertNotIn('Ana Fixture', first['text'] + second['text'])
+        self.assertIn(UNAVAILABLE, first['text'])
+
+    def test_current_contextual_irreversible_policy_cannot_reveal_historical_values(self):
+        from front.models import Rule, RulesGroup
+        source = 'rule context { strings: $a="Ana Fixture" $b="VIP" condition: $a and $b }'
+        rule = Rule.objects.create(name='Synthetic contextual rule', action='consent', yara_rule=source,
+            rules_group=RulesGroup.objects.create(name='Synthetic rules', company=self.company))
+        for config in ({'categories': {'PERSON': 'reversible'}, 'literals': [{'text': 'VIP Ana Fixture', 'treatment': 'irreversible'}]},
+                       {'categories': {'PERSON': 'reversible'}, 'yara': [{'rule_id': rule.pk, 'source_hash': digest(source), 'strings': ['$a'], 'treatment': 'irreversible'}]}):
+            revision = PrivacyRevision.objects.create(company=self.company, author=self.user,
+                configuration=json.dumps(config), fingerprint='fixture-context', detector_version=digest(detector_metadata()))
+            self.company.ai_config['privacy']['revision_id'] = revision.pk
+            self.company.save()
+            self.prompt.status = 'completed'
+            self.prompt.save(update_fields=['status'])
+            view = project_message(self.user.pk, self.prompt, 'VIP ' + self.protected)
+            self.assertNotIn('Ana Fixture', view['text'])
+            self.assertIn(UNAVAILABLE, view['text'])

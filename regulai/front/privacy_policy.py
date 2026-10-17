@@ -154,12 +154,49 @@ def revision_config(context, revision):
     return config, rules
 
 
+def preview_text(text, config, rules):
+    """The same local range detector for draft and policy previews, without writes."""
+    from .agents.aliases import preserve_aliases
+    from .local_masking import mask_local_texts
+    if not isinstance(text, str) or not 1 <= len(text.encode()) <= 32000:
+        raise ValueError('privacy_preview_size')
+    ranges, substitutions, result = detect_ranges(text, config, rules), {}, text
+    for start, end, category, recover, _ in reversed(ranges):
+        key = (category, text[start:end])
+        substitutions.setdefault(key, f'[[R_{category}_{len(substitutions):032x}]]')
+        token = substitutions[key] if recover else '[[REGULAI_SECRET]]'
+        result = result[:start] + token + result[end:]
+    return preserve_aliases([result], mask_local_texts)[0], ranges
+
+
+def preview_segments(text, ranges=(), *, protected=False):
+    """Presentation only: highlight known ranges, with compact labels for aliases."""
+    parts, cursor = [], 0
+    labels = {'PERSON': 'Nombre', 'EMAIL': 'Correo', 'PHONE': 'Teléfono', 'FIELD': 'Texto',
+              'ID': 'Documento', 'ACCOUNT': 'Cuenta', 'CARD': 'Tarjeta'}
+    spans = [(a, b, None) for a, b, *_ in ranges]
+    if protected:
+        spans, names, counts = [], {}, {}
+        for match in re.finditer(r'\[\[(?:R_([A-Z]+)_([a-f0-9]{32})|REGULAI_[A-Z]+)\]\]', text):
+            if match[1] and match[0] not in names:
+                counts[match[1]] = counts.get(match[1], 0) + 1
+                names[match[0]] = f'{labels.get(match[1], "Dato")} {counts[match[1]]}'
+            label = names.get(match[0], 'Oculto')
+            spans.append((*match.span(), label))
+    for a, b, label in spans:
+        if a > cursor:
+            parts.append({'text': text[cursor:a]})
+        parts.append({'text': text[a:b], 'selected': True, **({'label': label} if label else {})})
+        cursor = b
+    if cursor < len(text):
+        parts.append({'text': text[cursor:]})
+    return parts
+
+
 def simulate_revision(actor, proposed, sample):
     """Reuse the policy simulator baseline and local decision; never call a model."""
     from django.core import signing
     from .access import actor_company, can_manage_company_policy
-    from .agents.aliases import preserve_aliases
-    from .local_masking import mask_local_texts
     from .models import PrivacyRevision, Rule
     from .policy_simulator import _baseline, _outcome, _signals
     from .privacy import keyed_digest
@@ -171,26 +208,26 @@ def simulate_revision(actor, proposed, sample):
     config = PrivacyConfig.model_validate(proposed)
     owned = list(Rule.objects.filter(rules_group__company=company))
     baseline, rules = _baseline(actor, company, owned)
-    ranges = detect_ranges(sample, config, owned)
+    protected, ranges = preview_text(sample, config, owned)
     for selection in config.yara:
         if not any(detector.startswith(f'yara:{selection.rule_id}:') for *_, detector in ranges):
             raise ValueError('privacy_yara_sample_requires_match')
-    result, substitutions = sample, {}
-    for start, end, category, recover, _ in reversed(ranges):
-        if recover:
-            key = (category, sample[start:end])
-            substitutions.setdefault(key, f'[[R_{category}_{len(substitutions):032x}]]')
-            token = substitutions[key]
-        else:
-            token = '[[REGULAI_SECRET]]'
-        result = result[:start] + token + result[end:]
-    protected = preserve_aliases([result], mask_local_texts)[0]
+    reference = company.ai_config.get('privacy')
+    current_config = PrivacyConfig()
+    if reference:
+        current_revision = PrivacyRevision.objects.get(pk=reference['revision_id'], company=company)
+        if current_revision.detector_version != digest(detector_metadata()):
+            raise ValueError('privacy_detector_changed')
+        current_config = PrivacyConfig.model_validate_json(current_revision.configuration)
+    current, _ = preview_text(sample, current_config, owned)
     encoded = json.dumps(config.model_dump(), ensure_ascii=False, sort_keys=True)
     revision = PrivacyRevision.objects.create(company=company, author=actor, configuration=encoded,
         fingerprint=keyed_digest(encoded), detector_version=digest(detector_metadata()))
     proof = {**baseline, 'revision_id': revision.pk, 'fingerprint': revision.fingerprint,
              'detector': revision.detector_version}
-    return {'revision_id': revision.pk, 'protected': protected, 'current': mask_local_texts([sample])[0],
+    return {'revision_id': revision.pk, 'protected': protected, 'current': current,
+        'current_segments': preview_segments(current, protected=True),
+        'protected_segments': preview_segments(protected, protected=True),
         'decision': _outcome(actor, company.ai_config, sample, rules, _signals({})),
         'review_token': signing.dumps(proof, salt='privacy-review'), 'calls': [],
         'coverage': 'Texto explícito y patrones locales. No detecta todos los nombres libres ni sanea PDF, imágenes o binarios.'}

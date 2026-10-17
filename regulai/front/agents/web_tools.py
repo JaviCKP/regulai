@@ -21,13 +21,18 @@ from .public_web import ReadableHTML, WebError, fetch, public_url
 from .service import AgentDenied, _government, _totals, authenticate
 
 
-def search(query, configuration, *, max_results=5, language=None, time_range=None, timeout=25, transport=None):
-    """Tavily basic retrieval only. No answer inference, retries or fallback."""
+def search_body(query, *, max_results=5, language=None, time_range=None):
     body = {'query': query + (f' (language: {language})' if language else ''), 'topic': 'general',
         'search_depth': 'basic', 'max_results': max_results, 'include_answer': False,
         'include_raw_content': False, 'include_images': False, 'auto_parameters': False, 'include_usage': True}
     if time_range:
         body['time_range'] = time_range
+    return body
+
+
+def search(query, configuration, *, max_results=5, language=None, time_range=None, timeout=25, transport=None):
+    """Tavily basic retrieval only. No answer inference, retries or fallback."""
+    body = search_body(query, max_results=max_results, language=language, time_range=time_range)
     with httpx.Client(transport=transport, trust_env=False, follow_redirects=False, timeout=timeout) as client:
         with client.stream('POST', 'https://api.tavily.com/search', json=body,
                 headers={'Authorization': 'Bearer ' + configuration['api_key']}) as response:
@@ -222,6 +227,8 @@ def execute(token, attempt, payload):
 
     def permitted(value):
         # Check every outbound path/query before resolution, including redirects.
+        from front.privacy import outbound
+        outbound(run.prompt, 'web-destination:' + digest(value), [], metadata=[value])
         protected = government.protect_texts([value], context[8])[0]
         if protected != value or '[[R_' in value or '[[REGULAI_' in value:
             raise WebError('web_sensitive_request_denied')
@@ -258,8 +265,12 @@ def execute(token, attempt, payload):
             permitted(value)
             configuration = search_configuration(context[2]) if call.name == 'web_search' else None
             cost = Decimal(configuration['call_cost_bound']) if configuration else Decimal(0)
+            sent = json.dumps(search_body(value, max_results=call.args.get('max_results', 5),
+                language=call.args.get('language'), time_range=call.args.get('time_range')), ensure_ascii=False) if configuration else value
             record, started = government.start_call('web_search' if configuration else 'web_read',
-                'research:web', None, context[8] + [('prompts', value)], cost, {})
+                'research:web', None, context[8] + [('prompts', value)], cost, {}, outbound_texts=[sent],
+                outbound_metadata=['https://api.tavily.com/search'] if configuration else [value],
+                outbound_credentials=[configuration['api_key']] if configuration else [])
             if configuration:
                 record.update(provider_name='tavily', provider_inference=False, cost=None, cost_kind='unknown')
             else:

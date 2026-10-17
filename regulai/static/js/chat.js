@@ -1086,7 +1086,7 @@
   }
 
   function initEvents() {
-    document.addEventListener('click', event => {
+    document.addEventListener('click', async event => {
       const target = event.target.closest('[data-action], .rg-code-copy, .rg-cite, [data-suggestion]');
       if (!target) return;
       if (target.classList.contains('rg-code-copy')) { copy(target.dataset.copy || '', target); return; }
@@ -1108,8 +1108,17 @@
         case 'nav-open': setDrawer(!app.classList.contains('is-drawer-open')); break;
         case 'drawers-close': setDrawer(false); break;
         case 'copy': {
-          const body = article?.querySelector('.rg-md');
-          if (body) copy(window.RegulayMarkdown?.plain(sources.get(body) ?? body.textContent) ?? body.textContent, target);
+          if (!article?.dataset.requestId) break;
+          try {
+            const response = await fetch(`/chat/privacy/requests/${encodeURIComponent(article.dataset.requestId)}/`,
+              {cache: 'no-store', credentials: 'same-origin'});
+            if (!response.ok) throw new Error('unavailable');
+            const data = await response.json();
+            if (data.error_type === 'privacy_access_revoked' || !data.assistant_message) throw new Error('revoked');
+            const message = data.assistant_message;
+            const text = message.projection?.text ?? window.RegulayMarkdown?.plain(message.content ?? '') ?? message.content ?? '';
+            await copy(text, target);
+          } catch (_) { toast('La copia ya no está disponible. Actualiza el chat.'); }
           break;
         }
         case 'details': toggleDetails(target); break;

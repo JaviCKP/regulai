@@ -68,6 +68,17 @@ class RegistryTests(RegistryFixture, TestCase):
         self.assertEqual(result, '[[REGULAI_SECRET]]')
         self.assertEqual(ConversationAlias.objects.count(), 0)
 
+    def test_encryption_key_rotation_and_missing_key_do_not_return_ciphertext(self):
+        from cryptography.fernet import Fernet
+        from django.conf import settings
+        token = alias_value(self.context, 'EMAIL', 'rotation@example.invalid')
+        old_key = settings.ENCRYPTION_KEY
+        with override_settings(ENCRYPTION_KEY=Fernet.generate_key().decode(), ENCRYPTION_KEY_FALLBACKS=[old_key]):
+            self.assertEqual(ConversationAlias.objects.get(token=token).original, 'rotation@example.invalid')
+            self.assertEqual(alias_value(self.context, 'EMAIL', 'rotation@example.invalid'), token)
+        with override_settings(ENCRYPTION_KEY=Fernet.generate_key().decode(), ENCRYPTION_KEY_FALLBACKS=[]):
+            self.assertEqual(ConversationAlias.objects.get(token=token).original, '')
+
     def test_foreign_scope_references_are_rejected(self):
         token = alias_value(self.context, 'PERSON', 'Ana Fixture')
         other = Conversation.objects.create(user=self.user)

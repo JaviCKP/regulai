@@ -118,6 +118,14 @@ def _line_start(text, index):
     return text.rfind('\n', 0, max(index, 0)) + 1
 
 
+def structured_prefix(text):
+    stripped = text.lstrip()
+    prefixes = ('[[R_', '[[REGULAI_')
+    if not stripped or any(prefix.startswith(stripped) for prefix in prefixes):
+        return None
+    return stripped[0] in '{[' and not stripped.startswith(prefixes)
+
+
 def safe_cut(text, view=None):
     """Raw index up to which masking of ``text`` is final, whatever follows.
 
@@ -127,8 +135,7 @@ def safe_cut(text, view=None):
     block; those lines are held until complete. Other values never contain
     whitespace, so a cut after whitespace cannot split them.
     """
-    stripped = text.lstrip()
-    if not stripped or stripped[0] in '{[':
+    if structured_prefix(text) is not False:
         return 0  # Structured answers are masked as JSON at the end; never partial.
     matching, offsets = view or _matching_view(text)
     if len(matching) <= HOLDBACK:
@@ -213,12 +220,12 @@ class StreamGuard:
 
     def advance(self):
         if self.structured is None and self.text.strip():
-            self.structured = self.text.lstrip()[0] in '{['
+            self.structured = structured_prefix(self.text)
             if self.structured:
                 if self.prompt is not None:
                     self.prompt.decision.setdefault('delivery', {}).update(mode='complete', reason='structured_answer')
                 self.events.delivery('complete', 'structured_answer', attempt=self.attempt)
-        if self.structured:
+        if self.structured is not False:
             return
         cut = safe_cut(self.text, (self.matching, self.offsets))
         from .privacy import required, stream_cut

@@ -546,7 +546,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
         if not provider_managed and len(serialized.encode('utf-8')) > jev.MAX_STATE_BYTES:
             raise PipelineStop('evaluation_input_too_large')
         call, started = start_call(purpose, 'jev', cfg.jev.model,
-            policy_texts + [('prompts', serialized)], jev_bound, jev_prices, reserve, outbound_texts=[serialized])
+            policy_texts + [('prompts', serialized)], jev_bound, jev_prices, reserve,
+            outbound_texts=[json.dumps({'state': state, 'questions': questions}, ensure_ascii=False)])
         timeout = None
         if not provider_managed:
             seconds = min(120, remaining())
@@ -658,9 +659,11 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             current += '\n\nSources:\n' + sources.prompt_json
             system = system + [ChatMessage('system', DOCUMENT_INSTRUCTION)]
         messages = system + history + [ChatMessage('user', current)]
+        privacy_directions = ['context'] * len(system) + ['history'] * len(history) + ['input']
         if {'classification_ambiguous', 'task_ambiguous', 'difficulty_ambiguous',
                 'clarification_required', 'insufficient_evidence'}.intersection(prompt.decision.get('notices', [])):
             messages.insert(0, ChatMessage('system', 'The request may lack necessary information. State uncertainty and ask for clarification where needed; do not invent missing facts.'))
+            privacy_directions.insert(0, 'context')
         verify_reserve = jev_bound if semantic else Decimal(0)
         if masks:
             verify_reserve = None if verify_reserve is None or mask_chain_bound is None else verify_reserve + mask_chain_bound
@@ -693,6 +696,7 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
             engine, model, _ = rows[(candidate.company_engine_id, candidate.model_pk)]
             if attempt == 2:
                 messages = messages + retry_messages
+                privacy_directions += ['context'] * len(retry_messages)
             # Mask expansion and retry instructions must still fit the selected capacity.
             selection = route([candidate], messages, allowed_destinations=allowed,
                 require_quality=not tier_routing,
@@ -729,7 +733,8 @@ def run_pipeline(actor, command, prompt, profile, text, document, system, histor
                                         attempt=attempt, prompt=prompt)
             call, started = start_call('generation', f'engine:{engine.pk}', model.model_id,
                 policy_texts + [('prompts', m.content) for m in messages], selection.estimated_cost,
-                selection.price_snapshot, verify_reserve, model_pk=model.pk, outbound_texts=[m.content for m in messages])
+                selection.price_snapshot, verify_reserve, model_pk=model.pk, outbound_texts=[m.content for m in messages],
+                outbound_sections=list(zip(privacy_directions, [m.content for m in messages])))
             if guard is not None:
                 guard.privacy_call_key = call.get('privacy_call_key')
             connector = get_connector(engine.engine.connector_type, engine.api_key, engine.engine.base_url or None)
