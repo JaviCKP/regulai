@@ -139,7 +139,10 @@ function OutcomeNotice({ turn, outcome, request }: { turn: TurnModel; outcome: O
     case "blocked":
       return (
         <Notice tone="blocked" title="Bloqueado por la política" live={live}>
-          <p>{outcome.rules.length ? `Coincide con ${outcome.rules.join(", ")}. ` : ""}No se ha enviado a ningún proveedor.</p>
+          <p>
+            {outcome.rules.length ? `Coincide con ${outcome.rules.join(", ")}. ` : outcome.reason ? `${outcome.reason} ` : ""}
+            No se ha enviado a ningún proveedor.
+          </p>
         </Notice>
       )
     case "consent":

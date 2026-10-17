@@ -44,6 +44,10 @@ export function deliverableModel(artifact: Artifact, data: RunSnapshot | null) {
   const receiptAllows = !delivery || (["complete", "partial"].includes(String(delivery.status)) && list<{ artifact_id?: string; id?: string; sha256?: string }>(delivery.artifacts)
     .some((reference) => (reference.artifact_id || reference.id) === artifact.id && reference.sha256 === artifact.sha256))
   const verified = artifact.status === "verified" && receiptAllows
+  // The server serves a file only once delivered (file_continuity.delivered): listed in a complete
+  // or partial receipt, or, without a receipt, after the run completed. Until then the card shows
+  // the file without actions the server would refuse.
+  const delivered = verified && (delivery ? true : data?.run?.status === "completed")
   const pageUrls = list<string>(preview.pages)
   const pages = pageUrls.filter((url) => PAGE.test(url))
   const document = ["docx", "pdf", "pptx"].includes(format)
@@ -63,7 +67,7 @@ export function deliverableModel(artifact: Artifact, data: RunSnapshot | null) {
   const size = typeof artifact.size_bytes === "number" && Number.isSafeInteger(artifact.size_bytes) && artifact.size_bytes >= 0 ? artifact.size_bytes : null
   const title = artifact.filename || preview.title || "Entregable"
   const meta = [KIND[format] ?? (format.toUpperCase() || "Archivo"), count, size !== null ? fileSize(size) : "", `Revisión ${artifact.revision}`].filter(Boolean).join(" · ")
-  return { preview, format, verified, pages, pageUrls, document, viewer, pagesPreview, downloads, size, title, meta, mock: artifact.data_mode === "mock" || preview.data_mode === "mock" }
+  return { preview, format, verified, delivered, pages, pageUrls, document, viewer, pagesPreview, downloads, size, title, meta, mock: artifact.data_mode === "mock" || preview.data_mode === "mock" }
 }
 
 /** A deliverable: name, type and the actions the server allows; review and technical detail on demand. */
@@ -107,13 +111,13 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
       return
     }
     viewer.openPages({
-      runId, artifact, title: model.title, meta: model.meta, focusIndex, trigger, verified: model.verified, downloads: model.downloads,
+      runId, artifact, title: model.title, meta: model.meta, focusIndex, trigger, verified: model.delivered, downloads: model.downloads,
       review: reviewable ? { ready: Boolean(allLoaded) && !reviewing, confirm: confirmReview, pageLoaded } : undefined,
     })
   }
 
-  const canPreview = model.verified && (model.viewer || model.pagesPreview)
-  const thumb = model.verified && model.document && model.pagesPreview ? model.pages[0] : null
+  const canPreview = model.delivered && (model.viewer || model.pagesPreview)
+  const thumb = model.delivered && model.document && model.pagesPreview ? model.pages[0] : null
   const coverage = artifact.coverage || artifact.verification_checks?.coverage
   const checks = artifact.verification_checks ?? {}
   const failed = CHECKS.filter(([key]) => (checks[key] as { status?: string } | undefined)?.status === "failed").length
@@ -147,7 +151,7 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
               <EyeIcon />
             </Button>
           )}
-          {model.verified && model.downloads.map((download, index) => (
+          {model.delivered && model.downloads.map((download, index) => (
             <Button key={download.format} variant={index ? "ghost" : "outline"} size="sm"
               className={cn("h-9 gap-1.5 px-2.5 pointer-coarse:h-11", index > 0 && "text-muted-foreground")}
               render={<a href={download.url} download={artifact.filename || ""} />}
@@ -156,7 +160,7 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
               <span className="text-xs font-semibold">{download.format.toUpperCase()}</span>
             </Button>
           ))}
-          {professional && model.verified && !live && (
+          {professional && model.delivered && !live && (
             <Button variant="ghost" size="icon" className="size-9 text-muted-foreground pointer-coarse:size-11" aria-label={`Editar ${model.title}`} title="Editar"
               onClick={() => { session.editRevision(artifact, model.title); session.focusComposer?.() }}>
               <PencilIcon />
@@ -197,7 +201,7 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
           <p className="text-xs text-muted-foreground">Tu confirmación registra únicamente la revisión visual.</p>
         </div>
       )}
-      {!model.verified && !reviewable && <p className="text-xs text-subtle-foreground">Archivo pendiente de entrega verificada.</p>}
+      {!model.delivered && !reviewable && <p className="text-xs text-subtle-foreground">Archivo pendiente de entrega verificada.</p>}
 
       <Collapsible>
         <CollapsibleTrigger className="group/more flex items-center gap-1 rounded-md text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
@@ -222,7 +226,7 @@ export function Deliverable({ artifact, data, runId, revisions, professional, li
               })}
             </ul>
             {artifact.sha256 && <p className="break-all text-subtle-foreground">SHA-256 · {artifact.sha256}</p>}
-            {model.verified && canExport && <ExportForm artifact={artifact} />}
+            {model.delivered && canExport && <ExportForm artifact={artifact} />}
           </div>
         </CollapsibleContent>
       </Collapsible>

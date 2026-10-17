@@ -72,7 +72,7 @@ export function SkillPicker({ skills, open, onClose, onChosen, anchor }: {
         sideOffset={8}
         initialFocus={search}
         finalFocus={false}
-        className="w-[min(26rem,calc(100vw-1.5rem))] gap-2 p-2"
+        className="max-h-(--available-height) w-[min(26rem,calc(100vw-1.5rem))] gap-2 overflow-y-auto p-2"
       >
         <div className="flex items-center gap-2 px-1.5 pt-1">
           <PopoverTitle className="flex-1 text-[0.8125rem] font-semibold">Skills para el próximo mensaje</PopoverTitle>

@@ -100,9 +100,15 @@
   --warning: #8a5a00;
   --warning-soft: #fff8e8;
   --danger: #b42318;
-  --danger-soft: #fdecea;
+  --danger-soft: #fef3f2;
   --color-placeholder: #667085;
   --radius: 0.5rem;
+  /* Tailwind also emits --radius-md on :root for the components' min() radii, where
+   * --radius does not exist yet; redeclared here it resolves inside the island. */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
   --read: 46rem;
   color-scheme: light;
 }

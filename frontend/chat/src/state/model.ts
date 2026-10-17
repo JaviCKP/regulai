@@ -32,7 +32,7 @@ export type FileLink = { name: string; size: number | null; url: string }
 
 export type Outcome =
   | { kind: "answer"; text: string; unverified: boolean; evidence: EvidenceItem[]; file: FileLink | null; contextNote?: string }
-  | { kind: "blocked"; rules: string[] }
+  | { kind: "blocked"; rules: string[]; reason: string }
   | {
       kind: "consent"; rules: string[]; reason: string; disclosures: string[]; notices: string[]
       token: string | null; fileName: string | null; canConfirm: boolean
@@ -163,7 +163,10 @@ export function outcomeFromResult(data: RequestResult, command: Command | null, 
       : []
     return { kind: "answer", text, unverified, evidence, file }
   }
-  if (status === "blocked") return { kind: "blocked", rules: names(data.blocked_rules) }
+  if (status === "blocked") {
+    const rules = names(data.blocked_rules)
+    return { kind: "blocked", rules, reason: rules.length ? "" : data.error || "" }
+  }
   if (status === "pending_consent") {
     const reason = data.consent_reason || (data.receipt?.consent_reason as string | undefined) || ""
     const token = data.consent_token || command?.token || null
@@ -193,7 +196,7 @@ export function outcomeFromBoot(turn: BootTurn): Outcome | null {
   const notice = turn.notice
   if (notice) {
     switch (notice.kind) {
-      case "blocked": return { kind: "blocked", rules: notice.rules }
+      case "blocked": return { kind: "blocked", rules: notice.rules, reason: notice.rules.length ? "" : notice.detail || "" }
       case "consent": return {
         kind: "consent", rules: notice.rules, reason: notice.reason || "", disclosures: [], notices: [],
         token: notice.token ?? null, fileName: notice.file_name ?? null, canConfirm: Boolean(notice.token),

@@ -120,7 +120,11 @@ test("agent: activity, a quiet skill notice, the deliverable and the isolated vi
   const notice = turn.locator("[data-skill]")
   await expect(notice).toContainText("Taste v2", { timeout: 30_000 })
   await expect(prompt(page)).toBeFocused()
+  // Before the delivery the server refuses the file: the card shows it without actions.
+  await expect(turn.getByText("Archivo pendiente de entrega verificada.")).toBeVisible({ timeout: 40_000 })
+  await expect(turn.getByRole("button", { name: /Vista previa de madrid_landing\.html/ })).toHaveCount(0)
   await expect(turn.getByRole("button", { name: /Vista previa de madrid_landing\.html/ })).toBeVisible({ timeout: 40_000 })
+  await expect(turn.getByText("Archivo pendiente de entrega verificada.")).toHaveCount(0)
   await expect(turn.getByRole("button", { name: /Actividad del agente: Archivo disponible/ })).toHaveAttribute("aria-expanded", "false")
   const eye = turn.getByRole("button", { name: /Vista previa de madrid_landing\.html/ })
   await eye.click()

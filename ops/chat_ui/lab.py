@@ -185,6 +185,7 @@ def prepare(fresh=False):
     mask = ObfuscationConfig.objects.create(company=company, name='Local', backend='local', detect='both', language='es')
     company.ai_config = {'version': 1, 'local_sensitivity': 'internal', 'allow_empty_rules': True,
         'classification': 'local', 'verification': {'mode': 'local'}, 'masking': {'max_call_cost': '0'},
+        # Documents also need the semantic verifier (jev), absent here: the lab blocks them by policy.
         'destinations': {'internal': [f'engine:{credential.pk}', f'obfuscation:{mask.pk}']},
         'limits': {'provider_managed': True}}
     company.save()
@@ -355,11 +356,20 @@ def drive_run(run_id):
 def drive(once=False):
     owner_check()
     configure()
+    from django.db import Error, connections
     from front.models import AgentExecution
     print(json.dumps({'driver': 'fixture', 'polling': True}), flush=True)
     seen = set()
     while True:
-        for run in AgentExecution.objects.filter(status='queued').order_by('created_at').values_list('pk', flat=True):
+        try:
+            queued = list(AgentExecution.objects.filter(status='queued').order_by('created_at').values_list('pk', flat=True))
+        except Error:
+            # `prepare --fresh` drops the database under a running driver: wait for the new one.
+            connections.close_all()
+            seen.clear()
+            time.sleep(1)
+            continue
+        for run in queued:
             if run in seen:
                 continue
             seen.add(run)

@@ -149,7 +149,8 @@ function AccountMenu() {
           <span className="block truncate text-xs text-subtle-foreground">{user.company ?? "Sin empresa"}</span>
         </span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" align="start" sideOffset={8} className="w-64 max-h-[min(36rem,var(--available-height))]">
+      {/* All the room above the trigger: with touch-sized rows a fixed cap cut the last item on phones. */}
+      <DropdownMenuContent side="top" align="start" sideOffset={8} className="w-64">
         {boot.navigation.map((group, index) => (
           <DropdownMenuGroup key={group.label}>
             {index > 0 && <DropdownMenuSeparator />}

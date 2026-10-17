@@ -179,16 +179,17 @@ function LiveRegion() {
   return <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{text}</div>
 }
 
+/** Under the header: a passing message never covers the composer or the newest answer. */
 function Toast() {
   const toast = useChat((state) => state.toast)
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
+    <div className="pointer-events-none fixed inset-x-0 top-16 z-50 flex justify-center px-4">
       <AnimatePresence>
         {toast && (
           <m.div
             key={toast.id}
             role={toast.error ? "alert" : "status"}
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, transition: { duration: 0.12 } }}
             className={cn("pointer-events-auto max-w-md rounded-lg px-3.5 py-2 text-sm shadow-lg", toast.error ? "bg-danger text-white" : "bg-foreground text-background")}

@@ -1,11 +1,10 @@
-import { DownloadIcon, XIcon } from "lucide-react"
+import { CircleAlertIcon, DownloadIcon, XIcon } from "lucide-react"
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMediaQuery } from "@/lib/hooks"
-import { cn } from "@/lib/utils"
 
 import { getJSON, HttpError, isAbort } from "../transport/http"
 import type { Artifact } from "../types"
@@ -155,9 +154,17 @@ function ViewerBody({ opened, onClose, onSelect, width, onWidth, wide }: {
           <XIcon />
         </Button>
       </header>
-      <p role="status" className={cn("shrink-0 px-4 text-[0.8125rem]", state.status === "error" ? "text-danger" : "text-muted-foreground")}>
-        {state.status === "loading" ? "Comprobando acceso a esta revisión…" : state.status === "error" ? state.message : data?.notice || ""}
-      </p>
+      {/* One persistent live region: its content changes, so the result is announced. */}
+      <div role="status" className="shrink-0 px-4 text-[0.8125rem]">
+        {state.status === "error" ? (
+          <p className="flex items-start gap-2.5 rounded-lg bg-surface-2 px-3 py-2.5 text-foreground">
+            <CircleAlertIcon className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
+            {state.message}
+          </p>
+        ) : (
+          <p className="text-muted-foreground">{state.status === "loading" ? "Comprobando acceso a esta revisión…" : data?.notice || ""}</p>
+        )}
+      </div>
       {state.status === "ready" && data && (
         <Tabs defaultValue={typeof data.html === "string" ? "preview" : "code"} className="flex min-h-0 flex-1 flex-col gap-0 px-4 pt-3">
           <TabsList className="w-fit">

@@ -57,7 +57,9 @@ describe("history projection", () => {
     answer: null, assistant_file: null, receipt_url: null, evidence_url: null,
   }
   it("maps server notices to the same outcomes, and the consent token only when present", () => {
-    expect(outcomeFromBoot({ ...base, notice: { kind: "blocked", rules: ["R"] } })).toEqual({ kind: "blocked", rules: ["R"] })
+    expect(outcomeFromBoot({ ...base, notice: { kind: "blocked", rules: ["R"], detail: "x" } })).toEqual({ kind: "blocked", rules: ["R"], reason: "" })
+    expect(outcomeFromBoot({ ...base, notice: { kind: "blocked", rules: [], detail: "La política no autoriza…" } }))
+      .toEqual({ kind: "blocked", rules: [], reason: "La política no autoriza…" })
     expect(outcomeFromBoot({ ...base, notice: { kind: "consent", rules: [], token: null, file_name: "a.pdf" } })).toMatchObject({ canConfirm: false, fileName: "a.pdf" })
     expect(outcomeFromBoot({ ...base, notice: { kind: "error", rules: [], code: "outcome_unknown", title: "Resultado desconocido" } })).toMatchObject({ actions: ["check"] })
     expect(outcomeFromBoot({ ...base, notice: { kind: "live", rules: [], stale: true } })).toEqual({ kind: "pending", stale: true })

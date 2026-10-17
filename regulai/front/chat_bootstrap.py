@@ -108,12 +108,19 @@ def _evidence(items):
     return keep
 
 
-def _notice(notice):
+def _notice(notice, prompt=None):
     if not notice:
         return None
     value = {key: notice.get(key) for key in ('kind', 'title', 'text', 'reason', 'code', 'stale', 'retry')
              if notice.get(key) is not None}
     value['rules'] = list(notice.get('rules') or [])
+    if notice.get('kind') == 'blocked' and not value['rules'] and prompt is not None:
+        # Without a matching rule the policy's own reason says why (destination, restricted content),
+        # as the live result does.
+        from .chat_service import request_result
+        detail = request_result(prompt).data.get('error')
+        if isinstance(detail, str) and detail:
+            value['detail'] = detail
     if notice.get('kind') == 'consent':
         value['file_name'] = notice.get('file_name') or None
         # The legacy page exposed the token only when no file must be re-attached.
@@ -136,7 +143,7 @@ def _turn(turn):
         'live': bool(turn['notice'] and turn['notice'].get('kind') == 'live'),
         'user': ({'content': user.content, 'file_name': user.file_name or None,
                   'file_size': user.file_size or None} if user is not None else None),
-        'notice': _notice(turn['notice']),
+        'notice': _notice(turn['notice'], prompt),
         'answer': ({'text': answer['text'], 'unverified': bool(answer['unverified']),
                     'recorded': bool(answer['recorded']), 'evidence': _evidence(answer['evidence'])}
                    if answer is not None and (not run or run.get('professional')) else None),

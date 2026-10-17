@@ -22,6 +22,8 @@ export type Notice = {
   text?: string
   rules: string[]
   reason?: string
+  /** Blocked without a matching rule: the policy's own reason (bootstrap only). */
+  detail?: string
   code?: string
   stale?: boolean
   retry?: boolean
