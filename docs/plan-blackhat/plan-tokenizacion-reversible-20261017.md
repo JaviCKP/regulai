@@ -1,10 +1,10 @@
 # Protección reversible con vista natural del chat
 
-Fecha: 17 de octubre de 2026. Estado: **especificación propuesta; implementación y validación pendientes**.
+Fecha: 17 de octubre de 2026. Estado: **implementación autorizada en curso; activación real excluida**. Entregas [83–89](tareas/83-privacidad-contrato-vertical.md).
 
 Petición: seleccionar qué datos se sustituyen por identificadores, permitir patrones propios y selección de coincidencias YARA, mantener los originales en la conversación visible, enviar solo la representación protegida y restaurar las referencias al recibir la respuesta, también durante el streaming. Añadir un inspector discreto por conversación con correspondencias y recuentos.
 
-Esta petición amplía la exclusión histórica de ofuscación reversible del [plan Community](README.md). Autoriza documentar el nuevo comportamiento; este documento no afirma que esté disponible ni activa configuraciones. Se conserva la obligación D2 y los bloqueos existentes.
+Esta petición amplía la exclusión histórica de ofuscación reversible del [plan Community](README.md). La petición de implementación autoriza E1–E7, con la política nueva desactivada por defecto y sin activar empresas ni modificar datos reales. Se conserva la obligación D2 y los bloqueos existentes.
 
 ## 1. Resultado que debe experimentar el usuario
 
@@ -31,7 +31,7 @@ Inspección estática del árbol de trabajo local, que contiene cambios en curso
 | [chat_streaming.py](../../regulai/front/chat_streaming.py) y [agents/streaming.py](../../regulai/front/agents/streaming.py) | Controles de publicación progresiva y eventos con offsets. Añadir proyección natural sin modificar los offsets del texto protegido. |
 | [models.py](../../regulai/front/models.py), `Rule` | Acciones YARA actuales: bloquear y pedir consentimiento. La transformación será una configuración independiente; no cambiar silenciosamente estas acciones. |
 
-La nueva interfaz de chat se desarrolla en otro checkout, utilizado por el laboratorio 8890. Antes de implementar la interfaz hay que identificar el frontend que se vaya a integrar. No mantener dos motores de protección para React y las plantillas antiguas: ambos consumirán el mismo servicio del servidor.
+Base comprobada al iniciar: `main` y HEAD en `79fb195`. El frontend activo es la isla React de `frontend/chat/`, integrada en esa base. Las plantillas anteriores quedan como reversión local mediante `REGULAI_CHAT_FRONTEND=legacy` hasta la tarea 82. Existe un solo motor de protección y proyección en el servidor; ambos frontends consumen su proyección. Inspector y previsualización no portados al legado se ocultan allí, sin vías alternativas de revelación. Implementación aislada en la rama `codex/proteccion-reversible`, sin editar el checkout compartido.
 
 ## 3. Menú «Privacidad → Datos protegidos»
 
