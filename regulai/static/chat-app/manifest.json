@@ -1,0 +1,210 @@
+{
+  "_DialogTitle-CxvBP-0Q.js": {
+    "file": "assets/DialogTitle-CxvBP-0Q.js",
+    "name": "DialogTitle",
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_useScrollLock--4343XRz.js",
+      "_button-Bp0geJex.js"
+    ]
+  },
+  "_button-Bp0geJex.js": {
+    "file": "assets/button-Bp0geJex.js",
+    "name": "button",
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js"
+    ]
+  },
+  "_dialog-74MeFQKl.js": {
+    "file": "assets/dialog-74MeFQKl.js",
+    "name": "dialog",
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_useScrollLock--4343XRz.js",
+      "_button-Bp0geJex.js",
+      "src/main.tsx",
+      "_DialogTitle-CxvBP-0Q.js"
+    ]
+  },
+  "_format-Be6CF4nv.js": {
+    "file": "assets/format-Be6CF4nv.js",
+    "name": "format"
+  },
+  "_jsx-runtime-BX5dh3L7.js": {
+    "file": "assets/jsx-runtime-BX5dh3L7.js",
+    "name": "jsx-runtime"
+  },
+  "_popover-CGUHazLm.js": {
+    "file": "assets/popover-CGUHazLm.js",
+    "name": "popover",
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_useScrollLock--4343XRz.js",
+      "_button-Bp0geJex.js",
+      "src/main.tsx"
+    ]
+  },
+  "_react-DpvdKi1d.js": {
+    "file": "assets/react-DpvdKi1d.js",
+    "name": "react",
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js"
+    ]
+  },
+  "_useScrollLock--4343XRz.js": {
+    "file": "assets/useScrollLock--4343XRz.js",
+    "name": "useScrollLock",
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_button-Bp0geJex.js"
+    ]
+  },
+  "src/agent/ExportProposal.tsx": {
+    "file": "assets/ExportProposal-DQQP17Lq.js",
+    "name": "ExportProposal",
+    "src": "src/agent/ExportProposal.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_button-Bp0geJex.js",
+      "_format-Be6CF4nv.js",
+      "src/main.tsx"
+    ]
+  },
+  "src/agent/Oversight.tsx": {
+    "file": "assets/Oversight-bgOwp2Dz.js",
+    "name": "Oversight",
+    "src": "src/agent/Oversight.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_format-Be6CF4nv.js",
+      "src/main.tsx",
+      "src/turn/Receipt.tsx"
+    ]
+  },
+  "src/app/Drawer.tsx": {
+    "file": "assets/Drawer-C-0Y9sPA.js",
+    "name": "Drawer",
+    "src": "src/app/Drawer.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_useScrollLock--4343XRz.js",
+      "_button-Bp0geJex.js",
+      "src/main.tsx",
+      "_DialogTitle-CxvBP-0Q.js"
+    ]
+  },
+  "src/app/motion-features.ts": {
+    "file": "assets/motion-features-BXsmqy4P.js",
+    "name": "motion-features",
+    "src": "src/app/motion-features.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "src/main.tsx"
+    ]
+  },
+  "src/composer/DrivePicker.tsx": {
+    "file": "assets/DrivePicker-B7d1nedk.js",
+    "name": "DrivePicker",
+    "src": "src/composer/DrivePicker.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_button-Bp0geJex.js",
+      "src/main.tsx",
+      "_popover-CGUHazLm.js"
+    ]
+  },
+  "src/composer/SkillPicker.tsx": {
+    "file": "assets/SkillPicker-CbSnrJIw.js",
+    "name": "SkillPicker",
+    "src": "src/composer/SkillPicker.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_useScrollLock--4343XRz.js",
+      "_button-Bp0geJex.js",
+      "src/main.tsx",
+      "_popover-CGUHazLm.js"
+    ]
+  },
+  "src/main.tsx": {
+    "file": "assets/main-DQcgheQg.js",
+    "name": "main",
+    "src": "src/main.tsx",
+    "isEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_useScrollLock--4343XRz.js",
+      "_button-Bp0geJex.js",
+      "_format-Be6CF4nv.js"
+    ],
+    "dynamicImports": [
+      "src/composer/SkillPicker.tsx",
+      "src/composer/DrivePicker.tsx",
+      "src/viewer/ViewerPanel.tsx",
+      "src/viewer/PagesDialog.tsx",
+      "src/agent/Oversight.tsx",
+      "src/agent/ExportProposal.tsx",
+      "src/turn/Receipt.tsx",
+      "src/app/motion-features.ts",
+      "src/app/Drawer.tsx"
+    ],
+    "css": [
+      "assets/main-Bo1GZ8bK.css"
+    ]
+  },
+  "src/turn/Receipt.tsx": {
+    "file": "assets/Receipt-CLiv8p9i.js",
+    "name": "Receipt",
+    "src": "src/turn/Receipt.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_format-Be6CF4nv.js",
+      "src/main.tsx"
+    ]
+  },
+  "src/viewer/PagesDialog.tsx": {
+    "file": "assets/PagesDialog-D82dgnng.js",
+    "name": "PagesDialog",
+    "src": "src/viewer/PagesDialog.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_button-Bp0geJex.js",
+      "_format-Be6CF4nv.js",
+      "src/main.tsx",
+      "_dialog-74MeFQKl.js"
+    ]
+  },
+  "src/viewer/ViewerPanel.tsx": {
+    "file": "assets/ViewerPanel-CxVFP_M1.js",
+    "name": "ViewerPanel",
+    "src": "src/viewer/ViewerPanel.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BX5dh3L7.js",
+      "_react-DpvdKi1d.js",
+      "_useScrollLock--4343XRz.js",
+      "_button-Bp0geJex.js",
+      "src/main.tsx",
+      "_dialog-74MeFQKl.js"
+    ]
+  }
+}
