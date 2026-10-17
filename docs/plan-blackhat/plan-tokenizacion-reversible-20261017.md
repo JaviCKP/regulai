@@ -1,6 +1,6 @@
 # Protección reversible con vista natural del chat
 
-Fecha: 17 de octubre de 2026. Estado: **implementación autorizada en curso; activación real excluida**. Entregas [83–89](tareas/83-privacidad-contrato-vertical.md).
+Fecha: 17 de octubre de 2026. Estado: **E1–E7 implementadas y verificadas en laboratorio local; activación real e integración excluidas**. Entregas [83–89](tareas/83-privacidad-contrato-vertical.md). [Resultados y límites observados](entrega-privacidad-20261017.md).
 
 Petición: seleccionar qué datos se sustituyen por identificadores, permitir patrones propios y selección de coincidencias YARA, mantener los originales en la conversación visible, enviar solo la representación protegida y restaurar las referencias al recibir la respuesta, también durante el streaming. Añadir un inspector discreto por conversación con correspondencias y recuentos.
 

@@ -29,10 +29,13 @@ import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
-DATABASE = 'test_regulai_chat_ui'
-PORT = '55478'
+DATABASE = os.environ.get('REGULAI_CHAT_LAB_DATABASE', 'test_regulai_chat_ui')
+if not DATABASE.startswith('test_regulai_') or not DATABASE.replace('_', '').isalnum():
+    raise RuntimeError('lab_database_name_invalid')
+PORT = os.environ.get('REGULAI_CHAT_LAB_PORT', '55478')
 MARKER = '20261017'
-STATE = Path(tempfile.gettempdir()) / 'regulai-chat-redesign' / 'lab'
+PRIVACY_FIXTURE = os.environ.get('REGULAI_PRIVACY_LAB') == '1'
+STATE = Path(tempfile.gettempdir()) / ('regulai-privacy-lab' if PRIVACY_FIXTURE else 'regulai-chat-redesign') / 'lab'
 USERNAME = 'chat-ui'
 
 
@@ -112,6 +115,14 @@ def provider_transport():
         if 'fallo-demo' in prompt:
             return httpx.Response(500, json={'error': {'message': 'fixture provider failure', 'type': 'server_error'}})
         text = LONG if 'largo' in prompt else ANSWER
+        if PRIVACY_FIXTURE:
+            capture = ROOT / 'output' / 'privacy-20261017' / 'ui-provider-http.jsonl'
+            capture.parent.mkdir(parents=True, exist_ok=True)
+            with capture.open('a', encoding='utf-8') as destination:
+                destination.write(json.dumps({'fixture': True, 'url': str(request.url), 'headers': dict(request.headers), 'body': body}, ensure_ascii=False) + '\n')
+            text = ('Confirmado para este ejemplo ficticio: ' + str(body.get('messages', [{}])[-1].get('content', ''))
+                + '\n\nEl borrador está preparado para la revisión del equipo. Puedes ajustar el saludo y añadir los detalles del proyecto antes de compartirlo. '
+                'La próxima reunión servirá para cerrar los puntos pendientes y acordar los siguientes pasos.')
         if not body.get('stream'):
             return httpx.Response(200, json={'id': 'fixture', 'object': 'chat.completion', 'created': 0, 'model': 'fixture-effective',
                 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': text}, 'finish_reason': 'stop'}],
@@ -218,9 +229,22 @@ def prepare(fresh=False):
     for _ in range(3):
         Conversation.objects.create(user=user, mode='chat', title='Conversación de ejemplo')
     agent = Conversation.objects.create(user=user, mode='agent', title='Landing de Madrid')
+    privacy_chat = None
+    if PRIVACY_FIXTURE:
+        # Explicit disposable fixture only. Production migration never enables it.
+        from front.privacy_policy import simulate_revision, activate_revision
+        user.is_superuser = True
+        user.save(update_fields=['is_superuser'])
+        tested = simulate_revision(user, {'categories': {'EMAIL': 'reversible'},
+            'literals': [{'text': 'Ana Fixture', 'category': 'PERSON'}]}, 'Ana Fixture ana@example.invalid')
+        activate_revision(user, tested['revision_id'], tested['review_token'])
+        privacy_chat = Conversation.objects.create(user=user, mode='chat', title='Fixture de privacidad')
+        result = send(privacy_chat, 'Ana Fixture usa ana@example.invalid. Confirma el contacto ana@example.invalid.')
+        if result['status'] != 'completed':
+            raise RuntimeError('privacy_fixture_send_failed')
     STATE.mkdir(parents=True, exist_ok=True)
     report = {'database': DATABASE, 'server': f'regulai.chat_ui={MARKER}', 'fixture': True, 'provider': 'httpx.MockTransport',
-        'user': USERNAME, 'chat': chat.pk, 'agent': agent.pk, 'installations': installations,
+        'user': USERNAME, 'chat': chat.pk, 'privacy_chat': privacy_chat.pk if privacy_chat else None, 'agent': agent.pk, 'installations': installations,
         'history_status': [item.get('status') for item in history]}
     (STATE / 'lab.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report))

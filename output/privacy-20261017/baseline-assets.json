@@ -1,0 +1,11 @@
+{
+  "tests": 11,
+  "failures": [
+    {
+      "test": "test_registered_icons_cover_template_names_and_dynamic_toggle_states (front.test_frontend_resources.ResourceTests.test_registered_icons_cover_template_names_and_dynamic_toggle_states)",
+      "trace": "Traceback (most recent call last):\n  File \"C:\\Users\\javi\\Documents\\Codex\\regulai-privacy-baseline\\regulai\\front\\test_frontend_resources.py\", line 84, in test_registered_icons_cover_template_names_and_dynamic_toggle_states\n    self.assertTrue(expected['solar'].issubset(manifest['solar-icons.js']['icons']))\nAssertionError: False is not true\n"
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

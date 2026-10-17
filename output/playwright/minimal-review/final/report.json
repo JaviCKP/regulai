@@ -1,0 +1,207 @@
+{
+  "builds": [
+    [
+      "http://127.0.0.1:8893/static/chat-app/assets/main-DMr4HQ69.js"
+    ],
+    [
+      "http://127.0.0.1:8893/static/chat-app/assets/main-DMr4HQ69.js"
+    ]
+  ],
+  "states": [
+    {
+      "width": 360,
+      "name": "reveal-focus",
+      "pending": {
+        "tag": "BUTTON",
+        "name": "Revelar original",
+        "inDialog": true,
+        "inTurn": false,
+        "start": null,
+        "end": null,
+        "highlight": false
+      },
+      "nativeDisabled": false,
+      "revealed": {
+        "tag": "BUTTON",
+        "name": "Ocultar original",
+        "inDialog": true,
+        "inTurn": false,
+        "start": null,
+        "end": null,
+        "highlight": false
+      },
+      "hidden": {
+        "tag": "BUTTON",
+        "name": "Revelar original",
+        "inDialog": true,
+        "inTurn": false,
+        "start": null,
+        "end": null,
+        "highlight": false
+      },
+      "remainingOriginals": 0
+    },
+    {
+      "width": 360,
+      "name": "message-navigation",
+      "focus": {
+        "tag": "SPAN",
+        "name": "Ana Fixture",
+        "inDialog": false,
+        "inTurn": true,
+        "start": "0",
+        "end": "45",
+        "highlight": true
+      },
+      "targetBounds": {
+        "x": 71.375,
+        "y": 84,
+        "width": 74.390625,
+        "height": 20,
+        "top": 84,
+        "right": 145.765625,
+        "bottom": 104,
+        "left": 71.375
+      }
+    },
+    {
+      "width": 360,
+      "name": "preview-labels",
+      "chips": [
+        "Ana Fixture",
+        "ana@example.invalid",
+        "Nombre 1",
+        "Correo 1"
+      ]
+    },
+    {
+      "width": 360,
+      "name": "settings-labels",
+      "text": "Categorías\nCorreos electrónicos\nNo añadir\nRecuperable\nIrreversible\nTeléfonos\nNo añadir\nRecuperable\nIrreversible\nDocumentos\nNo añadir\nRecuperable\nIrreversible\nCuentas bancarias\nNo añadir\nRecuperable\nIrreversible\nTarjetas\nNo añadir\nRecuperable\nIrreversible\nNombres etiquetados\nNo añadir\nRecuperable\nIrreversible\nCampos elegidos\nNo añadir\nRecuperable\nIrreversible\nSobre la detección"
+    },
+    {
+      "width": 1440,
+      "name": "reveal-focus",
+      "pending": {
+        "tag": "BUTTON",
+        "name": "Revelar original",
+        "inDialog": true,
+        "inTurn": false,
+        "start": null,
+        "end": null,
+        "highlight": false
+      },
+      "nativeDisabled": false,
+      "revealed": {
+        "tag": "BUTTON",
+        "name": "Ocultar original",
+        "inDialog": true,
+        "inTurn": false,
+        "start": null,
+        "end": null,
+        "highlight": false
+      },
+      "hidden": {
+        "tag": "BUTTON",
+        "name": "Revelar original",
+        "inDialog": true,
+        "inTurn": false,
+        "start": null,
+        "end": null,
+        "highlight": false
+      },
+      "remainingOriginals": 0
+    },
+    {
+      "width": 1440,
+      "name": "message-navigation",
+      "focus": {
+        "tag": "SPAN",
+        "name": "Ana Fixture",
+        "inDialog": false,
+        "inTurn": true,
+        "start": "0",
+        "end": "45",
+        "highlight": true
+      },
+      "targetBounds": {
+        "x": 675,
+        "y": 84,
+        "width": 74.390625,
+        "height": 20,
+        "top": 84,
+        "right": 749.390625,
+        "bottom": 104,
+        "left": 675
+      }
+    },
+    {
+      "width": 1440,
+      "name": "preview-labels",
+      "chips": [
+        "Ana Fixture",
+        "ana@example.invalid",
+        "Nombre 1",
+        "Correo 1"
+      ]
+    },
+    {
+      "width": 1440,
+      "name": "settings-labels",
+      "text": "Categorías\nCorreos electrónicos\nNo añadir\nRecuperable\nIrreversible\nTeléfonos\nNo añadir\nRecuperable\nIrreversible\nDocumentos\nNo añadir\nRecuperable\nIrreversible\nCuentas bancarias\nNo añadir\nRecuperable\nIrreversible\nTarjetas\nNo añadir\nRecuperable\nIrreversible\nNombres etiquetados\nNo añadir\nRecuperable\nIrreversible\nCampos elegidos\nNo añadir\nRecuperable\nIrreversible\nSobre la detección"
+    }
+  ],
+  "shots": [
+    {
+      "name": "inspector",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "name": "inspector-details",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "name": "message-highlight",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "name": "preview",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "name": "settings-top",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "name": "inspector",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "inspector-details",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "message-highlight",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "preview",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "settings-top",
+      "width": 1440,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}
