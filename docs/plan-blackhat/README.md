@@ -103,7 +103,7 @@ Las llamadas de red se hacen fuera de transacciones largas. Para evitar dobles e
 
 **Candidatos para Vigía13:** optimización adaptativa con histórico amplio, presupuestos organizativos avanzados, aprobaciones entre responsables, integración corporativa y gobierno centralizado. Esta división es una propuesta de producto, pendiente de decisión comercial; no describe capacidades verificadas de Vigía13.
 
-La ofuscación reversible sigue excluida. La ampliación autorizada durante el piloto integra detección local y sustitución irreversible, conservando el conector HTTP anterior. La seguridad fundamental no se reserva para una edición superior.
+La ofuscación reversible quedó excluida del alcance original. La ampliación autorizada durante el piloto integra detección local y sustitución irreversible, conservando el conector HTTP anterior. El 17 de octubre de 2026 se solicitó la [especificación de protección reversible configurable y vista natural del chat](plan-tokenizacion-reversible-20261017.md): es una ampliación propuesta, con implementación y validación pendientes, que reutiliza los alias locales existentes del agente. La seguridad fundamental no se reserva para una edición superior.
 
 ## Condición de terminado de cada entrega
 
