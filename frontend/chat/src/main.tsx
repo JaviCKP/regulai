@@ -1,6 +1,6 @@
 import "./styles/app.css"
 
-import { StrictMode } from "react"
+import { startTransition, StrictMode } from "react"
 import { createRoot, type Root } from "react-dom/client"
 
 import { ChatApp } from "./app/ChatApp"
@@ -24,11 +24,14 @@ function mount() {
   const session = new ChatSession(readBootstrap(document))
   const root = createRoot(host)
   window.__regulaiChat = { root, session }
-  root.render(
-    <StrictMode>
-      <ChatApp session={session} />
-    </StrictMode>,
-  )
+  // A transition lets the first render yield to the browser instead of one long task.
+  startTransition(() => {
+    root.render(
+      <StrictMode>
+        <ChatApp session={session} />
+      </StrictMode>,
+    )
+  })
   window.addEventListener("pagehide", () => session.suspend())
   window.addEventListener("pageshow", (event) => {
     if (event.persisted) session.resume()

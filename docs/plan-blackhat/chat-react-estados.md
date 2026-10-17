@@ -46,7 +46,7 @@ justifica. Ningún estado se deduce del tiempo transcurrido ni del HTML generado
 | Texto progresivo | `delta` por `seq`, intento | ChatMarkdown, bloques estables, sin animar historial |
 | Texto retirado | `retract` | Desaparece del DOM y de copiar; línea «Reintentando»/«Comprobando» |
 | Completada | `final` completed | Respuesta, «No verificado» si procede, archivo, citas, copiar, detalles |
-| Bloqueada / confirmación / cancelada / error | `final` status + códigos | Aviso corto con causa, efecto y acción (confirmar, cancelar, comprobar, reenviar) |
+| Bloqueada / confirmación / cancelada / error | `final` status + códigos | Aviso corto con causa, efecto y acción (confirmar, cancelar, comprobar, reenviar); un bloqueo sin regla coincidente muestra el motivo de la política (`error`, también tras recargar vía bootstrap) |
 | Sin resultado / conexión perdida / no disponible | reattach agotado / 404 | «Comprobar estado» nunca repite la petición |
 | Recarga con petición viva | `notice.kind=live` | Se reengancha desde `after=0`, sin enviar |
 
@@ -60,7 +60,7 @@ justifica. Ningún estado se deduce del tiempo transcurrido ni del HTML generado
 | Texto público | `text.delta`/`text.snapshot` por `message_id`/offset UTF-8 | Segmentos; hueco → snapshot autorizado |
 | Espera de decisión | `visual_pending`, `approval_pending`, exportación | Visible fuera del plegable, con la acción |
 | Fallo, parcial, incierto | `result.error`, `delivery.status`, `interrupted`, `outcome_unknown` | Visible siempre; no se oculta en detalles |
-| Entregables | `artifacts`/`current_revision` + `delivery` | Tarjeta compacta: nombre, tipo, tamaño si existe; vista previa/descarga/editar; revisión y comprobaciones al desplegar |
+| Entregables | `artifacts`/`current_revision` + `delivery` | Tarjeta compacta: nombre, tipo, tamaño si existe; revisión y comprobaciones al desplegar. Vista previa/descarga/editar sólo cuando el servidor la serviría (`file_continuity.delivered`: en un recibo completo o parcial, o, sin recibo, con la ejecución completada); antes, «Archivo pendiente de entrega verificada» |
 | Revocado | 404/`revoked` | Se retiran texto, tarjetas, recibos y avisos; acción «Actualizar estado» |
 | Reanudar / detener | `resumable`, `cancel_url` | Acciones en el propio turno |
 | Uso y coste | `receipt.total`, llamadas | Sólo bajo demanda; desconocido ≠ 0 |

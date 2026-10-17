@@ -46,3 +46,7 @@ evals/reports/task54-export-20261013/** -text -whitespace
 /setup.py text eol=lf
 /setup.cmd text eol=crlf
 /ops/setup/** text eol=lf
+
+# Chat island build: CI rebuilds it and compares exact bytes; the lab helper runs in bash.
+/regulai/static/chat-app/** -text
+/ops/chat_ui/*.sh text eol=lf
