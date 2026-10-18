@@ -1,0 +1,30 @@
+{
+  "phase": "tested",
+  "exit_code": 0,
+  "image_id": "sha256:82417497449633af574023d9fafa40a32fa4f0b414ab5d9e912b4ba92a69fbc2",
+  "summary": {
+    "tests": 93,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "network": "internal",
+  "postgres": "isolated_tmpfs",
+  "live_database_used": false,
+  "external_provider_calls": 0,
+  "isolated_resources_removed": true,
+  "test_hashes": {
+    "regulai/front/test_agent_context_performance.py": "04cc8b924c6c6c1445f3895ada5b9ca1242a667727659685b123aa9034a354a4",
+    "regulai/front/test_agent_difficulty.py": "71a0071c3d8a609679aa3106642cdfb211de2390a96585eb60ae18095af329be",
+    "regulai/front/test_agent_inference.py": "95f5cabbb283d21890dae94160893dfa8503de001d326486242eeec00a684c48",
+    "regulai/front/test_agent_message_batch.py": "086e0893cc2afa2266e53a88f4091b460d142c7e7f0cbf00a74b9260df8162b4",
+    "regulai/front/test_agent_state.py": "08facb4d2f50298437d4e7630a314cf12caa9f3a70cad689ae37412c28f05c83",
+    "regulai/front/test_agent_transparency.py": "cdc2fc69fad8fd22fc97a264fe86070b0604a798c44473ac57f5b7438e4d02c8",
+    "regulai/front/test_chat_flow.py": "6ec5b3da6242492da09cadc959fbb499837d9bc4d13e05442d1d0565ef48a1e3",
+    "regulai/front/test_chat_island.py": "9ad1815ee1e14f785e4591c2248cb9b5d8cf93ba39dbea88403ec90a49425896",
+    "regulai/front/test_difficulty_routing.py": "4e8d50b6cdd63c3840eac8f34750d082f0b677e8f12f8993e1e404e843d1a4e4",
+    "regulai/front/test_local_masking.py": "78640fed781db5c43d2ace4cac5139593e16c1e9bd75eee5a7256be4bc64d312",
+    "regulai/front/test_pipeline.py": "7bddfe78b85251ecbc4e528786733e68c905e85c62da3fa3c9df688198dec60d",
+    "regulai/front/test_privacy_agent.py": "4d932290d24274b47e8bc7d2f68340882f3ccf5f2db693100ce3087df1bd84c0"
+  }
+}

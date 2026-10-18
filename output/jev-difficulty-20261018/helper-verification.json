@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "scope": "offline only; no VM mutation by this verification",
+  "tests": 17,
+  "seconds": 0.17,
+  "command": "rtk proxy python -m unittest ops.agent_chat.test_jev_update -q",
+  "diff_check": "passed",
+  "file_sha256": {
+    "ops/agent_chat/jev_local.py": "9644b5ad00ff63d8b008c0162853ad89d59af00a4d36a48e49e625cc5ea9a0ba",
+    "ops/agent_chat/jev_remote.py": "e8013f0d7b2f534e31c97d37c48d9257bb7210edbb78a24538d2b8a66255842b",
+    "ops/agent_chat/test_jev_update.py": "770879c62636b4d013b3b847789d5842d4705058f9898b4393c453ff875b2674"
+  },
+  "expected_current_base_image": "sha256:11d2287cdfd36a91ffd777f1b3ec79359abd84e1a853f05521642740bc7c8251",
+  "expected_current_service_sha256": "466efcdc96c46a636627e49b4ebec311f1eb27bce7c1a8553bd7453c7f71ee5b",
+  "production_file_allowlist": [
+    "regulai/front/agents/service.py"
+  ],
+  "checks": [
+    "original current image identity required before initialization",
+    "same Config/HostConfig/Env/User and mounts preserved except new image",
+    "partial stop and rename recover current original",
+    "rollback works with stopped candidate without restoring DB",
+    "failed rollback recovers candidate",
+    "unknown current container never stopped",
+    "zero or missing test summary rejected",
+    "stale test hashes for same image rejected",
+    "isolated cleanup must complete before apply",
+    "only web image replaced; worker ID/image/config preserved and restarted; PG untouched",
+    "web admission stopped before original worker; web healthy before worker start",
+    "partial worker stop/start failure restores both services",
+    "worker restart attempted even when web compensation health fails"
+  ]
+}

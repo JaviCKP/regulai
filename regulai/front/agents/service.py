@@ -22,7 +22,7 @@ from django.utils import timezone
 from front.access import _conversations_for_company
 from front.chat_service import authorized_history, _candidate, _safe_jev_error_code
 from front import jev
-from front.classification import decide
+from front.classification import decide, difficulty_level
 from front.connectors import ChatMessage, get_connector
 from front.governance import BoundaryAuthorization, GovernedCalls, PipelineStop, destination_identity
 from front.masking import mask_cost_bounds, mask_identity, valid_masks
@@ -38,6 +38,16 @@ class AgentDenied(ValueError):
     def __init__(self, code='agent_authorization_changed'):
         self.code = code
         super().__init__(code)
+
+
+def _jev_purpose(cfg):
+    """Choose one policy evaluation; an explicit agent model stays pinned."""
+    if cfg.classification == 'required':
+        return 'classification'
+    if (cfg.classification == 'local' and cfg.routing.mode == 'auto'
+            and cfg.routing.strategy == 'difficulty'):
+        return 'difficulty'
+    return None
 
 
 def _context(prompt, profile_id, *, allow_disabled=False, execution=None):
@@ -90,7 +100,7 @@ def _context(prompt, profile_id, *, allow_disabled=False, execution=None):
     except ValueError:
         raise AgentDenied('agent_policy_incompatible') from None
     destinations = [f'engine:{engine.pk}'] + [f'obfuscation:{m.pk}' for m in masks]
-    if cfg.classification == 'required':
+    if _jev_purpose(cfg):
         destinations.append('jev')
     texts = [('prompts', prompt.content), ('prompts', profile.company.system_prompt or ''),
              ('prompts', profile.department.system_prompt if profile.department else '')]
@@ -175,10 +185,11 @@ def authenticate(token, attempt, *, allow_uncertain=False):
 
 
 def _jev_receipt(profile, cfg):
-    required = cfg.classification == 'required'
+    purpose = _jev_purpose(cfg)
+    required = purpose is not None
     configured = bool(profile.company.jev_api_key)
     return {'status': 'pending' if required and configured else 'not_consulted' if configured else 'disabled',
-        'consulted': False, 'purpose': 'classification', 'consulted_at': None, 'completed_at': None,
+        'consulted': False, 'purpose': purpose or 'classification', 'consulted_at': None, 'completed_at': None,
         'model_requested': cfg.jev.model, 'model_effective': None, 'transport': cfg.jev.transport,
         'decision': None, 'signals': {}, 'reasons': [], 'recommendations': [],
         # The actual Jev contract contains structured signals, not prose reasons,
@@ -227,6 +238,12 @@ def _save_decision(prompt, *, update_fields=None):
             terminal = Prompt.objects.values_list('decision', flat=True).get(pk=prompt.pk)
             prompt.decision = {**terminal, **{key: prompt.decision[key]
                 for key in ('calls', 'total') if key in prompt.decision}}
+            # Mirror only the receipt actually recorded by the latest Jev call;
+            # its status stays pending/failed/consulted as observed, never inferred.
+            recorded_jev = next((call['jev'] for call in reversed(prompt.decision.get('calls', []))
+                if isinstance(call.get('jev'), dict)), None)
+            if recorded_jev is not None:
+                prompt.decision['jev'] = recorded_jev
         prompt.save(update_fields=update_fields or ['decision', 'updated_at'])
 
 
@@ -305,7 +322,7 @@ class AgentGovernedCalls(GovernedCalls):
         value = super().complete_call(call, started, safe)
         if getattr(self, 'execution', None):
             from .event_store import append_event
-            category = 'provider' if call['purpose'] in ('generation', 'compaction', 'vision') else 'protection' if call['purpose'] in ('obfuscation', 'classification') else 'network'
+            category = 'provider' if call['purpose'] in ('generation', 'compaction', 'vision') else 'protection' if call['purpose'] in ('obfuscation', 'classification', 'difficulty') else 'network'
             append_event(self.execution, 'interval', **{
                 'category': category, 'attempt': str(self.execution.attempt), 'call_id': call.get('call_id'),
                 'started_at': call.get('started_at'), 'completed_at': call['completed_at'],
@@ -329,7 +346,8 @@ def _government(execution, context, token, attempt, call_id):
 
 def _classify(execution, context, government, messages, policy_texts):
     actor, profile, _, cfg, _, _, _, _, _, _, local, _ = context
-    if cfg.classification != 'required':
+    purpose = _jev_purpose(cfg)
+    if purpose is None:
         return
     receipt = _jev_receipt(profile, cfg)
     execution.prompt.decision['jev'] = receipt
@@ -340,7 +358,8 @@ def _classify(execution, context, government, messages, policy_texts):
     # sent. Opaque approved image references do not imply visual review by Jev.
     state = {'request': next((message.content for message in reversed(messages) if message.role == 'user'), ''),
         'context': [asdict(message) for message in messages]}
-    questions = {**jev.classification_questions(), **jev.task_questions()}
+    questions = ({**jev.classification_questions(), **jev.task_questions()}
+        if purpose == 'classification' else jev.difficulty_questions())
     serialized = json.dumps(state, ensure_ascii=False)
     if not cfg.limits.provider_managed and len(serialized.encode('utf-8')) > jev.MAX_STATE_BYTES:
         receipt.update(status='not_consulted', effect='block', reason_codes=['evaluation_input_too_large'])
@@ -348,7 +367,7 @@ def _classify(execution, context, government, messages, policy_texts):
     prices = {key: getattr(cfg.jev, key) for key in ('input_price', 'output_price', 'currency', 'price_date')}
     bound = (Decimal(cfg.jev.max_call_cost) if cfg.jev.max_call_cost is not None
         and cfg.jev.input_price is not None and cfg.jev.output_price is not None else None)
-    call, started = government.start_call('classification', 'jev', cfg.jev.model,
+    call, started = government.start_call(purpose, 'jev', cfg.jev.model,
         policy_texts + [('prompts', serialized)], bound, prices,
         outbound_texts=[json.dumps({'state': state, 'questions': questions}, ensure_ascii=False)])
     receipt.update(consulted=True, consulted_at=call['started_at'])
@@ -374,6 +393,31 @@ def _classify(execution, context, government, messages, policy_texts):
         if error.outcome_unknown:
             raise
         raise AgentDenied('jev_failed') from None
+    if purpose == 'difficulty':
+        try:
+            level = difficulty_level(result.answers, cfg.jev.threshold)
+        except (ValueError, TypeError, KeyError):
+            level = None
+        valid_answers = deepcopy(result.answers) if level else {}
+        receipt.update(status='consulted', completed_at=timezone.now().isoformat(),
+            model_effective=_metadata_identifier(result.effective_model), signals=valid_answers,
+            decision={'difficulty': valid_answers['difficulty']['choice']} if valid_answers else None,
+            applied={'source': 'regulay_policy', 'sensitivity': local.sensitivity,
+                'difficulty': level} if valid_answers else None,
+            reason_codes=[] if valid_answers else ['security_check_failed'],
+            effect='continue' if valid_answers else 'block')
+        call.update(rubric_version=jev.DIFFICULTY_RUBRIC_VERSION)
+        # An answered but invalid evaluation still has its observed cost settled.
+        try:
+            government.complete_call(call, started, result)
+        except PipelineStop as error:
+            receipt.update(effect='block', reason_codes=[error.code])
+            raise
+        if not valid_answers:
+            raise AgentDenied('security_check_failed')
+        # Difficulty is advisory for this pinned profile: local sensitivity,
+        # permissions and the next outbound authorization remain authoritative.
+        return
     classification = decide(result.answers, cfg, local.sensitivity)
     valid_answers = {} if classification.stop_code == 'security_check_failed' else deepcopy(result.answers)
     receipt.update(status='consulted', completed_at=timezone.now().isoformat(),
@@ -793,7 +837,7 @@ def infer(token, attempt, payload):
         _validate_tool_history(execution, request)
         from .skill_context import inference_messages
         worker_messages, skill_instructions = inference_messages(execution, request)
-        if cfg.classification == 'required' and not profile.company.jev_api_key:
+        if _jev_purpose(cfg) and not profile.company.jev_api_key:
             _classify(execution, context, government, [], policy_texts)
         # Company and department instructions are sourced in the application.
         from .protocol import WireMessage

@@ -1,0 +1,18 @@
+{
+  "phase": "initialized",
+  "base_image_id": "sha256:11d2287cdfd36a91ffd777f1b3ec79359abd84e1a853f05521642740bc7c8251",
+  "worker_image_id": "sha256:9314ecac790ee3a74e090dfde217bd3c61a3d035db528fa17e54200a4656588b",
+  "preserved_source_hashes": {
+    "regulai/front/agents/service.py": "466efcdc96c46a636627e49b4ebec311f1eb27bce7c1a8553bd7453c7f71ee5b",
+    "regulai/front/agents/general_tools.py": "c2ab6b3800ab125444eff51993660a04d3bf730074dbe2c029ae41bc006a71ac",
+    "regulai/front/agents/checkpoints.py": "4d2604092a87a72401fbbdf91db5d61ce710bb9d091ae5e730419160587d639a",
+    "regulai/front/agents/history.py": "96b148d64d75b1f24cb354d8c0a3b8b0dc1a778c4be9bdb20fb77339264acaab",
+    "regulai/front/agents/continuation.py": "beac8f9bf4106c0f56f40c9e66f149a99c8dff8cd9026f47b8093923ea879047"
+  },
+  "backup": {
+    "file": "before-prepare.dump",
+    "sha256": "b8283def518b36b0f6b4fa098449dfa466caa3f90e5baa33055e0035f26affcf",
+    "bytes": 31184625
+  },
+  "database_modified": false
+}

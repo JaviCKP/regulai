@@ -1,0 +1,27 @@
+{
+  "phase": "applied",
+  "image_id": "sha256:82417497449633af574023d9fafa40a32fa4f0b414ab5d9e912b4ba92a69fbc2",
+  "base_image_id": "sha256:11d2287cdfd36a91ffd777f1b3ec79359abd84e1a853f05521642740bc7c8251",
+  "source_hashes_verified": true,
+  "chat12_sources_preserved": true,
+  "env_mounts_networks_preserved": true,
+  "mounted_config_and_keys_unchanged": true,
+  "worker_image_config_preserved": true,
+  "worker_restarted": true,
+  "postgres_unchanged": true,
+  "schema_changes": 0,
+  "provider_calls": 0,
+  "existing_data_unchanged": true,
+  "checkpoints_unchanged": true,
+  "backup": {
+    "file": "before-switch-1792331543520925154.dump",
+    "sha256": "71f2c60de8b39e8fa5a99f712fce1d7ea015f577ad73af47e21c20ff969a0a1a",
+    "bytes": 31184625
+  },
+  "checkpoint_backup": {
+    "directory": "/opt/regulai/updates/jev-difficulty-20261018-a1/checkpoints-before-switch-1792331543520925154",
+    "files": 0,
+    "manifest_sha256": "9fad2c610d05544eca7779d0eda4d5e4ad5c26a4c8f088955f5ea18b9fff0221"
+  },
+  "retained_web_id": "b8f309f787dde76f62b56ba46222f6e67c4e272791dd83ac8cadf2c1bbbca83a"
+}
