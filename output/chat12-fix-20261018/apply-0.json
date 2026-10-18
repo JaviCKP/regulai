@@ -1,0 +1,42 @@
+{
+  "phase": "applied",
+  "services": {
+    "regulai-v2-web": {
+      "running": true,
+      "restarts": 0,
+      "image_id": "sha256:11d2287cdfd36a91ffd777f1b3ec79359abd84e1a853f05521642740bc7c8251"
+    },
+    "regulai-v2-worker": {
+      "running": true,
+      "restarts": 0,
+      "image_id": "sha256:9314ecac790ee3a74e090dfde217bd3c61a3d035db528fa17e54200a4656588b"
+    }
+  },
+  "private_configuration_unchanged": true,
+  "source_hashes_verified": true,
+  "mounted_readonly_files_unchanged": true,
+  "checkpoint_files_changed_since_switch": 0,
+  "network_and_host_configuration_unchanged": true,
+  "http_health": {
+    "status": 200,
+    "path": "/static/js/skills.js"
+  },
+  "schema_changes": 0,
+  "provider_generation_calls": 0,
+  "existing_data_unchanged": true,
+  "retained_containers": {
+    "regulai-v2-web": "regulai-v2-web-before-chat12-20261018-a1",
+    "regulai-v2-worker": "regulai-v2-worker-before-chat12-20261018-a1"
+  },
+  "backup": {
+    "file": "before-switch-1792322555715762386.dump",
+    "sha256": "c4c6d5a82f3e93ea9c6253568b055e3d41079099113bef7f2438ba98cef8b96a",
+    "bytes": 31184625
+  },
+  "checkpoint_backup": {
+    "directory": "/opt/regulai/updates/chat12-20261018-a1/checkpoints-before-switch-1792322555715762386",
+    "files": 0,
+    "manifest_sha256": "9fad2c610d05544eca7779d0eda4d5e4ad5c26a4c8f088955f5ea18b9fff0221"
+  },
+  "checkpoint_files_unchanged_before_start": true
+}

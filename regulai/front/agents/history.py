@@ -18,6 +18,8 @@ def select(actor, conversation, text, context, *, max_output_tokens=None):
     _, profile, agent, cfg, engine, model, _, destinations, *_ = context
     selection = authorized_history(actor, conversation, provenance=True, professional=True)
     pairs = selection['pairs']
+    from .continuation import context as continuation_context, requested
+    continuation, extra = continuation_context(actor, conversation) if requested(text) else (None, [])
     output = model.max_tokens
     if type(output) is not int or output <= 0:
         raise RoutingError('unknown_capacity')
@@ -31,8 +33,13 @@ def select(actor, conversation, text, context, *, max_output_tokens=None):
         (profile.company.system_prompt or '') + (profile.department.system_prompt if profile.department else '')
         + json.dumps([tool_schema(name) for name in agent.tools], ensure_ascii=False))]
     omitted = selection['omitted']
+    while pairs and (len(pairs) + bool(extra) > cfg.history.max_turns or
+            sum(len(m.content.encode('utf-8')) for pair in pairs for m in pair['messages'])
+            + sum(len(m.content.encode('utf-8')) for m in extra) > cfg.history.max_bytes):
+        pairs.pop(0)
+        omitted += 1
     while True:
-        prefix = [m for pair in pairs for m in pair['messages']]
+        prefix = [m for pair in pairs for m in pair['messages']] + extra
         try:
             capacity = route([_candidate(engine, model, None, 'general')], fixed + prefix,
                 allowed_destinations=destinations, max_output_tokens=output,
@@ -45,6 +52,7 @@ def select(actor, conversation, text, context, *, max_output_tokens=None):
             omitted += 1
     prefix_bytes = sum(len(m.content.encode('utf-8')) + 256 for m in prefix)
     return {'version': 2, 'pairs': [_identity(pair) for pair in pairs], 'omitted': omitted,
+            **({'continuation': continuation} if continuation else {}),
             'prefix_tokens_bound': prefix_bytes,
             'model_profile': {'max_input_tokens': model.context_window - output - prefix_bytes,
                               'max_output_tokens': output}}
@@ -62,8 +70,10 @@ def for_prompt(actor, prompt, *, execution=_UNREAD_EXECUTION):
     # No historical content can leave for an explicitly empty selection.
     # Callers still authorize the actor/conversation at the current boundary;
     # the fresh execution and its snapshot remain part of the context binding.
+    from .continuation import selected
+    extra = selected(actor, prompt, snapshot)
     if snapshot['pairs'] == []:
-        return []
+        return extra
     available = authorized_history(actor, prompt.conversation, window=False, provenance=True, professional=True)
     by_id = {p['prompt_id']: p for p in available['pairs']}
     messages = []
@@ -72,4 +82,4 @@ def for_prompt(actor, prompt, *, execution=_UNREAD_EXECUTION):
         if not pair or _identity(pair) != selected:
             raise AgentDenied('history_authorization_changed')
         messages.extend(pair['messages'])
-    return messages
+    return messages + extra

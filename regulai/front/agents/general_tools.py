@@ -82,8 +82,16 @@ def _text(raw):
 def _command_output(text):
     """Unwrap only the runner's explicit output shape; arbitrary JSON stays data."""
     try:
-        value = json.loads(text)
+        text = text.lstrip()
+        value, end = json.JSONDecoder().raw_decode(text)
+        suffix = text[end:]
     except (ValueError, TypeError):
+        return None
+    # The pinned SDK wraps ExecuteResponse.output with this exact trailer.
+    # Accept no arbitrary tail, second object, or contradictory exit status.
+    if suffix.strip() and (not isinstance(value, dict) or
+            suffix != '\n[Command ' + ('succeeded' if value.get('exit_code') == 0 else 'failed')
+            + ' with exit code ' + str(value.get('exit_code')) + ']'):
         return None
     if (not isinstance(value, dict) or type(value.get('exit_code')) is not int
             or not isinstance(value.get('stdout'), str) or not isinstance(value.get('stderr'), str)

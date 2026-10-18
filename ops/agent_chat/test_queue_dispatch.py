@@ -33,7 +33,7 @@ class QueueDispatcherTests(unittest.TestCase):
                     patch('front.agents.worker.create_clean', side_effect=AssertionError('Text allocated VM')), \
                     patch('socket.socket.connect', side_effect=AssertionError('Unexpected network')):
                 return run({'worker_token_file': str(token), 'internal_endpoint': 'http://internal.test/internal',
-                            'shutdown_grace_seconds': 1}, once=once, stop_event=stop)
+                            'shutdown_grace_seconds': 1, 'concurrency': 1}, once=once, stop_event=stop)
 
     def test_long_poll_retries_reuse_claim_identity(self):
         claims = []

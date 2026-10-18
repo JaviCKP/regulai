@@ -1,0 +1,26 @@
+{
+  "phase": "verified",
+  "services": {
+    "regulai-v2-web": {
+      "running": true,
+      "restarts": 0,
+      "image_id": "sha256:11d2287cdfd36a91ffd777f1b3ec79359abd84e1a853f05521642740bc7c8251"
+    },
+    "regulai-v2-worker": {
+      "running": true,
+      "restarts": 0,
+      "image_id": "sha256:9314ecac790ee3a74e090dfde217bd3c61a3d035db528fa17e54200a4656588b"
+    }
+  },
+  "private_configuration_unchanged": true,
+  "source_hashes_verified": true,
+  "mounted_readonly_files_unchanged": true,
+  "checkpoint_files_changed_since_switch": 0,
+  "network_and_host_configuration_unchanged": true,
+  "http_health": {
+    "status": 200,
+    "path": "/static/js/skills.js"
+  },
+  "schema_changes": 0,
+  "provider_generation_calls": 0
+}

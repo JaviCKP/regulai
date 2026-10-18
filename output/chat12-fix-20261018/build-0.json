@@ -1,0 +1,58 @@
+{
+  "phase": "built",
+  "images": {
+    "web": "regulai-v2-web:chat12-20261018-a1",
+    "worker": "regulai-v2-worker:chat12-20261018-a1"
+  },
+  "image_ids": {
+    "web": "sha256:0cea0aba43a96463b7ae385f7147ede4b9799eb7cefa0b3f9b3fd01d0d858601",
+    "worker": "sha256:b085638bbb1ede875e6b566675cea45f2cb4fb452228b2206cd9ad9e46cb5e05"
+  },
+  "source_hashes": {
+    "regulai/front/agents/general_tools.py": "e5111ff6d9b32b4d40c3518b66cb5d4c898056c8863b3d123077762d53c2f7c8",
+    "regulai/front/agents/checkpoints.py": "4d2604092a87a72401fbbdf91db5d61ce710bb9d091ae5e730419160587d639a",
+    "regulai/front/agents/history.py": "53783d79267253e6100c30849eb8379a7cc26e3f9edc560adfe81aa640672a39",
+    "regulai/front/agents/continuation.py": "6248911495b6a1551e8f74805150919a72b1dac3356c12c8377f71a7ae98a0dc",
+    "regulai/front/test_chat12_recovery.py": "feca1bc372ff2e4d0b1b9d7dfe867c5493900d37e9ba66a3df7ce9c0e2915499",
+    "regulai/front/test_agent_tools_p1.py": "93fbdf5911d4bf606cedf1688e2fd1ee3201ebdfeb9359ac82cace40a96b4d7f",
+    "ops/agent_chat/test_p0_runtime.py": "af2f92b2b4d21862dbbfb09b0ba85dec219b7d59d6b2a4c25028b1efe49862c7",
+    "ops/agent_chat/test_p1_skills_runtime.py": "7713596e6d6438980f9313907bc19ca5be1254de8b098efad077821380765873",
+    "ops/agent_chat/test_queue_dispatch.py": "ca6a5b3b1f469e238c83c872a51550a02dc1d03a8dd3290ffe47a5e5c29ee911",
+    "ops/agent_chat/test_professional_tool_preparation.py": "d1a148abf982992a8110de429072bcc0d335839c5dca9bd2aa3d5d4fed05cd6a"
+  },
+  "changed": [
+    "regulai/front/agents/general_tools.py",
+    "regulai/front/agents/checkpoints.py",
+    "regulai/front/agents/history.py",
+    "regulai/front/agents/continuation.py"
+  ],
+  "changed_by_kind": {
+    "web": [
+      "regulai/front/agents/general_tools.py",
+      "regulai/front/agents/checkpoints.py",
+      "regulai/front/agents/history.py",
+      "regulai/front/agents/continuation.py"
+    ],
+    "worker": []
+  },
+  "files_by_kind": {
+    "web": [
+      "ops/agent_chat/test_p0_runtime.py",
+      "ops/agent_chat/test_p1_skills_runtime.py",
+      "ops/agent_chat/test_professional_tool_preparation.py",
+      "ops/agent_chat/test_queue_dispatch.py",
+      "regulai/front/agents/checkpoints.py",
+      "regulai/front/agents/continuation.py",
+      "regulai/front/agents/general_tools.py",
+      "regulai/front/agents/history.py",
+      "regulai/front/test_agent_tools_p1.py",
+      "regulai/front/test_chat12_recovery.py"
+    ],
+    "worker": [
+      "ops/agent_chat/test_p0_runtime.py",
+      "ops/agent_chat/test_p1_skills_runtime.py",
+      "ops/agent_chat/test_professional_tool_preparation.py",
+      "ops/agent_chat/test_queue_dispatch.py"
+    ]
+  }
+}

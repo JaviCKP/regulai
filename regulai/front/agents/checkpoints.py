@@ -141,6 +141,19 @@ def _validate_messages(payload):
     return expected
 
 
+def _private_workspace(run, value):
+    """Private executor recovery, never a binary model/input channel.
+
+    Privacy bootstrap already denies original attachments and revisions. Keep
+    that restriction here too. Only a bound sandbox's generated workspace can
+    round-trip through encrypted AgentInput storage; inference and tool results
+    still go through the normal text protection and current output policy.
+    """
+    if (value.get('version') != 2 or not run.job.get('sandbox_reservation', {}).get('sandbox_id')
+            or any(run.job.get(key) for key in ('source', 'base', 'references_manifest'))):
+        raise AgentDenied('privacy_binary_channel_blocked')
+
+
 def save(token, attempt, payload):
     from . import jobs
     started_at, started = timezone.now(), time.monotonic()
@@ -160,7 +173,10 @@ def save(token, attempt, payload):
         from front.privacy import required, ProtectionContext, protect_tree
         if required(run.prompt):
             if raw is not None:
-                raise AgentDenied('privacy_binary_channel_blocked')
+                _private_workspace(run, payload)
+                # Server-issued scope is inside the authenticated encrypted row;
+                # it cannot be supplied as an extra field by the executor.
+                payload = {**payload, 'workspace_scope': 'private_executor'}
             protected = protect_tree(ProtectionContext.from_prompt(run.prompt),
                 [payload['messages'], payload['wire_messages']])
             payload = {**payload, 'messages': protected[0], 'wire_messages': protected[1]}
@@ -205,7 +221,10 @@ def load(run):
     from front.privacy import required, ProtectionContext, protect_tree
     if required(run.prompt):
         if value.get('archive') is not None:
-            raise AgentDenied('privacy_binary_channel_blocked')
+            _private_workspace(run, value)
+            if value.get('workspace_scope') != 'private_executor':
+                raise AgentDenied('privacy_binary_channel_blocked')
+            validate_archive(base64.b64decode(value['archive'], validate=True), run.job['limits'])
         protected = protect_tree(ProtectionContext.from_prompt(run.prompt),
             [value['messages'], value['wire_messages']])
         value = {**value, 'messages': protected[0], 'wire_messages': protected[1]}
