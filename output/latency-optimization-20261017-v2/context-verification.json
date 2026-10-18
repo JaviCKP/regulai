@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "command": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe regulai/manage.py test front.test_agent_context_performance --settings=regulai.test_settings --noinput --verbosity=1",
+  "exit_code": 0,
+  "tests": 12,
+  "test_seconds": 0.407,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "database": "isolated in-memory SQLite",
+  "provider_boundary": "AgentFixture MockTransport; external sockets explicitly forbidden",
+  "coverage": [
+    "One execution read and joined provider/profile authority",
+    "Preflight reuses only rows fetched by its own authenticate",
+    "Live revocation of user, account, grant, grant version, engine, model, mask and policy",
+    "YARA applied independently to exact outgoing text",
+    "Cross-tenant connection and engine/model mismatch denied",
+    "History changes observed at the next boundary",
+    "Authorization digest unchanged by execution-row reuse",
+    "Mixed-tenant conversation provenance denied",
+    "Historical first-user/profile grant binding preserved",
+    "Empty history selects no messages even when valid history exists: zero queries with supplied execution, one with a fresh execution read",
+    "Changing an empty history snapshot to a valid selected pair invalidates the next authorization",
+    "Empty history does not bypass a changed conversation owner"
+  ],
+  "negative_control": {
+    "command": "rtk proxy C:\\Users\\javi\\Documents\\Codex\\regulai-platform\\.venv\\Scripts\\python.exe output/latency-optimization-20261017-v2/empty-history-regression-probe.py",
+    "mutation": "Remove only empty-history shortcut in memory; leave production source unchanged",
+    "observed": "New materialization regression fails as intended: 4 SQL queries instead of 0",
+    "tests": 1,
+    "expected_failures": 1,
+    "actual_failures": 1,
+    "actual_errors": 0,
+    "test_seconds": 0.040,
+    "exit_code": 0
+  },
+  "new_cache": false,
+  "freshness_scope": "Only one current authenticate/preflight operation; all existing boundary authentications retained",
+  "limitations": "PostgreSQL concurrency and end-to-end latency are measured separately by the parent harness."
+}

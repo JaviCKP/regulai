@@ -1,0 +1,20 @@
+{
+  "exit_code": 6,
+  "summary": {
+    "tests": 114,
+    "failures": [],
+    "errors": [
+      "test_authentication_reads_execution_once_and_joins_provider_rows (front.test_agent_context_performance.AgentContextPerformanceTests.test_authentication_reads_execution_once_and_joins_provider_rows)",
+      "test_each_boundary_observes_revocations_and_changed_authority (front.test_agent_context_performance.AgentContextPerformanceTests.test_each_boundary_observes_revocations_and_changed_authority)",
+      "test_history_snapshot_changes_are_not_retained_between_authentications (front.test_agent_context_performance.AgentContextPerformanceTests.test_history_snapshot_changes_are_not_retained_between_authentications)",
+      "test_joined_provider_still_rejects_foreign_tenant_and_model (front.test_agent_context_performance.AgentContextPerformanceTests.test_joined_provider_still_rejects_foreign_tenant_and_model)",
+      "test_preflight_does_not_rebuild_rows_just_authenticated (front.test_agent_context_performance.AgentContextPerformanceTests.test_preflight_does_not_rebuild_rows_just_authenticated)",
+      "test_same_context_still_checks_new_output_with_yara (front.test_agent_context_performance.AgentContextPerformanceTests.test_same_context_still_checks_new_output_with_yara)"
+    ],
+    "skipped": []
+  },
+  "image_ids": {
+    "web": "sha256:1b7ea0aa30d30aa1aef00f426f4ae19a84f9682731571a059503739c30457faf",
+    "worker": "sha256:8fc38582479f48b1030158bd7949c5604a5402879f0c763a89ed0b1071ad81df"
+  }
+}

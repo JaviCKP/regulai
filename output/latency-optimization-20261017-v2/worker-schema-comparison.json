@@ -1,0 +1,54 @@
+{
+  "scope": "Pinned SDK synthetic InternalClient HTTP; first inference request; no database/network",
+  "granted_tools": [
+    "execute"
+  ],
+  "cold_scope": "First graph invocation after module imports; not process startup or Django",
+  "cold": {
+    "wall_ms": 27.898100001038983,
+    "cpu_ms": 31.25
+  },
+  "warm": {
+    "wall_ms": {
+      "n": 1,
+      "median": 32.08980000636075,
+      "p95": 32.08980000636075,
+      "max": 32.08980000636075
+    },
+    "cpu_ms": {
+      "n": 1,
+      "median": 31.25,
+      "p95": 31.25,
+      "max": 31.25
+    }
+  },
+  "rows": [
+    {
+      "wall_ms": 27.898100001038983,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 32.08980000636075,
+      "cpu_ms": 31.25
+    }
+  ],
+  "profile": "         83376 function calls (79845 primitive calls) in 0.076 seconds\n\n   Ordered by: cumulative time\n   List reduced from 1521 to 40 due to restriction <40>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    0.077    0.077 latency_worker_profile.py:30(sample)\n        1    0.000    0.000    0.076    0.076 test_p0_runtime.py:83(invoke)\n        1    0.000    0.000    0.073    0.073 worker.py:118(run_job)\n        1    0.000    0.000    0.073    0.073 worker.py:113(__exit__)\n        1    0.000    0.000    0.073    0.073 threading.py:1117(join)\n        1    0.000    0.000    0.073    0.073 threading.py:1155(_wait_for_tstate_lock)\n     19/3    0.000    0.000    0.073    0.024 {method 'acquire' of '_thread.lock' objects}\n        1    0.000    0.000    0.073    0.073 threading.py:1018(_bootstrap)\n        1    0.000    0.000    0.073    0.073 threading.py:1058(_bootstrap_inner)\n        1    0.000    0.000    0.073    0.073 threading.py:1001(run)\n        1    0.000    0.000    0.072    0.072 professional_worker.py:29(run_professional)\n        1    0.000    0.000    0.033    0.033 main.py:3901(invoke)\n        8    0.000    0.000    0.033    0.004 main.py:2724(stream)\n       12    0.000    0.000    0.029    0.002 _runner.py:177(tick)\n        6    0.000    0.000    0.028    0.005 _retry.py:573(run_with_retry)\n        5    0.000    0.000    0.028    0.006 _runnable.py:674(invoke)\n    13/12    0.000    0.000    0.027    0.002 _runnable.py:374(invoke)\n    23/15    0.000    0.000    0.027    0.002 {method 'run' of '_contextvars.Context' objects}\n        1    0.000    0.000    0.026    0.026 factory.py:1520(model_node)\n      3/1    0.000    0.000    0.025    0.025 factory.py:337(composed)\n      4/1    0.000    0.000    0.025    0.025 run_helpers.py:813(wrapper)\n        1    0.000    0.000    0.025    0.025 adapter.py:230(build_agent)\n        1    0.000    0.000    0.025    0.025 todo.py:231(wrap_model_call)\n      3/1    0.000    0.000    0.025    0.025 factory.py:344(inner_handler)\n        1    0.000    0.000    0.025    0.025 graph.py:260(create_deep_agent)\n        1    0.000    0.000    0.025    0.025 filesystem.py:1864(wrap_model_call)\n        1    0.000    0.000    0.024    0.024 summarization.py:1377(wrap_model_call)\n        1    0.000    0.000    0.020    0.020 summarization.py:993(_count_tokens)\n        1    0.000    0.000    0.020    0.020 utils.py:2257(count_tokens_approximately)\n        1    0.000    0.000    0.018    0.018 factory.py:892(create_agent)\n        1    0.000    0.000    0.012    0.012 professional_worker.py:20(runtime_identity)\n       40    0.000    0.000    0.011    0.000 base.py:676(tool_call_schema)\n        8    0.000    0.000    0.010    0.001 pydantic.py:284(_create_subset_model)\n        8    0.000    0.000    0.010    0.001 pydantic.py:234(_create_subset_model_v2)\n        4    0.000    0.000    0.010    0.003 __init__.py:882(version)\n        8    0.000    0.000    0.009    0.001 main.py:1735(create_model)\n        1    0.000    0.000    0.009    0.009 state.py:1177(compile)\n        8    0.000    0.000    0.009    0.001 _model_construction.py:84(__new__)\n        7    0.000    0.000    0.008    0.001 state.py:1444(attach_node)\n        8    0.000    0.000    0.008    0.001 pydantic.py:351(model_json_schema)\n\n\n",
+  "schema_comparison": {
+    "baseline_ref": "a9e58ed73d65d7e59dcf6f23ee814f3668f413d1",
+    "count": 11,
+    "equal": true,
+    "names": [
+      "edit_file",
+      "inspect_image",
+      "install_packages",
+      "publish_artifact",
+      "read_output",
+      "replace_file",
+      "web_browse",
+      "web_download",
+      "web_find",
+      "web_open",
+      "web_search"
+    ]
+  }
+}

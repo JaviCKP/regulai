@@ -1,7 +1,60 @@
 # 92 — Diagnóstico de latencia antes de ejecutar en el chat 11
 
-Status: diagnóstico completado el 17 de octubre de 2026; optimización aplicada y verificada localmente.
+Status: diagnóstico completado el 17 de octubre de 2026; segunda optimización aplicada y verificada localmente el 18 de octubre de 2026.
 Blocked by: ninguno. Alcance: diagnóstico, optimización y activación local.
+
+## Segunda optimización: resultado vigente (18 de octubre)
+
+Se verificó la primera instalación antes de modificarla y se creó una referencia
+reproducible con sus imágenes, 20 procesos nuevos por variante y el mismo backup.
+La segunda optimización está instalada: web `dbd286f248ef`, worker `67acfe365d0f`;
+commit de producto `28e91e7`. Datos, claves, configuración y checkpoints conservados.
+
+| Medida | n por variante | Antes mediana / p95 | Después mediana / p95 |
+| --- | ---: | ---: | ---: |
+| Preparación simple caliente | 60 | 1,116 / 1,411 s | 0,816 / 0,992 s |
+| Preparación fría de proceso | 20 | 1,752 / 2,198 s | 1,438 / 1,758 s |
+| Cola con capacidad libre | 140 | 0,153 / 0,213 s | 0,106 / 0,152 s |
+| Primera llamada al proveedor, caliente | 120 | 1,297 / 1,581 s | 0,953 / 1,136 s |
+| SELECT simples | 60 | 525 / 525 | 308 / 308 |
+| SELECT catálogo directo | 5 | 12 / 12 | 10 / 10 |
+
+Las metas p95 de 700 ms, 1,5 s y 100 ms no se alcanzan. El perfil mantiene
+13 autenticaciones y tres preflight; el coste residual está principalmente en
+autorización/protección y SQL. Se agrupan lecturas y se reutiliza contexto fresco
+dentro de una operación, sin compartir permisos entre fronteras. Se evita
+materializar historial explícitamente vacío y se cachean sólo esquemas estáticos
+de herramientas (11 entradas), manteniendo closures y clientes nuevos.
+
+Pasan 137 pruebas PostgreSQL, 28 SDK y 42 de herramientas; una de socket Unix
+se omite en Windows. Hay 280 ejecuciones formales, 60 de historial creciente y
+100 concurrentes, con proveedor simulado y bloqueo de red externa. Se verifican
+las tres entradas HTTP, privacidad/YARA, revocaciones, aislamiento, fallos y
+reintentos, checkpoints, idempotencia y dinero. Los ensayos temporales propios
+están retirados; los originales y respaldos privados permiten reversión.
+
+Frío significa primer mensaje después de inicializar Django/SDK, no caché de
+PostgreSQL/SO vacía. Las admisiones usan Django TestClient y la comunicación
+worker/servidor HTTP local real. No se mide el primer token del modelo real.
+La concurrencia usa dos plazas de proveedor sólo en el ensayo; la instalación
+conserva una. Sus cohortes libre/saturada son descriptivas por la carrera de admisión.
+
+Desde el repositorio, los comandos vigentes son:
+
+```powershell
+rtk proxy python ops/agent_chat/latency_local.py verify --series second
+rtk proxy python ops/agent_chat/latency_local.py rollback --series second
+```
+
+El segundo comando revierte sólo esta segunda optimización, conservando datos
+actuales y claves. [Entrega y límites](../../../output/latency-optimization-20261017-v2/DELIVERY.md),
+[medidas](../../../output/latency-optimization-20261017-v2/summary.json) y
+[reproducción](../../../output/latency-optimization-20261017-v2/REPRODUCE.md).
+Las secciones siguientes conservan el diagnóstico y la primera optimización como
+registro histórico; sus imágenes y comandos sin `--series second` no describen
+la instalación vigente.
+
+## Registro histórico de la primera optimización
 
 Se inspeccionaron las dos ejecuciones completadas de la conversación 11, a las
 17:08 y 17:09 de Madrid. No se reenviaron mensajes ni se invocaron proveedores.

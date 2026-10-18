@@ -1,0 +1,128 @@
+{
+  "status": "failed_excluded",
+  "round": 51,
+  "variant": "after",
+  "reason": "HTTP 429 on admission after 30 completed messages; installed chat rate is 30 per 60 seconds. No production limit changed. Replacement comparison uses two processes of 25 messages per variant.",
+  "complete": false,
+  "completed_rows": 30,
+  "groups": [
+    {
+      "batch": 0,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 0,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 1,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 1,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 2,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 2,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 3,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 3,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 4,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 4,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 5,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 5,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    }
+  ],
+  "capacity_configuration": {
+    "installed_effective": {
+      "active_global": 2,
+      "active_company": 2,
+      "queued_global": 32,
+      "queued_company": 8,
+      "queue_seconds": 300,
+      "provider": 1,
+      "sandbox": 1
+    },
+    "fixture_effective": {
+      "active_global": 2,
+      "active_company": 2,
+      "queued_global": 32,
+      "queued_company": 8,
+      "queue_seconds": 300,
+      "provider": 2,
+      "sandbox": 1
+    },
+    "scope": "Process-local synthetic fixture only; baseline/after identical; installation unchanged."
+  },
+  "rate_limit_audit_events_after_test_start": 2
+}

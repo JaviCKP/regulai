@@ -1,0 +1,9 @@
+{
+  "command": "rtk proxy python -m unittest ops.agent_chat.test_latency_recovery ops.agent_chat.test_latency_profile ops.agent_chat.test_latency_report_v2",
+  "tests": 43,
+  "passed": 42,
+  "skipped": 1,
+  "skip_reason": "AF_UNIX server test unavailable on Windows",
+  "failures": 0,
+  "errors": 0
+}

@@ -14,11 +14,15 @@ import urllib.parse
 import urllib.request
 import uuid
 
-STAGE = Path('/opt/regulai/updates') / 'latency-20261017-a1'
+if REQUEST['identity'] not in {'latency-20261017-a1', 'latency-20261017-a2'}:
+    raise RuntimeError('invalid_latency_series')
+STAGE = Path('/opt/regulai/updates') / REQUEST['identity']
 WEB, WORKER, PG = 'regulai-v2-web', 'regulai-v2-worker', 'regulai-v2-postgres'
-WORKER_MODULES = {'regulai/front/agents/worker.py', 'regulai/front/agents/skill_backend.py'}
+WORKER_MODULES = {'regulai/front/agents/worker.py', 'regulai/front/agents/skill_backend.py',
+                  'regulai/front/agents/adapter.py', 'regulai/front/agents/professional_worker.py'}
 WORKER_TESTS = {'ops/agent_chat/test_queue_dispatch.py', 'ops/agent_chat/test_p1_skills_runtime.py',
-                'ops/agent_chat/test_p1_skill_materialization.py'}
+                'ops/agent_chat/test_p1_skill_materialization.py',
+                'ops/agent_chat/test_professional_tool_preparation.py', 'ops/agent_chat/test_p0_runtime.py'}
 h = {'__name__': 'latency_helper', '_ACTIVATION_SOURCE': REQUEST['helper']}
 exec(compile(REQUEST['helper'], 'helper.py', 'exec'), h)
 docker, inspect, save = h['docker'], h['inspect'], h['private_json']
@@ -156,16 +160,28 @@ def init():
         'images': {name: row['Image'] for name, row in rows.items()}, 'live_data_modified': False}
 
 
+def second_series():
+    return REQUEST.get('identity') == 'latency-20261017-a2'
+
+
+def benchmark_names(variant, number):
+    prefix = 'latency-v2-' if second_series() else 'latency-'
+    database = f'regulai_p1_latency_{"v2_" if second_series() else ""}{variant}_{number}'
+    return database, prefix + f'server-{variant}-{number}', prefix + f'worker-{variant}-{number}'
+
+
 def benchmark():
+    measured_started_at = time.time()
     variant = 'baseline' if REQUEST['action'] == 'bench-baseline' else 'after'
     number, count = int(REQUEST['round']), int(REQUEST['count'])
-    if not 0 <= number < 20 or not 1 <= count <= 30:
+    if not 0 <= number < (200 if second_series() else 20) or not 1 <= count <= 30:
         raise RuntimeError('invalid_benchmark_size')
-    database = f'regulai_p1_latency_{variant}_{number}'
+    database, server_name, worker_name = benchmark_names(variant, number)
     folder = STAGE / f'bench-{variant}-{number}'
     folder.mkdir(mode=0o755, exist_ok=True)
     for name, encoded in REQUEST['scripts'].items():
-        if name not in {'latency_benchmark_server.py', 'latency_benchmark_worker.py'}:
+        if name not in {'latency_benchmark_server.py', 'latency_benchmark_worker.py', 'latency_profile.py',
+                        'latency_concurrency_server.py'}:
             raise RuntimeError('invalid_script')
         (folder / name).write_bytes(base64.b64decode(encoded, validate=True))
     (folder / 'token').write_text('latency-fixture-worker-only-20261017')
@@ -184,13 +200,18 @@ def benchmark():
     original = h['read_json'](STAGE / 'original.json')
     images = ({'web': original[WEB]['Image'], 'worker': original[WORKER]['Image']} if variant == 'baseline'
         else h['read_json'](STAGE / 'candidate.json')['images'])
-    server_name, worker_name = f'latency-server-{variant}-{number}', f'latency-worker-{variant}-{number}'
     mounted = ['--mount', f'type=bind,src={folder},dst=/bench,readonly']
+    concurrent = REQUEST.get('scenario') == 'concurrency'
+    server_script = 'latency_concurrency_server.py' if concurrent else 'latency_benchmark_server.py'
+    expected_rows = count * 5 if concurrent else count
     try:
         docker('run', '-d', '--name', server_name, *app_args(images['web']), *mounted,
             '--mount', f'type=bind,src={results},dst=/results',
             '-e', 'BENCH_DATABASE=' + database, '-e', 'BENCH_COUNT=' + str(count),
-            images['web'], 'python', '/bench/latency_benchmark_server.py')
+            '-e', 'BENCH_PROFILE=' + str(int(bool(REQUEST.get('profile')))),
+            '-e', 'BENCH_ROUND=' + str(number),
+            '-e', 'BENCH_SCENARIO=' + REQUEST.get('scenario', 'simple'),
+            images['web'], 'python', '/bench/' + server_script)
         for _ in range(150):
             ready = subprocess.run(['docker', 'exec', server_name, 'test', '-f', '/tmp/latency-ready'], capture_output=True)
             if ready.returncode == 0:
@@ -203,8 +224,9 @@ def benchmark():
         docker('run', '-d', '--name', worker_name, '--network', 'host', '--user', '1000:1000',
             '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
             '--tmpfs', '/tmp:rw,nosuid,nodev,size=128m,uid=1000,gid=1000', *mounted,
+            '-e', 'BENCH_PROFILE=' + str(int(bool(REQUEST.get('profile')))),
             images['worker'], 'python', '/bench/latency_benchmark_worker.py')
-        deadline = time.monotonic() + count * 180 + 60
+        deadline = time.monotonic() + expected_rows * 180 + 60
         report = None
         while time.monotonic() < deadline:
             report_path = results / 'report.json'
@@ -213,7 +235,8 @@ def benchmark():
                     report = h['read_json'](report_path)
                 except (ValueError, OSError):
                     report = None  # The producer may still be replacing/writing it.
-                if report is not None and len(report.get('rows', [])) == count:
+                if (report is not None and len(report.get('rows', [])) == expected_rows
+                        and (not concurrent or report.get('complete') is True)):
                     if any(row.get('status') != 'completed' for row in report['rows']):
                         raise RuntimeError('benchmark_execution_not_completed')
                     break
@@ -225,7 +248,12 @@ def benchmark():
         # The persisted complete report is the result. A later 143 during the
         # bounded cleanup is not a failed benchmark or a reason to lose metrics.
         report.update(variant=variant, round=number, database=database, images=images,
-            image_ids={kind: json.loads(docker('image', 'inspect', image))[0]['Id'] for kind, image in images.items()})
+            image_ids={kind: json.loads(docker('image', 'inspect', image))[0]['Id'] for kind, image in images.items()},
+            harness_sha256={name: hashlib.sha256(base64.b64decode(value)).hexdigest()
+                            for name, value in REQUEST['scripts'].items()},
+            dataset_sha256=hashlib.sha256((STAGE / 'baseline.dump').read_bytes()).hexdigest(),
+            measured_started_at_unix=measured_started_at, measured_finished_at_unix=time.time(),
+            profile=bool(REQUEST.get('profile')), scenario=REQUEST.get('scenario', 'simple'))
         return report
     finally:
         for name in (worker_name, server_name):
@@ -252,15 +280,54 @@ def benchmark_container(identifier):
         client.close()
 
 
+def historical_benchmark_image(image_id, kind, candidate):
+    """Match an exact recorded build when its stopped container outlives the image.
+
+    This is only additional provenance for the second-series cleanup. The caller
+    still requires the exact task tag and all name/state/command/mount/DB checks.
+    A tag alone never establishes ownership; unknown digests remain untrusted.
+    """
+    if not second_series() or REQUEST.get('action') != 'cleanup-benchmarks':
+        return False
+    records = REQUEST.get('historical_builds', [])
+    allowed = {f'build-{number}.json' for number in (0, 2, 3, 4, 5)}
+    if not isinstance(records, list) or len(records) > len(allowed):
+        raise RuntimeError('benchmark_history_invalid')
+    seen, known = set(), set()
+    for record in records:
+        if (not isinstance(record, dict) or set(record) != {'artifact', 'manifest'}
+                or not isinstance(record['artifact'], str)
+                or record['artifact'] not in allowed or record['artifact'] in seen):
+            raise RuntimeError('benchmark_history_invalid')
+        seen.add(record['artifact'])
+        manifest = record['manifest']
+        if (not isinstance(manifest, dict) or manifest.get('phase') != 'built'
+                or manifest.get('images') != candidate['images']):
+            raise RuntimeError('benchmark_history_invalid')
+        ids = manifest.get('image_ids')
+        if (not isinstance(ids, dict) or set(ids) != {'web', 'worker'}
+                or any(not isinstance(value, str) or len(value) != 71
+                       or not value.startswith('sha256:')
+                       or any(char not in '0123456789abcdef' for char in value[7:])
+                       for value in ids.values())):
+            raise RuntimeError('benchmark_history_invalid')
+        known.add(ids[kind])
+    return image_id in known
+
+
 def check_benchmark_container(row, variant, number, role, original, candidate):
     """All evidence must match this task's exact synthetic benchmark resource."""
-    name = f'latency-{role}-{variant}-{number}'
+    database, server_name, worker_name = benchmark_names(variant, number)
+    name = server_name if role == 'server' else worker_name
     folder = STAGE / f'bench-{variant}-{number}'
     if row['Name'].lstrip('/') != name:
         raise RuntimeError('benchmark_name_mismatch')
     if row['State']['Running']:
         raise RuntimeError('benchmark_still_running')
-    if row['Config']['Cmd'] != ['python', f'/bench/latency_benchmark_{role}.py']:
+    valid_commands = [['python', f'/bench/latency_benchmark_{role}.py']]
+    if role == 'server' and second_series():
+        valid_commands.append(['python', '/bench/latency_concurrency_server.py'])
+    if row['Config']['Cmd'] not in valid_commands:
         raise RuntimeError('benchmark_command_mismatch')
     expected = {(str(folder), '/bench', False)}
     kind = 'web' if role == 'server' else 'worker'
@@ -270,7 +337,7 @@ def check_benchmark_container(row, variant, number, role, original, candidate):
                      for mount in original[WEB]['Mounts'] if mount['Type'] == 'bind'}
         expected.add((str(folder / 'results'), '/results', True))
         environment = dict(value.split('=', 1) for value in row['Config'].get('Env', []) if '=' in value)
-        if environment.get('BENCH_DATABASE') != f'regulai_p1_latency_{variant}_{number}':
+        if environment.get('BENCH_DATABASE') != database:
             raise RuntimeError('benchmark_database_mismatch')
     actual = {(mount['Source'], mount['Destination'], mount['RW'])
               for mount in row['Mounts'] if mount['Type'] == 'bind'}
@@ -283,9 +350,11 @@ def check_benchmark_container(row, variant, number, role, original, candidate):
     if row['Image'] in {original[service]['Image'], candidate['image_ids'][kind]}:
         return
     # Earlier measured candidates used the same task tag before later rebuilds.
-    # Prove they inherit the exact original image with one COPY-only layer.
+    # Match their immutable recorded IDs, or prove one COPY-only layer over base.
     if variant != 'after' or row['Config'].get('Image') != candidate['images'][kind]:
         raise RuntimeError('benchmark_image_unknown')
+    if historical_benchmark_image(row['Image'], kind, candidate):
+        return
     image = json.loads(docker('image', 'inspect', row['Image']))[0]
     base = json.loads(docker('image', 'inspect', original[service]['Image']))[0]
     layers, base_layers = image['RootFS']['Layers'], base['RootFS']['Layers']
@@ -303,11 +372,14 @@ def cleanup_benchmarks():
     # Explicit coordinator-approved runs. Never discover deletion targets by prefix.
     approved = {'baseline': (0, 1, 2, 3, 4, 7, 8, 9, *range(10, 20)),
                 'after': (4, 5, 6, 7, 10, 11, 12, *range(13, 20))}
+    if second_series():
+        approved = {'baseline': range(200), 'after': range(200)}
     plans, pending = [], []
     for variant, numbers in approved.items():
         for number in numbers:
             folder = STAGE / f'bench-{variant}-{number}'
-            names = [f'latency-{role}-{variant}-{number}' for role in ('worker', 'server')]
+            database, server_name, worker_name = benchmark_names(variant, number)
+            names = [worker_name, server_name]
             rows = [benchmark_container(name) for name in names]
             if not folder.is_dir():
                 if any(row is not None for row in rows):
@@ -323,7 +395,7 @@ def cleanup_benchmarks():
             except RuntimeError as error:
                 pending.append({'run': folder.name, 'reason': str(error)})
                 continue
-            plans.append({'database': f'regulai_p1_latency_{variant}_{number}',
+            plans.append({'database': database,
                           'containers': [(row['Id'], name) for name, row in zip(names, rows) if row is not None]})
     names = [plan['database'] for plan in plans]
     existing, sessions = set(), set()
@@ -427,6 +499,19 @@ labels=['front.test_agent_message_batch','front.test_privacy_batch','front.test_
  'front.test_agent_professional.ProfessionalTests.test_three_entries_real_account_free_text_and_http_idempotency']
 raise SystemExit(Recorded(interactive=False,verbosity=1).run_tests(labels))
 """
+    if second_series():
+        source = source.replace("'test_regulai_latency_20261017'", "'test_regulai_latency_v2_20261017'")
+        source = source.replace("labels=[", "labels=['front.test_agent_context_performance','front.test_agent_admission_context','front.test_agent_capacity',")
+        source = """import socket
+_connect, _connect_ex = socket.socket.connect, socket.socket.connect_ex
+def _local(method):
+ def guarded(sock, address):
+  if isinstance(address, tuple) and address[0] not in ('127.0.0.1','::1','localhost'):
+   raise AssertionError('test_external_network_denied')
+  return method(sock,address)
+ return guarded
+socket.socket.connect, socket.socket.connect_ex = _local(_connect), _local(_connect_ex)
+""" + source
     result = subprocess.run(['docker', 'run', '--rm', '-i', *app_args(candidate['images']['web']),
         candidate['images']['web'], 'python', '-'], input=source.encode(), capture_output=True)
     log = STAGE / 'candidate-tests.log'
@@ -444,10 +529,64 @@ def metadata(image):
     return json.loads(docker('run', '--rm', '-i', *app_args(image), image, 'python', '-', data=script.encode()))
 
 
+def runtime_info():
+    source = """import runpy,json,platform,os
+runpy.run_path('/run/p1/p1_activation_remote.py')['_configure']()
+from front.models import AgentExecution
+run=AgentExecution.objects.filter(conversation_id=11).select_related('profile').latest('created_at')
+print(json.dumps({'python':platform.python_version(),'cpus':os.cpu_count(),
+ 'tools':run.profile.tools,'job_kind':run.job.get('kind'),'job_version':run.job.get('version')}))
+"""
+    value = json.loads(docker('exec', '-i', WEB, 'python', '-', data=source.encode()))
+    value['host_load'] = os.getloadavg()
+    value['dataset_sha256'] = hashlib.sha256((STAGE / 'baseline.dump').read_bytes()).hexdigest()
+    return value
+
+
+def sdk_checks():
+    candidate = h['read_json'](STAGE / 'candidate.json')
+    folder = STAGE / ('sdk-' + str(int(REQUEST['round'])))
+    folder.mkdir(mode=0o755, exist_ok=True)
+    name = 'latency_worker_profile.py'
+    (folder / name).write_bytes(base64.b64decode(REQUEST['scripts'][name], validate=True))
+    (folder / name).chmod(0o644)
+    source = """import sys,json,unittest,socket
+sys.path[:0]=['/bench','/app/ops/agent_chat','/app/regulai']
+from unittest.mock import patch
+def denied(*args,**kwargs): raise AssertionError('sdk_external_network_denied')
+with patch.object(socket.socket,'connect',denied), patch.object(socket.socket,'connect_ex',denied):
+ suite=unittest.defaultTestLoader.loadTestsFromNames(['test_p0_runtime','test_p1_skills_runtime','test_queue_dispatch','test_professional_tool_preparation'])
+ result=unittest.TextTestRunner(verbosity=1).run(suite)
+ print(json.dumps({'tests':result.testsRun,'failures':[str(t) for t,_ in result.failures],
+ 'errors':[str(t) for t,_ in result.errors],'skipped':[(str(t),r) for t,r in result.skipped]}))
+ raise SystemExit(not result.wasSuccessful())
+"""
+    if REQUEST['action'] == 'sdk-profile':
+        source = """import sys,runpy
+sys.path[:0]=['/bench','/app/ops/agent_chat','/app/regulai']
+sys.argv=['latency_worker_profile.py','--count','31','--tools','installed']
+runpy.run_path('/bench/latency_worker_profile.py',run_name='__main__')
+"""
+    result = subprocess.run(['docker', 'run', '--rm', '-i', '--network', 'none', '--read-only',
+        '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+        '--tmpfs', '/tmp:rw,nosuid,nodev,size=128m,uid=1000,gid=1000',
+        '--mount', f'type=bind,src={folder},dst=/bench,readonly', candidate['image_ids']['worker'],
+        'python', '-'], input=source.encode(), capture_output=True)
+    (folder / 'result.log').write_bytes(result.stdout + result.stderr)
+    (folder / 'result.log').chmod(0o600)
+    lines = result.stdout.decode().splitlines()
+    if REQUEST['action'] == 'sdk-profile':
+        value = json.loads(result.stdout) if result.returncode == 0 else None
+    else:
+        summaries = [json.loads(line) for line in lines if line.startswith('{')]
+        value = summaries[-1] if summaries else None
+    return {'exit_code': result.returncode, 'summary': value, 'image_id': candidate['image_ids']['worker']}
+
+
 def catalog():
     variant = 'baseline' if REQUEST['action'] == 'catalog-baseline' else 'after'
     original = h['read_json'](STAGE / 'original.json')
-    image = original[WEB]['Image'] if variant == 'baseline' else h['read_json'](STAGE / 'candidate.json')['images']['web']
+    image = original[WEB]['Image'] if variant == 'baseline' else h['read_json'](STAGE / 'candidate.json')['image_ids']['web']
     database = 'regulai_p1_latency_catalog_' + variant + '_' + uuid.uuid4().hex[:16]
     created = False
     script = """import runpy,json,time,collections
@@ -477,7 +616,9 @@ print(json.dumps({'rows':rows,'live_data_modified':False,'provider_calls':0}))
             '--exit-on-error', '--no-owner', '--no-acl', data=(STAGE / 'baseline.dump').read_bytes())
         result = json.loads(docker('run', '--rm', '-i', *app_args(image), image,
                                   'python', '-', data=script.encode()))
-        result['database'] = database
+        result.update(database=database, image_id=image,
+            dataset_sha256=hashlib.sha256((STAGE / 'baseline.dump').read_bytes()).hexdigest(),
+            catalog_harness_sha256=hashlib.sha256(script.replace(database, '__isolated_database__').encode()).hexdigest())
         return result
     finally:
         if created:
@@ -734,6 +875,8 @@ def rollback():
 try:
     print(json.dumps({'init': init, 'bench-baseline': benchmark, 'bench-after': benchmark,
         'build': build, 'tests': tests, 'apply': apply, 'verify': verify, 'rollback': rollback,
+        'runtime-info': runtime_info,
+        'sdk-tests': sdk_checks, 'sdk-profile': sdk_checks,
         'cleanup-benchmarks': cleanup_benchmarks,
         'catalog-baseline': catalog, 'catalog-after': catalog}[REQUEST['action']]()))
 except Exception as error:

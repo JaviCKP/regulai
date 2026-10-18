@@ -1,0 +1,114 @@
+{
+  "baseline": {
+    "files": [
+      "bench-baseline-52-concurrency.json",
+      "bench-baseline-53-concurrency.json"
+    ],
+    "jobs": 50,
+    "groups": 20,
+    "all_completed_once": true,
+    "cohorts": {
+      "free": {
+        "queue_s": {
+          "n": 40,
+          "median": 0.348465,
+          "p95": 0.470537
+        },
+        "preparation_s": {
+          "n": 40,
+          "median": 1.4141225,
+          "p95": 2.042397
+        },
+        "first_inference_s": {
+          "n": 40,
+          "median": 1.7890765,
+          "p95": 2.329273
+        }
+      },
+      "blocked": {
+        "queue_s": {
+          "n": 10,
+          "median": 2.6300635,
+          "p95": 3.130126
+        },
+        "preparation_s": {
+          "n": 10,
+          "median": 1.0897934999999999,
+          "p95": 1.222086
+        },
+        "first_inference_s": {
+          "n": 10,
+          "median": 3.752751,
+          "p95": 4.23625
+        }
+      }
+    }
+  },
+  "after": {
+    "files": [
+      "bench-after-52-concurrency.json",
+      "bench-after-53-concurrency.json"
+    ],
+    "jobs": 50,
+    "groups": 20,
+    "all_completed_once": true,
+    "cohorts": {
+      "free": {
+        "queue_s": {
+          "n": 40,
+          "median": 0.2301765,
+          "p95": 0.315202
+        },
+        "preparation_s": {
+          "n": 40,
+          "median": 1.0558085,
+          "p95": 1.556119
+        },
+        "first_inference_s": {
+          "n": 40,
+          "median": 1.3249395000000002,
+          "p95": 1.740737
+        }
+      },
+      "blocked": {
+        "queue_s": {
+          "n": 10,
+          "median": 1.8392400000000002,
+          "p95": 2.315379
+        },
+        "preparation_s": {
+          "n": 10,
+          "median": 0.782249,
+          "p95": 1.013733
+        },
+        "first_inference_s": {
+          "n": 10,
+          "median": 2.636221,
+          "p95": 3.096753
+        }
+      }
+    }
+  },
+  "same_harness_dataset_capacity": true,
+  "capacity_configuration": {
+    "installed_effective": {
+      "active_global": 2,
+      "active_company": 2,
+      "queued_global": 32,
+      "queued_company": 8,
+      "queue_seconds": 300,
+      "provider": 1,
+      "sandbox": 1
+    },
+    "fixture_effective": {
+      "active_global": 2,
+      "active_company": 2,
+      "queued_global": 32,
+      "queued_company": 8,
+      "queue_seconds": 300,
+      "provider": 2,
+      "sandbox": 1
+    },
+    "scope": "Process-local synthetic fixture only; baseline/after identical; installation unchanged."
+  }
+}

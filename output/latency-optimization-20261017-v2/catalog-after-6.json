@@ -1,0 +1,55 @@
+{
+  "rows": [
+    {
+      "seconds": 0.06669622700064792,
+      "sql": {
+        "SELECT": 10,
+        "SAVEPOINT": 2,
+        "RELEASE": 2
+      },
+      "catalog_count": 1
+    },
+    {
+      "seconds": 0.01729331599926809,
+      "sql": {
+        "SELECT": 10,
+        "SAVEPOINT": 2,
+        "RELEASE": 2
+      },
+      "catalog_count": 1
+    },
+    {
+      "seconds": 0.0179983230009384,
+      "sql": {
+        "SELECT": 10,
+        "SAVEPOINT": 2,
+        "RELEASE": 2
+      },
+      "catalog_count": 1
+    },
+    {
+      "seconds": 0.017119795997132314,
+      "sql": {
+        "SELECT": 10,
+        "SAVEPOINT": 2,
+        "RELEASE": 2
+      },
+      "catalog_count": 1
+    },
+    {
+      "seconds": 0.015107114999409532,
+      "sql": {
+        "SELECT": 10,
+        "SAVEPOINT": 2,
+        "RELEASE": 2
+      },
+      "catalog_count": 1
+    }
+  ],
+  "live_data_modified": false,
+  "provider_calls": 0,
+  "database": "regulai_p1_latency_catalog_after_8d930a656732451b",
+  "image_id": "sha256:dbd286f248ef3d3966cfc355df750d025bbbe8fdefeff460bce5cdd489975e9d",
+  "dataset_sha256": "f59da15091cfa540bb02dbac8bc44e847fb5044e1f8720edbeafab5605a24efc",
+  "catalog_harness_sha256": "ce9623c78b66f599d692ecfcbea5fb85de332a47cd90f0c69ffe936bf6f8a4a1"
+}

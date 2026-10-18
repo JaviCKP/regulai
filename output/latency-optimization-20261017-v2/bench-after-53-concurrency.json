@@ -1,0 +1,1457 @@
+{
+  "rows": [
+    {
+      "index": 0,
+      "batch": 0,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "process-cold",
+      "entry": "/chat/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.20204,
+      "preparation_s": 1.630476,
+      "first_inference_s": 1.832516,
+      "entry_to_provider_s": 1.954685,
+      "inference_http_to_provider_s": 0.756665,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.075327,
+      "queue_dispatch_s": 0.126713,
+      "provider_held_s": 0.007853
+    },
+    {
+      "index": 1,
+      "batch": 0,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "process-cold",
+      "entry": "/api/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.167897,
+      "preparation_s": 1.556119,
+      "first_inference_s": 1.724016,
+      "entry_to_provider_s": 1.955448,
+      "inference_http_to_provider_s": 0.760773,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.0546,
+      "queue_dispatch_s": 0.113297,
+      "provider_held_s": 0.007281
+    },
+    {
+      "index": 2,
+      "batch": 0,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.43481,
+      "preparation_s": 1.305927,
+      "first_inference_s": 1.740737,
+      "entry_to_provider_s": 1.85437,
+      "inference_http_to_provider_s": 0.594742,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.101681,
+      "queue_dispatch_s": 0.333129,
+      "provider_held_s": 0.154146
+    },
+    {
+      "index": 3,
+      "batch": 0,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.305457,
+      "preparation_s": 1.382296,
+      "first_inference_s": 1.687753,
+      "entry_to_provider_s": 2.005785,
+      "inference_http_to_provider_s": 0.576912,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.093132,
+      "queue_dispatch_s": 0.212325,
+      "provider_held_s": 0.008862
+    },
+    {
+      "index": 4,
+      "batch": 0,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": true,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 2.315379,
+      "preparation_s": 0.781374,
+      "first_inference_s": 3.096753,
+      "entry_to_provider_s": 3.549539,
+      "inference_http_to_provider_s": 0.391262,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.058248,
+      "queue_dispatch_s": 2.257131,
+      "capacity_release_to_started_s": 0.758211
+    },
+    {
+      "index": 5,
+      "batch": 1,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.224817,
+      "preparation_s": 1.005758,
+      "first_inference_s": 1.230575,
+      "entry_to_provider_s": 1.330942,
+      "inference_http_to_provider_s": 0.511388,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.053579,
+      "queue_dispatch_s": 0.171238,
+      "provider_held_s": 0.080335
+    },
+    {
+      "index": 6,
+      "batch": 1,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.184729,
+      "preparation_s": 1.015524,
+      "first_inference_s": 1.200253,
+      "entry_to_provider_s": 1.407738,
+      "inference_http_to_provider_s": 0.525692,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.075317,
+      "queue_dispatch_s": 0.109412,
+      "provider_held_s": 0.004366
+    },
+    {
+      "index": 7,
+      "batch": 1,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.309452,
+      "preparation_s": 1.065092,
+      "first_inference_s": 1.374544,
+      "entry_to_provider_s": 1.505782,
+      "inference_http_to_provider_s": 0.559398,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.059407,
+      "queue_dispatch_s": 0.250045,
+      "provider_held_s": 0.03884
+    },
+    {
+      "index": 8,
+      "batch": 1,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.28475,
+      "preparation_s": 1.033115,
+      "first_inference_s": 1.317865,
+      "entry_to_provider_s": 1.533651,
+      "inference_http_to_provider_s": 0.52958,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.060598,
+      "queue_dispatch_s": 0.224152,
+      "provider_held_s": 0.002708
+    },
+    {
+      "index": 9,
+      "batch": 1,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": true,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 1.795375,
+      "preparation_s": 0.797076,
+      "first_inference_s": 2.592451,
+      "entry_to_provider_s": 2.918837,
+      "inference_http_to_provider_s": 0.411621,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.067114,
+      "queue_dispatch_s": 1.728261,
+      "capacity_release_to_started_s": 0.582659
+    },
+    {
+      "index": 10,
+      "batch": 2,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.185811,
+      "preparation_s": 1.289914,
+      "first_inference_s": 1.475725,
+      "entry_to_provider_s": 1.561771,
+      "inference_http_to_provider_s": 0.691103,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.053641,
+      "queue_dispatch_s": 0.13217,
+      "provider_held_s": 0.098824
+    },
+    {
+      "index": 11,
+      "batch": 2,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.159792,
+      "preparation_s": 1.319629,
+      "first_inference_s": 1.479421,
+      "entry_to_provider_s": 1.661521,
+      "inference_http_to_provider_s": 0.687511,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.051332,
+      "queue_dispatch_s": 0.10846,
+      "provider_held_s": 0.000659
+    },
+    {
+      "index": 12,
+      "batch": 2,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.301418,
+      "preparation_s": 0.972423,
+      "first_inference_s": 1.273841,
+      "entry_to_provider_s": 1.402593,
+      "inference_http_to_provider_s": 0.502389,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.057961,
+      "queue_dispatch_s": 0.243457,
+      "provider_held_s": 0.078785
+    },
+    {
+      "index": 13,
+      "batch": 2,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.271909,
+      "preparation_s": 0.97518,
+      "first_inference_s": 1.247089,
+      "entry_to_provider_s": 1.468207,
+      "inference_http_to_provider_s": 0.506464,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.059375,
+      "queue_dispatch_s": 0.212534,
+      "provider_held_s": 0.005734
+    },
+    {
+      "index": 14,
+      "batch": 2,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": true,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 1.833611,
+      "preparation_s": 0.764301,
+      "first_inference_s": 2.597912,
+      "entry_to_provider_s": 2.915766,
+      "inference_http_to_provider_s": 0.383134,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.058792,
+      "queue_dispatch_s": 1.774819,
+      "capacity_release_to_started_s": 0.674802
+    },
+    {
+      "index": 15,
+      "batch": 3,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.191827,
+      "preparation_s": 0.941631,
+      "first_inference_s": 1.133458,
+      "entry_to_provider_s": 1.234337,
+      "inference_http_to_provider_s": 0.468479,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.054345,
+      "queue_dispatch_s": 0.137482,
+      "provider_held_s": 0.110909
+    },
+    {
+      "index": 16,
+      "batch": 3,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.173347,
+      "preparation_s": 0.976553,
+      "first_inference_s": 1.1499,
+      "entry_to_provider_s": 1.33646,
+      "inference_http_to_provider_s": 0.490445,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.055178,
+      "queue_dispatch_s": 0.118169,
+      "provider_held_s": 0.002253
+    },
+    {
+      "index": 17,
+      "batch": 3,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.284714,
+      "preparation_s": 0.998119,
+      "first_inference_s": 1.282833,
+      "entry_to_provider_s": 1.388371,
+      "inference_http_to_provider_s": 0.578676,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.051154,
+      "queue_dispatch_s": 0.23356,
+      "provider_held_s": 0.077792
+    },
+    {
+      "index": 18,
+      "batch": 3,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.263621,
+      "preparation_s": 0.996934,
+      "first_inference_s": 1.260555,
+      "entry_to_provider_s": 1.458335,
+      "inference_http_to_provider_s": 0.490293,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.052711,
+      "queue_dispatch_s": 0.21091,
+      "provider_held_s": 0.010675
+    },
+    {
+      "index": 19,
+      "batch": 3,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": true,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 1.844869,
+      "preparation_s": 1.013733,
+      "first_inference_s": 2.858602,
+      "entry_to_provider_s": 3.15156,
+      "inference_http_to_provider_s": 0.569444,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.054717,
+      "queue_dispatch_s": 1.790152,
+      "capacity_release_to_started_s": 0.670298
+    },
+    {
+      "index": 20,
+      "batch": 4,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.176509,
+      "preparation_s": 1.210528,
+      "first_inference_s": 1.387037,
+      "entry_to_provider_s": 1.504189,
+      "inference_http_to_provider_s": 0.537936,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.051102,
+      "queue_dispatch_s": 0.125407,
+      "provider_held_s": 0.030521
+    },
+    {
+      "index": 21,
+      "batch": 4,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.169714,
+      "preparation_s": 1.164149,
+      "first_inference_s": 1.333863,
+      "entry_to_provider_s": 1.527845,
+      "inference_http_to_provider_s": 0.52305,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.058045,
+      "queue_dispatch_s": 0.111669,
+      "provider_held_s": 0.003547
+    },
+    {
+      "index": 22,
+      "batch": 4,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/send/",
+      "sensitive": true,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.315202,
+      "preparation_s": 1.129727,
+      "first_inference_s": 1.444929,
+      "entry_to_provider_s": 1.557515,
+      "inference_http_to_provider_s": 0.605342,
+      "sql_preparation": {
+        "SELECT": 315,
+        "SAVEPOINT": 22,
+        "RELEASE": 22,
+        "INSERT": 16,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 96,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 155,
+          "SAVEPOINT": 8,
+          "INSERT": 8,
+          "RELEASE": 8,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.066851,
+      "queue_dispatch_s": 0.248351,
+      "provider_held_s": 0.009695
+    },
+    {
+      "index": 23,
+      "batch": 4,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/api/chat/send/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": false,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 0.272968,
+      "preparation_s": 1.059046,
+      "first_inference_s": 1.332014,
+      "entry_to_provider_s": 1.553405,
+      "inference_http_to_provider_s": 0.563185,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.052837,
+      "queue_dispatch_s": 0.220131,
+      "provider_held_s": 0.012386
+    },
+    {
+      "index": 24,
+      "batch": 4,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "cache": "warm",
+      "entry": "/chat/",
+      "sensitive": false,
+      "status": "completed",
+      "capacity_blocked": true,
+      "provider_calls": 1,
+      "inference_count": 1,
+      "checkpoint_count": 1,
+      "claim_count": 1,
+      "catalog_count": 1,
+      "queue_s": 1.892393,
+      "preparation_s": 0.782137,
+      "first_inference_s": 2.67453,
+      "entry_to_provider_s": 3.007584,
+      "inference_http_to_provider_s": 0.407696,
+      "sql_preparation": {
+        "SELECT": 308,
+        "SAVEPOINT": 20,
+        "RELEASE": 20,
+        "INSERT": 14,
+        "UPDATE": 10
+      },
+      "sql_by_path": {
+        "/internal/agents/run/bootstrap/": {
+          "SELECT": 92,
+          "SAVEPOINT": 6,
+          "RELEASE": 6,
+          "INSERT": 3
+        },
+        "/internal/agents/run/checkpoint/": {
+          "SELECT": 64,
+          "SAVEPOINT": 7,
+          "RELEASE": 7,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "/internal/agents/inference/": {
+          "SELECT": 152,
+          "SAVEPOINT": 7,
+          "INSERT": 7,
+          "RELEASE": 7,
+          "UPDATE": 9
+        }
+      },
+      "queue_admission_s": 0.067228,
+      "queue_dispatch_s": 1.825165,
+      "capacity_release_to_started_s": 0.651425
+    }
+  ],
+  "groups": [
+    {
+      "batch": 0,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 0,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 1,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 1,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 2,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 2,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 3,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 3,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    },
+    {
+      "batch": 4,
+      "concurrent_jobs": 2,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 0,
+      "all_completed_once": true
+    },
+    {
+      "batch": 4,
+      "concurrent_jobs": 3,
+      "worker_capacity": 2,
+      "provider_overlap_verified": true,
+      "blocked_until_release": 1,
+      "all_completed_once": true
+    }
+  ],
+  "complete": true,
+  "scenario": "concurrency",
+  "capacity_configuration": {
+    "installed_effective": {
+      "active_global": 2,
+      "active_company": 2,
+      "queued_global": 32,
+      "queued_company": 8,
+      "queue_seconds": 300,
+      "provider": 1,
+      "sandbox": 1
+    },
+    "fixture_effective": {
+      "active_global": 2,
+      "active_company": 2,
+      "queued_global": 32,
+      "queued_company": 8,
+      "queue_seconds": 300,
+      "provider": 2,
+      "sandbox": 1
+    },
+    "scope": "Process-local synthetic fixture only; baseline/after identical; installation unchanged."
+  },
+  "instrumented": false,
+  "method": "Cloned data; three HTTP admission entries; real HTTP/SDK dispatcher; two worker slots; loopback-only sockets; MockTransport provider held with Event. SQL counters exclude admission/claim. Rows marked capacity_blocked include intentional provider hold; only other rows measure free-capacity queue. Cold is the first batch of this process; PostgreSQL/OS data caches are not cleared.",
+  "variant": "after",
+  "round": 53,
+  "database": "regulai_p1_latency_v2_after_53",
+  "images": {
+    "web": "regulai-v2-web:latency-20261017-a2",
+    "worker": "regulai-v2-worker:latency-20261017-a2"
+  },
+  "image_ids": {
+    "web": "sha256:dbd286f248ef3d3966cfc355df750d025bbbe8fdefeff460bce5cdd489975e9d",
+    "worker": "sha256:67acfe365d0fef23bb555cf65a881487432dc3e563a62d4de8a4074c382f5b19"
+  },
+  "harness_sha256": {
+    "latency_benchmark_server.py": "19704e4d627b26b982af1512915070a5751456d73db92f44d18964dd98fc4de2",
+    "latency_benchmark_worker.py": "786b2afe67c54acd14a1cf7320c31e8d8dcf0fd2f839663d53811a815f357892",
+    "latency_profile.py": "8b9a95ea6e264d5b7f6c6dabbe0fdd207f095d1d4d47324311aaeba391df4704",
+    "latency_concurrency_server.py": "02a930a03a5fdaaf4c1c5aa44799358b3828fbdce95fb8ad909264ff83cf122a"
+  },
+  "dataset_sha256": "f59da15091cfa540bb02dbac8bc44e847fb5044e1f8720edbeafab5605a24efc",
+  "measured_started_at_unix": 1792275008.6728742,
+  "measured_finished_at_unix": 1792275045.8079002,
+  "profile": false
+}

@@ -1,0 +1,164 @@
+{
+  "scope": "Pinned SDK synthetic InternalClient HTTP; first inference request; no database/network",
+  "granted_tools": [
+    "execute",
+    "edit_file",
+    "glob",
+    "grep",
+    "ls",
+    "publish_artifact",
+    "read_file",
+    "read_output",
+    "web_download",
+    "web_find",
+    "web_open",
+    "write_file"
+  ],
+  "schema_cache": "current",
+  "cold_scope": "First graph invocation after module imports; not process startup or Django",
+  "cold": {
+    "wall_ms": 64.18339999800082,
+    "cpu_ms": 62.5
+  },
+  "warm": {
+    "wall_ms": {
+      "n": 30,
+      "median": 20.775250006408896,
+      "p95": 25.151299996650778,
+      "max": 63.80430000717752
+    },
+    "cpu_ms": {
+      "n": 30,
+      "median": 15.625,
+      "p95": 31.25,
+      "max": 62.5
+    }
+  },
+  "rows": [
+    {
+      "wall_ms": 64.18339999800082,
+      "cpu_ms": 62.5
+    },
+    {
+      "wall_ms": 20.823600003495812,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 21.295500002452172,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.67900000838563,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 63.80430000717752,
+      "cpu_ms": 62.5
+    },
+    {
+      "wall_ms": 21.68389999133069,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 22.371099999872968,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 21.1091000091983,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 25.151299996650778,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 21.75119999446906,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 23.414299997966737,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.412899990333244,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 21.507800003746524,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.50680000684224,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 19.478599991998635,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 21.58019998751115,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 19.405800005188212,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.72690000932198,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.90190000308212,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 20.041800002218224,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 21.248400007607415,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 19.932399998651817,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 21.039900006144308,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.419799999217503,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.669399993494153,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 19.71890000277199,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 20.2187000104459,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 21.05429999937769,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 19.90030000160914,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.380499991006218,
+      "cpu_ms": 15.625
+    },
+    {
+      "wall_ms": 20.38180000090506,
+      "cpu_ms": 31.25
+    }
+  ],
+  "profile": "         107324 function calls (102842 primitive calls) in 0.051 seconds\n\n   Ordered by: cumulative time\n   List reduced from 1536 to 40 due to restriction <40>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    0.051    0.051 latency_worker_profile.py:31(sample)\n        1    0.000    0.000    0.051    0.051 test_p0_runtime.py:83(invoke)\n        1    0.000    0.000    0.049    0.049 worker.py:118(run_job)\n        1    0.000    0.000    0.049    0.049 worker.py:113(__exit__)\n        1    0.000    0.000    0.049    0.049 threading.py:1117(join)\n        1    0.000    0.000    0.049    0.049 threading.py:1155(_wait_for_tstate_lock)\n     19/3    0.000    0.000    0.049    0.016 {method 'acquire' of '_thread.lock' objects}\n        1    0.000    0.000    0.049    0.049 threading.py:1018(_bootstrap)\n        1    0.000    0.000    0.049    0.049 threading.py:1058(_bootstrap_inner)\n        1    0.000    0.000    0.049    0.049 threading.py:1001(run)\n        1    0.000    0.000    0.048    0.048 professional_worker.py:57(run_professional)\n        1    0.000    0.000    0.026    0.026 main.py:3901(invoke)\n        8    0.000    0.000    0.026    0.003 main.py:2724(stream)\n       12    0.000    0.000    0.023    0.002 _runner.py:177(tick)\n        6    0.000    0.000    0.023    0.004 _retry.py:573(run_with_retry)\n        5    0.000    0.000    0.023    0.005 _runnable.py:674(invoke)\n    13/12    0.000    0.000    0.022    0.002 _runnable.py:374(invoke)\n    23/15    0.000    0.000    0.022    0.001 {method 'run' of '_contextvars.Context' objects}\n        1    0.000    0.000    0.022    0.022 factory.py:1520(model_node)\n      3/1    0.000    0.000    0.021    0.021 factory.py:337(composed)\n      4/1    0.000    0.000    0.021    0.021 run_helpers.py:813(wrapper)\n        1    0.000    0.000    0.021    0.021 todo.py:231(wrap_model_call)\n      3/1    0.000    0.000    0.021    0.021 factory.py:344(inner_handler)\n        1    0.000    0.000    0.021    0.021 filesystem.py:1864(wrap_model_call)\n        1    0.000    0.000    0.021    0.021 summarization.py:1377(wrap_model_call)\n        1    0.000    0.000    0.018    0.018 summarization.py:993(_count_tokens)\n        1    0.000    0.000    0.018    0.018 utils.py:2257(count_tokens_approximately)\n        1    0.000    0.000    0.014    0.014 adapter.py:230(build_agent)\n        1    0.000    0.000    0.014    0.014 graph.py:260(create_deep_agent)\n        1    0.000    0.000    0.011    0.011 factory.py:892(create_agent)\n       65    0.000    0.000    0.011    0.000 base.py:676(tool_call_schema)\n       13    0.000    0.000    0.010    0.001 pydantic.py:284(_create_subset_model)\n       13    0.000    0.000    0.009    0.001 pydantic.py:234(_create_subset_model_v2)\n       13    0.000    0.000    0.009    0.001 main.py:1735(create_model)\n       13    0.000    0.000    0.008    0.001 _model_construction.py:84(__new__)\n       13    0.000    0.000    0.008    0.001 pydantic.py:351(model_json_schema)\n       26    0.000    0.000    0.008    0.000 base.py:420(_cached_json_schema)\n       13    0.000    0.000    0.008    0.001 main.py:561(model_json_schema)\n       13    0.000    0.000    0.008    0.001 json_schema.py:2518(model_json_schema)\n       13    0.000    0.000    0.006    0.000 json_schema.py:401(generate)\n\n\n"
+}

@@ -1,0 +1,164 @@
+{
+  "scope": "Pinned SDK synthetic InternalClient HTTP; first inference request; no database/network",
+  "granted_tools": [
+    "execute",
+    "edit_file",
+    "glob",
+    "grep",
+    "ls",
+    "publish_artifact",
+    "read_file",
+    "read_output",
+    "web_download",
+    "web_find",
+    "web_open",
+    "write_file"
+  ],
+  "schema_cache": "disabled",
+  "cold_scope": "First graph invocation after module imports; not process startup or Django",
+  "cold": {
+    "wall_ms": 59.52959999558516,
+    "cpu_ms": 46.875
+  },
+  "warm": {
+    "wall_ms": {
+      "n": 30,
+      "median": 50.15974999696482,
+      "p95": 54.4549000042025,
+      "max": 96.71610000077635
+    },
+    "cpu_ms": {
+      "n": 30,
+      "median": 46.875,
+      "p95": 62.5,
+      "max": 93.75
+    }
+  },
+  "rows": [
+    {
+      "wall_ms": 59.52959999558516,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 51.29719999968074,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 49.58249999617692,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 96.71610000077635,
+      "cpu_ms": 93.75
+    },
+    {
+      "wall_ms": 47.909200002322905,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 50.80440000165254,
+      "cpu_ms": 62.5
+    },
+    {
+      "wall_ms": 48.481900012120605,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 50.96079999930225,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 48.35119999188464,
+      "cpu_ms": 31.25
+    },
+    {
+      "wall_ms": 50.22449999523815,
+      "cpu_ms": 62.5
+    },
+    {
+      "wall_ms": 51.17600000812672,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 48.598900000797585,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 50.77280000841711,
+      "cpu_ms": 62.5
+    },
+    {
+      "wall_ms": 49.89490000298247,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 50.03220000071451,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 51.34540000290144,
+      "cpu_ms": 62.5
+    },
+    {
+      "wall_ms": 54.4549000042025,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 51.824999987729825,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 51.050099995336495,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 49.27020000468474,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 49.5012999890605,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 52.47810001310427,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 48.15829999279231,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 50.09499999869149,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 54.30970000452362,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 52.64809999789577,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 49.84659999900032,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 49.254400000791065,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 48.55870000028517,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 49.96779999055434,
+      "cpu_ms": 46.875
+    },
+    {
+      "wall_ms": 52.087899995967746,
+      "cpu_ms": 46.875
+    }
+  ],
+  "profile": "         251616 function calls (241390 primitive calls) in 0.124 seconds\n\n   Ordered by: cumulative time\n   List reduced from 1650 to 40 due to restriction <40>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    0.126    0.126 latency_worker_profile.py:31(sample)\n        1    0.000    0.000    0.126    0.126 test_p0_runtime.py:83(invoke)\n        1    0.000    0.000    0.124    0.124 worker.py:118(run_job)\n        1    0.000    0.000    0.124    0.124 worker.py:113(__exit__)\n        1    0.000    0.000    0.124    0.124 threading.py:1117(join)\n        1    0.000    0.000    0.124    0.124 threading.py:1155(_wait_for_tstate_lock)\n     19/3    0.000    0.000    0.124    0.041 {method 'acquire' of '_thread.lock' objects}\n        1    0.000    0.000    0.124    0.124 threading.py:1018(_bootstrap)\n        1    0.000    0.000    0.124    0.124 threading.py:1058(_bootstrap_inner)\n        1    0.000    0.000    0.124    0.124 threading.py:1001(run)\n        1    0.000    0.000    0.123    0.123 professional_worker.py:57(run_professional)\n       31    0.001    0.000    0.076    0.002 _model_construction.py:84(__new__)\n       25    0.000    0.000    0.074    0.003 main.py:1735(create_model)\n        6    0.000    0.000    0.072    0.012 convert.py:77(tool)\n       14    0.000    0.000    0.072    0.005 structured.py:187(from_function)\n        6    0.000    0.000    0.072    0.012 convert.py:282(_tool_factory)\n        6    0.000    0.000    0.071    0.012 base.py:263(create_schema_from_function)\n       31    0.001    0.000    0.065    0.002 _model_construction.py:600(complete_model_class)\n   329/49    0.001    0.000    0.060    0.001 _generate_schema.py:717(generate_schema)\n   710/49    0.001    0.000    0.060    0.001 _generate_schema.py:1017(_generate_schema_inner)\n    41/31    0.001    0.000    0.059    0.002 _generate_schema.py:756(_model_schema)\n      109    0.000    0.000    0.057    0.001 _generate_schema.py:1238(_generate_md_field_schema)\n  381/109    0.002    0.000    0.056    0.001 _generate_schema.py:1278(_common_field_schema)\n  381/109    0.001    0.000    0.054    0.000 _generate_schema.py:2210(_apply_annotations)\n  399/109    0.000    0.000    0.053    0.000 _schema_generation_shared.py:82(__call__)\n  381/109    0.000    0.000    0.052    0.000 _generate_schema.py:2227(inner_handler)\n  669/127    0.002    0.000    0.051    0.000 _generate_schema.py:1045(match_type)\n    30/10    0.001    0.000    0.048    0.005 _generate_schema.py:1835(_dataclass_schema)\n        6    0.000    0.000    0.040    0.007 decorator.py:39(validate_arguments)\n        6    0.000    0.000    0.040    0.007 decorator.py:51(validate)\n        6    0.000    0.000    0.040    0.007 decorator.py:77(__init__)\n       19    0.000    0.000    0.040    0.002 pydantic.py:284(_create_subset_model)\n       19    0.000    0.000    0.040    0.002 pydantic.py:234(_create_subset_model_v2)\n        6    0.000    0.000    0.040    0.007 decorator.py:229(create_model)\n  201/142    0.000    0.000    0.039    0.000 {built-in method builtins.sorted}\n  220/100    0.000    0.000    0.038    0.000 _generate_schema.py:1917(<genexpr>)\n   190/90    0.000    0.000    0.038    0.000 _generate_schema.py:1256(_generate_dc_field_schema)\n        1    0.000    0.000    0.027    0.027 main.py:3901(invoke)\n        8    0.000    0.000    0.027    0.003 main.py:2724(stream)\n       12    0.000    0.000    0.024    0.002 _runner.py:177(tick)\n\n\n"
+}
